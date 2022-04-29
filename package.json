@@ -1,0 +1,48 @@
+{
+  "name": "castore",
+  "version": "0.0.1",
+  "sideEffects": false,
+  "license": "MIT",
+  "maintainers": [
+    "Thomas Aribart",
+    "Charles Géry",
+    "Juliette Fournier",
+    "Valentin Beggi"
+  ],
+  "main": "dist/cjs/index.js",
+  "module": "dist/esm/index.js",
+  "types": "dist/types/index.d.ts",
+  "scripts": {
+    "transpile": "babel src --extensions .ts --quiet",
+    "package": "rm -rf dist && yarn package:cjs && yarn package:esm && yarn package:types",
+    "package:cjs": "NODE_ENV=cjs yarn transpile --out-dir dist/cjs --source-maps",
+    "package:esm": "NODE_ENV=esm yarn transpile --out-dir dist/esm --source-maps",
+    "package:types": "ttsc -p tsconfig.build.json",
+    "lint": "eslint '**/*.ts'",
+    "test:type": "tsc --noEmit --emitDeclarationOnly false",
+    "test:unit": "jest --maxWorkers=4 --passWithNoTests",
+    "test:unit-coverage": "jest --maxWorkers=4 --passWithNoTests --coverage",
+    "test:circular": "yarn depcruise --validate dependency-cruiser.js .",
+    "postinstall": "husky install"
+  },
+  "devDependencies": {
+    "@types/node": "^16.6.1",
+    "aws-sdk": "^2.970.0",
+    "dependency-cruiser": "11.4.1",
+    "eslint": "8.12.0",
+    "eslint-config-prettier": "8.5.0",
+    "eslint-plugin-prettier": "4.0.0",
+    "husky": "7.0.4",
+    "jest": "27.5.1",
+    "json-schema-to-ts": "2.2.0",
+    "lint-staged": "12.3.7",
+    "prettier": "2.6.2",
+    "ts-jest": "27.1.4",
+    "ts-node": "10.7.0",
+    "ts-toolbelt": "^6.15.5",
+    "typescript": "4.6.3"
+  },
+  "dependencies": {
+    "dynamodb-toolbox": "0.4.0-alpha.2"
+  }
+}

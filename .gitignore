@@ -1,0 +1,8 @@
+node_modules
+coverage
+.DS_Store
+dist
+
+**/tsconfig.tsbuildinfo
+**/yarn-error.log
+**/tsconfig.tsbuildinfo
