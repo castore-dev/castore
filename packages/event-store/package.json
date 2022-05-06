@@ -1,20 +1,9 @@
 {
   "name": "@castore/event-store",
-  "private": false,
   "version": "0.1.2-alpha.0",
   "license": "MIT",
-  "sideEffects": false,
-  "publishConfig": {
-    "access": "public"
-  },
   "homepage": "https://github.com/theodo/castore#readme",
   "bugs": "https://github.com/theodo/castore/issues",
-  "maintainers": [
-    "Thomas Aribart",
-    "Charles Géry",
-    "Juliette Fournier",
-    "Valentin Beggi"
-  ],
   "repository": "theodo/castore.git",
   "keywords": [
     "event",
@@ -22,6 +11,10 @@
     "store",
     "typescript"
   ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "sideEffects": false,
   "files": [
     "dist"
   ],
@@ -70,6 +63,12 @@
     "typescript": "^4.6.3",
     "zod": "^3.15.1"
   },
+  "maintainers": [
+    "Thomas Aribart",
+    "Charles Géry",
+    "Juliette Fournier",
+    "Valentin Beggi"
+  ],
   "nx": {
     "targets": {
       "package": {
