@@ -1,12 +1,10 @@
-/* eslint-disable max-lines */
-import { Entity, QueryOptions, Table } from "dynamodb-toolbox";
-import { FromSchema } from "json-schema-to-ts";
+import { Entity, QueryOptions, Table } from 'dynamodb-toolbox';
 
-import { Aggregate } from "./aggregate";
-import { DocumentClient } from "./documentClient";
-import { EventStoreEvent } from "./event";
-import { EventDetail } from "./eventDetail";
-import { EVENT_TABLE_PK, EVENT_TABLE_SK } from "./eventTableKeys";
+import { Aggregate } from './aggregate';
+import { DocumentClient } from './documentClient';
+import { EventStoreEvent, EventStoreEventDetail } from './event';
+import { EventDetail } from './eventDetail';
+import { EVENT_TABLE_PK, EVENT_TABLE_SK } from './eventTableKeys';
 
 type EventsQueryOptions = { maxVersion?: number };
 
@@ -18,36 +16,34 @@ export class EventStore<
   E extends EventStoreEvent = EventStoreEvent,
   D extends EventDetail = E extends infer U
     ? U extends EventStoreEvent
-      ? FromSchema<U["schema"]>
+      ? EventStoreEventDetail<U>
       : never
     : never,
   R extends (aggregate: any, event: D) => Aggregate = (
     aggregate: any,
-    event: D
+    event: D,
   ) => Aggregate,
-  A extends Aggregate = ReturnType<R>
+  A extends Aggregate = ReturnType<R>,
 > {
-  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-  // @ts-ignore
-  _types: { eventDetails: D };
+  _types?: { details?: D };
   eventStoreId: string;
   eventStoreEvents: E[];
   reduce: R;
   pushEvent: (eventDetail: D) => Promise<void>;
   simulateSideEffect: (
-    indexedEvents: Record<string, Omit<D, "version">>,
-    event: D
-  ) => Record<string, Omit<D, "version">>;
+    indexedEvents: Record<string, Omit<D, 'version'>>,
+    event: D,
+  ) => Record<string, Omit<D, 'version'>>;
 
   pushEventTransaction: (eventDetail: D) => any;
   buildAggregate: (events: D[]) => A | undefined;
   getEvents: (
     aggregateId: string,
-    options?: EventsQueryOptions
+    options?: EventsQueryOptions,
   ) => Promise<D[]>;
   getAggregate: (
     aggregateId: string,
-    options?: EventsQueryOptions
+    options?: EventsQueryOptions,
   ) => Promise<{
     aggregate: A | undefined;
     events: D[];
@@ -55,7 +51,7 @@ export class EventStore<
   }>;
   simulateAggregate: (
     events: D[],
-    options?: SimulationOptions
+    options?: SimulationOptions,
   ) => A | undefined;
   tableName: string;
   tableEventStreamArn: string;
@@ -76,9 +72,9 @@ export class EventStore<
     eventStoreEvents: E[];
     reduce: R;
     simulateSideEffect?: (
-      indexedEvents: Record<string, Omit<D, "version">>,
-      event: D
-    ) => Record<string, Omit<D, "version">>;
+      indexedEvents: Record<string, Omit<D, 'version'>>,
+      event: D,
+    ) => Record<string, Omit<D, 'version'>>;
     tableName: string;
     tableEventStreamArn: string;
   }) {
@@ -94,8 +90,8 @@ export class EventStore<
       partitionKey: EVENT_TABLE_PK,
       sortKey: EVENT_TABLE_SK,
       attributes: {
-        [EVENT_TABLE_PK]: "string",
-        [EVENT_TABLE_SK]: "number",
+        [EVENT_TABLE_PK]: 'string',
+        [EVENT_TABLE_SK]: 'number',
       },
       autoExecute: true,
       autoParse: true,
@@ -105,28 +101,28 @@ export class EventStore<
     const entity = new Entity({
       name: eventStoreId,
       attributes: {
-        aggregateId: { type: "string", partitionKey: true },
-        version: { type: "number", sortKey: true },
-        type: { type: "string", required: true },
+        aggregateId: { type: 'string', partitionKey: true },
+        version: { type: 'number', sortKey: true },
+        type: { type: 'string', required: true },
         timestamp: {
-          type: "string",
+          type: 'string',
           required: true,
           default: () => new Date().toISOString(),
         },
-        payload: { type: "map" },
+        payload: { type: 'map' },
       },
       table: this.table,
     } as const);
 
     this.pushEvent = async (event: D) => {
       await entity.put(event, {
-        conditions: { attr: "version", exists: false },
+        conditions: { attr: 'version', exists: false },
       });
     };
 
     this.pushEventTransaction = (event: D) =>
       entity.putTransaction(event, {
-        conditions: { attr: "version", exists: false },
+        conditions: { attr: 'version', exists: false },
       });
 
     this.buildAggregate = (events: D[]) =>
@@ -159,21 +155,21 @@ export class EventStore<
 
     this.simulateAggregate = (
       events,
-      { simulationDate } = {}
+      { simulationDate } = {},
     ): A | undefined => {
       let eventsWithSideEffects = Object.values(
-        events.reduce(this.simulateSideEffect, {} as Record<string, D>)
+        events.reduce(this.simulateSideEffect, {} as Record<string, D>),
       );
 
       if (simulationDate) {
         eventsWithSideEffects = eventsWithSideEffects.filter(
-          ({ timestamp }) => timestamp <= simulationDate
+          ({ timestamp }) => timestamp <= simulationDate,
         );
       }
 
       const sortedEventsWithSideEffects = eventsWithSideEffects
         .sort(({ timestamp: timestampA }, { timestamp: timestampB }) =>
-          timestampA < timestampB ? -1 : 1
+          timestampA < timestampB ? -1 : 1,
         )
         .map((event, index) => ({ ...event, version: index + 1 })) as D[];
 
@@ -181,3 +177,8 @@ export class EventStore<
     };
   }
 }
+
+export type EventStoreEventsDetails<S extends EventStore> = Exclude<
+  Exclude<S['_types'], undefined>['details'],
+  undefined
+>;
