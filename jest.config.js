@@ -1,22 +1,22 @@
 /** @type {import('ts-jest/dist/types').InitialOptionsTsJest} */
 module.exports = {
   globals: {
-    "ts-jest": {
+    'ts-jest': {
       isolatedModules: true,
     },
   },
-  preset: "ts-jest",
+  preset: 'ts-jest',
   testTimeout: 20000,
-  testEnvironment: "node",
-  roots: ["<rootDir>", "<rootDir>/src"],
+  testEnvironment: 'node',
+  roots: ['<rootDir>', '<rootDir>/src'],
   /**
    * @debt refacto "Find a way to link moduleNameMapper and tsconfig.paths"
    */
   moduleNameMapper: {
-    "^@libs(.*)$": "<rootDir>/src$1",
+    '^@libs(.*)$': '<rootDir>/src$1',
   },
-  testPathIgnorePatterns: ["/node_modules/"],
+  testPathIgnorePatterns: ['/node_modules/'],
   modulePathIgnorePatterns: [],
-  coverageReporters: ["json-summary"],
+  coverageReporters: ['json-summary'],
   clearMocks: true,
 };
