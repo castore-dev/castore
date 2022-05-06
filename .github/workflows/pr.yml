@@ -1,0 +1,69 @@
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+# cancel previous runs on the same PR
+concurrency:
+  group: ${{ github.ref }}
+  cancel-in-progress: true
+
+name: ⛷ PR tests
+
+env:
+  CI: true
+  NODE_VERSION: 14
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  build:
+    name: 🏗 Build Project
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          # We need to fetch all branches and commits so that Nx affected has a base to compare against.
+          fetch-depth: 0
+      - name: Install & cache node dependencies
+        uses: ./.github/actions/install-node-deps
+
+  lint-and-tests:
+    name: 📚 Tests
+    needs: build
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+      - name: Use Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+      - name: Use cached project dependencies
+        uses: ./.github/actions/cache-node-modules
+      - name: Run tests
+        run: yarn nx run-many --all --target=test --parallel=1
+
+  validate-pr:
+    name: ✅ Validate the PR
+    runs-on: ubuntu-latest
+    if: ${{ always() }}
+    needs: [build, lint-and-tests]
+    steps:
+      - name: Validate build
+        run: |
+          if [[ ${{ needs.build.result }} = "failure" ]]; then
+            echo "build failed"
+            exit 1
+          fi
+      - name: Validate tests
+        run: |
+          if [[ ${{ needs.lint-and-tests.result }} = "failure" ]]; then
+            echo "Tests failed"
+            exit 1
+          fi
