@@ -1,8 +1,56 @@
+# package directories
 node_modules
-coverage
-.DS_Store
-dist
+.npm
 
-**/tsconfig.tsbuildinfo
-**/yarn-error.log
-**/tsconfig.tsbuildinfo
+# Serverless directories
+.serverless
+
+# Webpack directories
+.webpack
+
+# Esbuild directories
+.esbuild
+
+# Ignore stack.json files
+**/stack.json
+
+# production
+/build
+**/dist
+
+# testing
+coverage
+
+# Ignore Jetbrains folder settings
+.idea
+
+# local env
+.env
+.env.dev
+.env.development
+.env.local
+
+# misc
+.DS_Store
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+lerna-debug.log*
+
+# If people use virtualenvs for python scripts
+.venv
+
+# remove files to invoke lambdas locally
+event.json
+
+# Nx caching
+nx-cache
+
+# yarn
+.pnp.*
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/sdks
+!.yarn/versions

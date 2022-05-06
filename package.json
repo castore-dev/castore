@@ -1,51 +1,70 @@
 {
   "name": "@castore/castore",
+  "description": "🦫 A simple way to implement event sourcing in Typescript",
   "version": "0.0.1",
-  "sideEffects": false,
-  "license": "MIT",
   "maintainers": [
     "Thomas Aribart",
     "Charles Géry",
     "Juliette Fournier",
     "Valentin Beggi"
   ],
+  "license": "MIT",
+  "workspaces": [ "packages/*"],
   "main": "dist/cjs/index.js",
   "module": "dist/esm/index.js",
   "types": "dist/types/index.d.ts",
   "scripts": {
-    "transpile": "babel src --extensions .ts --quiet",
-    "package": "rm -rf dist && yarn package:cjs && yarn package:esm && yarn package:types",
-    "package:cjs": "NODE_ENV=cjs yarn transpile --out-dir dist/cjs --source-maps",
-    "package:esm": "NODE_ENV=esm yarn transpile --out-dir dist/esm --source-maps",
-    "package:types": "ttsc -p tsconfig.build.json",
-    "lint": "eslint '**/*.ts'",
-    "test:type": "tsc --noEmit --emitDeclarationOnly false",
-    "test:unit": "jest --maxWorkers=4 --passWithNoTests",
-    "test:unit-coverage": "jest --maxWorkers=4 --passWithNoTests --coverage",
+    "build-all": "nx run-many --target=build --all --parallel=4",
+    "check-audit": "check-audit --yarn",
+    "graph": "nx dep-graph",
+    "info": "nx run-many --target=sls-info --all --parallel=4",
+    "lint-fix": "yarn linter-base-config --fix",
+    "linter-base-config": "eslint",
+    "package": "nx run-many --target=package --all --parallel=4",
+    "postinstall": "husky install && syncpack format",
+    "release": "yarn package && yarn lerna publish",
+    "resolve-audit": "resolve-audit --yarn",
+    "test": "nx run-many --target=test --all --parallel=4",
+    "test-affected": "nx affected --target=test",
+    "test-linter": "nx run-many --target=test-linter --all --parallel=4",
+    "test-type": "nx run-many --target=test-type --all --parallel=4",
+    "test-unit": "nx run-many --target=test-unit --all --parallel=4",
     "test:circular": "yarn depcruise --validate dependency-cruiser.js .",
-    "postinstall": "husky install"
+    "watch": "nx run-many --target=watch --all  --parallel=4"
   },
   "devDependencies": {
-    "@types/node": "^16.6.1",
-    "aws-sdk": "^2.970.0",
+    "@commitlint/cli": "^16.2.4",
+    "@commitlint/config-conventional": "^16.2.4",
+    "@nrwl/tao": "^14.0.3",
+    "@nrwl/workspace": "^14.0.3",
+    "@types/jest": "^27.4.1",
+    "@typescript-eslint/eslint-plugin": "^5.21.0",
+    "@typescript-eslint/parser": "^5.21.0",
+    "aws-sdk": "^2.1124.0",
     "dependency-cruiser": "11.4.1",
-    "eslint": "8.12.0",
-    "eslint-config-prettier": "8.5.0",
-    "eslint-plugin-prettier": "4.0.0",
-    "husky": "7.0.4",
-    "jest": "27.5.1",
-    "json-schema-to-ts": "2.2.0",
-    "lint-staged": "12.3.7",
-    "prettier": "2.6.2",
-    "ts-jest": "27.1.4",
-    "ts-node": "10.7.0",
-    "ts-toolbelt": "^6.15.5",
-    "typescript": "4.6.3"
+    "eslint": "^8.14.0",
+    "eslint-config-prettier": "^8.5.0",
+    "eslint-plugin-import": "^2.26.0",
+    "eslint-plugin-jest": "^26.1.5",
+    "eslint-plugin-prefer-arrow": "^1.2.3",
+    "eslint-plugin-prettier": "^4.0.0",
+    "husky": "^7.0.4",
+    "jest": "^27.5.1",
+    "lerna": "^4.0.0",
+    "lint-staged": "^12.4.1",
+    "lodash": "^4.17.21",
+    "npm-audit-resolver": "^3.0.0-7",
+    "nx": "^14.0.3",
+    "prettier": "^2.6.2",
+    "syncpack": "^7.0.0",
+    "typescript": "^4.6.3"
+  },
+  "engines": {
+    "node": "^14.18.2"
   },
   "dependencies": {
     "dynamodb-toolbox": "0.4.0-alpha.2"
   },
-  "description": "🦫 A simple way to implement event sourcing in Typescript",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/theodo/castore.git"
@@ -60,5 +79,6 @@
   "bugs": {
     "url": "https://github.com/theodo/castore/issues"
   },
-  "homepage": "https://github.com/theodo/castore#readme"
+  "homepage": "https://github.com/theodo/castore#readme",
+  "packageManager": "yarn@3.1.1"
 }

@@ -1,25 +1,22 @@
 {
   "compilerOptions": {
-    "lib": ["es2017"],
+    "target": "es2019",
+    "esModuleInterop": true,
+    "types": ["node", "jest"],
+    "lib": ["es2020"],
     "removeComments": true,
     "moduleResolution": "node",
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "sourceMap": true,
-    "target": "es2017",
-    "resolveJsonModule": true,
-    "allowSyntheticDefaultImports": true,
-    "esModuleInterop": true,
     "strict": true,
+    "noImplicitReturns": true,
     "skipLibCheck": true,
-    "baseUrl": "src",
-    "composite": true,
-    "plugins": [{ "transform": "@zerollup/ts-transform-paths" }],
-    "emitDeclarationOnly": true,
-    "outDir": "./dist/types",
-    "paths": {
-      "@libs/*": ["*"]
-    }
+    "declaration": true,
+    "declarationMap": true
+  },
+  "ts-node": {
+    "require": ["tsconfig-paths/register"]
   },
   "exclude": ["./dist"],
   "include": ["./**/*.ts"]
