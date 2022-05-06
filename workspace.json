@@ -1,0 +1,6 @@
+{
+  "version": 2,
+  "projects": {
+    "configuration": "packages/event-store"
+  }
+}

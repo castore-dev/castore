@@ -1,0 +1,63 @@
+{
+  "extends": "@nrwl/workspace/presets/npm.json",
+  "npmScope": "castore",
+  "tasksRunnerOptions": {
+    "default": {
+      "runner": "@nrwl/workspace/tasks-runners/default",
+      "options": {
+        "cacheableOperations": [
+          "build",
+          "package",
+          "test",
+          "test-all",
+          "test-type",
+          "test-linter",
+          "test-stylelint",
+          "test-unit"
+        ],
+        "cacheDirectory": "nx-cache"
+      }
+    }
+  },
+  "targetDependencies": {
+    "build": [
+      {
+        "target": "package",
+        "projects": "dependencies"
+      }
+    ],
+    "package": [
+      {
+        "target": "package",
+        "projects": "dependencies"
+      }
+    ],
+    "test": [
+      {
+        "target": "package",
+        "projects": "dependencies"
+      }
+    ],
+    "test-linter": [
+      {
+        "target": "package",
+        "projects": "dependencies"
+      }
+    ],
+    "test-type": [
+      {
+        "target": "package",
+        "projects": "dependencies"
+      }
+    ],
+    "test-unit": [
+      {
+        "target": "package",
+        "projects": "dependencies"
+      }
+    ]
+  },
+  "affected": {
+    "defaultBase": "main"
+  }
+}

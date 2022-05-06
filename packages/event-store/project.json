@@ -1,0 +1,6 @@
+{
+  "root": "packages/event-store",
+  "projectType": "library",
+  "tags": [],
+  "implicitDependencies": []
+}
