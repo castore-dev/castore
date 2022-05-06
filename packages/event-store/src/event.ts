@@ -1,23 +1,23 @@
-import { FromSchema, JSONSchema } from "json-schema-to-ts";
+import { FromSchema, JSONSchema } from 'json-schema-to-ts';
 
-import { EventDetail } from "./eventDetail";
+import { EventDetail } from './eventDetail';
 
 export class EventStoreEvent<
   T extends string = string,
-  S extends JSONSchema = { type: "object"; additionalProperties: false },
+  S extends JSONSchema = { type: 'object'; additionalProperties: false },
   I = FromSchema<{
-    type: "object";
+    type: 'object';
     properties: {
-      aggregateId: { type: "string" };
-      version: { type: "number" };
+      aggregateId: { type: 'string' };
+      version: { type: 'number' };
       type: { const: T };
-      timestamp: { type: "string"; format: "date-time" };
+      timestamp: { type: 'string'; format: 'date-time' };
       payload: S;
     };
-    required: ["aggregateId", "version", "type", "timestamp", "payload"];
+    required: ['aggregateId', 'version', 'type', 'timestamp', 'payload'];
     additionalProperties: false;
   }>,
-  D extends EventDetail = I extends EventDetail ? I : never
+  D extends EventDetail = I extends EventDetail ? I : never,
 > {
   _types?: { detail?: D };
   type: T;
@@ -25,7 +25,7 @@ export class EventStoreEvent<
 
   constructor({
     type,
-    payloadSchema = { type: "object", additionalProperties: false } as S,
+    payloadSchema = { type: 'object', additionalProperties: false } as S,
   }: {
     type: T;
     payloadSchema?: S;
@@ -36,6 +36,6 @@ export class EventStoreEvent<
 }
 
 export type EventStoreEventDetail<E extends EventStoreEvent> = Exclude<
-  Exclude<E["_types"], undefined>["detail"],
+  Exclude<E['_types'], undefined>['detail'],
   undefined
 >;

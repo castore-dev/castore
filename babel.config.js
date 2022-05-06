@@ -1,5 +1,5 @@
 const defaultPresets = [
-  ["@babel/preset-typescript", { allowNamespaces: true }],
+  ['@babel/preset-typescript', { allowNamespaces: true }],
 ];
 
 const defaultIgnores = [
@@ -11,23 +11,23 @@ const defaultIgnores = [
 
 const defaultPlugins = [
   [
-    "module-resolver",
+    'module-resolver',
     {
-      root: ["./src"],
-      extensions: [".ts"],
-      alias: { "@libs": "./src" },
+      root: ['./src'],
+      extensions: ['.ts'],
+      alias: { '@libs': './src' },
     },
   ],
-  "@babel/plugin-transform-runtime",
+  '@babel/plugin-transform-runtime',
 ];
 
 const presetsForESM = [
-  ["@babel/preset-env", { modules: false }],
+  ['@babel/preset-env', { modules: false }],
   ...defaultPresets,
 ];
 
 const presetsForCJS = [
-  ["@babel/preset-env", { modules: "cjs" }],
+  ['@babel/preset-env', { modules: 'cjs' }],
   ...defaultPresets,
 ];
 
