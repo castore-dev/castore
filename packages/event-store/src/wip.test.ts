@@ -39,9 +39,12 @@ export const counterEventStore = new EventStore({
     const { version, aggregateId } = event;
 
     switch (event.type) {
-      case 'COUNTER_CREATED':
+      case 'COUNTER_CREATED': {
         const { userId } = event.payload;
+
         return { aggregateId, version, userId, count: 0 };
+      }
+
       case 'COUNTER_INCREMENTED':
         return {
           ...counterAggregate,
