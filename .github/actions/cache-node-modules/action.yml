@@ -1,0 +1,15 @@
+name: 'Cache node modules'
+description: 'Cache node modules'
+outputs:
+  cache-hit:
+    description: 'True if cache was hit, false otherwise'
+    value: ${{ steps.cache-node-modules.outputs.cache-hit }}
+runs:
+  using: 'composite'
+  steps:
+    - name: Cache node_modules
+      id: cache-node-modules
+      uses: actions/cache@v2
+      with:
+        path: '**/node_modules'
+        key: ${{ runner.os }}-modules-${{ env.NODE_VERSION }}-${{ hashFiles('./yarn.lock') }}

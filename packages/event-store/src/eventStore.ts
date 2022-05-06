@@ -19,8 +19,9 @@ export class EventStore<
       ? EventStoreEventDetail<U>
       : never
     : never,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   R extends (aggregate: any, event: D) => Aggregate = (
-    aggregate: any,
+    aggregate: unknown,
     event: D,
   ) => Aggregate,
   A extends Aggregate = ReturnType<R>,
@@ -35,7 +36,7 @@ export class EventStore<
     event: D,
   ) => Record<string, Omit<D, 'version'>>;
 
-  pushEventTransaction: (eventDetail: D) => any;
+  pushEventTransaction: (eventDetail: D) => unknown;
   buildAggregate: (events: D[]) => A | undefined;
   getEvents: (
     aggregateId: string,
@@ -133,12 +134,11 @@ export class EventStore<
         consistent: true,
       };
 
-      if (maxVersion) {
+      if (maxVersion !== undefined) {
         queryOptions.lte = maxVersion;
       }
 
-      const { Items = [] } =
-        (await entity.query(aggregateId, queryOptions)) ?? {};
+      const { Items = [] } = await entity.query(aggregateId, queryOptions);
 
       return Items as D[];
     };
@@ -161,7 +161,7 @@ export class EventStore<
         events.reduce(this.simulateSideEffect, {} as Record<string, D>),
       );
 
-      if (simulationDate) {
+      if (simulationDate !== undefined) {
         eventsWithSideEffects = eventsWithSideEffects.filter(
           ({ timestamp }) => timestamp <= simulationDate,
         );

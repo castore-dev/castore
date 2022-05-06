@@ -14,8 +14,7 @@ export const buildMockEventsFn =
               U,
               'aggregateId' | 'version' | 'type' | 'timestamp' | 'payload'
             >,
-            'aggregateId',
-            'flat'
+            'aggregateId'
           >
         : never
       : never)[]
@@ -28,8 +27,7 @@ export const buildMockEventsFn =
               U,
               'aggregateId' | 'version' | 'type' | 'timestamp' | 'payload'
             >,
-            'aggregateId',
-            'flat'
+            'aggregateId'
           >
         : never
       : never)[]
