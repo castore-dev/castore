@@ -2,14 +2,20 @@
   "name": "@castore/castore",
   "description": "🦫 A simple way to implement event sourcing in Typescript",
   "version": "0.0.1",
-  "maintainers": [
-    "Thomas Aribart",
-    "Charles Géry",
-    "Juliette Fournier",
-    "Valentin Beggi"
-  ],
+  "author": "",
   "license": "MIT",
-  "workspaces": [ "packages/*"],
+  "homepage": "https://github.com/theodo/castore#readme",
+  "bugs": "https://github.com/theodo/castore/issues",
+  "repository": "theodo/castore.git",
+  "keywords": [
+    "event",
+    "source",
+    "store",
+    "typescript"
+  ],
+  "workspaces": [
+    "packages/*"
+  ],
   "main": "dist/cjs/index.js",
   "module": "dist/esm/index.js",
   "types": "dist/types/index.d.ts",
@@ -31,6 +37,9 @@
     "test-unit": "nx run-many --target=test-unit --all --parallel=4",
     "test:circular": "yarn depcruise --validate dependency-cruiser.js .",
     "watch": "nx run-many --target=watch --all  --parallel=4"
+  },
+  "dependencies": {
+    "dynamodb-toolbox": "0.4.0-alpha.2"
   },
   "devDependencies": {
     "@commitlint/cli": "^16.2.4",
@@ -62,23 +71,11 @@
   "engines": {
     "node": "^14.18.2"
   },
-  "dependencies": {
-    "dynamodb-toolbox": "0.4.0-alpha.2"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/theodo/castore.git"
-  },
-  "keywords": [
-    "store",
-    "event",
-    "source",
-    "typescript"
+  "maintainers": [
+    "Thomas Aribart",
+    "Charles Géry",
+    "Juliette Fournier",
+    "Valentin Beggi"
   ],
-  "author": "",
-  "bugs": {
-    "url": "https://github.com/theodo/castore/issues"
-  },
-  "homepage": "https://github.com/theodo/castore#readme",
   "packageManager": "yarn@3.1.1"
 }

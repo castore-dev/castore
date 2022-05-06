@@ -1443,9 +1443,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@castore/root@workspace:.":
+"@castore/castore@workspace:.":
   version: 0.0.0-use.local
-  resolution: "@castore/root@workspace:."
+  resolution: "@castore/castore@workspace:."
   dependencies:
     "@commitlint/cli": ^16.2.4
     "@commitlint/config-conventional": ^16.2.4
@@ -1456,6 +1456,7 @@ __metadata:
     "@typescript-eslint/parser": ^5.21.0
     aws-sdk: ^2.1124.0
     dependency-cruiser: 11.4.1
+    dynamodb-toolbox: 0.4.0-alpha.2
     eslint: ^8.14.0
     eslint-config-prettier: ^8.5.0
     eslint-plugin-import: ^2.26.0
@@ -1471,6 +1472,31 @@ __metadata:
     nx: ^14.0.3
     prettier: ^2.6.2
     syncpack: ^7.0.0
+    typescript: ^4.6.3
+  languageName: unknown
+  linkType: soft
+
+"@castore/event-store@workspace:packages/event-store":
+  version: 0.0.0-use.local
+  resolution: "@castore/event-store@workspace:packages/event-store"
+  dependencies:
+    "@babel/cli": ^7.17.6
+    "@babel/core": ^7.17.9
+    "@babel/plugin-transform-runtime": ^7.17.0
+    "@babel/preset-env": ^7.16.11
+    "@babel/preset-typescript": ^7.16.7
+    "@serverless/typescript": ^3.15.2
+    "@types/node": ^17.0.29
+    "@zerollup/ts-transform-paths": ^1.7.18
+    babel-plugin-module-resolver: ^4.1.0
+    concurrently: ^7.1.0
+    dynamodb-toolbox: 0.4.0-alpha.2
+    eslint: ^8.14.0
+    jest: ^27.5.1
+    json-schema-to-ts: ^2.2.0
+    prettier: ^2.6.2
+    ts-node: ^10.7.0
+    ttypescript: ^1.5.13
     typescript: ^4.6.3
   languageName: unknown
   linkType: soft
@@ -3227,31 +3253,6 @@ __metadata:
   checksum: 09b5a158ce013a6c37613258bad79ca4efeb99b1f59c41c73cca36cac00b258aefcf46eeea970fccf06b989414d86fe9f54c1102272c0c3bdd51a313cea80949
   languageName: node
   linkType: hard
-
-"@swarmion/serverless-configuration@workspace:packages/event-store":
-  version: 0.0.0-use.local
-  resolution: "@swarmion/serverless-configuration@workspace:packages/event-store"
-  dependencies:
-    "@babel/cli": ^7.17.6
-    "@babel/core": ^7.17.9
-    "@babel/plugin-transform-runtime": ^7.17.0
-    "@babel/preset-env": ^7.16.11
-    "@babel/preset-typescript": ^7.16.7
-    "@serverless/typescript": ^3.15.2
-    "@types/node": ^17.0.29
-    "@zerollup/ts-transform-paths": ^1.7.18
-    babel-plugin-module-resolver: ^4.1.0
-    concurrently: ^7.1.0
-    dynamodb-toolbox: 0.4.0-alpha.2
-    eslint: ^8.14.0
-    jest: ^27.5.1
-    json-schema-to-ts: ^2.2.0
-    prettier: ^2.6.2
-    ts-node: ^10.7.0
-    ttypescript: ^1.5.13
-    typescript: ^4.6.3
-  languageName: unknown
-  linkType: soft
 
 "@swc-node/core@npm:^1.9.0":
   version: 1.9.0
