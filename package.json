@@ -1,5 +1,5 @@
 {
-  "name": "castore",
+  "name": "@castore/castore",
   "version": "0.0.1",
   "sideEffects": false,
   "license": "MIT",
@@ -44,5 +44,21 @@
   },
   "dependencies": {
     "dynamodb-toolbox": "0.4.0-alpha.2"
-  }
+  },
+  "description": "🦫 A simple way to implement event sourcing in Typescript",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/theodo/castore.git"
+  },
+  "keywords": [
+    "store",
+    "event",
+    "source",
+    "typescript"
+  ],
+  "author": "",
+  "bugs": {
+    "url": "https://github.com/theodo/castore/issues"
+  },
+  "homepage": "https://github.com/theodo/castore#readme"
 }
