@@ -6,6 +6,12 @@
   "license": "MIT",
   "homepage": "https://github.com/theodo/castore#readme",
   "bugs": "https://github.com/theodo/castore/issues",
+  "maintainers": [
+    "Thomas Aribart",
+    "Charles Géry",
+    "Juliette Fournier",
+    "Valentin Beggi"
+  ],
   "repository": "theodo/castore.git",
   "keywords": [
     "event",
@@ -71,11 +77,5 @@
   "engines": {
     "node": "^14.18.2"
   },
-  "maintainers": [
-    "Thomas Aribart",
-    "Charles Géry",
-    "Juliette Fournier",
-    "Valentin Beggi"
-  ],
   "packageManager": "yarn@3.1.1"
 }

@@ -7,6 +7,21 @@
   "publishConfig": {
     "access": "public"
   },
+  "homepage": "https://github.com/theodo/castore#readme",
+  "bugs": "https://github.com/theodo/castore/issues",
+  "maintainers": [
+    "Thomas Aribart",
+    "Charles Géry",
+    "Juliette Fournier",
+    "Valentin Beggi"
+  ],
+  "repository": "theodo/castore.git",
+  "keywords": [
+    "event",
+    "source",
+    "store",
+    "typescript"
+  ],
   "files": [
     "dist"
   ],
