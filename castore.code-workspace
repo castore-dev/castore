@@ -56,11 +56,11 @@
   "folders": [
     {
       "path": ".",
-      "name": "castore root"
+      "name": "🦫 castore root"
     },
     {
       "path": "packages/event-store",
-      "name": "event store [library]"
-    },
+      "name": "📚 event store [library]"
+    }
   ]
 }
