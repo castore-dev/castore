@@ -4,6 +4,9 @@
   "version": "0.1.0",
   "license": "MIT",
   "sideEffects": false,
+  "publishConfig": {
+    "access": "public"
+  },
   "files": [
     "dist"
   ],
@@ -45,5 +48,14 @@
     "ts-node": "^10.7.0",
     "ttypescript": "^1.5.13",
     "typescript": "^4.6.3"
+  },
+  "nx": {
+    "targets": {
+      "package": {
+        "outputs": [
+          "packages/event-store/dist"
+        ]
+      }
+    }
   }
 }
