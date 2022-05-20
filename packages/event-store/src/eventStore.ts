@@ -2,8 +2,8 @@ import { Entity, QueryOptions, Table } from 'dynamodb-toolbox';
 
 import { Aggregate } from './aggregate';
 import { DocumentClient } from './documentClient';
-import { EventStoreEvent, EventStoreEventDetail } from './event';
-import { EventDetail } from './eventDetail';
+import { EventDetail } from './event/eventDetail';
+import { EventType, EventTypeDetail } from './event/eventType';
 import { EVENT_TABLE_PK, EVENT_TABLE_SK } from './eventTableKeys';
 
 type EventsQueryOptions = { maxVersion?: number };
@@ -13,10 +13,10 @@ type SimulationOptions = {
 };
 
 export class EventStore<
-  E extends EventStoreEvent = EventStoreEvent,
+  E extends EventType = EventType,
   D extends EventDetail = E extends infer U
-    ? U extends EventStoreEvent
-      ? EventStoreEventDetail<U>
+    ? U extends EventType
+      ? EventTypeDetail<U>
       : never
     : never,
   // eslint-disable-next-line @typescript-eslint/no-explicit-any

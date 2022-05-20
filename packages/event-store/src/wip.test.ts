@@ -1,14 +1,11 @@
 import { z } from 'zod';
 
-import {
-  EventStoreEvent,
-  EventStoreEventDetail,
-  JSONSchemaEvent,
-  ZodEvent,
-} from './event';
+import { EventType, EventTypeDetail } from './event/eventType';
+import { JSONSchemaEventType } from './event/implementations/jsonSchema';
+import { ZodEventType } from './event/implementations/zod';
 import { EventStore } from './eventStore';
 
-const counterCreatedEvent = new JSONSchemaEvent({
+const counterCreatedEvent = new JSONSchemaEventType({
   type: 'COUNTER_CREATED',
   payloadSchema: {
     type: 'object',
@@ -20,26 +17,22 @@ const counterCreatedEvent = new JSONSchemaEvent({
   } as const,
 });
 
-export type CounterCreatedDetail = EventStoreEventDetail<
-  typeof counterCreatedEvent
->;
+export type CounterCreatedDetail = EventTypeDetail<typeof counterCreatedEvent>;
 
-const counterIncrementedEvent = new EventStoreEvent({
+const counterIncrementedEvent = new EventType({
   type: 'COUNTER_INCREMENTED',
 });
 
-export type CounterIncrementedDetail = EventStoreEventDetail<
+export type CounterIncrementedDetail = EventTypeDetail<
   typeof counterIncrementedEvent
 >;
 
-const counterDeletedEvent = new ZodEvent({
+const counterDeletedEvent = new ZodEventType({
   type: 'COUNTER_DELETED',
   payloadSchema: z.object({ reason: z.string() }),
 });
 
-export type CounterDeletedDetail = EventStoreEventDetail<
-  typeof counterDeletedEvent
->;
+export type CounterDeletedDetail = EventTypeDetail<typeof counterDeletedEvent>;
 
 type CounterAggregate = {
   aggregateId: string;
