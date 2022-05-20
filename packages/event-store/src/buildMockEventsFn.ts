@@ -1,6 +1,6 @@
 import { O } from 'ts-toolbelt';
 
-import { EventDetail } from './eventDetail';
+import { EventDetail } from './event/eventDetail';
 import { EventStore, EventStoreEventsDetails } from './eventStore';
 
 export const buildMockEventsFn =
