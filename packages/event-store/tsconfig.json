@@ -5,7 +5,8 @@
     "composite": true,
     "plugins": [{ "transform": "@zerollup/ts-transform-paths" }],
     "emitDeclarationOnly": true,
-    "outDir": "./dist/types"
+    "outDir": "./dist/types",
+    "esModuleInterop": true
   },
   "exclude": ["./dist"],
   "include": ["./**/*.ts"]
