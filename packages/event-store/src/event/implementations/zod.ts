@@ -1,33 +1,76 @@
-import { AnyZodObject, z } from 'zod';
+import { z, ZodType } from 'zod';
 
 import { EventDetail } from '../eventDetail';
 import { EventType } from '../eventType';
 
 export class ZodEventType<
   T extends string = string,
-  Z extends AnyZodObject = AnyZodObject,
-  I = {
-    aggregateId: string;
-    version: number;
-    type: T;
-    timestamp: string;
-    payload: z.infer<Z>;
-  },
-  D extends EventDetail = I extends EventDetail ? I : never,
+  MS extends ZodType | undefined = ZodType | undefined,
+  PS extends ZodType | undefined = ZodType | undefined,
+  $D = undefined extends MS
+    ? undefined extends PS
+      ? // No metadata + No payload
+        {
+          aggregateId: string;
+          version: number;
+          type: T;
+          timestamp: string;
+        }
+      : PS extends ZodType
+      ? // No metadata + With payload
+        {
+          aggregateId: string;
+          version: number;
+          type: T;
+          timestamp: string;
+          payload: z.infer<PS>;
+        }
+      : never
+    : MS extends ZodType
+    ? undefined extends PS
+      ? // With metadata + No payload
+        {
+          aggregateId: string;
+          version: number;
+          type: T;
+          timestamp: string;
+          metadata: z.infer<MS>;
+        }
+      : PS extends ZodType
+      ? // With metadata + With payload
+        {
+          aggregateId: string;
+          version: number;
+          type: T;
+          timestamp: string;
+          payload: z.infer<PS>;
+          metadata: z.infer<MS>;
+        }
+      : never
+    : never,
+  D extends EventDetail = $D extends EventDetail ? $D : never,
 > implements EventType<T, D>
 {
-  _types?: { detail?: D };
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
+  _types: {
+    detail: D;
+  };
   type: T;
-  payloadSchema: Z;
+  payloadSchema?: PS;
+  metadataSchema?: MS;
 
   constructor({
     type,
-    payloadSchema = z.object({}) as Z,
+    payloadSchema,
+    metadataSchema,
   }: {
     type: T;
-    payloadSchema?: Z;
+    payloadSchema?: PS;
+    metadataSchema?: MS;
   }) {
     this.type = type;
     this.payloadSchema = payloadSchema;
+    this.metadataSchema = metadataSchema;
   }
 }

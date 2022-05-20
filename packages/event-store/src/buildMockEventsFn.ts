@@ -1,13 +1,13 @@
 import { O } from 'ts-toolbelt';
 
 import { EventDetail } from './event/eventDetail';
-import { EventStore, EventStoreEventsDetails } from './eventStore';
+import { EventStore } from './eventStore';
 
 export const buildMockEventsFn =
   <S extends EventStore>(
     aggregateIdMock: string,
   ): ((
-    ...partialDetails: (EventStoreEventsDetails<S> extends infer U
+    ...partialDetails: (S['_types']['details'] extends infer U
       ? U extends EventDetail
         ? O.Optional<
             Pick<
@@ -18,9 +18,9 @@ export const buildMockEventsFn =
           >
         : never
       : never)[]
-  ) => EventStoreEventsDetails<S>[]) =>
+  ) => S['_types']['details'][]) =>
   (
-    ...partialEvents: (EventStoreEventsDetails<S> extends infer U
+    ...partialEvents: (S['_types']['details'] extends infer U
       ? U extends EventDetail
         ? O.Optional<
             Pick<
@@ -31,7 +31,7 @@ export const buildMockEventsFn =
           >
         : never
       : never)[]
-  ): EventStoreEventsDetails<S>[] =>
+  ): S['_types']['details'][] =>
     partialEvents.map(partialEvent =>
       Object.assign({ aggregateId: aggregateIdMock }, partialEvent),
     );

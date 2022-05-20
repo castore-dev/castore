@@ -26,7 +26,11 @@ export class EventStore<
   ) => Aggregate,
   A extends Aggregate = ReturnType<R>,
 > {
-  _types?: { details?: D };
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
+  _types: {
+    details: D;
+  };
   eventStoreId: string;
   eventStoreEvents: E[];
   reduce: R;
@@ -177,8 +181,3 @@ export class EventStore<
     };
   }
 }
-
-export type EventStoreEventsDetails<S extends EventStore> = Exclude<
-  Exclude<S['_types'], undefined>['details'],
-  undefined
->;

@@ -3,5 +3,6 @@ export type EventDetail = {
   version: number;
   type: string;
   timestamp: string;
-  payload: Record<string, unknown>;
+  payload?: unknown;
+  metadata?: unknown;
 };
