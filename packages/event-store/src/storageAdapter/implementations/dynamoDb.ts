@@ -65,7 +65,7 @@ export class DynamoDbStorageAdapter implements StorageAdapter {
       timestamps: false,
     } as const);
 
-    this.pushEvent = async (event: EventDetail) => {
+    this.pushEvent = async event => {
       await entity.put(event, {
         conditions: { attr: 'version', exists: false },
       });
@@ -93,29 +93,24 @@ export class DynamoDbStorageAdapter implements StorageAdapter {
           timestamp,
           ...item
         }) => {
+          const payload = item.payload as unknown | undefined;
+          const metadata = item.metadata as unknown | undefined;
+
           const eventDetail: EventDetail = {
             aggregateId: eventAggregateId,
             version,
             type,
             timestamp,
+            ...(payload !== undefined ? { payload } : {}),
+            ...(metadata !== undefined ? { metadata } : {}),
           };
-
-          const payload = item.payload as unknown | undefined;
-          if (payload !== undefined) {
-            eventDetail.payload = payload;
-          }
-
-          const metadata = item.metadata as unknown | undefined;
-          if (metadata !== undefined) {
-            eventDetail.metadata = metadata;
-          }
 
           return eventDetail;
         },
       );
     };
 
-    this.pushEventTransaction = (event: EventDetail) =>
+    this.pushEventTransaction = event =>
       entity.putTransaction(event, {
         conditions: { attr: 'version', exists: false },
       });
