@@ -96,7 +96,7 @@ const {
 } = await counterEventStore.getAggregate(aggregateId);
 
 // 👇 Method input is correctly typed
-await counterEventStore.push({
+await counterEventStore.pushEvent({
   aggregateId: '123',
   version: 1,
   type: 'COUNTER_CREATED',
@@ -111,7 +111,7 @@ await counterEventStore.push({
 
 - 💬 **Verbosity**: Castore classes are designed to increase dryness and provide the optimal developer experience. Event Sourcing is hard, don't make it harder!
 - 📝 **Strong typings**: We love type inference, we know you will to!
-- 🏄‍♂️ **Interfaces before implementations**: The aim of Castore is to provide a standard interface to modelize common event sourcing patterns in TypeScript. But it **DOES NOT enforce any particular implementation** (like storage service, messaging system etc...). You can use Castore in React apps, containers or lambdas, it's up to you! Some common implementations are provided, but you are free to use **any implementation you want** via custom classes, as long as they follow the required interfaces.
+- 🏄‍♂️ **Interfaces before implementations**: Castore provides a standard interface to modelize common event sourcing patterns in TypeScript. But it **DOES NOT enforce any particular implementation** (storage service, messaging system etc...). You can use Castore in React apps, containers or lambdas, it's up to you! Some common implementations are provided, but you are free to use **any implementation you want** via custom classes, as long as they follow the required interfaces.
 - 👍 **Enforces best practices**: Gained from years of usage like using int versions instead of timestamps, transactions for multi-store events and state-carrying transfer events for projections.
 - 🛠 **Rich suite of helpers**: Like mock events builder to help you write tests.
 
