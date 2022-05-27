@@ -2,10 +2,10 @@
 
 Castore provides a unified interface for implementing Event Sourcing in TypeScript.
 
-Define your events shapes and register them in your event store:
+Define your events types:
 
 ```typescript
-import { EventStore } from 'castore';
+import { EventTypesDetails } from 'castore';
 import { JSONSchemaEventType } from 'castore/json-schema-event-type';
 
 const counterCreatedEvent = new JSONSchemaEventType({
@@ -18,14 +18,27 @@ const counterCreatedEvent = new JSONSchemaEventType({
   } as const,
 });
 
-const counterIncrementedEvent = new EventType({
+const counterIncrementedEvent = new JSONSchemaEventType({
   type: 'COUNTER_INCREMENTED',
 });
 
-const counterRemovedEvent = new EventType({
+const counterRemovedEvent = new JSONSchemaEventType({
   type: 'COUNTER_REMOVED',
 });
 
+const eventTypes = [
+  counterCreatedEvent,
+  counterIncrementedEvent,
+  counterRemovedEvent,
+];
+
+// Will infer correct union type 🙌
+type CounterEventDetail = EventTypesDetails<typeof eventTypes>;
+```
+
+Define your aggregate type and reducer:
+
+```typescript
 type CounterAggregate = {
   aggregateId: string;
   version: number;
@@ -33,63 +46,61 @@ type CounterAggregate = {
   status: string;
 };
 
+const reducer = (
+  aggregate: CounterAggregate,
+  event: CounterEventDetail,
+): CounterAggregate => {
+  const { aggregateId, version } = event;
+
+  switch (event.type) {
+    case 'COUNTER_CREATED': {
+      const { startCount = 0 } = event.payload;
+
+      return {
+        aggregateId,
+        version,
+        count: startCount,
+        status: 'CREATED',
+      };
+    }
+    case 'COUNTER_INCREMENTED':
+      return {
+        ...aggregate,
+        version,
+        count: aggregate.count + 1,
+      };
+    case 'COUNTER_REMOVED':
+      return {
+        ...aggregate,
+        version,
+        status: 'REMOVED',
+      };
+  }
+};
+```
+
+Finally, initialize an EventStore class and start interacting with your event store:
+
+```typescript
 const counterEventStore = new EventStore({
   eventStoreId: 'Counters',
-  eventTypes: [
-    counterCreatedEvent,
-    counterIncrementedEvent,
-    counterRemovedEvent,
-  ],
-  // The return type of the reducer defines the EventStore aggregate type
-  reduce: (aggregate: CounterAggregate, event): CounterAggregate => {
-    const { aggregateId, version } = event;
-
-    switch (event.type) {
-      case 'COUNTER_CREATED': {
-        // event details are correctly inferred 🙌
-        const { startCount = 0 } = event.payload;
-
-        return {
-          aggregateId,
-          version,
-          count: startCount,
-          status: 'CREATED',
-        };
-      }
-      case 'COUNTER_INCREMENTED':
-        return {
-          ...aggregate,
-          version,
-          count: aggregate.count + 1,
-        };
-      case 'COUNTER_REMOVED':
-        return {
-          ...aggregate,
-          version,
-          status: 'REMOVED',
-        };
-    }
-  },
+  eventTypes,
+  reducer,
   // 👇 See storage adapters section
   storageAdapter,
 });
-```
 
-Your event store will then expose fully typed methods to interact with your event store:
-
-```typescript
 const {
-  events, // <= Return typed events from your storage layer
+  events, // <= Typed events
   aggregate, // <= Reducer result
 } = await counterEventStore.getAggregate(aggregateId);
 
+// 👇 Method input is correctly typed
 await counterEventStore.push({
-  // 👇 Method input is correctly typed
-  aggregateId: crypto.randomUUID(),
+  aggregateId: '123',
   version: 1,
   type: 'COUNTER_CREATED',
   timestamp: new Date().toISOString(),
-  // Payload is correctly typed as well
   payload: {
     startCount: 18,
   },

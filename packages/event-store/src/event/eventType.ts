@@ -27,3 +27,9 @@ export type EventTypeDetail<
       timestamp: string;
     }
   : D;
+
+export type EventTypesDetails<E extends EventType[]> = E[number] extends infer U
+  ? U extends EventType
+    ? EventTypeDetail<U>
+    : never
+  : never;
