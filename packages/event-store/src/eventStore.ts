@@ -1,16 +1,12 @@
-import { Entity, QueryOptions, Table } from 'dynamodb-toolbox';
-
 import { Aggregate } from './aggregate';
-import { DocumentClient } from './documentClient';
 import { EventDetail } from './event/eventDetail';
 import { EventType, EventTypeDetail } from './event/eventType';
-import { EVENT_TABLE_PK, EVENT_TABLE_SK } from './eventTableKeys';
+import {
+  EventsQueryOptions,
+  StorageAdapter,
+} from './storageAdapter/storageAdapter';
 
-type EventsQueryOptions = { maxVersion?: number };
-
-type SimulationOptions = {
-  simulationDate?: string;
-};
+export type SimulationOptions = { simulationDate?: string };
 
 export class EventStore<
   E extends EventType = EventType,
@@ -28,9 +24,7 @@ export class EventStore<
 > {
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-ignore
-  _types: {
-    details: D;
-  };
+  _types: { details: D };
   eventStoreId: string;
   eventStoreEvents: E[];
   reduce: R;
@@ -58,9 +52,7 @@ export class EventStore<
     events: D[],
     options?: SimulationOptions,
   ) => A | undefined;
-  tableName: string;
-  tableEventStreamArn: string;
-  table: Table<string, typeof EVENT_TABLE_PK, typeof EVENT_TABLE_SK>;
+  storageAdapter: StorageAdapter;
 
   constructor({
     eventStoreId,
@@ -70,88 +62,43 @@ export class EventStore<
       ...indexedEvents,
       [event.version]: event,
     }),
-    tableName,
-    tableEventStreamArn,
+    storageAdapter,
   }: {
     eventStoreId: string;
     eventStoreEvents: E[];
     reduce: R;
+    storageAdapter: StorageAdapter;
     simulateSideEffect?: (
       indexedEvents: Record<string, Omit<D, 'version'>>,
       event: D,
     ) => Record<string, Omit<D, 'version'>>;
-    tableName: string;
-    tableEventStreamArn: string;
   }) {
     this.eventStoreId = eventStoreId;
     this.eventStoreEvents = eventStoreEvents;
     this.reduce = reduce;
     this.simulateSideEffect = simulateSideEffect;
-    this.tableName = tableName;
-    this.tableEventStreamArn = tableEventStreamArn;
+    this.storageAdapter = storageAdapter;
 
-    this.table = new Table({
-      name: tableName,
-      partitionKey: EVENT_TABLE_PK,
-      sortKey: EVENT_TABLE_SK,
-      attributes: {
-        [EVENT_TABLE_PK]: 'string',
-        [EVENT_TABLE_SK]: 'number',
-      },
-      autoExecute: true,
-      autoParse: true,
-      DocumentClient,
-    });
+    this.pushEvent = async (eventDetail: D) =>
+      this.storageAdapter.pushEvent(eventDetail);
 
-    const entity = new Entity({
-      name: eventStoreId,
-      attributes: {
-        aggregateId: { type: 'string', partitionKey: true },
-        version: { type: 'number', sortKey: true },
-        type: { type: 'string', required: true },
-        timestamp: {
-          type: 'string',
-          required: true,
-          default: () => new Date().toISOString(),
-        },
-        payload: { type: 'map' },
-      },
-      table: this.table,
-    } as const);
+    this.pushEventTransaction = (eventDetail: D) =>
+      this.storageAdapter.pushEventTransaction(eventDetail);
 
-    this.pushEvent = async (event: D) => {
-      await entity.put(event, {
-        conditions: { attr: 'version', exists: false },
-      });
-    };
+    this.buildAggregate = (eventDetails: D[]) =>
+      eventDetails.reduce(this.reduce, undefined as unknown as A) as
+        | A
+        | undefined;
 
-    this.pushEventTransaction = (event: D) =>
-      entity.putTransaction(event, {
-        conditions: { attr: 'version', exists: false },
-      });
-
-    this.buildAggregate = (events: D[]) =>
-      events.reduce(this.reduce, undefined as unknown as A) as A | undefined;
-
-    this.getEvents = async (aggregateId, { maxVersion } = {}) => {
-      const queryOptions: QueryOptions<typeof entity> = {
-        consistent: true,
-      };
-
-      if (maxVersion !== undefined) {
-        queryOptions.lte = maxVersion;
-      }
-
-      const { Items = [] } = await entity.query(aggregateId, queryOptions);
-
-      return Items as D[];
-    };
+    this.getEvents = async (aggregateId, queryOptions) =>
+      /**
+       * @debt feature "For the moment we just cast, we could implement validation + type guards at EventType level"
+       */
+      this.storageAdapter.getEvents(aggregateId, queryOptions) as Promise<D[]>;
 
     this.getAggregate = async (aggregateId, options) => {
       const events = await this.getEvents(aggregateId, options);
-
       const aggregate = this.buildAggregate(events);
-
       const lastEvent = events[events.length - 1];
 
       return { aggregate, events, lastEvent };

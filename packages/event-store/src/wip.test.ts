@@ -4,6 +4,7 @@ import { EventType, EventTypeDetail } from './event/eventType';
 import { JSONSchemaEventType } from './event/implementations/jsonSchema';
 import { ZodEventType } from './event/implementations/zod';
 import { EventStore } from './eventStore';
+import { DynamoDbStorageAdapter } from './storageAdapter/implementations/dynamoDb';
 
 const counterCreatedEvent = new JSONSchemaEventType({
   type: 'COUNTER_CREATED',
@@ -44,6 +45,10 @@ type CounterAggregate = {
 
 export const counterEventStore = new EventStore({
   eventStoreId: 'Counters',
+  storageAdapter: new DynamoDbStorageAdapter({
+    entityName: 'Counters',
+    tableName: 'CountersTable',
+  }),
   eventStoreEvents: [
     counterCreatedEvent,
     counterIncrementedEvent,
@@ -73,6 +78,4 @@ export const counterEventStore = new EventStore({
         };
     }
   },
-  tableName: 'toto',
-  tableEventStreamArn: 'tata',
 });

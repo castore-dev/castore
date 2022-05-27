@@ -9,26 +9,14 @@ export const buildMockEventsFn =
   ): ((
     ...partialDetails: (S['_types']['details'] extends infer U
       ? U extends EventDetail
-        ? O.Optional<
-            Pick<
-              U,
-              'aggregateId' | 'version' | 'type' | 'timestamp' | 'payload'
-            >,
-            'aggregateId'
-          >
+        ? O.Optional<U, 'aggregateId'>
         : never
       : never)[]
   ) => S['_types']['details'][]) =>
   (
     ...partialEvents: (S['_types']['details'] extends infer U
       ? U extends EventDetail
-        ? O.Optional<
-            Pick<
-              U,
-              'aggregateId' | 'version' | 'type' | 'timestamp' | 'payload'
-            >,
-            'aggregateId'
-          >
+        ? O.Optional<U, 'aggregateId'>
         : never
       : never)[]
   ): S['_types']['details'][] =>
