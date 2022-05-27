@@ -1,6 +1,6 @@
 {
   "name": "@castore/castore",
-  "description": "🦫 A simple way to implement event sourcing in Typescript",
+  "description": "🦫 Better DevX for Event Sourcing in TypeScript",
   "version": "0.0.1",
   "author": "",
   "license": "MIT",
@@ -37,9 +37,6 @@
     "test-type": "nx run-many --target=test-type --all --parallel=4",
     "test-unit": "nx run-many --target=test-unit --all --parallel=4",
     "watch": "nx run-many --target=watch --all  --parallel=4"
-  },
-  "dependencies": {
-    "dynamodb-toolbox": "0.4.0-alpha.2"
   },
   "devDependencies": {
     "@commitlint/cli": "^16.2.4",
@@ -78,5 +75,8 @@
     "Juliette Fournier",
     "Valentin Beggi"
   ],
-  "packageManager": "yarn@3.1.1"
+  "packageManager": "yarn@3.1.1",
+  "peerDependencies": {
+    "dynamodb-toolbox": "0.4.0-alpha.2"
+  }
 }

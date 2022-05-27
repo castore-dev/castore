@@ -1456,7 +1456,6 @@ __metadata:
     "@typescript-eslint/parser": ^5.21.0
     aws-sdk: ^2.1124.0
     dependency-cruiser: ^11.7.0
-    dynamodb-toolbox: 0.4.0-alpha.2
     eslint: ^8.14.0
     eslint-config-prettier: ^8.5.0
     eslint-plugin-import: ^2.26.0
@@ -1474,6 +1473,8 @@ __metadata:
     syncpack: ^7.0.0
     ts-jest: ^28.0.2
     typescript: ^4.6.3
+  peerDependencies:
+    dynamodb-toolbox: 0.4.0-alpha.2
   languageName: unknown
   linkType: soft
 
