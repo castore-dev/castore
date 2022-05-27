@@ -1,6 +1,10 @@
 export * from './aggregate';
 export * from './buildMockEventsFn';
-export { EventType, EventTypeDetail } from './event/eventType';
+export {
+  EventType,
+  EventTypeDetail,
+  EventTypesDetails,
+} from './event/eventType';
 export { JSONSchemaEventType } from './event/implementations/jsonSchema';
 export { ZodEventType } from './event/implementations/zod';
 export { EventDetail } from './event/eventDetail';

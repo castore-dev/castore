@@ -1,6 +1,6 @@
 import { Aggregate } from './aggregate';
 import { EventDetail } from './event/eventDetail';
-import { EventType, EventTypeDetail } from './event/eventType';
+import { EventType, EventTypesDetails } from './event/eventType';
 import {
   EventsQueryOptions,
   StorageAdapter,
@@ -9,12 +9,8 @@ import {
 export type SimulationOptions = { simulationDate?: string };
 
 export class EventStore<
-  E extends EventType = EventType,
-  D extends EventDetail = E extends infer U
-    ? U extends EventType
-      ? EventTypeDetail<U>
-      : never
-    : never,
+  E extends EventType[] = EventType[],
+  D extends EventDetail = EventTypesDetails<E>,
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   R extends (aggregate: any, event: D) => Aggregate = (
     aggregate: unknown,
@@ -26,7 +22,7 @@ export class EventStore<
   // @ts-ignore
   _types: { details: D };
   eventStoreId: string;
-  eventStoreEvents: E[];
+  eventStoreEvents: E;
   reduce: R;
   pushEvent: (eventDetail: D) => Promise<void>;
   simulateSideEffect: (
@@ -65,7 +61,7 @@ export class EventStore<
     storageAdapter,
   }: {
     eventStoreId: string;
-    eventStoreEvents: E[];
+    eventStoreEvents: E;
     reduce: R;
     storageAdapter: StorageAdapter;
     simulateSideEffect?: (
