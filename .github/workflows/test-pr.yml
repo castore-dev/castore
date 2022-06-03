@@ -1,13 +1,12 @@
-on:
-  pull_request:
-    types: [opened, synchronize, reopened]
-
+name: 🎯 Test PR
 # cancel previous runs on the same PR
 concurrency:
   group: ${{ github.ref }}
   cancel-in-progress: true
 
-name: ⛷ PR tests
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
 
 env:
   CI: true
@@ -32,7 +31,7 @@ jobs:
         uses: ./.github/actions/install-node-deps
 
   lint-and-tests:
-    name: 📚 Tests
+    name: 🎯 Run Tests
     needs: build
     runs-on: ubuntu-latest
     timeout-minutes: 30

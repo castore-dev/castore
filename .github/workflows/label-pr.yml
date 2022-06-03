@@ -1,0 +1,33 @@
+name: 🏷 Label PR
+# cancel previous runs on the same PR
+concurrency:
+  group: ${{ github.ref }}
+  cancel-in-progress: true
+
+on:
+  pull_request:
+    types: [opened, edited]
+
+env:
+  CI: true
+  NODE_VERSION: 14
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  label-pr:
+    name: 🏷 Label PR
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Ensure PR title follows conventional commits
+        uses: beemojs/conventional-pr-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Label PR w. conventional commit
+        uses: bcoe/conventional-release-labels@v1
+        with:
+          type_labels: '{ "feat": "minor", "fix": "patch", "breaking": "major" }'

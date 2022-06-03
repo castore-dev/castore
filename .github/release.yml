@@ -1,0 +1,15 @@
+# cf https://github.com/marketplace/actions/conventional-release-labels
+changelog:
+  categories:
+    - title: Breaking Changes 🛠
+      labels:
+        - major
+    - title: Exciting New Features 🎉
+      labels:
+        - minor
+    - title: Patches 🔧
+      labels:
+        - patch
+    - title: Other Changes
+      labels:
+        - '*'
