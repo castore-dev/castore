@@ -35,7 +35,7 @@ export class EventStore<
   getEvents: (
     aggregateId: string,
     options?: EventsQueryOptions,
-  ) => Promise<D[]>;
+  ) => Promise<{ events: D[] }>;
   getAggregate: (
     aggregateId: string,
     options?: EventsQueryOptions,
@@ -90,10 +90,12 @@ export class EventStore<
       /**
        * @debt feature "For the moment we just cast, we could implement validation + type guards at EventType level"
        */
-      this.storageAdapter.getEvents(aggregateId, queryOptions) as Promise<D[]>;
+      this.storageAdapter.getEvents(aggregateId, queryOptions) as Promise<{
+        events: D[];
+      }>;
 
     this.getAggregate = async (aggregateId, options) => {
-      const events = await this.getEvents(aggregateId, options);
+      const { events } = await this.getEvents(aggregateId, options);
       const aggregate = this.buildAggregate(events);
       const lastEvent = events[events.length - 1];
 

@@ -1,3 +1,4 @@
+/* eslint-disable max-lines */
 import { A } from 'ts-toolbelt';
 
 import { EventTypeDetail } from 'event/eventType';
@@ -51,7 +52,9 @@ const mockEvents: CounterEventsDetails[] = [
 
 const mockPushEvent = jest.fn();
 const mockPushEventTransaction = jest.fn();
-const mockGetEvents = jest.fn().mockResolvedValue(mockEvents);
+const mockGetEvents = jest.fn().mockResolvedValue({
+  events: mockEvents,
+});
 
 const mockStorageAdapter = new StorageAdapter({
   pushEvent: mockPushEvent,
@@ -100,6 +103,10 @@ const counterEventStore = new EventStore({
 });
 
 describe('event store', () => {
+  // beforeEach(() => {
+
+  // })
+
   it('has correct properties', () => {
     expect(new Set(Object.keys(counterEventStore))).toStrictEqual(
       new Set([
@@ -143,6 +150,26 @@ describe('event store', () => {
 
     expect(mockPushEvent).toHaveBeenCalledTimes(1);
     expect(mockPushEvent).toHaveBeenCalledWith(mockEvents[0]);
+  });
+
+  it('gets events correctly', async () => {
+    const assertGetEventsInput: A.Equals<
+      Parameters<typeof counterEventStore.getEvents>,
+      [aggregateId: string, options?: EventsQueryOptions]
+    > = 1;
+    assertGetEventsInput;
+
+    const assertGetEventsOutput: A.Equals<
+      ReturnType<typeof counterEventStore.getEvents>,
+      Promise<{ events: CounterEventsDetails[] }>
+    > = 1;
+    assertGetEventsOutput;
+
+    const response = await counterEventStore.getEvents(aggregateIdMock);
+
+    expect(mockGetEvents).toHaveBeenCalledTimes(1);
+    expect(mockGetEvents).toHaveBeenCalledWith(aggregateIdMock, undefined);
+    expect(response).toStrictEqual({ events: mockEvents });
   });
 
   it('gets aggregate correctly', async () => {

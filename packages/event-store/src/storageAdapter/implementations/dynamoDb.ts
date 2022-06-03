@@ -17,7 +17,7 @@ export class DynamoDbStorageAdapter implements StorageAdapter {
   getEvents: (
     aggregateId: string,
     options?: EventsQueryOptions,
-  ) => Promise<EventDetail[]>;
+  ) => Promise<{ events: EventDetail[] }>;
   pushEventTransaction: (eventDetail: EventDetail) => unknown;
 
   entityName: string;
@@ -85,29 +85,31 @@ export class DynamoDbStorageAdapter implements StorageAdapter {
         queryOptions,
       );
 
-      return items.map(
-        ({
-          aggregateId: eventAggregateId,
-          version,
-          type,
-          timestamp,
-          ...item
-        }) => {
-          const payload = item.payload as unknown | undefined;
-          const metadata = item.metadata as unknown | undefined;
-
-          const eventDetail: EventDetail = {
+      return {
+        events: items.map(
+          ({
             aggregateId: eventAggregateId,
             version,
             type,
             timestamp,
-            ...(payload !== undefined ? { payload } : {}),
-            ...(metadata !== undefined ? { metadata } : {}),
-          };
+            ...item
+          }) => {
+            const payload = item.payload as unknown | undefined;
+            const metadata = item.metadata as unknown | undefined;
 
-          return eventDetail;
-        },
-      );
+            const eventDetail: EventDetail = {
+              aggregateId: eventAggregateId,
+              version,
+              type,
+              timestamp,
+              ...(payload !== undefined ? { payload } : {}),
+              ...(metadata !== undefined ? { metadata } : {}),
+            };
+
+            return eventDetail;
+          },
+        ),
+      };
     };
 
     this.pushEventTransaction = event =>

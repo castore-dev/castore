@@ -7,7 +7,7 @@ export class StorageAdapter {
   getEvents: (
     aggregateId: string,
     options?: EventsQueryOptions,
-  ) => Promise<EventDetail[]>;
+  ) => Promise<{ events: EventDetail[] }>;
   pushEventTransaction: (eventDetail: EventDetail) => unknown;
 
   constructor({
@@ -19,7 +19,7 @@ export class StorageAdapter {
     getEvents: (
       aggregateId: string,
       options?: EventsQueryOptions,
-    ) => Promise<EventDetail[]>;
+    ) => Promise<{ events: EventDetail[] }>;
     pushEventTransaction: (eventDetail: EventDetail) => unknown;
   }) {
     this.getEvents = getEvents;
