@@ -7,11 +7,11 @@ import {
   counterIdMock,
   counterIncrementedEvent,
   countersReducer,
-  mockGetEvents,
-  mockPushEvent,
+  getEventsMock,
+  pushEventMock,
 } from './eventStore.util.test';
 
-mockGetEvents.mockResolvedValue({ events: counterEventsMocks });
+getEventsMock.mockResolvedValue({ events: counterEventsMocks });
 
 describe('event store', () => {
   it('has correct properties', () => {
@@ -40,26 +40,19 @@ describe('event store', () => {
     ]);
   });
 
-  it('pushes new event correctly', async () => {
-    await counterEventStore.pushEvent(counterEventsMocks[0]);
-
-    expect(mockPushEvent).toHaveBeenCalledTimes(1);
-    expect(mockPushEvent).toHaveBeenCalledWith(counterEventsMocks[0]);
-  });
-
   it('gets events correctly', async () => {
     const response = await counterEventStore.getEvents(counterIdMock);
 
-    expect(mockGetEvents).toHaveBeenCalledTimes(1);
-    expect(mockGetEvents).toHaveBeenCalledWith(counterIdMock, undefined);
+    expect(getEventsMock).toHaveBeenCalledTimes(1);
+    expect(getEventsMock).toHaveBeenCalledWith(counterIdMock, undefined);
     expect(response).toStrictEqual({ events: counterEventsMocks });
   });
 
   it('gets aggregate correctly', async () => {
     const response = await counterEventStore.getAggregate(counterIdMock);
 
-    expect(mockGetEvents).toHaveBeenCalledTimes(1);
-    expect(mockGetEvents).toHaveBeenCalledWith(counterIdMock, undefined);
+    expect(getEventsMock).toHaveBeenCalledTimes(1);
+    expect(getEventsMock).toHaveBeenCalledWith(counterIdMock, undefined);
     expect(response).toStrictEqual({
       aggregate: counterEventsMocks.reduce(
         countersReducer,
@@ -67,6 +60,15 @@ describe('event store', () => {
       ),
       events: counterEventsMocks,
       lastEvent: counterEventsMocks[counterEventsMocks.length - 1],
+    });
+  });
+
+  it('pushes new event correctly', async () => {
+    await counterEventStore.pushEvent(counterEventsMocks[0]);
+
+    expect(pushEventMock).toHaveBeenCalledTimes(1);
+    expect(pushEventMock).toHaveBeenCalledWith(counterEventsMocks[0], {
+      eventStoreId: counterEventStore.eventStoreId,
     });
   });
 });
