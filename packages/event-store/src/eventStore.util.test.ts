@@ -4,6 +4,18 @@ import { JSONSchemaEventType } from './event/implementations/jsonSchema';
 import { EventStore } from './eventStore';
 import { StorageAdapter } from './storageAdapter/storageAdapter';
 
+export const mockPushEvent = jest.fn();
+export const mockPushEventTransaction = jest.fn();
+export const mockGetEvents = jest.fn();
+
+export const mockStorageAdapter = new StorageAdapter({
+  pushEvent: mockPushEvent,
+  pushEventTransaction: mockPushEventTransaction,
+  getEvents: mockGetEvents,
+});
+
+// Counters
+
 export const counterCreatedEvent = new JSONSchemaEventType({
   type: 'COUNTER_CREATED',
 });
@@ -28,35 +40,23 @@ export type CounterAggregate = {
   status: string;
 };
 
-export const aggregateIdMock = 'aggregateId';
-export const mockEvents: CounterEventsDetails[] = [
+export const counterIdMock = 'counterId';
+export const counterEventsMocks: CounterEventsDetails[] = [
   {
-    aggregateId: aggregateIdMock,
+    aggregateId: counterIdMock,
     version: 1,
     type: 'COUNTER_CREATED',
     timestamp: '2022',
   },
   {
-    aggregateId: aggregateIdMock,
+    aggregateId: counterIdMock,
     version: 2,
     type: 'COUNTER_INCREMENTED',
     timestamp: '2023',
   },
 ];
 
-export const mockPushEvent = jest.fn();
-export const mockPushEventTransaction = jest.fn();
-export const mockGetEvents = jest.fn().mockResolvedValue({
-  events: mockEvents,
-});
-
-export const mockStorageAdapter = new StorageAdapter({
-  pushEvent: mockPushEvent,
-  pushEventTransaction: mockPushEventTransaction,
-  getEvents: mockGetEvents,
-});
-
-export const reduce = (
+export const countersReducer = (
   counterAggregate: CounterAggregate,
   event: CounterEventsDetails,
 ): CounterAggregate => {
@@ -92,17 +92,88 @@ export const counterEventStore = new EventStore({
     counterIncrementedEvent,
     counterDeletedEvent,
   ],
-  reduce,
+  reduce: countersReducer,
   storageAdapter: mockStorageAdapter,
 });
 
-export const counterEventStore2 = new EventStore({
-  eventStoreId: 'Counters',
-  eventStoreEvents: [
-    counterCreatedEvent,
-    counterIncrementedEvent,
-    counterDeletedEvent,
-  ],
-  reduce,
+// Users
+
+export const userCreatedEvent = new JSONSchemaEventType({
+  type: 'USER_CREATED',
+  payloadSchema: {
+    type: 'object',
+    properties: {
+      name: { type: 'string' },
+      age: { type: 'integer' },
+    },
+    required: ['name', 'age'],
+    additionalProperties: false,
+  } as const,
+});
+
+export const userRemovedEvent = new JSONSchemaEventType({
+  type: 'USER_REMOVED',
+});
+
+export type UserEventsDetails =
+  | EventTypeDetail<typeof userCreatedEvent>
+  | EventTypeDetail<typeof userRemovedEvent>;
+
+export type UserAggregate = {
+  aggregateId: string;
+  version: number;
+  name: string;
+  age: number;
+  status: string;
+};
+
+export const userIdMock = 'userId';
+export const userEventsMocks: UserEventsDetails[] = [
+  {
+    aggregateId: counterIdMock,
+    version: 1,
+    type: 'USER_CREATED',
+    timestamp: '2022',
+    payload: { name: 'Toto', age: 42 },
+  },
+  {
+    aggregateId: counterIdMock,
+    version: 2,
+    type: 'USER_REMOVED',
+    timestamp: '2023',
+  },
+];
+
+export const usersReducer = (
+  userAggregate: UserAggregate,
+  event: UserEventsDetails,
+): UserAggregate => {
+  const { version, aggregateId } = event;
+
+  switch (event.type) {
+    case 'USER_CREATED': {
+      const { name, age } = event.payload;
+
+      return {
+        aggregateId,
+        version: event.version,
+        name,
+        age,
+        status: 'CREATED',
+      };
+    }
+    case 'USER_REMOVED':
+      return {
+        ...userAggregate,
+        version,
+        status: 'DELETED',
+      };
+  }
+};
+
+export const userEventStore = new EventStore({
+  eventStoreId: 'Users',
+  eventStoreEvents: [userCreatedEvent, userRemovedEvent],
+  reduce: usersReducer,
   storageAdapter: mockStorageAdapter,
 });

@@ -1,15 +1,17 @@
 import {
-  aggregateIdMock,
   CounterAggregate,
   counterCreatedEvent,
   counterDeletedEvent,
+  counterEventsMocks,
   counterEventStore,
+  counterIdMock,
   counterIncrementedEvent,
-  mockEvents,
+  countersReducer,
   mockGetEvents,
   mockPushEvent,
-  reduce,
 } from './eventStore.util.test';
+
+mockGetEvents.mockResolvedValue({ events: counterEventsMocks });
 
 describe('event store', () => {
   it('has correct properties', () => {
@@ -39,32 +41,32 @@ describe('event store', () => {
   });
 
   it('pushes new event correctly', async () => {
-    await counterEventStore.pushEvent(mockEvents[0]);
+    await counterEventStore.pushEvent(counterEventsMocks[0]);
 
     expect(mockPushEvent).toHaveBeenCalledTimes(1);
-    expect(mockPushEvent).toHaveBeenCalledWith(mockEvents[0]);
+    expect(mockPushEvent).toHaveBeenCalledWith(counterEventsMocks[0]);
   });
 
   it('gets events correctly', async () => {
-    const response = await counterEventStore.getEvents(aggregateIdMock);
+    const response = await counterEventStore.getEvents(counterIdMock);
 
     expect(mockGetEvents).toHaveBeenCalledTimes(1);
-    expect(mockGetEvents).toHaveBeenCalledWith(aggregateIdMock, undefined);
-    expect(response).toStrictEqual({ events: mockEvents });
+    expect(mockGetEvents).toHaveBeenCalledWith(counterIdMock, undefined);
+    expect(response).toStrictEqual({ events: counterEventsMocks });
   });
 
   it('gets aggregate correctly', async () => {
-    const response = await counterEventStore.getAggregate(aggregateIdMock);
+    const response = await counterEventStore.getAggregate(counterIdMock);
 
     expect(mockGetEvents).toHaveBeenCalledTimes(1);
-    expect(mockGetEvents).toHaveBeenCalledWith(aggregateIdMock, undefined);
+    expect(mockGetEvents).toHaveBeenCalledWith(counterIdMock, undefined);
     expect(response).toStrictEqual({
-      aggregate: mockEvents.reduce(
-        reduce,
+      aggregate: counterEventsMocks.reduce(
+        countersReducer,
         undefined as unknown as CounterAggregate,
       ),
-      events: mockEvents,
-      lastEvent: mockEvents[mockEvents.length - 1],
+      events: counterEventsMocks,
+      lastEvent: counterEventsMocks[counterEventsMocks.length - 1],
     });
   });
 });

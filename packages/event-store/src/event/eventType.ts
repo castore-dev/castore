@@ -4,8 +4,7 @@ export class EventType<
   T extends string = string,
   D extends EventDetail = EventDetail,
 > {
-  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-  // @ts-ignore
+  // @ts-ignore _types only
   _types: {
     detail: D;
   };

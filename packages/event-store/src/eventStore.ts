@@ -12,7 +12,7 @@ export class EventStore<
   E extends EventType[] = EventType[],
   $D extends EventDetail = EventTypesDetails<E>,
   // cf https://devblogs.microsoft.com/typescript/announcing-typescript-4-7-rc/#optional-variance-annotations-for-type-parameters
-  // EventStore is contravariant on its fns args, we have to type them as any
+  // EventStore is contravariant on its fns args: We have to type them as any
   // So that EventStore implementations still extends the EventStore type
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   D extends EventDetail = EventDetail extends $D ? any : $D,
@@ -24,8 +24,7 @@ export class EventStore<
   ) => Aggregate,
   A extends Aggregate = ReturnType<R>,
 > {
-  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-  // @ts-ignore
+  // @ts-ignore _types only
   _types: {
     details: $D;
     aggregate: A;
