@@ -1,9 +1,16 @@
 import DynamoDB from 'aws-sdk/clients/dynamodb';
 import { Entity, QueryOptions, Table } from 'dynamodb-toolbox';
+import get from 'lodash/get';
 
+import { EventAlreadyExistsError } from 'errors/eventAlreadyExists';
 import { EventDetail } from 'event/eventDetail';
 
-import { EventsQueryOptions, StorageAdapter } from '../storageAdapter';
+import {
+  EventsQueryOptions,
+  PushEventContext,
+  PushEventTransactionContext,
+  StorageAdapter,
+} from '../storageAdapter';
 
 export const DocumentClient = new DynamoDB.DocumentClient({
   convertEmptyValues: false,
@@ -12,13 +19,22 @@ export const DocumentClient = new DynamoDB.DocumentClient({
 export const EVENT_TABLE_PK = 'aggregateId';
 export const EVENT_TABLE_SK = 'version';
 
+const isConditionalCheckFailedException = (error: Error): boolean =>
+  get(error, 'code') === 'ConditionalCheckFailedException';
+
 export class DynamoDbStorageAdapter implements StorageAdapter {
-  pushEvent: (eventDetail: EventDetail) => Promise<void>;
   getEvents: (
     aggregateId: string,
     options?: EventsQueryOptions,
   ) => Promise<{ events: EventDetail[] }>;
-  pushEventTransaction: (eventDetail: EventDetail) => unknown;
+  pushEvent: (
+    eventDetail: EventDetail,
+    context: PushEventContext,
+  ) => Promise<void>;
+  pushEventTransaction: (
+    eventDetail: EventDetail,
+    context: PushEventTransactionContext,
+  ) => unknown;
 
   entityName: string;
   tableName: string;
@@ -65,10 +81,26 @@ export class DynamoDbStorageAdapter implements StorageAdapter {
       timestamps: false,
     } as const);
 
-    this.pushEvent = async event => {
-      await entity.put(event, {
-        conditions: { attr: 'version', exists: false },
-      });
+    this.pushEvent = async (event, context) => {
+      try {
+        await entity.put(event, {
+          conditions: { attr: 'version', exists: false },
+        });
+      } catch (error) {
+        if (
+          error instanceof Error &&
+          isConditionalCheckFailedException(error)
+        ) {
+          const { aggregateId, version } = event;
+          const { eventStoreId } = context;
+
+          throw new EventAlreadyExistsError({
+            eventStoreId,
+            aggregateId,
+            version,
+          });
+        }
+      }
     };
 
     this.getEvents = async (aggregateId, { maxVersion } = {}) => {

@@ -84,10 +84,14 @@ export class EventStore<
     this.storageAdapter = storageAdapter;
 
     this.pushEvent = async (eventDetail: D) =>
-      this.storageAdapter.pushEvent(eventDetail);
+      await this.storageAdapter.pushEvent(eventDetail, {
+        eventStoreId: this.eventStoreId,
+      });
 
     this.pushEventTransaction = (eventDetail: D) =>
-      this.storageAdapter.pushEventTransaction(eventDetail);
+      this.storageAdapter.pushEventTransaction(eventDetail, {
+        eventStoreId: this.eventStoreId,
+      });
 
     this.buildAggregate = (eventDetails: D[]) =>
       eventDetails.reduce(this.reduce, undefined as unknown as A) as
