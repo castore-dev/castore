@@ -30,4 +30,4 @@ jobs:
       - name: Label PR w. conventional commit
         uses: bcoe/conventional-release-labels@v1
         with:
-          type_labels: '{ "feat": "minor", "fix": "patch", "breaking": "major" }'
+          type_labels: '{ "feature": "minor", "fix": "patch", "breaking": "major" }'
