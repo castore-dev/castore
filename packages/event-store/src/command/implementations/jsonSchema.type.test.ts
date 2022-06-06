@@ -1,7 +1,7 @@
-import { counterEventStore, userEventStore } from 'eventStore.util.test';
 import { FromSchema } from 'json-schema-to-ts';
 import { A } from 'ts-toolbelt';
 
+import { counterEventStore, userEventStore } from '../../eventStore.util.test';
 import { Command } from '../command';
 import { JSONSchemaCommand } from './jsonSchema';
 import {

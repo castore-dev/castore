@@ -22,6 +22,8 @@ export const outputSchema = {
 
 export const requiredEventStores = tuple(counterEventStore, userEventStore);
 
+export const onEventAlreadyExistsMock = jest.fn();
+
 export const incrementCounter = new JSONSchemaCommand({
   requiredEventStores,
   inputSchema,
@@ -44,6 +46,8 @@ export const incrementCounter = new JSONSchemaCommand({
 
     return { nextCount: count + 1 };
   },
+  eventAlreadyExistsRetries: 2,
+  onEventAlreadyExists: onEventAlreadyExistsMock,
 });
 
 export const incrementCounterNoOutput = new JSONSchemaCommand({
