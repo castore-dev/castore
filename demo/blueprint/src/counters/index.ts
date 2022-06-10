@@ -1,4 +1,5 @@
-export { CounterStatus, CounterAggregate } from './aggregate';
+export { CounterStatus } from './aggregate';
+export type { CounterAggregate } from './aggregate';
 export {
   counterCreatedEvent,
   counterIncrementedEvent,

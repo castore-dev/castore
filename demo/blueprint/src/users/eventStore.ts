@@ -1,6 +1,7 @@
 import { EventStore } from '@castore/event-store';
 
-import { UserAggregate, UserStatus } from './aggregate';
+import { UserStatus } from './aggregate';
+import type { UserAggregate } from './aggregate';
 import { userCreatedEvent, userRemovedEvent } from './events';
 
 export const userEventStore = new EventStore({

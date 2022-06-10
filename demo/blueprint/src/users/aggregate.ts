@@ -1,4 +1,4 @@
-import { Aggregate } from '@castore/event-store';
+import type { Aggregate } from '@castore/event-store';
 
 export enum UserStatus {
   ACTIVE = 'ACTIVE',

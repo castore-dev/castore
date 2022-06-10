@@ -1,6 +1,7 @@
 import { EventStore } from '@castore/event-store';
 
-import { CounterAggregate, CounterStatus } from './aggregate';
+import { CounterStatus } from './aggregate';
+import type { CounterAggregate } from './aggregate';
 import {
   counterCreatedEvent,
   counterDecrementedEvent,
