@@ -24,21 +24,7 @@
     "[html][javascript][json]": {
       "editor.defaultFormatter": "esbenp.prettier-vscode"
     },
-    "typescript.tsdk": "node_modules/typescript/lib",
-    "jest.autoRun": "off",
-    "jest.disabledWorkspaceFolders": ["castore root"],
-    "jest.jestCommandLine": "yarn jest",
-    "jest.showCoverageOnLoad": true,
-    "jest.coverageFormatter": "DefaultFormatter",
-    "cSpell.words": [
-      "clsx",
-      "esbuild",
-      "horiz",
-      "microservices",
-      "middlewares",
-      "castore",
-      "ulid"
-    ]
+    "typescript.tsdk": "node_modules/typescript/lib"
   },
   "extensions": {
     "recommendations": [
