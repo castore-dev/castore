@@ -1,0 +1,36 @@
+{
+  "name": "@castore/demo-implementation",
+  "sideEffects": false,
+  "license": "UNLICENSED",
+  "scripts": {
+    "lint": "eslint '**/*.ts'",
+    "test-unit": "jest --maxWorkers=4 --passWithNoTests",
+    "test-type": "tsc --noEmit --emitDeclarationOnly false",
+    "test-coverage": "jest --maxWorkers=4 --passWithNoTests --coverage",
+    "test-circular": "yarn depcruise --validate dependency-cruiser.js .",
+    "deploy": "env-cmd sls deploy",
+    "deploy-function": "env-cmd sls deploy function -f",
+    "log": "env-cmd sls logs -t -f",
+    "invoke-local": "env-cmd sls invoke local -f"
+  },
+  "devDependencies": {
+    "@serverless/typescript": "^3.0.0",
+    "@types/aws-lambda": "^8.10.82",
+    "@types/http-errors": "^1.8.1",
+    "@types/serverless": "^3.0.1",
+    "aws-sdk": "^2.970.0",
+    "env-cmd": "^10.1.0",
+    "esbuild": "^0.14.13",
+    "json-schema-to-ts": "^2.5.3",
+    "serverless": "^3.1.0",
+    "serverless-esbuild": "^1.23.4",
+    "typescript": "^4.6.3"
+  },
+  "dependencies": {
+    "@castore/demo-blueprint": "workspace:^",
+    "@castore/event-store": "workspace:^",
+    "@middy/core": "^3.0.4",
+    "@middy/validator": "^3.0.4",
+    "source-map-support": "^0.5.19"
+  }
+}

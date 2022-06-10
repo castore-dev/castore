@@ -49,6 +49,10 @@
       "name": "✨ Demo: Blueprint"
     },
     {
+      "path": "demo/implementation",
+      "name": "✨ Demo: Implementation"
+    },
+    {
       "path": ".",
       "name": "🦫 castore root"
     }
