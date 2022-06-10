@@ -17,5 +17,9 @@ jobs:
         env:
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
       - run: git update-index --assume-unchanged .npmrc
+      - name: Configure Git User
+        run: |
+          git config --global user.email "ci@octokit.com"
+          git config --global user.name "@$GITHUB_ACTOR"
       - name: Release to npm
         run: yarn release ${{ github.event.release.tag_name }} -y
