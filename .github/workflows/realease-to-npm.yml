@@ -15,4 +15,4 @@ jobs:
         env:
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
       - name: Release to npm
-        run: yarn release ${{ github.event.release.name }} -y
+        run: yarn release ${{ github.event.release.tag_name }} -y
