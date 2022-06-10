@@ -41,12 +41,16 @@
   },
   "folders": [
     {
-      "path": ".",
-      "name": "🦫 castore root"
+      "path": "packages/event-store",
+      "name": "📚 Event store"
     },
     {
-      "path": "packages/event-store",
-      "name": "📚 event store [library]"
+      "path": "demo/blueprint",
+      "name": "✨ Demo: Blueprint"
+    },
+    {
+      "path": ".",
+      "name": "🦫 castore root"
     }
   ]
 }

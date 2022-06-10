@@ -1,8 +1,6 @@
 {
   "name": "@castore/castore",
   "description": "🦫 Better DevX for Event Sourcing in TypeScript",
-  "version": "0.0.1",
-  "author": "",
   "license": "MIT",
   "homepage": "https://github.com/theodo/castore#readme",
   "bugs": "https://github.com/theodo/castore/issues",
@@ -14,11 +12,9 @@
     "typescript"
   ],
   "workspaces": [
-    "packages/*"
+    "packages/*",
+    "demo/*"
   ],
-  "main": "dist/cjs/index.js",
-  "module": "dist/esm/index.js",
-  "types": "dist/types/index.d.ts",
   "scripts": {
     "build-all": "nx run-many --target=build --all --parallel=4",
     "check-audit": "check-audit --yarn",
