@@ -1370,6 +1370,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@babel/runtime@npm:^7.18.3":
+  version: 7.18.3
+  resolution: "@babel/runtime@npm:7.18.3"
+  dependencies:
+    regenerator-runtime: ^0.13.4
+  checksum: db8526226aa02cfa35a5a7ac1a34b5f303c62a1f000c7db48cb06c6290e616483e5036ab3c4e7a84d0f3be6d4e2148d5fe5cec9564bf955f505c3e764b83d7f1
+  languageName: node
+  linkType: hard
+
 "@babel/runtime@npm:^7.8.4":
   version: 7.17.9
   resolution: "@babel/runtime@npm:7.17.9"
@@ -1497,6 +1506,7 @@ __metadata:
     "@babel/plugin-transform-runtime": ^7.17.0
     "@babel/preset-env": ^7.16.11
     "@babel/preset-typescript": ^7.16.7
+    "@babel/runtime": ^7.18.3
     "@castore/event-store": "workspace:^"
     "@types/node": ^17.0.29
     "@zerollup/ts-transform-paths": ^1.7.18
@@ -1528,6 +1538,7 @@ __metadata:
     "@types/http-errors": ^1.8.1
     "@types/serverless": ^3.0.1
     aws-sdk: ^2.970.0
+    dependency-cruiser: ^11.7.0
     env-cmd: ^10.1.0
     esbuild: ^0.14.13
     json-schema-to-ts: ^2.5.3
@@ -1547,6 +1558,7 @@ __metadata:
     "@babel/plugin-transform-runtime": ^7.17.0
     "@babel/preset-env": ^7.16.11
     "@babel/preset-typescript": ^7.16.7
+    "@babel/runtime": ^7.18.3
     "@serverless/typescript": ^3.15.2
     "@types/lodash": ^4.14.182
     "@types/node": ^17.0.29
@@ -1558,6 +1570,7 @@ __metadata:
     dynamodb-toolbox: 0.4.0-alpha.2
     eslint: ^8.14.0
     jest: ^27.5.1
+    json-schema-to-ts: ^2.2.0
     lodash: ^4.17.21
     prettier: ^2.6.2
     ts-node: ^10.7.0
@@ -9686,7 +9699,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"json-schema-to-ts@npm:^2.5.3":
+"json-schema-to-ts@npm:^2.2.0, json-schema-to-ts@npm:^2.5.3":
   version: 2.5.3
   resolution: "json-schema-to-ts@npm:2.5.3"
   dependencies:

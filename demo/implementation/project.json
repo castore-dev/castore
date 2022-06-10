@@ -1,5 +1,5 @@
 {
-  "root": "joconde",
+  "root": "demo/implementation",
   "projectType": "application",
   "tags": [],
   "implicitDependencies": []

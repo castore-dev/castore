@@ -19,6 +19,7 @@
     "@types/http-errors": "^1.8.1",
     "@types/serverless": "^3.0.1",
     "aws-sdk": "^2.970.0",
+    "dependency-cruiser": "^11.7.0",
     "env-cmd": "^10.1.0",
     "esbuild": "^0.14.13",
     "json-schema-to-ts": "^2.5.3",

@@ -33,11 +33,12 @@
     "test-circular": "yarn depcruise --validate dependency-cruiser.js .",
     "test-linter": "yarn linter-base-config .",
     "test-type": "tsc --noEmit --emitDeclarationOnly false",
-    "test-unit": "yarn jest",
+    "test-unit": "yarn jest --passWithNoTests",
     "transpile": "babel src --extensions .ts --quiet",
     "watch": "rm -rf dist && concurrently 'yarn:package-* --watch'"
   },
   "dependencies": {
+    "@babel/runtime": "^7.18.3",
     "aws-sdk": "^2.1129.0",
     "dynamodb-toolbox": "0.4.0-alpha.2",
     "lodash": "^4.17.21"
@@ -58,6 +59,7 @@
     "dependency-cruiser": "^11.7.0",
     "eslint": "^8.14.0",
     "jest": "^27.5.1",
+    "json-schema-to-ts": "^2.2.0",
     "prettier": "^2.6.2",
     "ts-node": "^10.7.0",
     "ts-toolbelt": "^9.6.0",
