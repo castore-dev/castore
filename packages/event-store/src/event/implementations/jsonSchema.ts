@@ -14,16 +14,8 @@ export class JSONSchemaEventType<
     version: number;
     type: T;
     timestamp: string;
-    payload: undefined extends PS
-      ? undefined
-      : PS extends JSONSchema
-      ? FromSchema<PS>
-      : never;
-    metadata: undefined extends MS
-      ? undefined
-      : MS extends JSONSchema
-      ? FromSchema<MS>
-      : never;
+    payload: PS extends JSONSchema ? FromSchema<PS> : undefined;
+    metadata: MS extends JSONSchema ? FromSchema<MS> : undefined;
   }>,
   D extends EventDetail = $D extends EventDetail ? $D : never,
 > implements EventType<T, D>

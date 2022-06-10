@@ -30,9 +30,7 @@ describe('jsonSchemaEvent implementation', () => {
   type Metadata = FromSchema<typeof metadataSchema>;
 
   it('has correct properties (no payload, no metadata)', () => {
-    const simpleEventType = new JSONSchemaEventType({
-      type,
-    });
+    const simpleEventType = new JSONSchemaEventType({ type });
 
     type SimpleEventTypeDetail = EventTypeDetail<typeof simpleEventType>;
     const assertSimpleEventTypeDetail: A.Equals<

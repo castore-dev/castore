@@ -4,8 +4,7 @@ export class EventType<
   T extends string = string,
   D extends EventDetail = EventDetail,
 > {
-  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-  // @ts-ignore
+  // @ts-ignore _types only
   _types: {
     detail: D;
   };
@@ -16,17 +15,7 @@ export class EventType<
   }
 }
 
-export type EventTypeDetail<
-  E extends EventType,
-  D extends EventDetail = E['_types']['detail'],
-> = EventDetail extends D
-  ? {
-      aggregateId: string;
-      version: number;
-      type: E['type'];
-      timestamp: string;
-    }
-  : D;
+export type EventTypeDetail<E extends EventType> = E['_types']['detail'];
 
 export type EventTypesDetails<E extends EventType[]> = E[number] extends infer U
   ? U extends EventType

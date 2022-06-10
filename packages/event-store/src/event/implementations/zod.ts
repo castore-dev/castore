@@ -13,16 +13,8 @@ export class ZodEventType<
     version: number;
     type: T;
     timestamp: string;
-    payload: undefined extends PS
-      ? undefined
-      : PS extends ZodType
-      ? z.infer<PS>
-      : never;
-    metadata: undefined extends MS
-      ? undefined
-      : MS extends ZodType
-      ? z.infer<MS>
-      : never;
+    payload: PS extends ZodType ? z.infer<PS> : undefined;
+    metadata: MS extends ZodType ? z.infer<MS> : undefined;
   }>,
   D extends EventDetail = $D extends EventDetail ? $D : never,
 > implements EventType<T, D>
