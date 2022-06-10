@@ -1,4 +1,5 @@
 import { Aggregate } from './aggregate';
+import { UndefinedStorageAdapterError } from './errors/undefinedStorageAdapterError';
 import { EventDetail } from './event/eventDetail';
 import { EventType, EventTypesDetails } from './event/eventType';
 import {
@@ -56,7 +57,7 @@ export class EventStore<
     events: D[],
     options?: SimulationOptions,
   ) => A | undefined;
-  storageAdapter: StorageAdapter;
+  storageAdapter?: StorageAdapter;
 
   constructor({
     eventStoreId,
@@ -71,11 +72,11 @@ export class EventStore<
     eventStoreId: string;
     eventStoreEvents: E;
     reduce: R;
-    storageAdapter: StorageAdapter;
     simulateSideEffect?: (
       indexedEvents: Record<string, Omit<D, 'version'>>,
       event: D,
     ) => Record<string, Omit<D, 'version'>>;
+    storageAdapter?: StorageAdapter;
   }) {
     this.eventStoreId = eventStoreId;
     this.eventStoreEvents = eventStoreEvents;
@@ -83,28 +84,50 @@ export class EventStore<
     this.simulateSideEffect = simulateSideEffect;
     this.storageAdapter = storageAdapter;
 
-    this.pushEvent = async (eventDetail: D) =>
-      await this.storageAdapter.pushEvent(eventDetail, {
+    this.pushEvent = async (eventDetail: D) => {
+      if (!this.storageAdapter) {
+        throw new UndefinedStorageAdapterError({
+          eventStoreId: this.eventStoreId,
+        });
+      }
+
+      return this.storageAdapter.pushEvent(eventDetail, {
         eventStoreId: this.eventStoreId,
       });
+    };
 
-    this.pushEventTransaction = (eventDetail: D) =>
+    this.pushEventTransaction = (eventDetail: D) => {
+      if (!this.storageAdapter) {
+        throw new UndefinedStorageAdapterError({
+          eventStoreId: this.eventStoreId,
+        });
+      }
+
       this.storageAdapter.pushEventTransaction(eventDetail, {
         eventStoreId: this.eventStoreId,
       });
+    };
 
     this.buildAggregate = (eventDetails: D[]) =>
       eventDetails.reduce(this.reduce, undefined as unknown as A) as
         | A
         | undefined;
 
-    this.getEvents = async (aggregateId, queryOptions) =>
+    this.getEvents = async (aggregateId, queryOptions) => {
+      if (!this.storageAdapter) {
+        throw new UndefinedStorageAdapterError({
+          eventStoreId: this.eventStoreId,
+        });
+      }
+
       /**
        * @debt feature "For the moment we just cast, we could implement validation + type guards at EventType level"
        */
-      this.storageAdapter.getEvents(aggregateId, queryOptions) as Promise<{
-        events: D[];
-      }>;
+      return this.storageAdapter.getEvents(
+        aggregateId,
+        queryOptions,
+      ) as Promise<{ events: D[] }>;
+    };
 
     this.getAggregate = async (aggregateId, options) => {
       const { events } = await this.getEvents(aggregateId, options);
