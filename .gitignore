@@ -54,3 +54,4 @@ nx-cache
 !.yarn/releases
 !.yarn/sdks
 !.yarn/versions
+.npmrc	
