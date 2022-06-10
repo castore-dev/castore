@@ -1488,6 +1488,7 @@ __metadata:
     "@babel/preset-env": ^7.16.11
     "@babel/preset-typescript": ^7.16.7
     "@serverless/typescript": ^3.15.2
+    "@types/lodash": ^4.14.182
     "@types/node": ^17.0.29
     "@zerollup/ts-transform-paths": ^1.7.18
     aws-sdk: ^2.1124.0
@@ -1498,6 +1499,7 @@ __metadata:
     eslint: ^8.14.0
     jest: ^27.5.1
     json-schema-to-ts: ^2.2.0
+    lodash: ^4.17.21
     prettier: ^2.6.2
     ts-node: ^10.7.0
     ts-toolbelt: ^9.6.0
@@ -3603,6 +3605,13 @@ __metadata:
   version: 0.0.29
   resolution: "@types/json5@npm:0.0.29"
   checksum: e60b153664572116dfea673c5bda7778dbff150498f44f998e34b5886d8afc47f16799280e4b6e241c0472aef1bc36add771c569c68fc5125fc2ae519a3eb9ac
+  languageName: node
+  linkType: hard
+
+"@types/lodash@npm:^4.14.182":
+  version: 4.14.182
+  resolution: "@types/lodash@npm:4.14.182"
+  checksum: 7dd137aa9dbabd632408bd37009d984655164fa1ecc3f2b6eb94afe35bf0a5852cbab6183148d883e9c73a958b7fec9a9bcf7c8e45d41195add6a18c34958209
   languageName: node
   linkType: hard
 

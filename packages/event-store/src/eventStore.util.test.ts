@@ -4,14 +4,14 @@ import { JSONSchemaEventType } from './event/implementations/jsonSchema';
 import { EventStore } from './eventStore';
 import { StorageAdapter } from './storageAdapter/storageAdapter';
 
-export const mockPushEvent = jest.fn();
-export const mockPushEventTransaction = jest.fn();
-export const mockGetEvents = jest.fn();
+export const pushEventMock = jest.fn();
+export const pushEventTransactionMock = jest.fn();
+export const getEventsMock = jest.fn();
 
 export const mockStorageAdapter = new StorageAdapter({
-  pushEvent: mockPushEvent,
-  pushEventTransaction: mockPushEventTransaction,
-  getEvents: mockGetEvents,
+  pushEvent: pushEventMock,
+  pushEventTransaction: pushEventTransactionMock,
+  getEvents: getEventsMock,
 });
 
 // Counters
