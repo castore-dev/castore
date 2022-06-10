@@ -30,7 +30,7 @@ export class JSONSchemaCommand<
   inputSchema?: IS;
   outputSchema?: OS;
   eventAlreadyExistsRetries: number;
-  onEventAlreadyExists?: OnEventAlreadyExistsCallback;
+  onEventAlreadyExists: OnEventAlreadyExistsCallback;
   handler: (input: I, requiredEventStores: E) => Promise<O>;
 
   constructor({
@@ -38,7 +38,7 @@ export class JSONSchemaCommand<
     inputSchema,
     outputSchema,
     eventAlreadyExistsRetries = 2,
-    onEventAlreadyExists,
+    onEventAlreadyExists = async () => new Promise(resolve => resolve()),
     handler,
   }: {
     requiredEventStores: $E;
@@ -50,10 +50,7 @@ export class JSONSchemaCommand<
   }) {
     this.requiredEventStores = requiredEventStores;
     this.eventAlreadyExistsRetries = eventAlreadyExistsRetries;
-
-    if (onEventAlreadyExists !== undefined) {
-      this.onEventAlreadyExists = onEventAlreadyExists;
-    }
+    this.onEventAlreadyExists = onEventAlreadyExists;
 
     if (inputSchema !== undefined) {
       this.inputSchema = inputSchema;
@@ -77,12 +74,10 @@ export class JSONSchemaCommand<
             throw error;
           }
 
-          if (this.onEventAlreadyExists) {
-            await this.onEventAlreadyExists(error, {
-              attemptNumber,
-              retriesLeft,
-            });
-          }
+          await this.onEventAlreadyExists(error, {
+            attemptNumber,
+            retriesLeft,
+          });
 
           if (retriesLeft === 0) {
             throw error;

@@ -46,17 +46,17 @@ describe('jsonSchemaCommand implementation', () => {
   });
 
   it('has correct properties (no output)', () => {
-    expect(Object.keys(incrementCounterNoOutput)).toHaveLength(4);
+    expect(Object.keys(incrementCounterNoOutput)).toHaveLength(5);
     expect(incrementCounterNoOutput.inputSchema).toStrictEqual(inputSchema);
   });
 
   it('has correct properties (no input)', () => {
-    expect(Object.keys(incrementCounterA)).toHaveLength(4);
+    expect(Object.keys(incrementCounterA)).toHaveLength(5);
     expect(incrementCounterA.outputSchema).toStrictEqual(outputSchema);
   });
 
   it('has correct properties (no input, no output)', () => {
-    expect(Object.keys(incrementCounterANoOutput)).toHaveLength(3);
+    expect(Object.keys(incrementCounterANoOutput)).toHaveLength(4);
   });
 
   describe('onEventAlreadyExists retry behavior', () => {
