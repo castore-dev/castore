@@ -1497,7 +1497,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@castore/demo-blueprint@0.3.9, @castore/demo-blueprint@workspace:demo/blueprint":
+"@castore/demo-blueprint@^0.3.91, @castore/demo-blueprint@workspace:demo/blueprint":
   version: 0.0.0-use.local
   resolution: "@castore/demo-blueprint@workspace:demo/blueprint"
   dependencies:
@@ -1507,7 +1507,7 @@ __metadata:
     "@babel/preset-env": ^7.16.11
     "@babel/preset-typescript": ^7.16.7
     "@babel/runtime": ^7.18.3
-    "@castore/event-store": 0.3.9
+    "@castore/event-store": ^0.3.91
     "@types/node": ^17.0.29
     "@zerollup/ts-transform-paths": ^1.7.18
     babel-plugin-module-resolver: ^4.1.0
@@ -1529,8 +1529,8 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@castore/demo-implementation@workspace:demo/implementation"
   dependencies:
-    "@castore/demo-blueprint": 0.3.9
-    "@castore/event-store": 0.3.9
+    "@castore/demo-blueprint": ^0.3.91
+    "@castore/event-store": ^0.3.91
     "@middy/core": ^3.0.4
     "@middy/validator": ^3.0.4
     "@serverless/typescript": ^3.0.0
@@ -1549,7 +1549,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@castore/event-store@0.3.9, @castore/event-store@workspace:packages/event-store":
+"@castore/event-store@^0.3.91, @castore/event-store@workspace:packages/event-store":
   version: 0.0.0-use.local
   resolution: "@castore/event-store@workspace:packages/event-store"
   dependencies:
