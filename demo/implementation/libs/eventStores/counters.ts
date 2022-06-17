@@ -1,5 +1,5 @@
 import { counterEventStore as $counterEventStore } from '@castore/demo-blueprint';
-import { DynamoDbStorageAdapter } from '@castore/event-store';
+import { DynamoDbStorageAdapter } from '@castore/dynamodb-event-storage-adapter';
 
 export const counterEventStore = $counterEventStore;
 

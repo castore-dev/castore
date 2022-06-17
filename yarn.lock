@@ -2517,6 +2517,7 @@ __metadata:
   resolution: "@castore/demo-implementation@workspace:demo/implementation"
   dependencies:
     "@castore/demo-blueprint": ^0.3.91
+    "@castore/dynamodb-event-storage-adapter": "workspace:^"
     "@castore/event-store": ^0.3.91
     "@middy/core": ^3.0.4
     "@middy/validator": ^3.0.4
@@ -2590,7 +2591,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@castore/dynamodb-event-storage-adapter@workspace:packages/dynamodb-event-storage-adapter":
+"@castore/dynamodb-event-storage-adapter@workspace:^, @castore/dynamodb-event-storage-adapter@workspace:packages/dynamodb-event-storage-adapter":
   version: 0.0.0-use.local
   resolution: "@castore/dynamodb-event-storage-adapter@workspace:packages/dynamodb-event-storage-adapter"
   dependencies:
