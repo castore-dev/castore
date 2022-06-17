@@ -9,4 +9,8 @@ export { StorageAdapter } from './storageAdapter/storageAdapter';
 export type { EventsQueryOptions } from './storageAdapter/storageAdapter';
 export { DynamoDbStorageAdapter } from './storageAdapter/implementations/dynamoDb';
 export { EventStore } from './eventStore';
-export type { SimulationOptions } from './eventStore';
+export type {
+  SimulationOptions,
+  EventStoreEventsDetails,
+  EventStoreAggregate,
+} from './eventStore';

@@ -1,7 +1,6 @@
 import { JSONSchema } from 'json-schema-to-ts';
 import middy from '@middy/core';
 import type { MiddyfiedHandler } from '@middy/core';
-// import jsonBodyParser from '@middy/http-json-body-parser';
 import jsonValidator from '@middy/validator';
 import { Callback, Context } from 'aws-lambda';
 
@@ -22,8 +21,6 @@ export const applyConsoleMiddleware = <T, R, C extends Context>(
   const { inputSchema } = options;
 
   const middyfiedHandler = middy(handler);
-
-  // middyfiedHandler.use(jsonBodyParser());
 
   if (inputSchema !== undefined) {
     middyfiedHandler.use(jsonValidator({ inputSchema }));
