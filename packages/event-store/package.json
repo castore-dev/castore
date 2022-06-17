@@ -1,6 +1,6 @@
 {
   "name": "@castore/event-store",
-  "version": "0.2.0",
+  "version": "0.3.9",
   "license": "MIT",
   "homepage": "https://github.com/theodo/castore#readme",
   "bugs": "https://github.com/theodo/castore/issues",
