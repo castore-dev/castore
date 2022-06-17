@@ -2,6 +2,7 @@
   "name": "@castore/demo-implementation",
   "sideEffects": false,
   "license": "UNLICENSED",
+  "version": "0.3.9",
   "scripts": {
     "lint": "eslint '**/*.ts'",
     "test-unit": "jest --maxWorkers=4 --passWithNoTests",
