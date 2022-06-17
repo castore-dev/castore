@@ -10,7 +10,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
         with:
-          ref: main
+          ref: origin/main
       - name: Install & cache node dependencies
         uses: ./.github/actions/install-node-deps
       - run: echo //registry.npmjs.org/:_authToken=${NPM_TOKEN} > .npmrc
