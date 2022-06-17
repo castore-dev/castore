@@ -21,5 +21,12 @@ jobs:
         run: |
           git config --global user.email "ci@octokit.com"
           git config --global user.name "@$GITHUB_ACTOR"
-      - name: Release to npm
-        run: yarn release ${{ github.event.release.tag_name }} -y
+      - name: "update version"
+        run: |
+          cd ./packages/event-store
+          npm version ${{ github.event.release.tag_name }} --allow-same-version true --git-tag-version false --commit-hooks false
+          git add .
+          git commit -m '${{ github.event.release.tag_name }} release'
+      - uses: JS-DevTools/npm-publish@v1
+        with:
+          token: ${{ secrets.NPM_TOKEN }}
