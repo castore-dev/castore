@@ -1,16 +1,16 @@
-export * from './aggregate';
+export type { Aggregate } from './aggregate';
 export * from './buildMockEventsFn';
-export {
-  EventType,
-  EventTypeDetail,
-  EventTypesDetails,
-} from './event/eventType';
+export { EventType } from './event/eventType';
+export type { EventTypeDetail, EventTypesDetails } from './event/eventType';
 export { JSONSchemaEventType } from './event/implementations/jsonSchema';
 export { ZodEventType } from './event/implementations/zod';
-export { EventDetail } from './event/eventDetail';
-export {
-  StorageAdapter,
-  EventsQueryOptions,
-} from './storageAdapter/storageAdapter';
+export type { EventDetail } from './event/eventDetail';
+export { StorageAdapter } from './storageAdapter/storageAdapter';
+export type { EventsQueryOptions } from './storageAdapter/storageAdapter';
 export { DynamoDbStorageAdapter } from './storageAdapter/implementations/dynamoDb';
-export { EventStore, SimulationOptions } from './eventStore';
+export { EventStore } from './eventStore';
+export type {
+  SimulationOptions,
+  EventStoreEventsDetails,
+  EventStoreAggregate,
+} from './eventStore';

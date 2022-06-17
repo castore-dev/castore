@@ -1,0 +1,6 @@
+{
+  "root": "demo/blueprint",
+  "projectType": "library",
+  "tags": [],
+  "implicitDependencies": []
+}

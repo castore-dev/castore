@@ -1,6 +1,8 @@
 {
   "version": 2,
   "projects": {
-    "event-store": "packages/event-store"
+    "event-store": "packages/event-store",
+    "demo-blueprint": "demo/blueprint",
+    "demo-implementation": "demo/implementation"
   }
 }
