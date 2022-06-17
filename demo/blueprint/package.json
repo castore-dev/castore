@@ -1,6 +1,6 @@
 {
   "name": "@castore/demo-blueprint",
-  "version": "0.3.9",
+  "version": "0.3.91",
   "license": "MIT",
   "homepage": "https://github.com/theodo/castore#readme",
   "bugs": "https://github.com/theodo/castore/issues",
@@ -30,7 +30,7 @@
   },
   "dependencies": {
     "@babel/runtime": "^7.18.3",
-    "@castore/event-store": "0.3.9"
+    "@castore/event-store": "^0.3.91"
   },
   "devDependencies": {
     "@babel/cli": "^7.17.6",

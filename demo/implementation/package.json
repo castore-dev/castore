@@ -2,7 +2,7 @@
   "name": "@castore/demo-implementation",
   "sideEffects": false,
   "license": "UNLICENSED",
-  "version": "0.3.9",
+  "version": "0.3.91",
   "scripts": {
     "lint": "eslint '**/*.ts'",
     "test-unit": "jest --maxWorkers=4 --passWithNoTests",
@@ -29,8 +29,8 @@
     "typescript": "^4.6.3"
   },
   "dependencies": {
-    "@castore/demo-blueprint": "0.3.9",
-    "@castore/event-store": "0.3.9",
+    "@castore/demo-blueprint": "^0.3.91",
+    "@castore/event-store": "^0.3.91",
     "@middy/core": "^3.0.4",
     "@middy/validator": "^3.0.4",
     "source-map-support": "^0.5.19"
