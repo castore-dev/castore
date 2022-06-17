@@ -13,20 +13,13 @@ jobs:
           fetch-depth: 0
       - name: Install & cache node dependencies
         uses: ./.github/actions/install-node-deps
-      - run: echo //registry.npmjs.org/:_authToken=${NPM_TOKEN} > .npmrc
-        env:
-          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
-      - run: git update-index --assume-unchanged .npmrc
       - name: Configure Git User
         run: |
           git config --global user.email "ci@octokit.com"
           git config --global user.name "@$GITHUB_ACTOR"
       - name: "update version"
-        run: |
-          cd ./packages/event-store
-          npm version ${{ github.event.release.tag_name }} --allow-same-version true --git-tag-version false --commit-hooks false
-          git add .
-          git commit -m '${{ github.event.release.tag_name }} release'
+        run: yarn lerna version ${{ github.event.release.tag_name }}
       - uses: JS-DevTools/npm-publish@v1
         with:
           token: ${{ secrets.NPM_TOKEN }}
+          package: ./packages/event-store/package.json
