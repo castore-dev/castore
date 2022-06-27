@@ -53,6 +53,10 @@
       "name": "✨ Demo: Implementation"
     },
     {
+      "path": "demo/visualization",
+      "name": "✨ Demo: Visualization"
+    },
+    {
       "path": ".",
       "name": "🦫 castore root"
     }
