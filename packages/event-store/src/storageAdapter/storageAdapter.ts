@@ -17,11 +17,13 @@ export class StorageAdapter {
     eventDetail: EventDetail,
     context: PushEventTransactionContext,
   ) => unknown;
+  listAggregateIds: () => Promise<{ aggregateIds: string[] }>;
 
   constructor({
     getEvents,
     pushEvent,
     pushEventTransaction,
+    listAggregateIds,
   }: {
     getEvents: (
       aggregateId: string,
@@ -35,9 +37,11 @@ export class StorageAdapter {
       eventDetail: EventDetail,
       context: PushEventTransactionContext,
     ) => unknown;
+    listAggregateIds: () => Promise<{ aggregateIds: string[] }>;
   }) {
     this.getEvents = getEvents;
     this.pushEvent = pushEvent;
     this.pushEventTransaction = pushEventTransaction;
+    this.listAggregateIds = listAggregateIds;
   }
 }

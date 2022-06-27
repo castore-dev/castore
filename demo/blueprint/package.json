@@ -30,7 +30,8 @@
   },
   "dependencies": {
     "@babel/runtime": "^7.18.3",
-    "@castore/event-store": "^0.3.91"
+    "@castore/event-store": "^0.3.91",
+    "uuid": "^8.3.2"
   },
   "devDependencies": {
     "@babel/cli": "^7.17.6",
@@ -52,7 +53,9 @@
     "typescript": "^4.6.3"
   },
   "peerDependencies": {
-    "json-schema-to-ts": "^2.5.3"
+    "@castore/event-store": "^0.3.91",
+    "json-schema-to-ts": "^2.5.3",
+    "uuid": "^8.3.2"
   },
   "maintainers": [
     "Thomas Aribart",

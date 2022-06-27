@@ -1,0 +1,38 @@
+{
+  "extends": "../../tsconfig.json",
+
+  "include": ["./config", "./src", "./vite.config.ts"],
+  "compilerOptions": {
+    "lib": ["dom", "dom.iterable", "esnext"],
+    "removeComments": true,
+    "forceConsistentCasingInFileNames": true,
+    "moduleResolution": "node",
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "sourceMap": true,
+    "target": "es2017",
+    "resolveJsonModule": true,
+    "allowSyntheticDefaultImports": true,
+    "allowJs": true,
+    "esModuleInterop": true,
+    "strict": true,
+    "skipLibCheck": true,
+    "baseUrl": "src",
+    "composite": true,
+    "preserveSymlinks": true,
+    "plugins": [{ "transform": "@zerollup/ts-transform-paths" }],
+    "emitDeclarationOnly": true,
+    "isolatedModules": true,
+    "jsx": "react",
+    "module": "esnext",
+    "noFallthroughCasesInSwitch": true
+  },
+  "references": [
+    { "path": "../blueprint/tsconfig.build.json" },
+    { "path": "../../packages/event-store/tsconfig.build.json" }
+  ],
+  "ts-node": {
+    "files": true,
+    "require": ["tsconfig-paths/register"]
+  }
+}

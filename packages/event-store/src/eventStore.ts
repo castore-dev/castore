@@ -33,18 +33,20 @@ export class EventStore<
   eventStoreId: string;
   eventStoreEvents: E;
   reduce: R;
-  pushEvent: (eventDetail: D) => Promise<void>;
   simulateSideEffect: (
     indexedEvents: Record<string, Omit<D, 'version'>>,
     event: D,
   ) => Record<string, Omit<D, 'version'>>;
 
-  pushEventTransaction: (eventDetail: D) => unknown;
-  buildAggregate: (events: D[]) => A | undefined;
   getEvents: (
     aggregateId: string,
     options?: EventsQueryOptions,
   ) => Promise<{ events: D[] }>;
+  pushEvent: (eventDetail: D) => Promise<void>;
+  pushEventTransaction: (eventDetail: D) => unknown;
+  listAggregateIds: () => Promise<{ aggregateIds: string[] }>;
+
+  buildAggregate: (events: D[]) => A | undefined;
   getAggregate: (
     aggregateId: string,
     options?: EventsQueryOptions,
@@ -84,6 +86,22 @@ export class EventStore<
     this.simulateSideEffect = simulateSideEffect;
     this.storageAdapter = storageAdapter;
 
+    this.getEvents = async (aggregateId, queryOptions) => {
+      if (!this.storageAdapter) {
+        throw new UndefinedStorageAdapterError({
+          eventStoreId: this.eventStoreId,
+        });
+      }
+
+      /**
+       * @debt feature "For the moment we just cast, we could implement validation + type guards at EventType level"
+       */
+      return this.storageAdapter.getEvents(
+        aggregateId,
+        queryOptions,
+      ) as Promise<{ events: D[] }>;
+    };
+
     this.pushEvent = async (eventDetail: D) => {
       if (!this.storageAdapter) {
         throw new UndefinedStorageAdapterError({
@@ -108,26 +126,20 @@ export class EventStore<
       });
     };
 
-    this.buildAggregate = (eventDetails: D[]) =>
-      eventDetails.reduce(this.reduce, undefined as unknown as A) as
-        | A
-        | undefined;
-
-    this.getEvents = async (aggregateId, queryOptions) => {
+    this.listAggregateIds = async () => {
       if (!this.storageAdapter) {
         throw new UndefinedStorageAdapterError({
           eventStoreId: this.eventStoreId,
         });
       }
 
-      /**
-       * @debt feature "For the moment we just cast, we could implement validation + type guards at EventType level"
-       */
-      return this.storageAdapter.getEvents(
-        aggregateId,
-        queryOptions,
-      ) as Promise<{ events: D[] }>;
+      return this.storageAdapter.listAggregateIds();
     };
+
+    this.buildAggregate = (eventDetails: D[]) =>
+      eventDetails.reduce(this.reduce, undefined as unknown as A) as
+        | A
+        | undefined;
 
     this.getAggregate = async (aggregateId, options) => {
       const { events } = await this.getEvents(aggregateId, options);

@@ -4,15 +4,25 @@
   "license": "UNLICENSED",
   "version": "0.3.91",
   "scripts": {
-    "lint": "eslint '**/*.ts'",
-    "test-unit": "jest --maxWorkers=4 --passWithNoTests",
-    "test-type": "tsc --noEmit --emitDeclarationOnly false",
-    "test-coverage": "jest --maxWorkers=4 --passWithNoTests --coverage",
-    "test-circular": "yarn depcruise --validate dependency-cruiser.js .",
     "deploy": "env-cmd sls deploy",
     "deploy-function": "env-cmd sls deploy function -f",
+    "invoke-local": "env-cmd sls invoke local -f",
+    "lint-fix": "yarn linter-base-config --fix",
+    "lint-fix-all": "yarn lint-fix .",
+    "linter-base-config": "eslint --ext=js,ts .",
     "log": "env-cmd sls logs -t -f",
-    "invoke-local": "env-cmd sls invoke local -f"
+    "test": "yarn test-linter && yarn test-type && yarn test-circular && yarn test-unit",
+    "test-circular": "yarn depcruise --validate dependency-cruiser.js .",
+    "test-linter": "yarn linter-base-config .",
+    "test-type": "tsc --noEmit --emitDeclarationOnly false",
+    "test-unit": "jest --maxWorkers=4 --passWithNoTests"
+  },
+  "dependencies": {
+    "@castore/demo-blueprint": "^0.3.91",
+    "@castore/event-store": "^0.3.91",
+    "@middy/core": "^3.0.4",
+    "@middy/validator": "^3.0.4",
+    "source-map-support": "^0.5.19"
   },
   "devDependencies": {
     "@serverless/typescript": "^3.0.0",
@@ -23,16 +33,10 @@
     "dependency-cruiser": "^11.7.0",
     "env-cmd": "^10.1.0",
     "esbuild": "^0.14.13",
+    "eslint": "^8.14.0",
     "json-schema-to-ts": "^2.5.3",
     "serverless": "^3.1.0",
     "serverless-esbuild": "^1.23.4",
     "typescript": "^4.6.3"
-  },
-  "dependencies": {
-    "@castore/demo-blueprint": "^0.3.91",
-    "@castore/event-store": "^0.3.91",
-    "@middy/core": "^3.0.4",
-    "@middy/validator": "^3.0.4",
-    "source-map-support": "^0.5.19"
   }
 }

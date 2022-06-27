@@ -67,9 +67,6 @@
     "typescript": "^4.6.3",
     "zod": "^3.15.1"
   },
-  "peerDependencies": {
-    "json-schema-to-ts": "^2.2.0"
-  },
   "maintainers": [
     "Thomas Aribart",
     "Charles Géry",
@@ -84,5 +81,8 @@
         ]
       }
     }
+  },
+  "peerDependencies": {
+    "json-schema-to-ts": "^2.2.0"
   }
 }

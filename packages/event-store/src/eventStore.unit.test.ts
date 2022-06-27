@@ -26,6 +26,7 @@ describe('event store', () => {
         'pushEventTransaction',
         'buildAggregate',
         'getEvents',
+        'listAggregateIds',
         'getAggregate',
         'simulateAggregate',
       ]),

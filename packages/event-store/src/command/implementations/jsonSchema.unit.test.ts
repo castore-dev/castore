@@ -24,6 +24,7 @@ describe('jsonSchemaCommand implementation', () => {
   it('has correct properties', () => {
     expect(new Set(Object.keys(incrementCounter))).toStrictEqual(
       new Set([
+        'commandId',
         'requiredEventStores',
         'inputSchema',
         'outputSchema',
@@ -46,17 +47,17 @@ describe('jsonSchemaCommand implementation', () => {
   });
 
   it('has correct properties (no output)', () => {
-    expect(Object.keys(incrementCounterNoOutput)).toHaveLength(5);
+    expect(Object.keys(incrementCounterNoOutput)).toHaveLength(6);
     expect(incrementCounterNoOutput.inputSchema).toStrictEqual(inputSchema);
   });
 
   it('has correct properties (no input)', () => {
-    expect(Object.keys(incrementCounterA)).toHaveLength(5);
+    expect(Object.keys(incrementCounterA)).toHaveLength(6);
     expect(incrementCounterA.outputSchema).toStrictEqual(outputSchema);
   });
 
   it('has correct properties (no input, no output)', () => {
-    expect(Object.keys(incrementCounterANoOutput)).toHaveLength(4);
+    expect(Object.keys(incrementCounterANoOutput)).toHaveLength(5);
   });
 
   describe('onEventAlreadyExists retry behavior', () => {

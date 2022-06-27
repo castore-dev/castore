@@ -25,6 +25,7 @@ export const requiredEventStores = tuple(counterEventStore, userEventStore);
 export const onEventAlreadyExistsMock = jest.fn();
 
 export const incrementCounter = new JSONSchemaCommand({
+  commandId: 'INCREMENT_COUNTER',
   requiredEventStores,
   inputSchema,
   outputSchema,
@@ -51,6 +52,7 @@ export const incrementCounter = new JSONSchemaCommand({
 });
 
 export const incrementCounterNoOutput = new JSONSchemaCommand({
+  commandId: 'INCREMENT_COUNTER_NO_OUTPUT',
   requiredEventStores: tuple(counterEventStore, userEventStore),
   inputSchema,
   handler: async (input, eventStores) => {
@@ -72,6 +74,7 @@ export const incrementCounterNoOutput = new JSONSchemaCommand({
 });
 
 export const incrementCounterA = new JSONSchemaCommand({
+  commandId: 'INCREMENT_COUNTER_A',
   requiredEventStores: tuple(counterEventStore, userEventStore),
   outputSchema,
   handler: async (_, eventStores) => {
@@ -95,6 +98,7 @@ export const incrementCounterA = new JSONSchemaCommand({
 });
 
 export const incrementCounterANoOutput = new JSONSchemaCommand({
+  commandId: 'INCREMENT_COUNTER_A_NO_OUTPUT',
   requiredEventStores: tuple(counterEventStore, userEventStore),
   handler: async (_, eventStores) => {
     const counterId = 'A';
