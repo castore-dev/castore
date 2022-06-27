@@ -35,6 +35,7 @@ export class DynamoDbStorageAdapter implements StorageAdapter {
     eventDetail: EventDetail,
     context: PushEventTransactionContext,
   ) => unknown;
+  listAggregateIds: () => Promise<{ aggregateIds: string[] }>;
 
   entityName: string;
   tableName: string;
@@ -148,5 +149,11 @@ export class DynamoDbStorageAdapter implements StorageAdapter {
       entity.putTransaction(event, {
         conditions: { attr: 'version', exists: false },
       });
+
+    /**
+     * @debt feature "To implement"
+     */
+    // eslint-disable-next-line @typescript-eslint/require-await
+    this.listAggregateIds = async () => ({ aggregateIds: [] });
   }
 }

@@ -22,16 +22,20 @@ export class Command<
     input: I;
     output: O;
   };
+  commandId: string;
   requiredEventStores: $E;
   handler: (input: I, requiredEventStores: E) => Promise<O>;
 
   constructor({
+    commandId,
     requiredEventStores,
     handler,
   }: {
+    commandId: string;
     requiredEventStores: $E;
     handler: (input: I, requiredEventStores: E) => Promise<O>;
   }) {
+    this.commandId = commandId;
     this.requiredEventStores = requiredEventStores;
     this.handler = handler;
   }

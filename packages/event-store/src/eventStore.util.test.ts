@@ -7,11 +7,13 @@ import { StorageAdapter } from './storageAdapter/storageAdapter';
 export const pushEventMock = jest.fn();
 export const pushEventTransactionMock = jest.fn();
 export const getEventsMock = jest.fn();
+export const listAggregateIdsMock = jest.fn();
 
 export const mockStorageAdapter = new StorageAdapter({
   pushEvent: pushEventMock,
   pushEventTransaction: pushEventTransactionMock,
   getEvents: getEventsMock,
+  listAggregateIds: listAggregateIdsMock,
 });
 
 // Counters

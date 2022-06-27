@@ -26,6 +26,7 @@ export class JSONSchemaCommand<
     input: I;
     output: O;
   };
+  commandId: string;
   requiredEventStores: $E;
   inputSchema?: IS;
   outputSchema?: OS;
@@ -34,6 +35,7 @@ export class JSONSchemaCommand<
   handler: (input: I, requiredEventStores: E) => Promise<O>;
 
   constructor({
+    commandId,
     requiredEventStores,
     inputSchema,
     outputSchema,
@@ -41,6 +43,7 @@ export class JSONSchemaCommand<
     onEventAlreadyExists = async () => new Promise(resolve => resolve()),
     handler,
   }: {
+    commandId: string;
     requiredEventStores: $E;
     inputSchema?: IS;
     outputSchema?: OS;
@@ -48,6 +51,7 @@ export class JSONSchemaCommand<
     onEventAlreadyExists?: OnEventAlreadyExistsCallback;
     handler: (input: I, requiredEventStores: E) => Promise<O>;
   }) {
+    this.commandId = commandId;
     this.requiredEventStores = requiredEventStores;
     this.eventAlreadyExistsRetries = eventAlreadyExistsRetries;
     this.onEventAlreadyExists = onEventAlreadyExists;
