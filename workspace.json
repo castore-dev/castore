@@ -4,6 +4,7 @@
     "event-store": "packages/event-store",
     "demo-blueprint": "demo/blueprint",
     "demo-implementation": "demo/implementation",
-    "demo-visualization": "demo/visualization"
+    "demo-visualization": "demo/visualization",
+    "adapters": "packages/dynamodb-event-storage-adapter"
   }
 }
