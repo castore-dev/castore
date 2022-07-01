@@ -2,11 +2,11 @@
   "version": 2,
   "projects": {
     "event-store": "packages/event-store",
-    "demo-blueprint": "demo/blueprint",
-    "demo-implementation": "demo/implementation",
-    "demo-visualization": "demo/visualization",
     "dynamodb-event-storage-adapter": "packages/dynamodb-event-storage-adapter",
     "json-schema-event": "packages/json-schema-event",
-    "zod-event": "packages/zod-event"
+    "zod-event": "packages/zod-event",
+    "demo-blueprint": "demo/blueprint",
+    "demo-implementation": "demo/implementation",
+    "demo-visualization": "demo/visualization"
   }
 }

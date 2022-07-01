@@ -45,6 +45,22 @@
       "name": "📚 Event store"
     },
     {
+      "path": "packages/dynamodb-event-storage-adapter",
+      "name": "🔌 Event Storage Adapters: DynamoDb"
+    },
+    {
+      "path": "packages/dynamodb-event-storage-adapter",
+      "name": "🔌 Event Storage Adapters: DynamoDb"
+    },
+    {
+      "path": "packages/json-schema-event",
+      "name": "📬 Events : Json Schema"
+    },
+    {
+      "path": "packages/zod-event",
+      "name": "📬 Events : Zod"
+    },
+    {
       "path": "demo/blueprint",
       "name": "✨ Demo: Blueprint"
     },
@@ -59,18 +75,6 @@
     {
       "path": ".",
       "name": "🦫 castore root"
-    },
-    {
-      "path": "packages/dynamodb-event-storage-adapter",
-      "name": "🔌 Event Storage Adapters: DynamoDb [library]"
-    },
-    {
-      "path": "packages/json-schema-event",
-      "name": "📬 Events : Json Schema [library]"
-    },
-    {
-      "path": "packages/zod-event",
-      "name": "📬 Events : Zod [library]"
     }
   ]
 }
