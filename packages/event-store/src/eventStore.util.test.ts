@@ -1,6 +1,5 @@
 /* eslint-disable max-lines */
-import { EventType, EventTypeDetail } from 'event/eventType';
-
+import { EventType, EventTypeDetail } from './event/eventType';
 import { EventStore } from './eventStore';
 import { StorageAdapter } from './storageAdapter/storageAdapter';
 
