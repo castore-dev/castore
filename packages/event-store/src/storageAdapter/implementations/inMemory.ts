@@ -23,6 +23,7 @@ export class InMemoryStorageAdapter implements StorageAdapter {
     eventDetail: EventDetail,
     context: PushEventTransactionContext,
   ) => unknown;
+  listAggregateIds: () => Promise<{ aggregateIds: string[] }>;
 
   eventStore: { [aggregateId: string]: EventDetail[] };
 
@@ -58,6 +59,23 @@ export class InMemoryStorageAdapter implements StorageAdapter {
     // eslint-disable-next-line @typescript-eslint/require-await
     this.pushEventTransaction = async event => {
       console.log(event);
+    };
+
+    // eslint-disable-next-line @typescript-eslint/require-await
+    this.listAggregateIds = async () => {
+      const aggregateIds = Object.entries(this.eventStore)
+        .map(([aggregateId, events]) => ({
+          aggregateId,
+          timestamp: events[0].timestamp,
+        }))
+        .sort(({ timestamp: timestamp1 }, { timestamp: timestamp2 }) =>
+          timestamp1 > timestamp2 ? 1 : -1,
+        )
+        .map(({ aggregateId }) => aggregateId);
+
+      return {
+        aggregateIds,
+      };
     };
   }
 }

@@ -1,3 +1,4 @@
+import { EventAlreadyExistsError } from '../../errors/eventAlreadyExists';
 import {
   counterEventsMocks,
   counterEventStore,
@@ -17,7 +18,7 @@ describe('in-memory storage adapter', () => {
     await counterEventStore.pushEvent(counterEventsMocks[0]);
     await expect(
       counterEventStore.pushEvent(counterEventsMocks[0]),
-    ).rejects.toThrow();
+    ).rejects.toThrow(EventAlreadyExistsError);
   });
 
   it('pushes and gets events correctly', async () => {
@@ -25,5 +26,17 @@ describe('in-memory storage adapter', () => {
 
     const response = await counterEventStore.getEvents(counterIdMock);
     expect(response).toStrictEqual({ events: counterEventsMocks });
+  });
+
+  it('list aggregate Ids', async () => {
+    await counterEventStore.pushEvent({
+      aggregateId: 'counterIdMock2',
+      version: 1,
+      type: 'COUNTER_CREATED',
+      timestamp: '2021',
+    });
+    expect(await counterEventStore.listAggregateIds()).toStrictEqual({
+      aggregateIds: ['counterIdMock2', counterIdMock],
+    });
   });
 });
