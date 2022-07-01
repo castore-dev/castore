@@ -13,7 +13,6 @@ export type {
   PushEventContext,
   PushEventTransactionContext,
 } from './storageAdapter/storageAdapter';
-export { DynamoDbStorageAdapter } from './storageAdapter/implementations/dynamoDb';
 export { EventStore } from './eventStore';
 export type {
   SimulationOptions,

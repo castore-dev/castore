@@ -1,8 +1,8 @@
 {
   "name": "@castore/demo-implementation",
-  "sideEffects": false,
-  "license": "UNLICENSED",
   "version": "0.3.91",
+  "license": "UNLICENSED",
+  "sideEffects": false,
   "scripts": {
     "deploy": "env-cmd sls deploy",
     "deploy-function": "env-cmd sls deploy function -f",
@@ -19,6 +19,7 @@
   },
   "dependencies": {
     "@castore/demo-blueprint": "^0.3.91",
+    "@castore/dynamodb-event-storage-adapter": "workspace:^",
     "@castore/event-store": "^0.3.91",
     "@middy/core": "^3.0.4",
     "@middy/validator": "^3.0.4",

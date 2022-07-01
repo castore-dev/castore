@@ -2,15 +2,14 @@ import DynamoDB from 'aws-sdk/clients/dynamodb';
 import { Entity, QueryOptions, Table } from 'dynamodb-toolbox';
 import get from 'lodash/get';
 
-import { EventAlreadyExistsError } from 'errors/eventAlreadyExists';
-import { EventDetail } from 'event/eventDetail';
-
 import {
+  EventAlreadyExistsError,
+  EventDetail,
   EventsQueryOptions,
   PushEventContext,
   PushEventTransactionContext,
   StorageAdapter,
-} from '../storageAdapter';
+} from '@castore/event-store';
 
 export const DocumentClient = new DynamoDB.DocumentClient({
   convertEmptyValues: false,
@@ -22,7 +21,7 @@ export const EVENT_TABLE_SK = 'version';
 const isConditionalCheckFailedException = (error: Error): boolean =>
   get(error, 'code') === 'ConditionalCheckFailedException';
 
-export class DynamoDbStorageAdapter implements StorageAdapter {
+export class DynamoDbEventStorageAdapter implements StorageAdapter {
   getEvents: (
     aggregateId: string,
     options?: EventsQueryOptions,
