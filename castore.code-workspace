@@ -63,6 +63,14 @@
     {
       "path": "packages/dynamodb-event-storage-adapter",
       "name": "🔌 Event Storage Adapters: DynamoDb [library]"
+    },
+    {
+      "path": "packages/json-schema-event",
+      "name": "📬 Events : Json Schema [library]"
+    },
+    {
+      "path": "packages/zod-event",
+      "name": "📬 Events : Zod [library]"
     }
   ]
 }
