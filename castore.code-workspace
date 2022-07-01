@@ -49,10 +49,6 @@
       "name": "🔌 Event Storage Adapters: DynamoDb"
     },
     {
-      "path": "packages/dynamodb-event-storage-adapter",
-      "name": "🔌 Event Storage Adapters: DynamoDb"
-    },
-    {
       "path": "packages/json-schema-event",
       "name": "📬 Events : Json Schema"
     },
