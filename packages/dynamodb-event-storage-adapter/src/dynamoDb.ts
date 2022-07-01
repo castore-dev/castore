@@ -21,7 +21,7 @@ export const EVENT_TABLE_SK = 'version';
 const isConditionalCheckFailedException = (error: Error): boolean =>
   get(error, 'code') === 'ConditionalCheckFailedException';
 
-export class DynamoDbStorageAdapter implements StorageAdapter {
+export class DynamoDbEventStorageAdapter implements StorageAdapter {
   getEvents: (
     aggregateId: string,
     options?: EventsQueryOptions,
