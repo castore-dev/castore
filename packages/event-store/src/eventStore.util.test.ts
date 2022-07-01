@@ -1,6 +1,6 @@
-import { EventTypeDetail } from 'event/eventType';
+/* eslint-disable max-lines */
+import { EventType, EventTypeDetail } from 'event/eventType';
 
-import { JSONSchemaEventType } from './event/implementations/jsonSchema';
 import { EventStore } from './eventStore';
 import { StorageAdapter } from './storageAdapter/storageAdapter';
 
@@ -18,15 +18,39 @@ export const mockStorageAdapter = new StorageAdapter({
 
 // Counters
 
-export const counterCreatedEvent = new JSONSchemaEventType({
+export const counterCreatedEvent = new EventType<
+  'COUNTER_CREATED',
+  {
+    aggregateId: string;
+    version: number;
+    type: 'COUNTER_CREATED';
+    timestamp: string;
+  }
+>({
   type: 'COUNTER_CREATED',
 });
 
-export const counterIncrementedEvent = new JSONSchemaEventType({
+export const counterIncrementedEvent = new EventType<
+  'COUNTER_INCREMENTED',
+  {
+    aggregateId: string;
+    version: number;
+    type: 'COUNTER_INCREMENTED';
+    timestamp: string;
+  }
+>({
   type: 'COUNTER_INCREMENTED',
 });
 
-export const counterDeletedEvent = new JSONSchemaEventType({
+export const counterDeletedEvent = new EventType<
+  'COUNTER_DELETED',
+  {
+    aggregateId: string;
+    version: number;
+    type: 'COUNTER_DELETED';
+    timestamp: string;
+  }
+>({
   type: 'COUNTER_DELETED',
 });
 
@@ -84,6 +108,12 @@ export const countersReducer = (
         version,
         status: 'DELETED',
       };
+    default: {
+      return {
+        ...counterAggregate,
+        version,
+      };
+    }
   }
 };
 
@@ -100,20 +130,28 @@ export const counterEventStore = new EventStore({
 
 // Users
 
-export const userCreatedEvent = new JSONSchemaEventType({
+export const userCreatedEvent = new EventType<
+  'USER_CREATED',
+  {
+    aggregateId: string;
+    version: number;
+    type: 'USER_CREATED';
+    timestamp: string;
+    payload: { name: string; age: number };
+  }
+>({
   type: 'USER_CREATED',
-  payloadSchema: {
-    type: 'object',
-    properties: {
-      name: { type: 'string' },
-      age: { type: 'integer' },
-    },
-    required: ['name', 'age'],
-    additionalProperties: false,
-  } as const,
 });
 
-export const userRemovedEvent = new JSONSchemaEventType({
+export const userRemovedEvent = new EventType<
+  'USER_REMOVED',
+  {
+    aggregateId: string;
+    version: number;
+    type: 'USER_REMOVED';
+    timestamp: string;
+  }
+>({
   type: 'USER_REMOVED',
 });
 
