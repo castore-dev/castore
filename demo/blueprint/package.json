@@ -31,6 +31,7 @@
   "dependencies": {
     "@babel/runtime": "^7.18.3",
     "@castore/event-store": "^0.6.2",
+    "@castore/json-schema-event": "^0.6.2",
     "uuid": "^8.3.2"
   },
   "devDependencies": {

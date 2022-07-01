@@ -1,6 +1,6 @@
 {
   "name": "@castore/json-schema-event",
-  "version": "0.1.0",
+  "version": "0.6.2",
   "license": "MIT",
   "homepage": "https://github.com/theodo/castore#readme",
   "bugs": "https://github.com/theodo/castore/issues",

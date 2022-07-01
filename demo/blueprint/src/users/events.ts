@@ -1,4 +1,4 @@
-import { JSONSchemaEventType } from '@castore/event-store';
+import { JSONSchemaEventType } from '@castore/json-schema-event';
 
 export const userCreatedEvent = new JSONSchemaEventType({
   type: 'USER_CREATED',
