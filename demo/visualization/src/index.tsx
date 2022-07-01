@@ -3,8 +3,8 @@ import ReactDOM from 'react-dom';
 
 import {
   counterEventStore,
-  createUser,
-  deleteUser,
+  createUserCommand,
+  deleteUserCommand,
   userEventStore,
 } from '@castore/demo-blueprint';
 
@@ -16,7 +16,7 @@ ReactDOM.render(
   <React.StrictMode>
     <App
       eventStores={[userEventStore, counterEventStore]}
-      commands={[createUser, deleteUser]}
+      commands={[createUserCommand, deleteUserCommand]}
     />
   </React.StrictMode>,
   document.getElementById('root'),

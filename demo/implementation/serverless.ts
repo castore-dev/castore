@@ -34,6 +34,18 @@ const serverlessConfiguration: AWS = {
             Resource: [
               { 'Fn::GetAtt': ['UserEventsTable', 'Arn'] },
               { 'Fn::GetAtt': ['CounterEventsTable', 'Arn'] },
+              {
+                'Fn::Join': [
+                  '/',
+                  [{ 'Fn::GetAtt': ['UserEventsTable', 'Arn'] }, 'index/*'],
+                ],
+              },
+              {
+                'Fn::Join': [
+                  '/',
+                  [{ 'Fn::GetAtt': ['CounterEventsTable', 'Arn'] }, 'index/*'],
+                ],
+              },
             ],
             Action: [
               'dynamodb:GetItem',

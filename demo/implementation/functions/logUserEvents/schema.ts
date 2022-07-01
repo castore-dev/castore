@@ -5,9 +5,9 @@ import { uuidSchema } from '@libs/schemas/uuid';
 export const inputSchema = {
   type: 'object',
   properties: {
-    counterId: uuidSchema,
+    userId: uuidSchema,
   },
-  required: ['counterId'],
+  required: ['userId'],
   additionalProperties: false,
 } as const;
 

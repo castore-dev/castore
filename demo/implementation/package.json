@@ -4,6 +4,7 @@
   "license": "UNLICENSED",
   "sideEffects": false,
   "scripts": {
+    "print": "env-cmd sls print",
     "deploy": "env-cmd sls deploy",
     "deploy-function": "env-cmd sls deploy function -f",
     "invoke-local": "env-cmd sls invoke local -f",
