@@ -17,6 +17,12 @@ export const DocumentClient = new DynamoDB.DocumentClient({
 
 export const EVENT_TABLE_PK = 'aggregateId';
 export const EVENT_TABLE_SK = 'version';
+export const EVENT_TABLE_TIMESTAMP_KEY = 'timestamp';
+export const EVENT_TABLE_EVENT_TYPE_KEY = 'type';
+export const EVENT_TABLE_PAYLOAD_KEY = 'payload';
+export const EVENT_TABLE_METADATA_KEY = 'metadata';
+export const EVENT_TABLE_IS_INITIAL_EVENT_KEY = 'isInitialEvent';
+export const EVENT_TABLE_INITIAL_EVENT_INDEX_NAME = 'initialEvents';
 
 const isConditionalCheckFailedException = (error: Error): boolean =>
   get(error, 'code') === 'ConditionalCheckFailedException';
@@ -36,27 +42,29 @@ export class DynamoDbEventStorageAdapter implements StorageAdapter {
   ) => unknown;
   listAggregateIds: () => Promise<{ aggregateIds: string[] }>;
 
-  entityName: string;
   tableName: string;
-  table: Table<string, typeof EVENT_TABLE_PK, typeof EVENT_TABLE_SK>;
 
-  constructor({
-    entityName,
-    tableName,
-  }: {
-    tableName: string;
-    entityName: string;
-  }) {
-    this.entityName = entityName;
+  constructor({ tableName }: { tableName: string }) {
     this.tableName = tableName;
 
-    this.table = new Table({
+    const table = new Table({
       name: tableName,
       partitionKey: EVENT_TABLE_PK,
       sortKey: EVENT_TABLE_SK,
       attributes: {
         [EVENT_TABLE_PK]: 'string',
         [EVENT_TABLE_SK]: 'number',
+        [EVENT_TABLE_EVENT_TYPE_KEY]: 'string',
+        [EVENT_TABLE_TIMESTAMP_KEY]: 'string',
+        [EVENT_TABLE_PAYLOAD_KEY]: 'map',
+        [EVENT_TABLE_METADATA_KEY]: 'map',
+        [EVENT_TABLE_IS_INITIAL_EVENT_KEY]: 'number',
+      },
+      indexes: {
+        [EVENT_TABLE_INITIAL_EVENT_INDEX_NAME]: {
+          partitionKey: EVENT_TABLE_IS_INITIAL_EVENT_KEY,
+          sortKey: EVENT_TABLE_TIMESTAMP_KEY,
+        },
       },
       autoExecute: true,
       autoParse: true,
@@ -64,20 +72,29 @@ export class DynamoDbEventStorageAdapter implements StorageAdapter {
     });
 
     const entity = new Entity({
-      name: entityName,
+      name: 'event',
       attributes: {
-        aggregateId: { type: 'string', partitionKey: true },
-        version: { type: 'number', sortKey: true },
-        type: { type: 'string', required: true },
-        timestamp: {
+        [EVENT_TABLE_PK]: { type: 'string', partitionKey: true },
+        [EVENT_TABLE_SK]: { type: 'number', sortKey: true },
+        [EVENT_TABLE_EVENT_TYPE_KEY]: { type: 'string', required: true },
+        [EVENT_TABLE_TIMESTAMP_KEY]: {
           type: 'string',
           required: true,
           default: () => new Date().toISOString(),
         },
-        payload: { type: 'map' },
-        metadata: { type: 'map' },
+        [EVENT_TABLE_PAYLOAD_KEY]: { type: 'map' },
+        [EVENT_TABLE_METADATA_KEY]: { type: 'map' },
+        [EVENT_TABLE_IS_INITIAL_EVENT_KEY]: {
+          type: 'number',
+          default: ({
+            [EVENT_TABLE_SK]: version,
+          }: {
+            [EVENT_TABLE_SK]: number;
+          }) => (version === 1 ? 1 : undefined),
+          dependsOn: [EVENT_TABLE_SK],
+        },
       },
-      table: this.table,
+      table,
       timestamps: false,
     } as const);
 
@@ -149,10 +166,25 @@ export class DynamoDbEventStorageAdapter implements StorageAdapter {
         conditions: { attr: 'version', exists: false },
       });
 
-    /**
-     * @debt feature "To implement"
-     */
-    // eslint-disable-next-line @typescript-eslint/require-await
-    this.listAggregateIds = async () => ({ aggregateIds: [] });
+    this.listAggregateIds = async () => {
+      const aggregateIds: string[] = [];
+
+      let queryResult = await entity.query(1, {
+        index: EVENT_TABLE_INITIAL_EVENT_INDEX_NAME,
+      });
+
+      aggregateIds.push(
+        ...(queryResult.Items ?? []).map(({ aggregateId }) => aggregateId),
+      );
+
+      while (queryResult.next) {
+        queryResult = await queryResult.next();
+        aggregateIds.push(
+          ...(queryResult.Items ?? []).map(({ aggregateId }) => aggregateId),
+        );
+      }
+
+      return { aggregateIds };
+    };
   }
 }
