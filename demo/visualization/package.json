@@ -1,5 +1,6 @@
 {
   "name": "@castore/demo-visualization",
+  "version": "0.3.91",
   "scripts": {
     "lint-fix": "yarn linter-base-config --fix",
     "lint-fix-all": "yarn lint-fix .",
