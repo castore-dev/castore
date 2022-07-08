@@ -17,8 +17,16 @@ jobs:
         run: |
           git config --global user.email "ci@octokit.com"
           git config --global user.name "@$GITHUB_ACTOR"
+          git stash
+          git push --delete origin ${{ github.event.release.tag_name }}
       - name: "update version"
-        run: yarn lerna version ${{ github.event.release.tag_name }}
+        run: yarn lerna version ${{ github.event.release.tag_name }} --yes
+      - name: Update yarn.lock with new version
+        run: |
+          export YARN_ENABLE_IMMUTABLE_INSTALLS=false
+          yarn
+          git commit --amend --no-edit
+          git push origin --force
       - uses: JS-DevTools/npm-publish@v1
         with:
           token: ${{ secrets.NPM_TOKEN }}

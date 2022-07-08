@@ -19,7 +19,7 @@
   },
   "dependencies": {
     "@castore/demo-blueprint": "^0.3.92",
-    "@castore/dynamodb-event-storage-adapter": "^0.3.91",
+    "@castore/dynamodb-event-storage-adapter": "^0.3.92",
     "@castore/event-store": "^0.3.92",
     "@middy/core": "^3.0.4",
     "@middy/validator": "^3.0.4",

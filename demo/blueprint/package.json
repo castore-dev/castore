@@ -68,7 +68,7 @@
     }
   },
   "peerDependencies": {
-    "@castore/event-store": "^0.3.91",
+    "@castore/event-store": "^0.3.92",
     "json-schema-to-ts": "^2.5.3",
     "uuid": "^8.3.2"
   }
