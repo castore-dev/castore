@@ -43,20 +43,21 @@ export type CounterAggregate = {
 };
 
 export const counterIdMock = 'counterId';
-export const counterEventsMocks: CounterEventsDetails[] = [
-  {
-    aggregateId: counterIdMock,
-    version: 1,
-    type: 'COUNTER_CREATED',
-    timestamp: '2022',
-  },
-  {
-    aggregateId: counterIdMock,
-    version: 2,
-    type: 'COUNTER_INCREMENTED',
-    timestamp: '2023',
-  },
-];
+export const counterEventsMocks: [CounterEventsDetails, CounterEventsDetails] =
+  [
+    {
+      aggregateId: counterIdMock,
+      version: 1,
+      type: 'COUNTER_CREATED',
+      timestamp: '2022',
+    },
+    {
+      aggregateId: counterIdMock,
+      version: 2,
+      type: 'COUNTER_INCREMENTED',
+      timestamp: '2023',
+    },
+  ];
 
 export const countersReducer = (
   counterAggregate: CounterAggregate,
