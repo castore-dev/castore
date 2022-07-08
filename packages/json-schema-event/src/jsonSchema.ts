@@ -1,11 +1,15 @@
 import { FromSchema, JSONSchema } from 'json-schema-to-ts';
+import { O } from 'ts-toolbelt';
 
 import { EventDetail, EventType } from '@castore/event-store';
-import type { OmitUndefinableKeys } from '@castore/event-store';
+
+type OmitUndefinableKeys<Obj extends Record<string, unknown>> = Omit<
+  Obj,
+  O.UndefinableKeys<Obj>
+>;
 
 export class JSONSchemaEventType<
   T extends string = string,
-  // Metadata
   MS extends JSONSchema | undefined = JSONSchema | undefined,
   PS extends JSONSchema | undefined = JSONSchema | undefined,
   $D = OmitUndefinableKeys<{

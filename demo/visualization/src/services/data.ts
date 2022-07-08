@@ -1,6 +1,6 @@
 import type { IHookStateSetAction } from 'react-use/lib/misc/hookState';
 
-import { EventDetail, EventStore } from '@castore/event-store';
+import type { EventDetail, EventStore } from '@castore/event-store';
 
 export const dbByEventStoreId: Record<
   string,

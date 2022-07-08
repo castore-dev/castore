@@ -1,5 +1,5 @@
 {
-  "root": "packages/dynamodb-event-storage-adapter",
+  "root": "packages/inmemory-event-storage-adapter",
   "projectType": "library",
   "tags": [],
   "implicitDependencies": ["event-store"]

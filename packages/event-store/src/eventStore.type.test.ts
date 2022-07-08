@@ -12,7 +12,7 @@ import {
   CounterEventsDetails,
   counterEventStore,
 } from './eventStore.util.test';
-import { EventsQueryOptions } from './storageAdapter/storageAdapter';
+import { EventsQueryOptions } from './storageAdapter';
 
 // --- EXTENDS ---
 

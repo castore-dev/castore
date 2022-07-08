@@ -8,7 +8,7 @@ import {
 } from '@mui/material';
 import React from 'react';
 
-import { JSONSchemaCommand } from '@castore/event-store';
+import type { JSONSchemaCommand } from '@castore/event-store';
 
 import { Form } from 'components/Form';
 import { eventStoresById } from 'services/data';

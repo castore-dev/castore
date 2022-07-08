@@ -2,5 +2,5 @@
   "root": "demo/implementation",
   "projectType": "application",
   "tags": [],
-  "implicitDependencies": []
+  "implicitDependencies": ["event-store"]
 }

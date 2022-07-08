@@ -1,14 +1,13 @@
 import intersectionBy from 'lodash/intersectionBy';
 
-import { EventDetail } from 'event/eventDetail';
-
-import { EventAlreadyExistsError } from '../../errors/eventAlreadyExists';
 import {
+  EventAlreadyExistsError,
+  EventDetail,
   EventsQueryOptions,
   PushEventContext,
   PushEventTransactionContext,
   StorageAdapter,
-} from '../storageAdapter';
+} from '@castore/event-store';
 
 const getInitialEventTimestamp = (
   aggregateId: string,

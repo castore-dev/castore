@@ -2,10 +2,7 @@ import { Aggregate } from './aggregate';
 import { UndefinedStorageAdapterError } from './errors/undefinedStorageAdapterError';
 import { EventDetail } from './event/eventDetail';
 import { EventType, EventTypesDetails } from './event/eventType';
-import {
-  EventsQueryOptions,
-  StorageAdapter,
-} from './storageAdapter/storageAdapter';
+import { EventsQueryOptions, StorageAdapter } from './storageAdapter';
 
 export type SimulationOptions = { simulationDate?: string };
 

@@ -1,7 +1,7 @@
 import { Stack } from '@mui/material';
 import React, { useEffect, useState } from 'react';
 
-import { EventDetail, EventStore } from '@castore/event-store';
+import type { EventDetail, EventStore } from '@castore/event-store';
 
 import { eventStoresById } from 'services/data';
 

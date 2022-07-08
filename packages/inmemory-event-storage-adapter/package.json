@@ -1,10 +1,19 @@
 {
-  "name": "@castore/demo-blueprint",
+  "name": "@castore/inmemory-event-storage-adapter",
   "version": "0.7.0",
   "license": "MIT",
   "homepage": "https://github.com/theodo/castore#readme",
   "bugs": "https://github.com/theodo/castore/issues",
   "repository": "theodo/castore.git",
+  "keywords": [
+    "event",
+    "source",
+    "store",
+    "typescript"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
   "sideEffects": false,
   "files": [
     "dist"
@@ -29,9 +38,7 @@
     "watch": "rm -rf dist && concurrently 'yarn:package-* --watch'"
   },
   "dependencies": {
-    "@babel/runtime": "^7.18.3",
-    "@castore/json-schema-event": "^0.7.0",
-    "uuid": "^8.3.2"
+    "lodash": "^4.17.21"
   },
   "devDependencies": {
     "@babel/cli": "^7.17.6",
@@ -40,6 +47,7 @@
     "@babel/preset-env": "^7.16.11",
     "@babel/preset-typescript": "^7.16.7",
     "@castore/event-store": "^0.7.0",
+    "@types/lodash": "^4.14.182",
     "@types/node": "^17.0.29",
     "@zerollup/ts-transform-paths": "^1.7.18",
     "babel-plugin-module-resolver": "^4.1.0",
@@ -47,12 +55,13 @@
     "dependency-cruiser": "^11.7.0",
     "eslint": "^8.14.0",
     "jest": "^27.5.1",
-    "json-schema-to-ts": "^2.5.4",
     "prettier": "^2.6.2",
     "ts-node": "^10.7.0",
-    "ts-toolbelt": "^9.6.0",
     "ttypescript": "^1.5.13",
     "typescript": "^4.6.3"
+  },
+  "peerDependencies": {
+    "@castore/event-store": "^0.7.0"
   },
   "maintainers": [
     "Thomas Aribart",
@@ -64,14 +73,9 @@
     "targets": {
       "package": {
         "outputs": [
-          "demo/blueprint/dist"
+          "packages/inmemory-event-storage-adapter/dist"
         ]
       }
     }
-  },
-  "peerDependencies": {
-    "@castore/event-store": "^0.7.0",
-    "json-schema-to-ts": "^2.0.0",
-    "uuid": "^8.3.2"
   }
 }
