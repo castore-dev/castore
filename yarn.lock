@@ -3284,7 +3284,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@castore/demo-blueprint@^0.6.2, @castore/demo-blueprint@workspace:demo/blueprint":
+"@castore/demo-blueprint@^0.7.0, @castore/demo-blueprint@workspace:demo/blueprint":
   version: 0.0.0-use.local
   resolution: "@castore/demo-blueprint@workspace:demo/blueprint"
   dependencies:
@@ -3294,8 +3294,8 @@ __metadata:
     "@babel/preset-env": ^7.16.11
     "@babel/preset-typescript": ^7.16.7
     "@babel/runtime": ^7.18.3
-    "@castore/event-store": ^0.6.2
-    "@castore/json-schema-event": ^0.6.2
+    "@castore/event-store": ^0.7.0
+    "@castore/json-schema-event": ^0.7.0
     "@types/node": ^17.0.29
     "@zerollup/ts-transform-paths": ^1.7.18
     babel-plugin-module-resolver: ^4.1.0
@@ -3321,9 +3321,9 @@ __metadata:
   resolution: "@castore/demo-implementation@workspace:demo/implementation"
   dependencies:
     "@aws-sdk/client-dynamodb": ^3.121.0
-    "@castore/demo-blueprint": ^0.6.2
-    "@castore/dynamodb-event-storage-adapter": ^0.6.2
-    "@castore/event-store": ^0.6.2
+    "@castore/demo-blueprint": ^0.7.0
+    "@castore/dynamodb-event-storage-adapter": ^0.7.0
+    "@castore/event-store": ^0.7.0
     "@middy/core": ^3.0.4
     "@middy/validator": ^3.0.4
     "@serverless/typescript": ^3.0.0
@@ -3348,8 +3348,8 @@ __metadata:
   resolution: "@castore/demo-visualization@workspace:demo/visualization"
   dependencies:
     "@ant-design/icons": ^4.7.0
-    "@castore/demo-blueprint": ^0.6.2
-    "@castore/event-store": ^0.6.2
+    "@castore/demo-blueprint": ^0.7.0
+    "@castore/event-store": ^0.7.0
     "@emotion/react": ^11.9.3
     "@emotion/styled": ^11.9.3
     "@material-ui/core": ^4.12.4
@@ -3396,7 +3396,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@castore/dynamodb-event-storage-adapter@^0.6.2, @castore/dynamodb-event-storage-adapter@workspace:packages/dynamodb-event-storage-adapter":
+"@castore/dynamodb-event-storage-adapter@^0.7.0, @castore/dynamodb-event-storage-adapter@workspace:packages/dynamodb-event-storage-adapter":
   version: 0.0.0-use.local
   resolution: "@castore/dynamodb-event-storage-adapter@workspace:packages/dynamodb-event-storage-adapter"
   dependencies:
@@ -3407,7 +3407,7 @@ __metadata:
     "@babel/plugin-transform-runtime": ^7.17.0
     "@babel/preset-env": ^7.16.11
     "@babel/preset-typescript": ^7.16.7
-    "@castore/event-store": ^0.6.2
+    "@castore/event-store": ^0.7.0
     "@serverless/typescript": ^3.15.2
     "@types/lodash": ^4.14.182
     "@types/node": ^17.0.29
@@ -3428,7 +3428,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@castore/event-store@^0.6.2, @castore/event-store@workspace:packages/event-store":
+"@castore/event-store@^0.7.0, @castore/event-store@workspace:packages/event-store":
   version: 0.0.0-use.local
   resolution: "@castore/event-store@workspace:packages/event-store"
   dependencies:
@@ -3476,7 +3476,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@castore/json-schema-event@^0.6.2, @castore/json-schema-event@workspace:packages/json-schema-event":
+"@castore/json-schema-event@^0.7.0, @castore/json-schema-event@workspace:packages/json-schema-event":
   version: 0.0.0-use.local
   resolution: "@castore/json-schema-event@workspace:packages/json-schema-event"
   dependencies:

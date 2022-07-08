@@ -1,6 +1,6 @@
 {
   "name": "@castore/dynamodb-event-storage-adapter",
-  "version": "0.6.2",
+  "version": "0.7.0",
   "license": "MIT",
   "homepage": "https://github.com/theodo/castore#readme",
   "bugs": "https://github.com/theodo/castore/issues",
@@ -40,7 +40,7 @@
   "dependencies": {
     "@aws-sdk/client-dynamodb": "^3.0.0",
     "@aws/dynamodb-auto-marshaller": "^0.7.1",
-    "@castore/event-store": "^0.6.2",
+    "@castore/event-store": "^0.7.0",
     "lodash": "^4.17.21"
   },
   "devDependencies": {
