@@ -1,23 +1,25 @@
 import { A } from 'ts-toolbelt';
 
-import { EventTypeDetail, EventTypesDetails } from './eventType';
-import { JSONSchemaEventType } from './implementations/jsonSchema';
+import { EventType, EventTypeDetail, EventTypesDetails } from './eventType';
 
-const counterCreatedEvent = new JSONSchemaEventType({
+const counterCreatedEvent = new EventType<
+  'COUNTER_CREATED',
+  {
+    aggregateId: string;
+    version: number;
+    type: string;
+    timestamp: string;
+    payload: { startCount?: number };
+  }
+>({
   type: 'COUNTER_CREATED',
-  payloadSchema: {
-    type: 'object',
-    properties: {
-      startCount: { type: 'integer' },
-    },
-  } as const,
 });
 
-const counterIncrementedEvent = new JSONSchemaEventType({
+const counterIncrementedEvent = new EventType({
   type: 'COUNTER_INCREMENTED',
 });
 
-const counterRemovedEvent = new JSONSchemaEventType({
+const counterRemovedEvent = new EventType({
   type: 'COUNTER_REMOVED',
 });
 

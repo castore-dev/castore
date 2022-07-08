@@ -5,6 +5,8 @@
     "demo-blueprint": "demo/blueprint",
     "demo-implementation": "demo/implementation",
     "demo-visualization": "demo/visualization",
-    "adapters": "packages/dynamodb-event-storage-adapter"
+    "dynamodb-event-storage-adapter": "packages/dynamodb-event-storage-adapter",
+    "json-schema-event": "packages/json-schema-event",
+    "zod-event": "packages/zod-event"
   }
 }

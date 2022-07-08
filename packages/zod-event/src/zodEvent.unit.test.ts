@@ -1,36 +1,25 @@
-import { FromSchema } from 'json-schema-to-ts';
 import { A } from 'ts-toolbelt';
+import { z } from 'zod';
 
-import { EventTypeDetail } from '../eventType';
-import { JSONSchemaEventType } from './jsonSchema';
+import { EventTypeDetail } from '@castore/event-store';
 
-describe('jsonSchemaEvent implementation', () => {
+import { ZodEventType } from './zodEvent';
+
+describe('zodEvent implementation', () => {
   const type = 'SOMETHING_HAPPENED';
 
-  const payloadSchema = {
-    type: 'object',
-    properties: {
-      message: { type: 'string' },
-    },
-    required: ['message'],
-    additionalProperties: false,
-  } as const;
+  const payloadSchema = z.object({ message: z.string() });
 
-  type Payload = FromSchema<typeof payloadSchema>;
+  type Payload = z.infer<typeof payloadSchema>;
 
-  const metadataSchema = {
-    type: 'object',
-    properties: {
-      userEmail: { type: 'string', format: 'email' },
-    },
-    required: ['userEmail'],
-    additionalProperties: false,
-  } as const;
+  const metadataSchema = z.object({ userEmail: z.string().email() });
 
-  type Metadata = FromSchema<typeof metadataSchema>;
+  type Metadata = z.infer<typeof metadataSchema>;
 
   it('has correct properties (no payload, no metadata)', () => {
-    const simpleEventType = new JSONSchemaEventType({ type });
+    const simpleEventType = new ZodEventType({
+      type,
+    });
 
     type SimpleEventTypeDetail = EventTypeDetail<typeof simpleEventType>;
     const assertSimpleEventTypeDetail: A.Equals<
@@ -51,7 +40,7 @@ describe('jsonSchemaEvent implementation', () => {
   });
 
   it('has correct properties (with payload, no metadata)', () => {
-    const payloadEventType = new JSONSchemaEventType({
+    const payloadEventType = new ZodEventType({
       type,
       payloadSchema,
     });
@@ -76,7 +65,7 @@ describe('jsonSchemaEvent implementation', () => {
   });
 
   it('has correct properties (no payload, with metadata)', () => {
-    const metadataEventType = new JSONSchemaEventType({
+    const metadataEventType = new ZodEventType({
       type,
       metadataSchema,
     });
@@ -101,7 +90,7 @@ describe('jsonSchemaEvent implementation', () => {
   });
 
   it('has correct properties (with payload, with metadata)', () => {
-    const fullEventType = new JSONSchemaEventType({
+    const fullEventType = new ZodEventType({
       type,
       payloadSchema,
       metadataSchema,

@@ -2481,7 +2481,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@castore/demo-blueprint@^0.6.11, @castore/demo-blueprint@workspace:demo/blueprint":
+"@castore/demo-blueprint@^0.6.2, @castore/demo-blueprint@workspace:demo/blueprint":
   version: 0.0.0-use.local
   resolution: "@castore/demo-blueprint@workspace:demo/blueprint"
   dependencies:
@@ -2491,7 +2491,8 @@ __metadata:
     "@babel/preset-env": ^7.16.11
     "@babel/preset-typescript": ^7.16.7
     "@babel/runtime": ^7.18.3
-    "@castore/event-store": ^0.6.11
+    "@castore/event-store": ^0.6.2
+    "@castore/json-schema-event": ^0.6.2
     "@types/node": ^17.0.29
     "@zerollup/ts-transform-paths": ^1.7.18
     babel-plugin-module-resolver: ^4.1.0
@@ -2516,9 +2517,9 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@castore/demo-implementation@workspace:demo/implementation"
   dependencies:
-    "@castore/demo-blueprint": ^0.6.11
-    "@castore/dynamodb-event-storage-adapter": ^0.6.11
-    "@castore/event-store": ^0.6.11
+    "@castore/demo-blueprint": ^0.6.2
+    "@castore/dynamodb-event-storage-adapter": ^0.6.2
+    "@castore/event-store": ^0.6.2
     "@middy/core": ^3.0.4
     "@middy/validator": ^3.0.4
     "@serverless/typescript": ^3.0.0
@@ -2543,8 +2544,8 @@ __metadata:
   resolution: "@castore/demo-visualization@workspace:demo/visualization"
   dependencies:
     "@ant-design/icons": ^4.7.0
-    "@castore/demo-blueprint": ^0.6.11
-    "@castore/event-store": ^0.6.11
+    "@castore/demo-blueprint": ^0.6.2
+    "@castore/event-store": ^0.6.2
     "@emotion/react": ^11.9.3
     "@emotion/styled": ^11.9.3
     "@material-ui/core": ^4.12.4
@@ -2591,7 +2592,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@castore/dynamodb-event-storage-adapter@^0.6.11, @castore/dynamodb-event-storage-adapter@workspace:packages/dynamodb-event-storage-adapter":
+"@castore/dynamodb-event-storage-adapter@^0.6.2, @castore/dynamodb-event-storage-adapter@workspace:packages/dynamodb-event-storage-adapter":
   version: 0.0.0-use.local
   resolution: "@castore/dynamodb-event-storage-adapter@workspace:packages/dynamodb-event-storage-adapter"
   dependencies:
@@ -2600,7 +2601,7 @@ __metadata:
     "@babel/plugin-transform-runtime": ^7.17.0
     "@babel/preset-env": ^7.16.11
     "@babel/preset-typescript": ^7.16.7
-    "@castore/event-store": ^0.6.11
+    "@castore/event-store": ^0.6.2
     "@serverless/typescript": ^3.15.2
     "@types/lodash": ^4.14.182
     "@types/node": ^17.0.29
@@ -2623,7 +2624,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@castore/event-store@^0.6.11, @castore/event-store@workspace:packages/event-store":
+"@castore/event-store@^0.6.2, @castore/event-store@workspace:packages/event-store":
   version: 0.0.0-use.local
   resolution: "@castore/event-store@workspace:packages/event-store"
   dependencies:
@@ -2654,6 +2655,80 @@ __metadata:
     zod: ^3.15.1
   peerDependencies:
     json-schema-to-ts: ^2.2.0
+  languageName: unknown
+  linkType: soft
+
+"@castore/event-store@npm:^0.3.9":
+  version: 0.3.99
+  resolution: "@castore/event-store@npm:0.3.99"
+  dependencies:
+    "@babel/runtime": ^7.18.3
+    aws-sdk: ^2.1129.0
+    dynamodb-toolbox: 0.4.0-alpha.2
+    lodash: ^4.17.21
+  peerDependencies:
+    json-schema-to-ts: ^2.2.0
+  checksum: 1d352eb109bdab2e45ddd25fd661a2ede1a75750280644a0bd5e72ebea0f395eab3f0c065d7d6aa3674df156c724f38b820a7ae045aeab87989c213268f340b5
+  languageName: node
+  linkType: hard
+
+"@castore/json-schema-event@^0.6.2, @castore/json-schema-event@workspace:packages/json-schema-event":
+  version: 0.0.0-use.local
+  resolution: "@castore/json-schema-event@workspace:packages/json-schema-event"
+  dependencies:
+    "@babel/cli": ^7.17.6
+    "@babel/core": ^7.17.9
+    "@babel/plugin-transform-runtime": ^7.17.0
+    "@babel/preset-env": ^7.16.11
+    "@babel/preset-typescript": ^7.16.7
+    "@castore/event-store": ^0.3.9
+    "@serverless/typescript": ^3.15.2
+    "@types/lodash": ^4.14.182
+    "@types/node": ^17.0.29
+    "@zerollup/ts-transform-paths": ^1.7.18
+    aws-sdk: ^2.1124.0
+    babel-plugin-module-resolver: ^4.1.0
+    concurrently: ^7.1.0
+    dependency-cruiser: ^11.7.0
+    eslint: ^8.14.0
+    jest: ^27.5.1
+    json-schema-to-ts: ^2.2.0
+    prettier: ^2.6.2
+    ts-node: ^10.7.0
+    ts-toolbelt: ^9.6.0
+    ttypescript: ^1.5.13
+    typescript: ^4.6.3
+    zod: ^3.15.1
+  languageName: unknown
+  linkType: soft
+
+"@castore/zod-event@workspace:packages/zod-event":
+  version: 0.0.0-use.local
+  resolution: "@castore/zod-event@workspace:packages/zod-event"
+  dependencies:
+    "@babel/cli": ^7.17.6
+    "@babel/core": ^7.17.9
+    "@babel/plugin-transform-runtime": ^7.17.0
+    "@babel/preset-env": ^7.16.11
+    "@babel/preset-typescript": ^7.16.7
+    "@castore/event-store": ^0.3.9
+    "@serverless/typescript": ^3.15.2
+    "@types/lodash": ^4.14.182
+    "@types/node": ^17.0.29
+    "@zerollup/ts-transform-paths": ^1.7.18
+    aws-sdk: ^2.1124.0
+    babel-plugin-module-resolver: ^4.1.0
+    concurrently: ^7.1.0
+    dependency-cruiser: ^11.7.0
+    eslint: ^8.14.0
+    jest: ^27.5.1
+    json-schema-to-ts: ^2.2.0
+    prettier: ^2.6.2
+    ts-node: ^10.7.0
+    ts-toolbelt: ^9.6.0
+    ttypescript: ^1.5.13
+    typescript: ^4.6.3
+    zod: ^3.15.1
   languageName: unknown
   linkType: soft
 
@@ -7795,6 +7870,23 @@ __metadata:
     uuid: 3.3.2
     xml2js: 0.4.19
   checksum: 53288253baf337e1bfdbd7f20040a2a96e90eff94dcff0c6cac0f6649340c0b147950bba94cbe3b4b651abf8be3c1614b9dd93541290ae3a46877a8bf6367cff
+  languageName: node
+  linkType: hard
+
+"aws-sdk@npm:^2.1129.0":
+  version: 2.1170.0
+  resolution: "aws-sdk@npm:2.1170.0"
+  dependencies:
+    buffer: 4.9.2
+    events: 1.1.1
+    ieee754: 1.1.13
+    jmespath: 0.16.0
+    querystring: 0.2.0
+    sax: 1.2.1
+    url: 0.10.3
+    uuid: 8.0.0
+    xml2js: 0.4.19
+  checksum: fa88bb2bcf5cf23698cd6c47f77c30608bf0d5b57aed117304d00e1c78ba62724008603520fe1c1f4c08c0643a2b2619027be2b6bc5a949db5f4a21772430af5
   languageName: node
   linkType: hard
 

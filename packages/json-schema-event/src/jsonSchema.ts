@@ -1,20 +1,20 @@
-import { z, ZodType } from 'zod';
+import { FromSchema, JSONSchema } from 'json-schema-to-ts';
 
-import { EventDetail } from '../eventDetail';
-import { EventType } from '../eventType';
-import { OmitUndefinableKeys } from './utils';
+import { EventDetail, EventType } from '@castore/event-store';
+import type { OmitUndefinableKeys } from '@castore/event-store';
 
-export class ZodEventType<
+export class JSONSchemaEventType<
   T extends string = string,
-  MS extends ZodType | undefined = ZodType | undefined,
-  PS extends ZodType | undefined = ZodType | undefined,
+  // Metadata
+  MS extends JSONSchema | undefined = JSONSchema | undefined,
+  PS extends JSONSchema | undefined = JSONSchema | undefined,
   $D = OmitUndefinableKeys<{
     aggregateId: string;
     version: number;
     type: T;
     timestamp: string;
-    payload: PS extends ZodType ? z.infer<PS> : undefined;
-    metadata: MS extends ZodType ? z.infer<MS> : undefined;
+    payload: PS extends JSONSchema ? FromSchema<PS> : undefined;
+    metadata: MS extends JSONSchema ? FromSchema<MS> : undefined;
   }>,
   D extends EventDetail = $D extends EventDetail ? $D : never,
 > implements EventType<T, D>
