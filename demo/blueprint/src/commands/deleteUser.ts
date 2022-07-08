@@ -1,4 +1,4 @@
-import { JSONSchemaCommand, tuple } from '@castore/event-store';
+import { JSONSchemaCommand, tuple } from '@castore/core';
 
 import { userEventStore, UserStatus } from 'users';
 

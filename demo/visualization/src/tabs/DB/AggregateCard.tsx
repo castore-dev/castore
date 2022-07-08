@@ -12,7 +12,7 @@ import {
 } from '@mui/material';
 import React, { useState } from 'react';
 
-import type { EventDetail, EventStore } from '@castore/event-store';
+import type { EventDetail, EventStore } from '@castore/core';
 
 import { JsonView } from 'components/JsonView';
 

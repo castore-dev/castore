@@ -1,7 +1,7 @@
 import { FromSchema } from 'json-schema-to-ts';
 import { A } from 'ts-toolbelt';
 
-import { EventTypeDetail } from '@castore/event-store';
+import { EventTypeDetail } from '@castore/core';
 
 import { JSONSchemaEventType } from './jsonSchema';
 

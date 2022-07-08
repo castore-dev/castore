@@ -8,7 +8,7 @@
     "outDir": "./dist/types",
     "esModuleInterop": true
   },
-  "references": [{ "path": "../../packages/event-store/tsconfig.build.json" }],
+  "references": [{ "path": "../../packages/core/tsconfig.build.json" }],
   "exclude": ["./dist"],
   "include": ["./**/*.ts"]
 }

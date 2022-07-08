@@ -4,7 +4,7 @@ import {
   EventAlreadyExistsError,
   EventDetail,
   StorageAdapter,
-} from '@castore/event-store';
+} from '@castore/core';
 
 import { dbByEventStoreId, eventStoresById } from 'services/data';
 

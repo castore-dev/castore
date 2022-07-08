@@ -1,4 +1,4 @@
-import { EventStore } from '@castore/event-store';
+import { EventStore } from '@castore/core';
 
 import { UserStatus } from './aggregate';
 import type { UserAggregate } from './aggregate';

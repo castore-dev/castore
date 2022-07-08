@@ -1,7 +1,7 @@
 import { FromSchema, JSONSchema } from 'json-schema-to-ts';
 import { O } from 'ts-toolbelt';
 
-import { EventDetail, EventType } from '@castore/event-store';
+import { EventDetail, EventType } from '@castore/core';
 
 type OmitUndefinableKeys<Obj extends Record<string, unknown>> = Omit<
   Obj,
