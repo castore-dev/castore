@@ -9,6 +9,21 @@ import {
   StorageAdapter,
 } from '@castore/event-store';
 
+const getInitialEventTimestamp = (
+  aggregateId: string,
+  events: EventDetail[],
+) => {
+  const initialEventTimestamp = events[0]?.timestamp;
+
+  if (initialEventTimestamp === undefined) {
+    throw new Error(
+      `Unable to find initial timestamp for aggregate ${aggregateId}`,
+    );
+  }
+
+  return initialEventTimestamp;
+};
+
 export class InMemoryStorageAdapter implements StorageAdapter {
   getEvents: (
     aggregateId: string,
@@ -33,6 +48,7 @@ export class InMemoryStorageAdapter implements StorageAdapter {
     this.pushEvent = async (event, context) => {
       const { aggregateId, version } = event;
       const events = this.eventStore[aggregateId];
+
       if (intersectionBy(events, [event], 'version').length > 0) {
         const { eventStoreId } = context;
 
@@ -42,18 +58,22 @@ export class InMemoryStorageAdapter implements StorageAdapter {
           version,
         });
       }
-      aggregateId in this.eventStore
-        ? this.eventStore[aggregateId].push(event)
-        : (this.eventStore[aggregateId] = [event]);
+
+      const aggregateEvents = this.eventStore[aggregateId];
+
+      if (aggregateEvents === undefined) {
+        this.eventStore[aggregateId] = [event];
+
+        return;
+      }
+
+      aggregateEvents.push(event);
     };
 
     // eslint-disable-next-line @typescript-eslint/require-await
-    this.getEvents = async aggregateId => {
-      const events =
-        aggregateId in this.eventStore ? this.eventStore[aggregateId] : [];
-
-      return { events };
-    };
+    this.getEvents = async aggregateId => ({
+      events: this.eventStore[aggregateId] ?? [],
+    });
 
     // eslint-disable-next-line @typescript-eslint/require-await
     this.pushEventTransaction = async event => {
@@ -63,14 +83,13 @@ export class InMemoryStorageAdapter implements StorageAdapter {
     // eslint-disable-next-line @typescript-eslint/require-await
     this.listAggregateIds = async () => {
       const aggregateIds = Object.entries(this.eventStore)
-        .map(([aggregateId, events]) => ({
-          aggregateId,
-          timestamp: events[0].timestamp,
-        }))
-        .sort(({ timestamp: timestamp1 }, { timestamp: timestamp2 }) =>
-          timestamp1 > timestamp2 ? 1 : -1,
-        )
-        .map(({ aggregateId }) => aggregateId);
+        .sort((entryA, entryB) => {
+          const initialEventATimestamp = getInitialEventTimestamp(...entryA);
+          const initialEventBTimestamp = getInitialEventTimestamp(...entryB);
+
+          return initialEventATimestamp > initialEventBTimestamp ? 1 : -1;
+        })
+        .map(([aggregateId]) => aggregateId);
 
       return {
         aggregateIds,
