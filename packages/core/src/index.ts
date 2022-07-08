@@ -1,5 +1,4 @@
 export type { Aggregate } from './aggregate';
-export * from './buildMockEventsFn';
 export { EventType } from './event/eventType';
 export type { EventTypeDetail, EventTypesDetails } from './event/eventType';
 export type { EventDetail } from './event/eventDetail';
