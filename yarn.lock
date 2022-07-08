@@ -3278,7 +3278,6 @@ __metadata:
     syncpack: ^7.0.0
     ts-jest: ^28.0.2
     typescript: ^4.6.3
-    util: ^0.12.4
   peerDependencies:
     dynamodb-toolbox: 0.4.0-alpha.2
   languageName: unknown
@@ -3303,6 +3302,7 @@ __metadata:
     dependency-cruiser: ^11.7.0
     eslint: ^8.14.0
     jest: ^27.5.1
+    json-schema-to-ts: ^2.5.4
     prettier: ^2.6.2
     ts-node: ^10.7.0
     ts-toolbelt: ^9.6.0
@@ -3310,8 +3310,8 @@ __metadata:
     typescript: ^4.6.3
     uuid: ^8.3.2
   peerDependencies:
-    "@castore/event-store": ^0.3.92
-    json-schema-to-ts: ^2.5.3
+    "@castore/event-store": ^0.7.0
+    json-schema-to-ts: ^2.0.0
     uuid: ^8.3.2
   languageName: unknown
   linkType: soft
@@ -3330,12 +3330,11 @@ __metadata:
     "@types/aws-lambda": ^8.10.82
     "@types/http-errors": ^1.8.1
     "@types/serverless": ^3.0.1
-    aws-sdk: ^2.970.0
     dependency-cruiser: ^11.7.0
     env-cmd: ^10.1.0
     esbuild: ^0.14.13
     eslint: ^8.14.0
-    json-schema-to-ts: ^2.5.3
+    json-schema-to-ts: ^2.5.4
     serverless: ^3.1.0
     serverless-esbuild: ^1.23.4
     source-map-support: ^0.5.19
@@ -3374,7 +3373,7 @@ __metadata:
     eslint: ^8.14.0
     file-saver: ^2.0.5
     http-errors: ^2.0.0
-    json-schema-to-ts: ^2.5.3
+    json-schema-to-ts: ^2.5.4
     lodash: ^4.17.21
     react: ^17.0.2
     react-dom: ^17.0.2
@@ -3390,9 +3389,6 @@ __metadata:
     vite-plugin-svgr: ^2.1.0
     vite-tsconfig-paths: ^3.5.0
     web-vitals: ^2.1.4
-  peerDependencies:
-    "@castore/demo-blueprint": ^0.3.91
-    "@castore/event-store": ^0.3.91
   languageName: unknown
   linkType: soft
 
@@ -3424,7 +3420,7 @@ __metadata:
     typescript: ^4.6.3
   peerDependencies:
     "@aws-sdk/client-dynamodb": ^3.0.0
-    "@castore/event-store": ^0.3.9
+    "@castore/event-store": ^0.7.0
   languageName: unknown
   linkType: soft
 
@@ -3438,43 +3434,23 @@ __metadata:
     "@babel/preset-env": ^7.16.11
     "@babel/preset-typescript": ^7.16.7
     "@babel/runtime": ^7.18.3
-    "@serverless/typescript": ^3.15.2
-    "@types/lodash": ^4.14.182
     "@types/node": ^17.0.29
     "@zerollup/ts-transform-paths": ^1.7.18
-    aws-sdk: ^2.1124.0
     babel-plugin-module-resolver: ^4.1.0
     concurrently: ^7.1.0
     dependency-cruiser: ^11.7.0
-    dynamodb-toolbox: 0.4.0-alpha.2
     eslint: ^8.14.0
     jest: ^27.5.1
-    json-schema-to-ts: ^2.2.0
-    lodash: ^4.17.21
+    json-schema-to-ts: ^2.5.4
     prettier: ^2.6.2
     ts-node: ^10.7.0
     ts-toolbelt: ^9.6.0
     ttypescript: ^1.5.13
     typescript: ^4.6.3
-    zod: ^3.15.1
   peerDependencies:
-    json-schema-to-ts: ^2.2.0
+    json-schema-to-ts: ^2.0.0
   languageName: unknown
   linkType: soft
-
-"@castore/event-store@npm:^0.3.9, @castore/event-store@npm:^0.3.92":
-  version: 0.3.99
-  resolution: "@castore/event-store@npm:0.3.99"
-  dependencies:
-    "@babel/runtime": ^7.18.3
-    aws-sdk: ^2.1129.0
-    dynamodb-toolbox: 0.4.0-alpha.2
-    lodash: ^4.17.21
-  peerDependencies:
-    json-schema-to-ts: ^2.2.0
-  checksum: 1d352eb109bdab2e45ddd25fd661a2ede1a75750280644a0bd5e72ebea0f395eab3f0c065d7d6aa3674df156c724f38b820a7ae045aeab87989c213268f340b5
-  languageName: node
-  linkType: hard
 
 "@castore/inmemory-event-storage-adapter@workspace:packages/inmemory-event-storage-adapter":
   version: 0.0.0-use.local
@@ -3485,26 +3461,22 @@ __metadata:
     "@babel/plugin-transform-runtime": ^7.17.0
     "@babel/preset-env": ^7.16.11
     "@babel/preset-typescript": ^7.16.7
-    "@castore/event-store": ^0.3.92
-    "@serverless/typescript": ^3.15.2
+    "@castore/event-store": ^0.7.0
     "@types/lodash": ^4.14.182
     "@types/node": ^17.0.29
     "@zerollup/ts-transform-paths": ^1.7.18
-    aws-sdk: ^2.1124.0
     babel-plugin-module-resolver: ^4.1.0
     concurrently: ^7.1.0
     dependency-cruiser: ^11.7.0
-    dynamodb-toolbox: 0.4.0-alpha.2
     eslint: ^8.14.0
     jest: ^27.5.1
-    json-schema-to-ts: ^2.2.0
     lodash: ^4.17.21
     prettier: ^2.6.2
     ts-node: ^10.7.0
-    ts-toolbelt: ^9.6.0
     ttypescript: ^1.5.13
     typescript: ^4.6.3
-    zod: ^3.15.1
+  peerDependencies:
+    "@castore/event-store": ^0.7.0
   languageName: unknown
   linkType: soft
 
@@ -3517,24 +3489,23 @@ __metadata:
     "@babel/plugin-transform-runtime": ^7.17.0
     "@babel/preset-env": ^7.16.11
     "@babel/preset-typescript": ^7.16.7
-    "@castore/event-store": ^0.3.9
-    "@serverless/typescript": ^3.15.2
-    "@types/lodash": ^4.14.182
+    "@castore/event-store": ^0.7.0
     "@types/node": ^17.0.29
     "@zerollup/ts-transform-paths": ^1.7.18
-    aws-sdk: ^2.1124.0
     babel-plugin-module-resolver: ^4.1.0
     concurrently: ^7.1.0
     dependency-cruiser: ^11.7.0
     eslint: ^8.14.0
     jest: ^27.5.1
-    json-schema-to-ts: ^2.2.0
+    json-schema-to-ts: ^2.5.4
     prettier: ^2.6.2
     ts-node: ^10.7.0
     ts-toolbelt: ^9.6.0
     ttypescript: ^1.5.13
     typescript: ^4.6.3
-    zod: ^3.15.1
+  peerDependencies:
+    "@castore/event-store": ^0.7.0
+    json-schema-to-ts: ^2.0.0
   languageName: unknown
   linkType: soft
 
@@ -3547,24 +3518,23 @@ __metadata:
     "@babel/plugin-transform-runtime": ^7.17.0
     "@babel/preset-env": ^7.16.11
     "@babel/preset-typescript": ^7.16.7
-    "@castore/event-store": ^0.3.9
-    "@serverless/typescript": ^3.15.2
-    "@types/lodash": ^4.14.182
+    "@castore/event-store": ^0.7.0
     "@types/node": ^17.0.29
     "@zerollup/ts-transform-paths": ^1.7.18
-    aws-sdk: ^2.1124.0
     babel-plugin-module-resolver: ^4.1.0
     concurrently: ^7.1.0
     dependency-cruiser: ^11.7.0
     eslint: ^8.14.0
     jest: ^27.5.1
-    json-schema-to-ts: ^2.2.0
     prettier: ^2.6.2
     ts-node: ^10.7.0
     ts-toolbelt: ^9.6.0
     ttypescript: ^1.5.13
     typescript: ^4.6.3
     zod: ^3.15.1
+  peerDependencies:
+    "@castore/event-store": ^0.7.0
+    zod: ^3.0.0
   languageName: unknown
   linkType: soft
 
@@ -8685,13 +8655,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"available-typed-arrays@npm:^1.0.5":
-  version: 1.0.5
-  resolution: "available-typed-arrays@npm:1.0.5"
-  checksum: 20eb47b3cefd7db027b9bbb993c658abd36d4edd3fe1060e83699a03ee275b0c9b216cc076ff3f2db29073225fb70e7613987af14269ac1fe2a19803ccc97f1a
-  languageName: node
-  linkType: hard
-
 "aws-sdk@npm:^2.1124.0":
   version: 2.1129.0
   resolution: "aws-sdk@npm:2.1129.0"
@@ -8709,24 +8672,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"aws-sdk@npm:^2.1129.0":
-  version: 2.1170.0
-  resolution: "aws-sdk@npm:2.1170.0"
-  dependencies:
-    buffer: 4.9.2
-    events: 1.1.1
-    ieee754: 1.1.13
-    jmespath: 0.16.0
-    querystring: 0.2.0
-    sax: 1.2.1
-    url: 0.10.3
-    uuid: 8.0.0
-    xml2js: 0.4.19
-  checksum: fa88bb2bcf5cf23698cd6c47f77c30608bf0d5b57aed117304d00e1c78ba62724008603520fe1c1f4c08c0643a2b2619027be2b6bc5a949db5f4a21772430af5
-  languageName: node
-  linkType: hard
-
-"aws-sdk@npm:^2.1147.0, aws-sdk@npm:^2.970.0":
+"aws-sdk@npm:^2.1147.0":
   version: 2.1152.0
   resolution: "aws-sdk@npm:2.1152.0"
   dependencies:
@@ -11491,15 +11437,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"dynamodb-toolbox@npm:0.4.0-alpha.2":
-  version: 0.4.0-alpha.2
-  resolution: "dynamodb-toolbox@npm:0.4.0-alpha.2"
-  dependencies:
-    ts-toolbelt: ^6.15.5
-  checksum: 0248daab492fb459869872f430daada8147c39821be4a4abcbd7e77fd0d0cc19be12fd8031996e76a6db52d2b5f7b5db7d71a9eaa56ae877624b1fca34b6dcaf
-  languageName: node
-  linkType: hard
-
 "eastasianwidth@npm:^0.2.0":
   version: 0.2.0
   resolution: "eastasianwidth@npm:0.2.0"
@@ -11706,7 +11643,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"es-abstract@npm:^1.17.2, es-abstract@npm:^1.20.0, es-abstract@npm:^1.20.1":
+"es-abstract@npm:^1.17.2, es-abstract@npm:^1.20.1":
   version: 1.20.1
   resolution: "es-abstract@npm:1.20.1"
   dependencies:
@@ -13415,15 +13352,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"for-each@npm:^0.3.3":
-  version: 0.3.3
-  resolution: "for-each@npm:0.3.3"
-  dependencies:
-    is-callable: ^1.1.3
-  checksum: 6c48ff2bc63362319c65e2edca4a8e1e3483a2fabc72fbe7feaf8c73db94fc7861bd53bc02c8a66a0c1dd709da6b04eec42e0abdd6b40ce47305ae92a25e5d28
-  languageName: node
-  linkType: hard
-
 "forever-agent@npm:~0.6.1":
   version: 0.6.1
   resolution: "forever-agent@npm:0.6.1"
@@ -14751,16 +14679,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"is-arguments@npm:^1.0.4":
-  version: 1.1.1
-  resolution: "is-arguments@npm:1.1.1"
-  dependencies:
-    call-bind: ^1.0.2
-    has-tostringtag: ^1.0.0
-  checksum: 7f02700ec2171b691ef3e4d0e3e6c0ba408e8434368504bb593d0d7c891c0dbfda6d19d30808b904a6cb1929bca648c061ba438c39f296c2a8ca083229c49f27
-  languageName: node
-  linkType: hard
-
 "is-arrayish@npm:^0.2.1":
   version: 0.2.1
   resolution: "is-arrayish@npm:0.2.1"
@@ -14796,7 +14714,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"is-callable@npm:^1.1.3, is-callable@npm:^1.1.4, is-callable@npm:^1.2.4":
+"is-callable@npm:^1.1.4, is-callable@npm:^1.2.4":
   version: 1.2.4
   resolution: "is-callable@npm:1.2.4"
   checksum: 1a28d57dc435797dae04b173b65d6d1e77d4f16276e9eff973f994eadcfdc30a017e6a597f092752a083c1103cceb56c91e3dadc6692fedb9898dfaba701575f
@@ -14875,15 +14793,6 @@ __metadata:
   version: 2.1.0
   resolution: "is-generator-fn@npm:2.1.0"
   checksum: a6ad5492cf9d1746f73b6744e0c43c0020510b59d56ddcb78a91cbc173f09b5e6beff53d75c9c5a29feb618bfef2bf458e025ecf3a57ad2268e2fb2569f56215
-  languageName: node
-  linkType: hard
-
-"is-generator-function@npm:^1.0.7":
-  version: 1.0.10
-  resolution: "is-generator-function@npm:1.0.10"
-  dependencies:
-    has-tostringtag: ^1.0.0
-  checksum: d54644e7dbaccef15ceb1e5d91d680eb5068c9ee9f9eb0a9e04173eb5542c9b51b5ab52c5537f5703e48d5fddfd376817c1ca07a84a407b7115b769d4bdde72b
   languageName: node
   linkType: hard
 
@@ -15099,19 +15008,6 @@ __metadata:
   dependencies:
     text-extensions: ^1.0.0
   checksum: fb5d78752c22b3f73a7c9540768f765ffcfa38c9e421e2b9af869565307fa1ae5e3d3a2ba016a43549742856846566d327da406e94a5846ec838a288b1704fd2
-  languageName: node
-  linkType: hard
-
-"is-typed-array@npm:^1.1.3, is-typed-array@npm:^1.1.9":
-  version: 1.1.9
-  resolution: "is-typed-array@npm:1.1.9"
-  dependencies:
-    available-typed-arrays: ^1.0.5
-    call-bind: ^1.0.2
-    es-abstract: ^1.20.0
-    for-each: ^0.3.3
-    has-tostringtag: ^1.0.0
-  checksum: 11910f1e58755fef43bf0074e52fa5b932bf101ec65d613e0a83d40e8e4c6e3f2ee142d624ebc7624c091d3bbe921131f8db7d36ecbbb71909f2fe310c1faa65
   languageName: node
   linkType: hard
 
@@ -16021,14 +15917,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"json-schema-to-ts@npm:^2.2.0, json-schema-to-ts@npm:^2.5.3":
-  version: 2.5.3
-  resolution: "json-schema-to-ts@npm:2.5.3"
+"json-schema-to-ts@npm:^2.5.4":
+  version: 2.5.4
+  resolution: "json-schema-to-ts@npm:2.5.4"
   dependencies:
     "@types/json-schema": ^7.0.9
     ts-algebra: ^1.1.1
     ts-toolbelt: ^9.6.0
-  checksum: bcfdfedcfd83475cb001c511cac31147c24c26d86f9249657e2eba73b52caaf46e75a95fd38e9761b5aa496b5c35b034cbf6aeefcf74c7a99f7acbe3edc50dd4
+  checksum: 722239a1a45a9bfb1d174d2d6f667d042f9bfa8b84ea65cc2c806c7e4f0359854aaaf569bd07d782a056ef3b8345cf1451f8adaeb1c6cb5a1281dad6355eb1c1
   languageName: node
   linkType: hard
 
@@ -22970,13 +22866,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ts-toolbelt@npm:^6.15.5":
-  version: 6.15.5
-  resolution: "ts-toolbelt@npm:6.15.5"
-  checksum: 24ad00cfd9ce735c76c873a9b1347eac475b94e39ebbdf100c9019dce88dd5f4babed52884cf82bb456a38c28edd0099ab6f704b84b2e5e034852b618472c1f3
-  languageName: node
-  linkType: hard
-
 "ts-toolbelt@npm:^9.6.0":
   version: 9.6.0
   resolution: "ts-toolbelt@npm:9.6.0"
@@ -23517,20 +23406,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"util@npm:^0.12.4":
-  version: 0.12.4
-  resolution: "util@npm:0.12.4"
-  dependencies:
-    inherits: ^2.0.3
-    is-arguments: ^1.0.4
-    is-generator-function: ^1.0.7
-    is-typed-array: ^1.1.3
-    safe-buffer: ^5.1.2
-    which-typed-array: ^1.1.2
-  checksum: 8eac7a6e6b341c0f1b3eb73bbe5dfcae31a7e9699c8fc3266789f3e95f7637946a7700dcf1904dbd3749a58a36760ebf7acf4bb5b717f7468532a8a79f44eff0
-  languageName: node
-  linkType: hard
-
 "utila@npm:~0.4":
   version: 0.4.0
   resolution: "utila@npm:0.4.0"
@@ -24063,20 +23938,6 @@ __metadata:
     is-string: ^1.0.5
     is-symbol: ^1.0.3
   checksum: 53ce774c7379071729533922adcca47220228405e1895f26673bbd71bdf7fb09bee38c1d6399395927c6289476b5ae0629863427fd151491b71c4b6cb04f3a5e
-  languageName: node
-  linkType: hard
-
-"which-typed-array@npm:^1.1.2":
-  version: 1.1.8
-  resolution: "which-typed-array@npm:1.1.8"
-  dependencies:
-    available-typed-arrays: ^1.0.5
-    call-bind: ^1.0.2
-    es-abstract: ^1.20.0
-    for-each: ^0.3.3
-    has-tostringtag: ^1.0.0
-    is-typed-array: ^1.1.9
-  checksum: bedf4d30a738e848404fe67fe0ace33433a7298cf3f5a4d4b2c624ba99c4d25f06a7fd6f3566c3d16af5f8a54f0c6293cbfded5b1208ce11812753990223b45a
   languageName: node
   linkType: hard
 

@@ -1,43 +1,56 @@
-import {
-  counterEventsMocks,
-  counterEventStore,
-  counterIdMock,
-  EventAlreadyExistsError,
-} from '@castore/event-store';
+import { randomUUID } from 'crypto';
+
+import { EventAlreadyExistsError } from '@castore/event-store';
 
 import { InMemoryStorageAdapter } from './inMemory';
 
-counterEventStore.storageAdapter = new InMemoryStorageAdapter();
+const storageAdapter = new InMemoryStorageAdapter();
+const eventStoreIdMock = 'eventStoreIdMock';
+
+const aggregateIdMock = randomUUID();
+const laterAggregateIdMock = randomUUID();
+const eventMock = {
+  aggregateId: aggregateIdMock,
+  version: 1,
+  type: 'EVENT_TYPE',
+  timestamp: '2021',
+};
 
 describe('in-memory storage adapter', () => {
   it('gets an empty array if there is no event for aggregateId', async () => {
-    const response = await counterEventStore.getEvents(counterIdMock);
+    const response = await storageAdapter.getEvents(aggregateIdMock);
     expect(response).toStrictEqual({ events: [] });
   });
 
   it('throws an error if version already exists', async () => {
-    await counterEventStore.pushEvent(counterEventsMocks[0]);
-    await expect(
-      counterEventStore.pushEvent(counterEventsMocks[0]),
+    await storageAdapter.pushEvent(eventMock, {
+      eventStoreId: eventStoreIdMock,
+    });
+
+    await expect(() =>
+      storageAdapter.pushEvent(eventMock, { eventStoreId: eventStoreIdMock }),
     ).rejects.toThrow(EventAlreadyExistsError);
   });
 
   it('pushes and gets events correctly', async () => {
-    await counterEventStore.pushEvent(counterEventsMocks[1]);
-
-    const response = await counterEventStore.getEvents(counterIdMock);
-    expect(response).toStrictEqual({ events: counterEventsMocks });
+    const response = await storageAdapter.getEvents(aggregateIdMock);
+    expect(response).toStrictEqual({ events: [eventMock] });
   });
 
   it('list aggregate Ids', async () => {
-    await counterEventStore.pushEvent({
-      aggregateId: 'counterIdMock2',
-      version: 1,
-      type: 'COUNTER_CREATED',
-      timestamp: '2021',
-    });
-    expect(await counterEventStore.listAggregateIds()).toStrictEqual({
-      aggregateIds: ['counterIdMock2', counterIdMock],
+    await storageAdapter.pushEvent(
+      {
+        ...eventMock,
+        aggregateId: laterAggregateIdMock,
+        timestamp: '2022',
+      },
+      { eventStoreId: eventStoreIdMock },
+    );
+
+    const aggregateIds = await storageAdapter.listAggregateIds();
+
+    expect(aggregateIds).toStrictEqual({
+      aggregateIds: [aggregateIdMock, laterAggregateIdMock],
     });
   });
 });

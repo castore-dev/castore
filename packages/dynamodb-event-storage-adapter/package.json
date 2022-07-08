@@ -40,7 +40,6 @@
   "dependencies": {
     "@aws-sdk/client-dynamodb": "^3.0.0",
     "@aws/dynamodb-auto-marshaller": "^0.7.1",
-    "@castore/event-store": "^0.7.0",
     "lodash": "^4.17.21"
   },
   "devDependencies": {
@@ -49,6 +48,7 @@
     "@babel/plugin-transform-runtime": "^7.17.0",
     "@babel/preset-env": "^7.16.11",
     "@babel/preset-typescript": "^7.16.7",
+    "@castore/event-store": "^0.7.0",
     "@serverless/typescript": "^3.15.2",
     "@types/lodash": "^4.14.182",
     "@types/node": "^17.0.29",
@@ -65,7 +65,7 @@
   },
   "peerDependencies": {
     "@aws-sdk/client-dynamodb": "^3.0.0",
-    "@castore/event-store": "^0.3.9"
+    "@castore/event-store": "^0.7.0"
   },
   "maintainers": [
     "Thomas Aribart",
