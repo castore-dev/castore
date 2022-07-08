@@ -1,6 +1,6 @@
 {
   "name": "@castore/demo-visualization",
-  "version": "0.6.2",
+  "version": "0.6.21",
   "scripts": {
     "lint-fix": "yarn linter-base-config --fix",
     "lint-fix-all": "yarn lint-fix .",
@@ -26,8 +26,8 @@
   },
   "dependencies": {
     "@ant-design/icons": "^4.7.0",
-    "@castore/demo-blueprint": "^0.6.2",
-    "@castore/event-store": "^0.6.2",
+    "@castore/demo-blueprint": "^0.6.21",
+    "@castore/event-store": "^0.6.21",
     "@emotion/react": "^11.9.3",
     "@emotion/styled": "^11.9.3",
     "@material-ui/core": "^4.12.4",
