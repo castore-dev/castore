@@ -33,3 +33,15 @@ jobs:
         with:
           token: ${{ secrets.NPM_TOKEN }}
           package: ./packages/event-store/package.json
+      - uses: JS-DevTools/npm-publish@v1
+        with:
+          token: ${{ secrets.NPM_TOKEN }}
+          package: ./packages/dynamodb-event-storage-adapter/package.json      
+      - uses: JS-DevTools/npm-publish@v1
+        with:
+          token: ${{ secrets.NPM_TOKEN }}
+          package: ./packages/json-schema-event/package.json      
+      - uses: JS-DevTools/npm-publish@v1
+        with:
+          token: ${{ secrets.NPM_TOKEN }}
+          package: ./packages/zod-event/package.json
