@@ -20,4 +20,15 @@ export type {
 export { Command, tuple } from './command/command';
 export { JSONSchemaCommand } from './command/implementations/jsonSchema';
 export type { OnEventAlreadyExistsCallback } from './command/implementations/jsonSchema';
+/**
+ * @debt refactor "TODO: Remove this type from event-store as it is unused"
+ */
 export type { OmitUndefinableKeys } from './event/utils';
+/**
+ * @debt refactor "TODO: Use demo-blueprint instead of those exports and remove from export"
+ */
+export {
+  counterEventsMocks,
+  counterEventStore,
+  counterIdMock,
+} from './eventStore.util.test';
