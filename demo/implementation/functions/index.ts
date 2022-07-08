@@ -1,5 +1,11 @@
-import { getCounterEvents } from './getCounterEvents';
+import { logUserEvents } from './logUserEvents';
+import { logAggregateIds } from './logAggregateIds';
+import { createUser } from './createUser';
+import { deleteUser } from './deleteUser';
 
 export const functions = {
-  getCounterEvents,
+  logUserEvents,
+  logAggregateIds,
+  createUser,
+  deleteUser,
 };

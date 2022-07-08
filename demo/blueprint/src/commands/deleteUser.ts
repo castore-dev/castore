@@ -2,7 +2,7 @@ import { JSONSchemaCommand, tuple } from '@castore/event-store';
 
 import { userEventStore, UserStatus } from 'users';
 
-export const deleteUser = new JSONSchemaCommand({
+export const deleteUserCommand = new JSONSchemaCommand({
   commandId: 'DELETE_USER',
   requiredEventStores: tuple(userEventStore),
   inputSchema: {

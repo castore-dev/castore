@@ -4,7 +4,7 @@ import { JSONSchemaCommand, tuple } from '@castore/event-store';
 
 import { userEventStore, UserStatus } from 'users';
 
-export const createUser = new JSONSchemaCommand({
+export const createUserCommand = new JSONSchemaCommand({
   commandId: 'CREATE_USER',
   requiredEventStores: tuple(userEventStore),
   inputSchema: {

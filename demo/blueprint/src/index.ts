@@ -1,4 +1,4 @@
 export * from './counters';
 export * from './users';
-export { createUser } from './commands/createUser';
-export { deleteUser } from './commands/deleteUser';
+export { createUserCommand } from './commands/createUser';
+export { deleteUserCommand } from './commands/deleteUser';

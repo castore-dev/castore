@@ -28,7 +28,10 @@
   },
   "references": [
     { "path": "../blueprint/tsconfig.build.json" },
-    { "path": "../../packages/event-store/tsconfig.build.json" }
+    { "path": "../../packages/event-store/tsconfig.build.json" },
+    {
+      "path": "../../packages/dynamodb-event-storage-adapter/tsconfig.build.json"
+    }
   ],
   "ts-node": {
     "files": true,
