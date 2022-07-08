@@ -1,5 +1,5 @@
 {
-  "root": "packages/event-store",
+  "root": "packages/core",
   "projectType": "library",
   "tags": [],
   "implicitDependencies": []

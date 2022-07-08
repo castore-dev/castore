@@ -1,7 +1,7 @@
 import { A } from 'ts-toolbelt';
 import { z } from 'zod';
 
-import { EventTypeDetail } from '@castore/event-store';
+import { EventTypeDetail } from '@castore/core';
 
 import { ZodEventType } from './zodEvent';
 

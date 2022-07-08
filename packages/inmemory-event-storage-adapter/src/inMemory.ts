@@ -7,7 +7,7 @@ import {
   PushEventContext,
   PushEventTransactionContext,
   StorageAdapter,
-} from '@castore/event-store';
+} from '@castore/core';
 
 const getInitialEventTimestamp = (
   aggregateId: string,

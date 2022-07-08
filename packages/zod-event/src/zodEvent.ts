@@ -1,7 +1,7 @@
 import { O } from 'ts-toolbelt';
 import { z, ZodType } from 'zod';
 
-import { EventDetail, EventType } from '@castore/event-store';
+import { EventDetail, EventType } from '@castore/core';
 
 export type OmitUndefinableKeys<Obj extends Record<string, unknown>> = Omit<
   Obj,

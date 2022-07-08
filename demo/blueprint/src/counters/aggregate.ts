@@ -1,4 +1,4 @@
-import type { Aggregate } from '@castore/event-store';
+import type { Aggregate } from '@castore/core';
 
 export enum CounterStatus {
   ACTIVE = 'ACTIVE',

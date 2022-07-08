@@ -1,6 +1,6 @@
 import { v4 as uuid } from 'uuid';
 
-import { JSONSchemaCommand, tuple } from '@castore/event-store';
+import { JSONSchemaCommand, tuple } from '@castore/core';
 
 import { userEventStore, UserStatus } from 'users';
 

@@ -11,7 +11,7 @@ import {
   PushEventContext,
   PushEventTransactionContext,
   StorageAdapter,
-} from '@castore/event-store';
+} from '@castore/core';
 
 const marshaller = new Marshaller() as {
   marshallItem: (

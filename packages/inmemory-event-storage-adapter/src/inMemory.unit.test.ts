@@ -1,6 +1,6 @@
 import { randomUUID } from 'crypto';
 
-import { EventAlreadyExistsError } from '@castore/event-store';
+import { EventAlreadyExistsError } from '@castore/core';
 
 import { InMemoryStorageAdapter } from './inMemory';
 

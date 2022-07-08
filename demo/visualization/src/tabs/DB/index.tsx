@@ -2,7 +2,7 @@ import { TabContext, TabList, TabPanel } from '@mui/lab';
 import { Tab } from '@mui/material';
 import React, { useState } from 'react';
 
-import type { EventStore } from '@castore/event-store';
+import type { EventStore } from '@castore/core';
 
 import { EventStoreDB } from './EventStoreDB';
 

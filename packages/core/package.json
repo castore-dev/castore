@@ -1,5 +1,5 @@
 {
-  "name": "@castore/event-store",
+  "name": "@castore/core",
   "version": "0.7.0",
   "license": "MIT",
   "homepage": "https://github.com/theodo/castore#readme",
@@ -73,7 +73,7 @@
     "targets": {
       "package": {
         "outputs": [
-          "packages/event-store/dist"
+          "packages/core/dist"
         ]
       }
     }

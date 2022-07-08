@@ -41,40 +41,40 @@
   },
   "folders": [
     {
-      "path": "packages/event-store",
-      "name": "📚 Event store"
+      "path": "packages/core",
+      "name": "🫀  Core"
     },
     {
       "path": "packages/dynamodb-event-storage-adapter",
-      "name": "🔌 Event Storage Adapters: DynamoDb"
+      "name": "🔌  DynamoDb"
     },
     {
       "path": "packages/inmemory-event-storage-adapter",
-      "name": "🔌 Event Storage Adapters: InMemory"
+      "name": "🔌  InMemory"
     },
     {
       "path": "packages/json-schema-event",
-      "name": "📬 Events : Json Schema"
+      "name": "📬  Json Schema"
     },
     {
       "path": "packages/zod-event",
-      "name": "📬 Events : Zod"
+      "name": "📬  Zod"
     },
     {
       "path": "demo/blueprint",
-      "name": "✨ Demo: Blueprint"
+      "name": "✨  Blueprint"
     },
     {
       "path": "demo/implementation",
-      "name": "✨ Demo: Implementation"
+      "name": "✨  Implementation"
     },
     {
       "path": "demo/visualization",
-      "name": "✨ Demo: Visualization"
+      "name": "✨  Visualization"
     },
     {
       "path": ".",
-      "name": "🦫 castore root"
+      "name": "🦫  Root"
     }
   ]
 }

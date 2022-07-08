@@ -1,4 +1,4 @@
-import { EventStore } from '@castore/event-store';
+import { EventStore } from '@castore/core';
 
 import { CounterStatus } from './aggregate';
 import type { CounterAggregate } from './aggregate';
