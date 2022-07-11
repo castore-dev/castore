@@ -14,6 +14,8 @@ jobs:
           token: ${{ secrets.PAT_TOKEN }}
       - name: Install & cache node dependencies
         uses: ./.github/actions/install-node-deps
+      - name: Build packages
+        uses: yarn package
       - name: Configure Git User
         run: |
           git config --global user.email "ci@octokit.com"
