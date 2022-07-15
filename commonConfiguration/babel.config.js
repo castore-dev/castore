@@ -1,5 +1,8 @@
 const defaultPresets = [
-  ['@babel/preset-typescript', { allowNamespaces: true }],
+  [
+    '@babel/preset-typescript',
+    { allowNamespaces: true, allowDeclareFields: true },
+  ],
 ];
 
 const defaultIgnores = [/.*\/(.*\.|)test\.tsx?/, /node_modules/, /dist/];
