@@ -7,6 +7,7 @@ import { EventsQueryOptions, StorageAdapter } from './storageAdapter';
 export type SimulationOptions = { simulationDate?: string };
 
 export class EventStore<
+  I extends string = string,
   E extends EventType[] = EventType[],
   $D extends EventDetail = EventTypesDetails<E>,
   // cf https://devblogs.microsoft.com/typescript/announcing-typescript-4-7-rc/#optional-variance-annotations-for-type-parameters
@@ -27,7 +28,7 @@ export class EventStore<
     details: $D;
     aggregate: A;
   };
-  eventStoreId: string;
+  eventStoreId: I;
   eventStoreEvents: E;
   reduce: R;
   simulateSideEffect: (
@@ -68,7 +69,7 @@ export class EventStore<
     }),
     storageAdapter,
   }: {
-    eventStoreId: string;
+    eventStoreId: I;
     eventStoreEvents: E;
     reduce: R;
     simulateSideEffect?: (
