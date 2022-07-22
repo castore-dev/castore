@@ -39,7 +39,7 @@ export class EventStore<
   getEvents: (
     aggregateId: string,
     options?: EventsQueryOptions,
-  ) => Promise<{ events: D[] }>;
+  ) => Promise<{ events: $D[] }>;
   pushEvent: (eventDetail: D) => Promise<void>;
   pushEventTransaction: (eventDetail: D) => unknown;
   listAggregateIds: () => Promise<{ aggregateIds: string[] }>;
@@ -50,8 +50,8 @@ export class EventStore<
     options?: EventsQueryOptions,
   ) => Promise<{
     aggregate: A | undefined;
-    events: D[];
-    lastEvent: D | undefined;
+    events: $D[];
+    lastEvent: $D | undefined;
   }>;
   simulateAggregate: (
     events: D[],
@@ -97,7 +97,7 @@ export class EventStore<
       return this.storageAdapter.getEvents(
         aggregateId,
         queryOptions,
-      ) as Promise<{ events: D[] }>;
+      ) as Promise<{ events: $D[] }>;
     };
 
     this.pushEvent = async (eventDetail: D) => {
@@ -141,7 +141,7 @@ export class EventStore<
 
     this.getAggregate = async (aggregateId, options) => {
       const { events } = await this.getEvents(aggregateId, options);
-      const aggregate = this.buildAggregate(events);
+      const aggregate = this.buildAggregate(events as unknown as D[]);
       const lastEvent = events[events.length - 1];
 
       return { aggregate, events, lastEvent };
