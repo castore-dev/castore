@@ -22,6 +22,14 @@ const assertExtends: A.Equals<
 > = 1;
 assertExtends;
 
+// --- EVENT STORE ID ---
+
+const assertCounterEventStoreId: A.Equals<
+  typeof counterEventStore['eventStoreId'],
+  'Counters'
+> = 1;
+assertCounterEventStoreId;
+
 // --- EVENTS DETAILS ---
 
 const assertCounterEventsDetails: A.Equals<
