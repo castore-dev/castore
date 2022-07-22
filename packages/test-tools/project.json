@@ -1,0 +1,6 @@
+{
+  "root": "packages/test-tools",
+  "projectType": "library",
+  "tags": [],
+  "implicitDependencies": []
+}

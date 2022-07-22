@@ -7,3 +7,4 @@ export {
   counterRemovedEvent,
 } from './events';
 export { counterEventStore } from './eventStore';
+export { counterIdMock, counterEventsMocks } from './mock';

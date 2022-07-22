@@ -61,6 +61,10 @@
       "name": "📬  Zod"
     },
     {
+      "path": "packages/test-tools",
+      "name": "🔨 Test Tools"
+    },
+    {
       "path": "demo/blueprint",
       "name": "✨  Blueprint"
     },

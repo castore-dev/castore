@@ -9,6 +9,7 @@
     "demo-blueprint": "demo/blueprint",
     "demo-implementation": "demo/implementation",
     "demo-visualization": "demo/visualization",
-    "adapters": "packages/dynamodb-event-storage-adapter"
+    "adapters": "packages/dynamodb-event-storage-adapter",
+    "test-tools": "packages/test-tools"
   }
 }
