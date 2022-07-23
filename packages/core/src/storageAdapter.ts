@@ -4,6 +4,16 @@ export type EventsQueryOptions = { maxVersion?: number };
 export type PushEventContext = { eventStoreId?: string };
 export type PushEventTransactionContext = { eventStoreId?: string };
 
+export type ListAggregateIdsOptions = {
+  limit?: number;
+  pageToken?: string;
+};
+
+export type ListAggregateIdsOutput = {
+  aggregateIds: string[];
+  nextPageToken?: string;
+};
+
 export class StorageAdapter {
   getEvents: (
     aggregateId: string,
@@ -17,7 +27,9 @@ export class StorageAdapter {
     eventDetail: EventDetail,
     context: PushEventTransactionContext,
   ) => unknown;
-  listAggregateIds: () => Promise<{ aggregateIds: string[] }>;
+  listAggregateIds: (
+    options?: ListAggregateIdsOptions,
+  ) => Promise<ListAggregateIdsOutput>;
 
   constructor({
     getEvents,
@@ -37,7 +49,9 @@ export class StorageAdapter {
       eventDetail: EventDetail,
       context: PushEventTransactionContext,
     ) => unknown;
-    listAggregateIds: () => Promise<{ aggregateIds: string[] }>;
+    listAggregateIds: (
+      options?: ListAggregateIdsOptions,
+    ) => Promise<ListAggregateIdsOutput>;
   }) {
     this.getEvents = getEvents;
     this.pushEvent = pushEvent;

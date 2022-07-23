@@ -9,6 +9,8 @@ export type {
   EventsQueryOptions,
   PushEventContext,
   PushEventTransactionContext,
+  ListAggregateIdsOptions,
+  ListAggregateIdsOutput,
 } from './storageAdapter';
 export { EventStore } from './eventStore';
 export type {

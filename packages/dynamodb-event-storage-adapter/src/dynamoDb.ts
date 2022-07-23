@@ -1,5 +1,9 @@
 /* eslint-disable max-lines */
-import { PutItemCommand, QueryCommand } from '@aws-sdk/client-dynamodb';
+import {
+  PutItemCommand,
+  QueryCommand,
+  QueryCommandInput,
+} from '@aws-sdk/client-dynamodb';
 import type { AttributeValue, DynamoDBClient } from '@aws-sdk/client-dynamodb';
 import { Marshaller } from '@aws/dynamodb-auto-marshaller';
 import get from 'lodash/get';
@@ -8,10 +12,17 @@ import {
   EventAlreadyExistsError,
   EventDetail,
   EventsQueryOptions,
+  ListAggregateIdsOptions,
+  ListAggregateIdsOutput,
   PushEventContext,
   PushEventTransactionContext,
   StorageAdapter,
 } from '@castore/core';
+
+import {
+  parseAppliedListAggregateIdsOptions,
+  ParsedPageToken,
+} from './utils/parseAppliedListAggregateIdsOptions';
 
 const marshaller = new Marshaller() as {
   marshallItem: (
@@ -47,7 +58,9 @@ export class DynamoDbEventStorageAdapter implements StorageAdapter {
     eventDetail: EventDetail,
     context: PushEventTransactionContext,
   ) => unknown;
-  listAggregateIds: () => Promise<{ aggregateIds: string[] }>;
+  listAggregateIds: (
+    options?: ListAggregateIdsOptions,
+  ) => Promise<ListAggregateIdsOutput>;
 
   tableName: string;
   dynamoDbClient: DynamoDBClient;
@@ -161,10 +174,11 @@ export class DynamoDbEventStorageAdapter implements StorageAdapter {
       // To re-implement
     };
 
-    this.listAggregateIds = async () => {
-      const unmarshalledInitialEvents: Record<string, AttributeValue>[] = [];
-
-      const aggregateIdsQueryCommand = new QueryCommand({
+    this.listAggregateIds = async ({
+      limit: inputLimit,
+      pageToken: inputPageToken,
+    } = {}) => {
+      const aggregateIdsQueryCommandInput: QueryCommandInput = {
         TableName: this.tableName,
         KeyConditionExpression: '#isInitialEvent = :true',
         ExpressionAttributeNames: {
@@ -174,37 +188,43 @@ export class DynamoDbEventStorageAdapter implements StorageAdapter {
           ':true': 1,
         }),
         IndexName: EVENT_TABLE_INITIAL_EVENT_INDEX_NAME,
-      });
+      };
 
-      let aggregateIdsQueryResult = await this.dynamoDbClient.send(
-        aggregateIdsQueryCommand,
+      const { appliedLimit, appliedLastEvaluatedKey } =
+        parseAppliedListAggregateIdsOptions({ inputLimit, inputPageToken });
+
+      if (appliedLimit !== undefined) {
+        aggregateIdsQueryCommandInput.Limit = appliedLimit;
+      }
+
+      if (appliedLastEvaluatedKey !== undefined) {
+        aggregateIdsQueryCommandInput.ExclusiveStartKey =
+          appliedLastEvaluatedKey;
+      }
+
+      const {
+        Items: unmarshalledInitialEvents = [],
+        LastEvaluatedKey: lastEvaluatedKey,
+      } = await this.dynamoDbClient.send(
+        new QueryCommand(aggregateIdsQueryCommandInput),
       );
 
-      unmarshalledInitialEvents.push(...(aggregateIdsQueryResult.Items ?? []));
-
-      while (aggregateIdsQueryResult.LastEvaluatedKey !== undefined) {
-        aggregateIdsQueryCommand.input.ExclusiveStartKey =
-          aggregateIdsQueryResult.LastEvaluatedKey;
-        aggregateIdsQueryResult = await this.dynamoDbClient.send(
-          aggregateIdsQueryCommand,
-        );
-
-        unmarshalledInitialEvents.push(
-          ...(aggregateIdsQueryResult.Items ?? []),
-        );
-      }
+      const parsedNextPageToken: ParsedPageToken = {
+        limit: appliedLimit,
+        lastEvaluatedKey,
+      };
 
       return {
         aggregateIds: unmarshalledInitialEvents
           .map(item => marshaller.unmarshallItem(item))
           .map(item => {
-            const { aggregateId } = item as Pick<
-              EventDetail,
-              'aggregateId' | 'version' | 'timestamp'
-            >;
+            const { aggregateId } = item as Pick<EventDetail, 'aggregateId'>;
 
             return aggregateId;
           }),
+        ...(lastEvaluatedKey !== undefined
+          ? { nextPageToken: JSON.stringify(parsedNextPageToken) }
+          : {}),
       };
     };
   }
