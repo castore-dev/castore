@@ -1,6 +1,6 @@
 {
   "name": "@castore/demo-implementation",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "license": "UNLICENSED",
   "sideEffects": false,
   "scripts": {
@@ -20,9 +20,9 @@
   },
   "dependencies": {
     "@aws-sdk/client-dynamodb": "^3.121.0",
-    "@castore/core": "^1.0.2",
-    "@castore/demo-blueprint": "^1.0.2",
-    "@castore/dynamodb-event-storage-adapter": "^1.0.2",
+    "@castore/core": "^1.0.3",
+    "@castore/demo-blueprint": "^1.0.3",
+    "@castore/dynamodb-event-storage-adapter": "^1.0.3",
     "@middy/core": "^3.0.4",
     "@middy/validator": "^3.0.4",
     "source-map-support": "^0.5.19"
