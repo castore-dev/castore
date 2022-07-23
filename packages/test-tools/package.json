@@ -1,6 +1,6 @@
 {
   "name": "@castore/test-tools",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "license": "MIT",
   "homepage": "https://github.com/theodo/castore#readme",
   "bugs": "https://github.com/theodo/castore/issues",
@@ -38,8 +38,8 @@
     "watch": "rm -rf dist && concurrently 'yarn:package-* --watch'"
   },
   "dependencies": {
-    "@castore/core": "^1.0.2",
-    "@castore/inmemory-event-storage-adapter": "^1.0.2"
+    "@castore/core": "^1.0.3",
+    "@castore/inmemory-event-storage-adapter": "^1.0.3"
   },
   "devDependencies": {
     "@babel/cli": "^7.17.6",
@@ -47,7 +47,7 @@
     "@babel/plugin-transform-runtime": "^7.17.0",
     "@babel/preset-env": "^7.16.11",
     "@babel/preset-typescript": "^7.16.7",
-    "@castore/demo-blueprint": "^1.0.2",
+    "@castore/demo-blueprint": "^1.0.3",
     "@types/node": "^17.0.29",
     "@zerollup/ts-transform-paths": "^1.7.18",
     "babel-plugin-module-resolver": "^4.1.0",
