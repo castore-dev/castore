@@ -4,10 +4,17 @@ import {
   EventAlreadyExistsError,
   EventDetail,
   EventsQueryOptions,
+  ListAggregateIdsOptions,
+  ListAggregateIdsOutput,
   PushEventContext,
   PushEventTransactionContext,
   StorageAdapter,
 } from '@castore/core';
+
+import {
+  parseAppliedListAggregateIdsOptions,
+  ParsedPageToken,
+} from './utils/parseAppliedListAggregateIdsOptions';
 
 const getInitialEventTimestamp = (
   aggregateId: string,
@@ -37,7 +44,9 @@ export class InMemoryStorageAdapter implements StorageAdapter {
     eventDetail: EventDetail,
     context: PushEventTransactionContext,
   ) => unknown;
-  listAggregateIds: () => Promise<{ aggregateIds: string[] }>;
+  listAggregateIds: (
+    options?: ListAggregateIdsOptions,
+  ) => Promise<ListAggregateIdsOutput>;
 
   eventStore: { [aggregateId: string]: EventDetail[] };
 
@@ -80,8 +89,11 @@ export class InMemoryStorageAdapter implements StorageAdapter {
       console.log(event);
     };
 
-    // eslint-disable-next-line @typescript-eslint/require-await
-    this.listAggregateIds = async () => {
+    this.listAggregateIds = async ({
+      limit: inputLimit,
+      pageToken: inputPageToken,
+      // eslint-disable-next-line @typescript-eslint/require-await
+    } = {}) => {
       const aggregateIds = Object.entries(this.eventStore)
         .sort((entryA, entryB) => {
           const initialEventATimestamp = getInitialEventTimestamp(...entryA);
@@ -91,8 +103,32 @@ export class InMemoryStorageAdapter implements StorageAdapter {
         })
         .map(([aggregateId]) => aggregateId);
 
+      const { appliedLimit, appliedStartIndex = 0 } =
+        parseAppliedListAggregateIdsOptions({ inputLimit, inputPageToken });
+
+      const appliedExclusiveEndIndex =
+        appliedLimit === undefined
+          ? undefined
+          : appliedStartIndex + appliedLimit;
+
+      const hasNextPage =
+        appliedExclusiveEndIndex === undefined
+          ? false
+          : aggregateIds[appliedExclusiveEndIndex] !== undefined;
+
+      const parsedNextPageToken: ParsedPageToken = {
+        limit: appliedLimit,
+        exclusiveEndIndex: appliedExclusiveEndIndex,
+      };
+
       return {
-        aggregateIds,
+        aggregateIds: aggregateIds.slice(
+          appliedStartIndex,
+          appliedExclusiveEndIndex,
+        ),
+        ...(hasNextPage
+          ? { nextPageToken: JSON.stringify(parsedNextPageToken) }
+          : {}),
       };
     };
   }

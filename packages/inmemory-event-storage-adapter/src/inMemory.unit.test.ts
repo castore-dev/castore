@@ -7,10 +7,12 @@ import { InMemoryStorageAdapter } from './inMemory';
 const storageAdapter = new InMemoryStorageAdapter();
 const eventStoreIdMock = 'eventStoreIdMock';
 
-const aggregateIdMock = randomUUID();
-const laterAggregateIdMock = randomUUID();
+const aggregateIdMock1 = randomUUID();
+const aggregateIdMock2 = randomUUID();
+const aggregateIdMock3 = randomUUID();
+const aggregateIdMock4 = randomUUID();
 const eventMock = {
-  aggregateId: aggregateIdMock,
+  aggregateId: aggregateIdMock1,
   version: 1,
   type: 'EVENT_TYPE',
   timestamp: '2021',
@@ -18,7 +20,7 @@ const eventMock = {
 
 describe('in-memory storage adapter', () => {
   it('gets an empty array if there is no event for aggregateId', async () => {
-    const response = await storageAdapter.getEvents(aggregateIdMock);
+    const response = await storageAdapter.getEvents(aggregateIdMock1);
     expect(response).toStrictEqual({ events: [] });
   });
 
@@ -33,7 +35,7 @@ describe('in-memory storage adapter', () => {
   });
 
   it('pushes and gets events correctly', async () => {
-    const response = await storageAdapter.getEvents(aggregateIdMock);
+    const response = await storageAdapter.getEvents(aggregateIdMock1);
     expect(response).toStrictEqual({ events: [eventMock] });
   });
 
@@ -41,7 +43,7 @@ describe('in-memory storage adapter', () => {
     await storageAdapter.pushEvent(
       {
         ...eventMock,
-        aggregateId: laterAggregateIdMock,
+        aggregateId: aggregateIdMock2,
         timestamp: '2022',
       },
       { eventStoreId: eventStoreIdMock },
@@ -50,7 +52,43 @@ describe('in-memory storage adapter', () => {
     const aggregateIds = await storageAdapter.listAggregateIds();
 
     expect(aggregateIds).toStrictEqual({
-      aggregateIds: [aggregateIdMock, laterAggregateIdMock],
+      aggregateIds: [aggregateIdMock1, aggregateIdMock2],
+    });
+  });
+
+  it('paginates aggregate Ids', async () => {
+    await storageAdapter.pushEvent(
+      {
+        ...eventMock,
+        aggregateId: aggregateIdMock3,
+        timestamp: '2023',
+      },
+      { eventStoreId: eventStoreIdMock },
+    );
+
+    await storageAdapter.pushEvent(
+      {
+        ...eventMock,
+        aggregateId: aggregateIdMock4,
+        timestamp: '2024',
+      },
+      { eventStoreId: eventStoreIdMock },
+    );
+
+    const { aggregateIds, nextPageToken } =
+      await storageAdapter.listAggregateIds({ limit: 2 });
+
+    expect(aggregateIds).toStrictEqual([aggregateIdMock1, aggregateIdMock2]);
+    expect(nextPageToken).toBe(
+      JSON.stringify({ limit: 2, exclusiveEndIndex: 2 }),
+    );
+
+    const lastAggregateIds = await storageAdapter.listAggregateIds({
+      pageToken: nextPageToken,
+    });
+
+    expect(lastAggregateIds).toStrictEqual({
+      aggregateIds: [aggregateIdMock3, aggregateIdMock4],
     });
   });
 });

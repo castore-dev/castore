@@ -2,7 +2,12 @@ import { Aggregate } from './aggregate';
 import { UndefinedStorageAdapterError } from './errors/undefinedStorageAdapterError';
 import { EventDetail } from './event/eventDetail';
 import { EventType, EventTypesDetails } from './event/eventType';
-import { EventsQueryOptions, StorageAdapter } from './storageAdapter';
+import {
+  EventsQueryOptions,
+  ListAggregateIdsOptions,
+  ListAggregateIdsOutput,
+  StorageAdapter,
+} from './storageAdapter';
 
 export type SimulationOptions = { simulationDate?: string };
 
@@ -42,7 +47,9 @@ export class EventStore<
   ) => Promise<{ events: $D[] }>;
   pushEvent: (eventDetail: D) => Promise<void>;
   pushEventTransaction: (eventDetail: D) => unknown;
-  listAggregateIds: () => Promise<{ aggregateIds: string[] }>;
+  listAggregateIds: (
+    listAggregateOptions?: ListAggregateIdsOptions,
+  ) => Promise<ListAggregateIdsOutput>;
 
   buildAggregate: (events: D[]) => A | undefined;
   getAggregate: (
@@ -124,14 +131,14 @@ export class EventStore<
       });
     };
 
-    this.listAggregateIds = async () => {
+    this.listAggregateIds = async (options?: ListAggregateIdsOptions) => {
       if (!this.storageAdapter) {
         throw new UndefinedStorageAdapterError({
           eventStoreId: this.eventStoreId,
         });
       }
 
-      return this.storageAdapter.listAggregateIds();
+      return this.storageAdapter.listAggregateIds(options);
     };
 
     this.buildAggregate = (eventDetails: D[]) =>
