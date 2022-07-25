@@ -1,3 +1,4 @@
+import { AggregateNotFoundError } from './errors/aggregateNotFound';
 import {
   CounterAggregate,
   counterCreatedEvent,
@@ -9,11 +10,18 @@ import {
   countersReducer,
   getEventsMock,
   pushEventMock,
+  listAggregateIdsMock,
 } from './eventStore.util.test';
 
-getEventsMock.mockResolvedValue({ events: counterEventsMocks });
-
 describe('event store', () => {
+  beforeEach(() => {
+    getEventsMock.mockClear();
+    getEventsMock.mockResolvedValue({ events: counterEventsMocks });
+    pushEventMock.mockClear();
+    listAggregateIdsMock.mockClear();
+    listAggregateIdsMock.mockReturnValue({ aggregateIds: [counterIdMock] });
+  });
+
   it('has correct properties', () => {
     expect(new Set(Object.keys(counterEventStore))).toStrictEqual(
       new Set([
@@ -28,6 +36,7 @@ describe('event store', () => {
         'getEvents',
         'listAggregateIds',
         'getAggregate',
+        'getExistingAggregate',
         'simulateAggregate',
       ]),
     );
@@ -41,35 +50,94 @@ describe('event store', () => {
     ]);
   });
 
-  it('gets events correctly', async () => {
-    const response = await counterEventStore.getEvents(counterIdMock);
+  describe('getEvents', () => {
+    it('gets events correctly', async () => {
+      const response = await counterEventStore.getEvents(counterIdMock);
 
-    expect(getEventsMock).toHaveBeenCalledTimes(1);
-    expect(getEventsMock).toHaveBeenCalledWith(counterIdMock, undefined);
-    expect(response).toStrictEqual({ events: counterEventsMocks });
-  });
-
-  it('gets aggregate correctly', async () => {
-    const response = await counterEventStore.getAggregate(counterIdMock);
-
-    expect(getEventsMock).toHaveBeenCalledTimes(1);
-    expect(getEventsMock).toHaveBeenCalledWith(counterIdMock, undefined);
-    expect(response).toStrictEqual({
-      aggregate: counterEventsMocks.reduce(
-        countersReducer,
-        undefined as unknown as CounterAggregate,
-      ),
-      events: counterEventsMocks,
-      lastEvent: counterEventsMocks[counterEventsMocks.length - 1],
+      expect(getEventsMock).toHaveBeenCalledTimes(1);
+      expect(getEventsMock).toHaveBeenCalledWith(counterIdMock, undefined);
+      expect(response).toStrictEqual({ events: counterEventsMocks });
     });
   });
 
-  it('pushes new event correctly', async () => {
-    await counterEventStore.pushEvent(counterEventsMocks[0]);
+  describe('getAggregate', () => {
+    it('gets aggregate correctly', async () => {
+      const response = await counterEventStore.getAggregate(counterIdMock);
 
-    expect(pushEventMock).toHaveBeenCalledTimes(1);
-    expect(pushEventMock).toHaveBeenCalledWith(counterEventsMocks[0], {
-      eventStoreId: counterEventStore.eventStoreId,
+      expect(getEventsMock).toHaveBeenCalledTimes(1);
+      expect(getEventsMock).toHaveBeenCalledWith(counterIdMock, undefined);
+      expect(response).toStrictEqual({
+        aggregate: counterEventsMocks.reduce(
+          countersReducer,
+          undefined as unknown as CounterAggregate,
+        ),
+        events: counterEventsMocks,
+        lastEvent: counterEventsMocks[counterEventsMocks.length - 1],
+      });
+    });
+  });
+
+  describe('getExistingAggregate', () => {
+    it('gets aggregate correctly if it exists', async () => {
+      const response = await counterEventStore.getExistingAggregate(
+        counterIdMock,
+      );
+
+      expect(getEventsMock).toHaveBeenCalledTimes(1);
+      expect(getEventsMock).toHaveBeenCalledWith(counterIdMock, undefined);
+
+      expect(response).toStrictEqual({
+        aggregate: counterEventsMocks.reduce(
+          countersReducer,
+          undefined as unknown as CounterAggregate,
+        ),
+        events: counterEventsMocks,
+        lastEvent: counterEventsMocks[counterEventsMocks.length - 1],
+      });
+    });
+
+    it('throws an AggregateNotFound error if it does not', async () => {
+      getEventsMock.mockResolvedValue({ events: [] });
+
+      await expect(() =>
+        counterEventStore.getExistingAggregate(counterIdMock),
+      ).rejects.toThrow(
+        new AggregateNotFoundError({
+          eventStoreId: counterEventStore.eventStoreId,
+          aggregateId: counterIdMock,
+        }),
+      );
+    });
+  });
+
+  describe('pushEvent', () => {
+    it('pushes new event correctly', async () => {
+      await counterEventStore.pushEvent(counterEventsMocks[0]);
+
+      expect(pushEventMock).toHaveBeenCalledTimes(1);
+      expect(pushEventMock).toHaveBeenCalledWith(counterEventsMocks[0], {
+        eventStoreId: counterEventStore.eventStoreId,
+      });
+    });
+  });
+
+  describe('listAggregateIds', () => {
+    it('lists aggregateIds correctly', async () => {
+      const limitMock = 10;
+      const pageTokenMock = 'pageTokenMock';
+
+      const response = await counterEventStore.listAggregateIds({
+        limit: limitMock,
+        pageToken: pageTokenMock,
+      });
+
+      expect(listAggregateIdsMock).toHaveBeenCalledTimes(1);
+      expect(listAggregateIdsMock).toHaveBeenCalledWith({
+        limit: limitMock,
+        pageToken: pageTokenMock,
+      });
+
+      expect(response).toStrictEqual({ aggregateIds: [counterIdMock] });
     });
   });
 });

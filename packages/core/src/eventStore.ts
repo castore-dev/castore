@@ -1,4 +1,6 @@
+/* eslint-disable max-lines */
 import type { Aggregate } from '~/aggregate';
+import { AggregateNotFoundError } from '~/errors/aggregateNotFound';
 import { UndefinedStorageAdapterError } from '~/errors/undefinedStorageAdapterError';
 import type { EventDetail } from '~/event/eventDetail';
 import type { EventType, EventTypesDetails } from '~/event/eventType';
@@ -59,6 +61,14 @@ export class EventStore<
     aggregate: A | undefined;
     events: $D[];
     lastEvent: $D | undefined;
+  }>;
+  getExistingAggregate: (
+    aggregateId: string,
+    options?: EventsQueryOptions,
+  ) => Promise<{
+    aggregate: A;
+    events: $D[];
+    lastEvent: $D;
   }>;
   simulateAggregate: (
     events: D[],
@@ -152,6 +162,20 @@ export class EventStore<
       const lastEvent = events[events.length - 1];
 
       return { aggregate, events, lastEvent };
+    };
+
+    this.getExistingAggregate = async (aggregateId, options) => {
+      const { aggregate, lastEvent, ...restAggregate } =
+        await this.getAggregate(aggregateId, options);
+
+      if (aggregate === undefined || lastEvent === undefined) {
+        throw new AggregateNotFoundError({
+          aggregateId,
+          eventStoreId: this.eventStoreId,
+        });
+      }
+
+      return { aggregate, lastEvent, ...restAggregate };
     };
 
     this.simulateAggregate = (
