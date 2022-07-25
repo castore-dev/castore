@@ -1,3 +1,5 @@
+<img src="assets/logo.svg" width="300px"/>
+
 # ✨ Better DevX for Event Sourcing in TypeScript
 
 Castore provides a unified interface for implementing Event Sourcing in TypeScript.
