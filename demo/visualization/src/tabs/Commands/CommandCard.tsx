@@ -10,8 +10,8 @@ import React from 'react';
 
 import type { JSONSchemaCommand } from '@castore/core';
 
-import { Form } from 'components/Form';
-import { eventStoresById } from 'services/data';
+import { Form } from '~/components/Form';
+import { eventStoresById } from '~/services/data';
 
 export const CommandCard = ({
   command,

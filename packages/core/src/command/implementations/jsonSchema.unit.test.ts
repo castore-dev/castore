@@ -1,12 +1,13 @@
-import { EventAlreadyExistsError } from '../../errors/eventAlreadyExists';
-import { EventDetail } from '../../event/eventDetail';
+import { EventAlreadyExistsError } from '~/errors/eventAlreadyExists';
+import { EventDetail } from '~/event/eventDetail';
 import {
   counterEventsMocks,
   counterEventStore,
   getEventsMock,
   pushEventMock,
   userEventStore,
-} from '../../eventStore.util.test';
+} from '~/eventStore.util.test';
+
 import {
   incrementCounter,
   incrementCounterA,

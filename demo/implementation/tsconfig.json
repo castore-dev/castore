@@ -19,12 +19,7 @@
     "composite": true,
     "preserveSymlinks": true,
     "plugins": [{ "transform": "@zerollup/ts-transform-paths" }],
-    "emitDeclarationOnly": true,
-    "paths": {
-      "@libs/*": ["libs/*"],
-      "@functions/*": ["functions/*"],
-      "@resources/*": ["resources/*"]
-    }
+    "emitDeclarationOnly": true
   },
   "references": [
     { "path": "../blueprint/tsconfig.build.json" },

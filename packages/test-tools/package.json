@@ -60,11 +60,6 @@
     "ttypescript": "^1.5.13",
     "typescript": "^4.6.3"
   },
-  "peerDependencies": {
-    "@castore/core": "^0.7.3",
-    "@castore/demo-blueprint": "^0.7.3",
-    "@castore/inmemory-event-storage-adapter": "^0.7.3"
-  },
   "maintainers": [
     "Thomas Aribart",
     "Charles Géry",
@@ -79,5 +74,10 @@
         ]
       }
     }
+  },
+  "peerDependencies": {
+    "@castore/core": "^0.7.3",
+    "@castore/demo-blueprint": "^0.7.3",
+    "@castore/inmemory-event-storage-adapter": "^0.7.3"
   }
 }

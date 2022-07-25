@@ -1,13 +1,13 @@
-import { Aggregate } from './aggregate';
-import { UndefinedStorageAdapterError } from './errors/undefinedStorageAdapterError';
-import { EventDetail } from './event/eventDetail';
-import { EventType, EventTypesDetails } from './event/eventType';
-import {
+import type { Aggregate } from '~/aggregate';
+import { UndefinedStorageAdapterError } from '~/errors/undefinedStorageAdapterError';
+import type { EventDetail } from '~/event/eventDetail';
+import type { EventType, EventTypesDetails } from '~/event/eventType';
+import type {
   EventsQueryOptions,
   ListAggregateIdsOptions,
   ListAggregateIdsOutput,
   StorageAdapter,
-} from './storageAdapter';
+} from '~/storageAdapter';
 
 export type SimulationOptions = { simulationDate?: string };
 

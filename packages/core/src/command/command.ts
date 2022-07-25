@@ -1,4 +1,4 @@
-import { EventStore } from 'eventStore';
+import type { EventStore } from '~/eventStore';
 
 export const tuple = <A extends unknown[]>(...args: A): A => args;
 

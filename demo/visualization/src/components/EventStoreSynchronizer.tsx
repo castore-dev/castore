@@ -6,7 +6,7 @@ import {
   StorageAdapter,
 } from '@castore/core';
 
-import { dbByEventStoreId, eventStoresById } from 'services/data';
+import { dbByEventStoreId, eventStoresById } from '~/services/data';
 
 export const EventStoreSynchronizer = ({
   eventStoreId,

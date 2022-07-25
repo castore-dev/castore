@@ -1,6 +1,6 @@
 import { JSONSchemaCommand, tuple } from '@castore/core';
 
-import { userEventStore, UserStatus } from 'users';
+import { userEventStore, UserStatus } from '~/users';
 
 export const deleteUserCommand = new JSONSchemaCommand({
   commandId: 'DELETE_USER',

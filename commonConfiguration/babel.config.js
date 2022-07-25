@@ -13,6 +13,7 @@ const defaultPlugins = [
     {
       root: ['./src'],
       extensions: ['.ts'],
+      alias: { '~': './src' },
     },
   ],
   '@babel/plugin-transform-runtime',

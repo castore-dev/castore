@@ -1,4 +1,5 @@
-import { counterEventStore, userEventStore } from '../../eventStore.util.test';
+import { counterEventStore, userEventStore } from '~/eventStore.util.test';
+
 import { tuple } from '../command';
 import { JSONSchemaCommand } from './jsonSchema';
 

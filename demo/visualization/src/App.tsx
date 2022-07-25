@@ -5,8 +5,8 @@ import { createGlobalState } from 'react-use';
 
 import type { EventStore, JSONSchemaCommand } from '@castore/core';
 
-import { EventStoreSynchronizer } from 'components/EventStoreSynchronizer';
-import { dbByEventStoreId, eventStoresById } from 'services/data';
+import { EventStoreSynchronizer } from '~/components/EventStoreSynchronizer';
+import { dbByEventStoreId, eventStoresById } from '~/services/data';
 
 import { DB as $DB, Commands } from './tabs';
 import { theme } from './theme';

@@ -1,18 +1,19 @@
 import { A } from 'ts-toolbelt';
 
-import { Aggregate } from './aggregate';
-import { EventDetail } from './event/eventDetail';
+import { Aggregate } from '~/aggregate';
+import { EventDetail } from '~/event/eventDetail';
 import {
   EventStore,
   EventStoreAggregate,
   EventStoreEventsDetails,
-} from './eventStore';
+} from '~/eventStore';
+import { EventsQueryOptions } from '~/storageAdapter';
+
 import {
   CounterAggregate,
   CounterEventsDetails,
   counterEventStore,
 } from './eventStore.util.test';
-import { EventsQueryOptions } from './storageAdapter';
 
 // --- EXTENDS ---
 

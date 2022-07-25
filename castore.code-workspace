@@ -2,10 +2,6 @@
   "settings": {
     "editor.defaultFormatter": "esbenp.prettier-vscode",
     "editor.formatOnSave": true,
-    "editor.codeActionsOnSave": {
-      "source.fixAll.eslint": true,
-      "source.fixAll.stylelint": true
-    },
     "stylelint.validate": ["typescript", "typescriptreact"],
     "stylelint.customSyntax": "@stylelint/postcss-css-in-js",
     "search.exclude": {

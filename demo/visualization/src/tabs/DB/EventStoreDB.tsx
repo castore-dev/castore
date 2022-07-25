@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react';
 
 import type { EventDetail, EventStore } from '@castore/core';
 
-import { eventStoresById } from 'services/data';
+import { eventStoresById } from '~/services/data';
 
 import { AggregateCard } from './AggregateCard';
 
@@ -27,7 +27,7 @@ export const EventStoreDB = ({
       await Promise.all(
         aggregateIds.map(async aggregateId => {
           const { events } = await getEvents(aggregateId);
-          $db[aggregateId] = events as EventDetail[];
+          $db[aggregateId] = events;
         }),
       );
 

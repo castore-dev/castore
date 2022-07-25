@@ -60,9 +60,6 @@
     "ttypescript": "^1.5.13",
     "typescript": "^4.6.3"
   },
-  "peerDependencies": {
-    "@castore/core": "^0.7.0"
-  },
   "maintainers": [
     "Thomas Aribart",
     "Charles Géry",
@@ -77,5 +74,8 @@
         ]
       }
     }
+  },
+  "peerDependencies": {
+    "@castore/core": "^0.7.0"
   }
 }

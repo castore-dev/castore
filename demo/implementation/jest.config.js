@@ -3,11 +3,7 @@ const commonConfig = require('../../commonConfiguration/jest.config');
 
 const config = {
   ...commonConfig,
-  moduleNameMapper: {
-    '^@libs(.*)$': '<rootDir>/libs$1',
-    '^@functions(.*)$': '<rootDir>/functions$1',
-    '^@resources(.*)$': '<rootDir>/resources$1',
-  },
+  rootDir: '.',
   moduleDirectories: ['node_modules', '<rootDir>'],
 };
 

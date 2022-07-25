@@ -1,5 +1,5 @@
 module.exports = {
-  extends: ['eslint:recommended', 'plugin:prettier/recommended'],
+  extends: ['eslint:recommended', 'plugin:prettier/recommended', 'prettier'],
   rules: {
     'prettier/prettier': 'error',
     'import/extensions': 0,
@@ -26,25 +26,6 @@ module.exports = {
       },
     ],
     'prefer-const': 'error',
-    'import/order': [
-      'error',
-      {
-        groups: [
-          ['external', 'builtin'],
-          'internal',
-          ['parent', 'sibling', 'index'],
-        ],
-      },
-    ],
-    'sort-imports': [
-      'error',
-      {
-        ignoreCase: true,
-        ignoreDeclarationSort: true,
-        ignoreMemberSort: false,
-        memberSyntaxSortOrder: ['none', 'all', 'multiple', 'single'],
-      },
-    ],
     'padding-line-between-statements': [
       'error',
       {
@@ -96,7 +77,7 @@ module.exports = {
     jest: true,
     browser: true,
   },
-  plugins: ['prefer-arrow', 'import'],
+  plugins: ['prefer-arrow', 'import', 'prettier'],
   parserOptions: {
     ecmaVersion: 9,
     sourceType: 'module',

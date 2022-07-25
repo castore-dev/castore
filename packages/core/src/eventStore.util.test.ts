@@ -1,7 +1,7 @@
 /* eslint-disable max-lines */
-import { EventType, EventTypeDetail } from './event/eventType';
-import { EventStore } from './eventStore';
-import { StorageAdapter } from './storageAdapter';
+import { EventType, EventTypeDetail } from '~/event/eventType';
+import { EventStore } from '~/eventStore';
+import { StorageAdapter } from '~/storageAdapter';
 
 export const pushEventMock = jest.fn();
 export const pushEventTransactionMock = jest.fn();

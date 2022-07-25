@@ -2,7 +2,7 @@ import { v4 as uuid } from 'uuid';
 
 import { JSONSchemaCommand, tuple } from '@castore/core';
 
-import { userEventStore, UserStatus } from 'users';
+import { userEventStore, UserStatus } from '~/users';
 
 export const createUserCommand = new JSONSchemaCommand({
   commandId: 'CREATE_USER',

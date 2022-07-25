@@ -1,7 +1,7 @@
 import type { AWS } from '@serverless/typescript';
 
-import { resources } from './resources';
 import { functions } from './functions';
+import { resources } from './resources';
 
 const serverlessConfiguration: AWS = {
   service: 'castore-demo',

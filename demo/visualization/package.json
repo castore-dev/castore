@@ -70,10 +70,5 @@
     "vite-plugin-style-import": "^2.0.0",
     "vite-plugin-svgr": "^2.1.0",
     "vite-tsconfig-paths": "^3.5.0"
-  },
-  "eslintConfig": {
-    "extends": [
-      "react-app"
-    ]
   }
 }

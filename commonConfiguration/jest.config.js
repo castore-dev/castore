@@ -12,6 +12,10 @@ const commonConfig = {
   modulePathIgnorePatterns: ['/dist/'],
   moduleDirectories: ['node_modules', '<rootDir>/src'],
   clearMocks: true,
+  rootDir: 'src',
+  moduleNameMapper: {
+    '^~/(.*)$': '<rootDir>/$1',
+  },
 };
 
 module.exports = commonConfig;

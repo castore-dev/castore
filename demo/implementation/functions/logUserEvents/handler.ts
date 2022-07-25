@@ -1,5 +1,5 @@
-import { userEventStore } from '@libs/eventStores/users';
-import { applyConsoleMiddleware } from '@libs/middlewares/console';
+import { userEventStore } from '~/libs/eventStores/users';
+import { applyConsoleMiddleware } from '~/libs/middlewares/console';
 
 import { Input, inputSchema } from './schema';
 
