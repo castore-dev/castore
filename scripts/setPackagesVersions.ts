@@ -1,16 +1,25 @@
-import { readdirSync, readFileSync, writeFileSync } from 'fs';
+import { readdirSync, readFileSync } from 'fs';
 import { join } from 'path';
 
-const newVersion = process.argv[2] as string | undefined;
+const newVersionTag = process.argv[2] as string | undefined;
 
-if (newVersion === undefined) {
+console.log('newVersionTag', newVersionTag);
+
+const semanticVersioningRegex =
+  /^v(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?:-((?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\.(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\+([0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?$/;
+
+if (
+  newVersionTag === undefined ||
+  !semanticVersioningRegex.test(newVersionTag)
+) {
   throw new Error('Invalid version');
 }
 
-const semanticVersioningRegex =
-  /^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?:-((?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\.(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\+([0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?$/;
+const NEW_VERSION = newVersionTag.slice(1);
+console.log('NEW_VERSION', NEW_VERSION);
 
-const VERSION_MAJOR = (newVersion.match(semanticVersioningRegex) ?? [])[1];
+const VERSION_MAJOR = (newVersionTag.match(semanticVersioningRegex) ?? [])[1];
+console.log('VERSION_MAJOR', VERSION_MAJOR);
 
 type PackageJson = {
   version?: string;
@@ -29,12 +38,12 @@ packagesNames.forEach(packageName => {
     readFileSync(packageJsonPath).toString(),
   ) as PackageJson;
 
-  packageJson.version = newVersion;
+  packageJson.version = NEW_VERSION;
 
   Object.keys(packageJson.dependencies ?? {}).forEach(dependencyName => {
     if (dependencyName.startsWith('@castore/')) {
       (packageJson.dependencies as Record<string, string>)[dependencyName] =
-        newVersion;
+        NEW_VERSION;
     }
   });
 
@@ -46,5 +55,5 @@ packagesNames.forEach(packageName => {
     }
   });
 
-  writeFileSync(packageJsonPath, JSON.stringify(packageJson, null, 2));
+  // writeFileSync(packageJsonPath, JSON.stringify(packageJson, null, 2));
 });
