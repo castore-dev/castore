@@ -6,7 +6,7 @@ concurrency:
 
 on:
   pull_request:
-    types: [opened, edited]
+    types: [opened, synchronize, reopened, edited]
 
 env:
   CI: true

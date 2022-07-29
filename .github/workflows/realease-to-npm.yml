@@ -10,8 +10,8 @@ jobs:
     steps:
       - uses: actions/checkout@v3
         with:
-          ref: 'main'
-          token: ${{ secrets.PAT_TOKEN }}
+          ref: main
+          fetch-depth: 0
       - name: Install & cache node dependencies
         uses: ./.github/actions/install-node-deps
       - name: Build packages
@@ -22,7 +22,7 @@ jobs:
           git config --global user.name "$GITHUB_ACTOR"
           git stash
           git push --delete origin ${{ github.event.release.tag_name }}
-      - name: 'update version'
+      - name: update version
         run: yarn lerna version ${{ github.event.release.tag_name }} --yes
       - name: Update yarn.lock with new version
         run: |
@@ -31,27 +31,27 @@ jobs:
           git add yarn.lock
           git commit --amend --no-edit
           git push origin --force
-      - uses: JS-DevTools/npm-publish@v1
-        with:
-          token: ${{ secrets.NPM_TOKEN }}
-          package: ./packages/core/package.json
-      - uses: JS-DevTools/npm-publish@v1
-        with:
-          token: ${{ secrets.NPM_TOKEN }}
-          package: ./packages/dynamodb-event-storage-adapter/package.json
-      - uses: JS-DevTools/npm-publish@v1
-        with:
-          token: ${{ secrets.NPM_TOKEN }}
-          package: ./packages/inmemory-event-storage-adapter/package.json
-      - uses: JS-DevTools/npm-publish@v1
-        with:
-          token: ${{ secrets.NPM_TOKEN }}
-          package: ./packages/json-schema-event/package.json
-      - uses: JS-DevTools/npm-publish@v1
-        with:
-          token: ${{ secrets.NPM_TOKEN }}
-          package: ./packages/zod-event/package.json
-      - uses: JS-DevTools/npm-publish@v1
-        with:
-          token: ${{ secrets.NPM_TOKEN }}
-          package: ./packages/test-tools/package.json
+      # - uses: JS-DevTools/npm-publish@v1
+      #   with:
+      #     token: ${{ secrets.NPM_TOKEN }}
+      #     package: ./packages/core/package.json
+      # - uses: JS-DevTools/npm-publish@v1
+      #   with:
+      #     token: ${{ secrets.NPM_TOKEN }}
+      #     package: ./packages/dynamodb-event-storage-adapter/package.json
+      # - uses: JS-DevTools/npm-publish@v1
+      #   with:
+      #     token: ${{ secrets.NPM_TOKEN }}
+      #     package: ./packages/inmemory-event-storage-adapter/package.json
+      # - uses: JS-DevTools/npm-publish@v1
+      #   with:
+      #     token: ${{ secrets.NPM_TOKEN }}
+      #     package: ./packages/json-schema-event/package.json
+      # - uses: JS-DevTools/npm-publish@v1
+      #   with:
+      #     token: ${{ secrets.NPM_TOKEN }}
+      #     package: ./packages/zod-event/package.json
+      # - uses: JS-DevTools/npm-publish@v1
+      #   with:
+      #     token: ${{ secrets.NPM_TOKEN }}
+      #     package: ./packages/test-tools/package.json
