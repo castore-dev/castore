@@ -25,6 +25,7 @@
     "package": "nx run-many --target=package --all --parallel=4",
     "postinstall": "husky install && syncpack format",
     "resolve-audit": "resolve-audit --yarn",
+    "set-packages-versions": "yarn ts-node scripts/setPackagesVersions",
     "test": "nx run-many --target=test --all --parallel=4",
     "test-affected": "nx affected --target=test",
     "test-circular": "yarn depcruise --validate dependency-cruiser.js .",
@@ -59,6 +60,7 @@
     "prettier": "^2.6.2",
     "syncpack": "^7.0.0",
     "ts-jest": "^28.0.2",
+    "ts-node": "^10.9.1",
     "typescript": "^4.6.3"
   },
   "engines": {

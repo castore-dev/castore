@@ -1,0 +1,44 @@
+name: 🚀 Release to NPM
+
+on:
+  release:
+    types: [published]
+jobs:
+  build:
+    name: release
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          ref: main
+          fetch-depth: 0
+      - name: Install & cache node dependencies
+        uses: ./.github/actions/install-node-deps
+      - name: Build packages
+        run: yarn package
+      - name: Set packages versions
+        run: yarn set-packages-versions $RELEASE_VERSION
+      - uses: JS-DevTools/npm-publish@v1
+        with:
+          token: ${{ secrets.NPM_TOKEN }}
+          package: ./packages/core/package.json
+      - uses: JS-DevTools/npm-publish@v1
+        with:
+          token: ${{ secrets.NPM_TOKEN }}
+          package: ./packages/dynamodb-event-storage-adapter/package.json
+      - uses: JS-DevTools/npm-publish@v1
+        with:
+          token: ${{ secrets.NPM_TOKEN }}
+          package: ./packages/inmemory-event-storage-adapter/package.json
+      - uses: JS-DevTools/npm-publish@v1
+        with:
+          token: ${{ secrets.NPM_TOKEN }}
+          package: ./packages/json-schema-event/package.json
+      - uses: JS-DevTools/npm-publish@v1
+        with:
+          token: ${{ secrets.NPM_TOKEN }}
+          package: ./packages/zod-event/package.json
+      - uses: JS-DevTools/npm-publish@v1
+        with:
+          token: ${{ secrets.NPM_TOKEN }}
+          package: ./packages/test-tools/package.json
