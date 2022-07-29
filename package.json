@@ -24,8 +24,8 @@
     "linter-base-config": "eslint",
     "package": "nx run-many --target=package --all --parallel=4",
     "postinstall": "husky install && syncpack format",
-    "release": "yarn package && yarn lerna publish",
     "resolve-audit": "resolve-audit --yarn",
+    "set-packages-versions": "yarn ts-node scripts/setPackagesVersions",
     "test": "nx run-many --target=test --all --parallel=4",
     "test-affected": "nx affected --target=test",
     "test-circular": "yarn depcruise --validate dependency-cruiser.js .",
@@ -53,7 +53,6 @@
     "eslint-plugin-prettier": "^4.0.0",
     "husky": "^7.0.4",
     "jest": "^27.5.1",
-    "lerna": "^4.0.0",
     "lint-staged": "^12.4.1",
     "lodash": "^4.17.21",
     "npm-audit-resolver": "^3.0.0-7",
@@ -61,6 +60,7 @@
     "prettier": "^2.6.2",
     "syncpack": "^7.0.0",
     "ts-jest": "^28.0.2",
+    "ts-node": "^10.9.1",
     "typescript": "^4.6.3"
   },
   "engines": {
