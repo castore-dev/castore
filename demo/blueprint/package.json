@@ -1,6 +1,6 @@
 {
   "name": "@castore/demo-blueprint",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "license": "MIT",
   "homepage": "https://github.com/theodo/castore#readme",
   "bugs": "https://github.com/theodo/castore/issues",
@@ -30,7 +30,7 @@
   },
   "dependencies": {
     "@babel/runtime": "^7.18.3",
-    "@castore/json-schema-event": "^1.0.3",
+    "@castore/json-schema-event": "^1.0.4",
     "uuid": "^8.3.2"
   },
   "devDependencies": {
@@ -39,7 +39,7 @@
     "@babel/plugin-transform-runtime": "^7.17.0",
     "@babel/preset-env": "^7.16.11",
     "@babel/preset-typescript": "^7.16.7",
-    "@castore/core": "^1.0.3",
+    "@castore/core": "^1.0.4",
     "@types/node": "^17.0.29",
     "@zerollup/ts-transform-paths": "^1.7.18",
     "babel-plugin-module-resolver": "^4.1.0",
