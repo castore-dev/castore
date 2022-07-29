@@ -20,8 +20,9 @@ jobs:
         run: |
           git config --global user.email "ci@octokit.com"
           git config --global user.name "$GITHUB_ACTOR"
-          git stash
+          # tagging is re-done by lerna in next steps
           git push --delete origin ${{ github.event.release.tag_name }}
+          git tag -d ${{ github.event.release.tag_name }}
       - name: update version
         run: yarn lerna version ${{ github.event.release.tag_name }} --yes
       - name: Update yarn.lock with new version
@@ -29,8 +30,8 @@ jobs:
           export YARN_ENABLE_IMMUTABLE_INSTALLS=false
           yarn
           git add yarn.lock
-          git commit --amend --no-edit
-          git push origin --force
+          git commit -m "${{ github.event.release.tag_name }} release"
+          git push
       # - uses: JS-DevTools/npm-publish@v1
       #   with:
       #     token: ${{ secrets.NPM_TOKEN }}
