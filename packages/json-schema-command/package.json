@@ -1,9 +1,18 @@
 {
-  "name": "@castore/demo-blueprint",
+  "name": "@castore/json-schema-command",
   "license": "MIT",
   "homepage": "https://github.com/theodo/castore#readme",
   "bugs": "https://github.com/theodo/castore/issues",
   "repository": "theodo/castore.git",
+  "keywords": [
+    "event",
+    "source",
+    "store",
+    "typescript"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
   "sideEffects": false,
   "files": [
     "dist"
@@ -23,13 +32,12 @@
     "test-circular": "yarn depcruise --validate dependency-cruiser.js .",
     "test-linter": "yarn linter-base-config .",
     "test-type": "tsc --noEmit --emitDeclarationOnly false",
-    "test-unit": "yarn jest --passWithNoTests",
+    "test-unit": "yarn jest",
     "transpile": "babel src --extensions .ts --quiet",
     "watch": "rm -rf dist && concurrently 'yarn:package-* --watch'"
   },
   "dependencies": {
-    "@babel/runtime": "^7.18.3",
-    "uuid": "^8.3.2"
+    "ts-toolbelt": "^9.6.0"
   },
   "devDependencies": {
     "@babel/cli": "^7.17.6",
@@ -38,8 +46,6 @@
     "@babel/preset-env": "^7.16.11",
     "@babel/preset-typescript": "^7.16.7",
     "@castore/core": "workspace:",
-    "@castore/json-schema-command": "workspace:",
-    "@castore/json-schema-event": "workspace:",
     "@types/node": "^17.0.29",
     "@zerollup/ts-transform-paths": "^1.7.18",
     "babel-plugin-module-resolver": "^4.1.0",
@@ -50,7 +56,6 @@
     "json-schema-to-ts": "^2.5.4",
     "prettier": "^2.6.2",
     "ts-node": "^10.7.0",
-    "ts-toolbelt": "^9.6.0",
     "ttypescript": "^1.5.13",
     "typescript": "^4.6.3"
   },
@@ -64,15 +69,13 @@
     "targets": {
       "package": {
         "outputs": [
-          "demo/blueprint/dist"
+          "packages/json-schema-command/dist"
         ]
       }
     }
   },
   "peerDependencies": {
     "@castore/core": "*",
-    "@castore/json-schema-event": "*",
-    "json-schema-to-ts": "^2.0.0",
-    "uuid": "^8.3.2"
+    "json-schema-to-ts": "^2.0.0"
   }
 }

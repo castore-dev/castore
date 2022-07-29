@@ -1,17 +1,18 @@
 import { FromSchema } from 'json-schema-to-ts';
 import { A } from 'ts-toolbelt';
 
-import { counterEventStore, userEventStore } from '~/eventStore.util.test';
+import { Command } from '@castore/core';
 
-import { Command } from '../command';
 import { JSONSchemaCommand } from './jsonSchema';
 import {
+  counterEventStore,
   incrementCounter,
   incrementCounterA,
   incrementCounterANoOutput,
   incrementCounterNoOutput,
   inputSchema,
   outputSchema,
+  userEventStore,
 } from './jsonSchema.util.test';
 
 type Input = FromSchema<typeof inputSchema>;

@@ -50,11 +50,15 @@
     },
     {
       "path": "packages/json-schema-event",
-      "name": "📬  Json Schema"
+      "name": "📬  Json Schema Event"
     },
     {
       "path": "packages/zod-event",
-      "name": "📬  Zod"
+      "name": "📬  Zod Event"
+    },
+    {
+      "path": "packages/json-schema-command",
+      "name": "👮‍♀️ Json Schema Command"
     },
     {
       "path": "packages/test-tools",

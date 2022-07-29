@@ -1,0 +1,6 @@
+{
+  "root": "packages/json-schema-command",
+  "projectType": "library",
+  "tags": [],
+  "implicitDependencies": ["core"]
+}

@@ -3,7 +3,8 @@ import { CssBaseline, Tab, ThemeProvider } from '@mui/material';
 import React, { useState } from 'react';
 import { createGlobalState } from 'react-use';
 
-import type { EventStore, JSONSchemaCommand } from '@castore/core';
+import type { EventStore } from '@castore/core';
+import type { JSONSchemaCommand } from '@castore/json-schema-command';
 
 import { EventStoreSynchronizer } from '~/components/EventStoreSynchronizer';
 import { dbByEventStoreId, eventStoresById } from '~/services/data';

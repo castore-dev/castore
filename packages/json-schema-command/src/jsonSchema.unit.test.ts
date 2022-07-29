@@ -1,14 +1,9 @@
-import { EventAlreadyExistsError } from '~/errors/eventAlreadyExists';
-import { EventDetail } from '~/event/eventDetail';
+import { EventDetail, EventAlreadyExistsError } from '@castore/core';
+
 import {
   counterEventsMocks,
   counterEventStore,
   getEventsMock,
-  pushEventMock,
-  userEventStore,
-} from '~/eventStore.util.test';
-
-import {
   incrementCounter,
   incrementCounterA,
   incrementCounterANoOutput,
@@ -16,7 +11,9 @@ import {
   inputSchema,
   onEventAlreadyExistsMock,
   outputSchema,
+  pushEventMock,
   requiredEventStores,
+  userEventStore,
 } from './jsonSchema.util.test';
 
 getEventsMock.mockResolvedValue({ events: counterEventsMocks });
