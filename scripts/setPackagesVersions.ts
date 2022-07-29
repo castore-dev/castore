@@ -1,9 +1,7 @@
-import { readdirSync, readFileSync } from 'fs';
+import { readdirSync, readFileSync, writeFileSync } from 'fs';
 import { join } from 'path';
 
 const newVersionTag = process.argv[2] as string | undefined;
-
-console.log('newVersionTag', newVersionTag);
 
 const semanticVersioningRegex =
   /^v(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?:-((?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\.(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\+([0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?$/;
@@ -16,10 +14,8 @@ if (
 }
 
 const NEW_VERSION = newVersionTag.slice(1);
-console.log('NEW_VERSION', NEW_VERSION);
 
 const VERSION_MAJOR = (newVersionTag.match(semanticVersioningRegex) ?? [])[1];
-console.log('VERSION_MAJOR', VERSION_MAJOR);
 
 type PackageJson = {
   version?: string;
@@ -55,5 +51,5 @@ packagesNames.forEach(packageName => {
     }
   });
 
-  // writeFileSync(packageJsonPath, JSON.stringify(packageJson, null, 2));
+  writeFileSync(packageJsonPath, JSON.stringify(packageJson, null, 2));
 });
