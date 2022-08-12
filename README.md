@@ -1,7 +1,7 @@
 # 🦫 Castore - Better DevX for Event Sourcing in TypeScript
 
 Castore provides a unified interface for implementing Event Sourcing in TypeScript 🦸‍♂️.
-
+aa
 ## 🤔 Why use Castore ?
 
 - 💬 **Verbosity**: Castore classes are designed to increase dryness and provide the optimal developer experience. Event Sourcing is hard, don't make it harder!
