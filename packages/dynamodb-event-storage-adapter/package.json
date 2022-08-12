@@ -1,8 +1,8 @@
 {
   "name": "@castore/dynamodb-event-storage-adapter",
   "license": "MIT",
-  "homepage": "https://github.com/theodo/castore#readme",
-  "bugs": "https://github.com/theodo/castore/issues",
+  "homepage": "https://github.com/castore-dev/castore#readme",
+  "bugs": "https://github.com/castore-dev/castore/issues",
   "repository": "theodo/castore.git",
   "keywords": [
     "event",
