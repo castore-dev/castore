@@ -28,9 +28,6 @@ const App = ({
   commands: JSONSchemaCommand[];
   eventStores: EventStore[];
 }): JSX.Element => {
-  commands;
-  eventStores;
-
   const [activeTabName, setActiveTabName] = useState<TabName>(defaultTabName);
 
   return (
