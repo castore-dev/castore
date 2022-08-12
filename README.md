@@ -1,4 +1,20 @@
-# 🦫 Castore - Better DevX for Event Sourcing in TypeScript
+<p align="center">
+    <img src="assets/logo.svg" height="128">
+    <h1 style="border-bottom:none;font-size:60px;margin-bottom:0;" align="center" >Castore 🦫</h1>
+</p>
+<p align="center">
+  <a aria-label="NPM version" href="https://www.npmjs.com/package/@castore/core">
+    <img alt="" src="https://img.shields.io/npm/v/@castore/core?color=935e0e&style=for-the-badge">
+  </a>
+  <a aria-label="License" href="https://github.com/castore-dev/castore/blob/main/LICENSE">
+    <img alt="" src="https://img.shields.io/github/license/castore-dev/castore?color=%23F8A11C&style=for-the-badge">
+  </a>
+    <img alt="" src=https://img.shields.io/npm/dt/@castore/core?color=%23B7612E&style=for-the-badge>
+    <br/>
+    <br/>
+</p>
+
+# Better DevX for Event Sourcing in TypeScript
 
 Castore provides a unified interface for implementing Event Sourcing in TypeScript 🦸‍♂️.
 
@@ -22,6 +38,7 @@ Castore provides a unified interface for implementing Event Sourcing in TypeScri
   - [Storage Adapter](#storage-adapter)
   - [Event Store Interface](#event-store-interface)
 - [Going Further](#going-further-🏃‍♂️)
+
 ## Events
 
 The first step in your ✨ Castore journey ✨ is to define your business events! 🦫
@@ -61,7 +78,6 @@ const eventTypes = [
 
 Once you're happy with your set of EventTypes you can move on to step 2: attaching the EventTypes to an actual EventStore! 🏪.
 
-
 ## Event Store
 
 Welcome in the heart of Castore: the EventStore ❤️<br/>
@@ -80,7 +96,7 @@ const userEventStore = new EventStore({
 
 ### Reducer
 
-The reducer needed in the EventStore initialization is the function that will be applied to the sorted array of events in order to build the aggregates ⚙️. It works like your usual Redux reducer! 
+The reducer needed in the EventStore initialization is the function that will be applied to the sorted array of events in order to build the aggregates ⚙️. It works like your usual Redux reducer!
 
 Basically, it consists in a function implementing switch cases for all event types and returning the aggregate updated with your business logic. 🧠
 
@@ -113,8 +129,8 @@ export const usersReducer = (
       };
   }
 };
-
 ```
+
 ### Storage Adapter
 
 !['Storage Adapter'](/assets/storage_adapter_schema.png)
@@ -128,6 +144,7 @@ To be able to use your EventStore, you will need to attach a Storage Adapter �
 All the Storage Adapters have the same interface, and you can create your own if you want to implement new storage methods!
 
 So far, castore supports 2 Storage Adapters ✨:
+
 - in-memory
 - DynamoDB
 
@@ -144,27 +161,24 @@ To do that, the Event Store class exposes several methods, including the followi
 Here is a quick example showing how an application would use these two methods:
 
 ```ts
-
 const removeUser = async (userId: string) => {
-
-  // get the aggregate for that userId, 
+  // get the aggregate for that userId,
   // which is a representation of our user's state
-  const { aggregate } = await userEventStore.getAggregate(userId)
+  const { aggregate } = await userEventStore.getAggregate(userId);
 
   // use the aggregate to check the user status
-  if (aggregate.status === "REMOVED") {
-    throw new Error("User already removed")
+  if (aggregate.status === 'REMOVED') {
+    throw new Error('User already removed');
   }
 
   // put the USER_REMOVED event in the event store 🦫
   await userEventStore.pushEvent({
     aggregateId: userId,
     version: aggregate.version + 1,
-    type: "USER_REMOVED",
-    timestamp: new Date()
-  })
-}
-
+    type: 'USER_REMOVED',
+    timestamp: new Date(),
+  });
+};
 ```
 
 ## Going Further 🏃‍♂️
