@@ -3,7 +3,7 @@
   "license": "MIT",
   "homepage": "https://github.com/castore-dev/castore#readme",
   "bugs": "https://github.com/castore-dev/castore/issues",
-  "repository": "theodo/castore.git",
+  "repository": "castore-dev/castore.git",
   "keywords": [
     "event",
     "source",
