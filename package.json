@@ -2,9 +2,9 @@
   "name": "@castore/castore",
   "description": "🦫 Better DevX for Event Sourcing in TypeScript",
   "license": "MIT",
-  "homepage": "https://github.com/theodo/castore#readme",
-  "bugs": "https://github.com/theodo/castore/issues",
-  "repository": "theodo/castore.git",
+  "homepage": "https://github.com/castore-dev/castore#readme",
+  "bugs": "https://github.com/castore-dev/castore/issues",
+  "repository": "castore-dev/castore.git",
   "keywords": [
     "event",
     "source",
