@@ -77,7 +77,7 @@ module.exports = {
     jest: true,
     browser: true,
   },
-  plugins: ['prefer-arrow', 'import', 'prettier'],
+  plugins: ['prefer-arrow', 'import', 'prettier', 'jsdoc'],
   parserOptions: {
     ecmaVersion: 9,
     sourceType: 'module',
@@ -137,6 +137,29 @@ module.exports = {
         '@typescript-eslint/no-unnecessary-type-arguments': 'error',
         '@typescript-eslint/prefer-string-starts-ends-with': 'error',
         '@typescript-eslint/switch-exhaustiveness-check': 'error',
+      },
+    },
+    {
+      files: ['**/*[!.test].ts?(x)'],
+      extends: ['plugin:jsdoc/recommended'],
+      parser: '@typescript-eslint/parser',
+      parserOptions: {
+        project: 'tsconfig.json',
+      },
+      rules: {
+        'jsdoc/require-jsdoc': [
+          'warn',
+          {
+            require: {
+              ArrowFunctionExpression: true,
+              ClassDeclaration: true,
+              ClassExpression: true,
+              FunctionDeclaration: true,
+              FunctionExpression: true,
+              MethodDefinition: false,
+            },
+          },
+        ],
       },
     },
   ],

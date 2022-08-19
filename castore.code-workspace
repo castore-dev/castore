@@ -1,5 +1,6 @@
 {
   "settings": {
+    "jsdoc.mode": "typescript",
     "editor.defaultFormatter": "esbenp.prettier-vscode",
     "editor.formatOnSave": true,
     "stylelint.validate": ["typescript", "typescriptreact"],
