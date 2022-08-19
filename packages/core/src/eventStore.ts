@@ -13,6 +13,11 @@ import type {
 
 export type SimulationOptions = { simulationDate?: string };
 
+/**
+ * @class EventStore
+ * @description Instance of an EventStore.
+ * Use it to manipulate events within your database.
+ */
 export class EventStore<
   I extends string = string,
   E extends EventType[] = EventType[],
@@ -35,9 +40,17 @@ export class EventStore<
     details: $D;
     aggregate: A;
   };
+  /**
+   * @name eventStoreId
+   * @description The ID of the EventStore.
+   */
   eventStoreId: I;
   /**
    * @debt v2 "rename as eventTypes"
+   */
+  /**
+   * @name eventStoreEvents
+   * @description A list of event details, or event types, the store will manipulate.
    */
   eventStoreEvents: E;
   /**
@@ -49,16 +62,51 @@ export class EventStore<
     event: D,
   ) => Record<string, Omit<D, 'version'>>;
 
+  /**
+   * @name getEvents
+   * @description Asynchronously gets a list of all events with the same aggregateId.
+   * @param aggregateId - The ID of the aggregate to get events for.
+   * @param options
+   * @param options.maxVersion - Retrieve all events with version < maxVersion.
+   * @returns An object containing the list of events.
+   */
   getEvents: (
     aggregateId: string,
     options?: EventsQueryOptions,
   ) => Promise<{ events: $D[] }>;
+  /**
+   * @name pushEvent
+   * @description Asynchronously pushes a new event to the event store.
+   * @param eventDetail - Details of the event to push. Strongly typed according to eventStoreEvents the EventStore has been instantiated with.
+   * @returns void
+   */
   pushEvent: (eventDetail: D) => Promise<void>;
+  pushEventTransaction: (eventDetail: D) => unknown;
+  /**
+   * @name listAggregateIds
+   * @description Asynchronously lists all aggregateIds in the event store.
+   * @param listAggregateOptions - listAggregateIds options
+   * @param listAggregateOptions.limit - maximum number of aggregateIds to return per page
+   * @param listAggregateOptions.pageToken - token to access next page of aggregateIds
+   * @returns aggregateIds: the list of aggregateIds in the event store
+   * @returns nextPageToken: token to access next page of aggregateIds
+   */
   listAggregateIds: (
     listAggregateOptions?: ListAggregateIdsOptions,
   ) => Promise<ListAggregateIdsOutput>;
 
   buildAggregate: (events: D[]) => A | undefined;
+
+  /**
+   * @name getAggregate
+   * @description Asynchronously builds the aggregate from the events in the event store by applying the reducer.
+   * @param aggregateId - aggregateId for which the aggregate will be built
+   * @param options
+   * @param options.maxVersion -  computes the aggregate up until maxVersion.
+   * @returns aggregate: the aggregate associated with the aggregateId
+   * @returns events: list of events that were used to build the aggregate
+   * @returns lastEvent: lastEvent that was used to build the aggregate
+   */
   getAggregate: (
     aggregateId: string,
     options?: EventsQueryOptions,
@@ -67,6 +115,10 @@ export class EventStore<
     events: $D[];
     lastEvent: $D | undefined;
   }>;
+  /**
+   * @name getExistingAggregate
+   * @description getAggregate but throws an error if the aggregate is not found.
+   */
   getExistingAggregate: (
     aggregateId: string,
     options?: EventsQueryOptions,
