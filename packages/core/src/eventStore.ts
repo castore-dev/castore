@@ -48,7 +48,6 @@ export class EventStore<
     options?: EventsQueryOptions,
   ) => Promise<{ events: $D[] }>;
   pushEvent: (eventDetail: D) => Promise<void>;
-  pushEventTransaction: (eventDetail: D) => unknown;
   listAggregateIds: (
     listAggregateOptions?: ListAggregateIdsOptions,
   ) => Promise<ListAggregateIdsOutput>;
@@ -125,18 +124,6 @@ export class EventStore<
       }
 
       return this.storageAdapter.pushEvent(eventDetail, {
-        eventStoreId: this.eventStoreId,
-      });
-    };
-
-    this.pushEventTransaction = (eventDetail: D) => {
-      if (!this.storageAdapter) {
-        throw new UndefinedStorageAdapterError({
-          eventStoreId: this.eventStoreId,
-        });
-      }
-
-      this.storageAdapter.pushEventTransaction(eventDetail, {
         eventStoreId: this.eventStoreId,
       });
     };
