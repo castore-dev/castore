@@ -3494,14 +3494,11 @@ __metadata:
     dependency-cruiser: ^11.7.0
     eslint: ^8.14.0
     jest: ^27.5.1
-    json-schema-to-ts: ^2.5.4
     prettier: ^2.6.2
     ts-node: ^10.7.0
     ts-toolbelt: ^9.6.0
     ttypescript: ^1.5.13
     typescript: ^4.6.3
-  peerDependencies:
-    json-schema-to-ts: ^2.0.0
   languageName: unknown
   linkType: soft
 
@@ -3516,6 +3513,7 @@ __metadata:
     "@babel/preset-typescript": ^7.16.7
     "@babel/runtime": ^7.18.3
     "@castore/core": "workspace:"
+    "@castore/json-schema-command": "workspace:"
     "@castore/json-schema-event": "workspace:"
     "@types/node": ^17.0.29
     "@zerollup/ts-transform-paths": ^1.7.18
@@ -3572,6 +3570,7 @@ __metadata:
     "@ant-design/icons": ^4.7.0
     "@castore/core": "workspace:"
     "@castore/demo-blueprint": "workspace:"
+    "@castore/json-schema-command": "workspace:"
     "@emotion/react": ^11.9.3
     "@emotion/styled": ^11.9.3
     "@material-ui/core": ^4.12.4
@@ -3672,6 +3671,35 @@ __metadata:
     typescript: ^4.6.3
   peerDependencies:
     "@castore/core": "*"
+  languageName: unknown
+  linkType: soft
+
+"@castore/json-schema-command@workspace:, @castore/json-schema-command@workspace:packages/json-schema-command":
+  version: 0.0.0-use.local
+  resolution: "@castore/json-schema-command@workspace:packages/json-schema-command"
+  dependencies:
+    "@babel/cli": ^7.17.6
+    "@babel/core": ^7.17.9
+    "@babel/plugin-transform-runtime": ^7.17.0
+    "@babel/preset-env": ^7.16.11
+    "@babel/preset-typescript": ^7.16.7
+    "@castore/core": "workspace:"
+    "@types/node": ^17.0.29
+    "@zerollup/ts-transform-paths": ^1.7.18
+    babel-plugin-module-resolver: ^4.1.0
+    concurrently: ^7.1.0
+    dependency-cruiser: ^11.7.0
+    eslint: ^8.14.0
+    jest: ^27.5.1
+    json-schema-to-ts: ^2.5.4
+    prettier: ^2.6.2
+    ts-node: ^10.7.0
+    ts-toolbelt: ^9.6.0
+    ttypescript: ^1.5.13
+    typescript: ^4.6.3
+  peerDependencies:
+    "@castore/core": "*"
+    json-schema-to-ts: ^2.0.0
   languageName: unknown
   linkType: soft
 

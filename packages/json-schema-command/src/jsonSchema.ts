@@ -1,9 +1,6 @@
 import { FromSchema, JSONSchema } from 'json-schema-to-ts';
 
-import { EventAlreadyExistsError } from '~/errors/eventAlreadyExists';
-import { EventStore } from '~/eventStore';
-
-import { Command } from '../command';
+import { Command, EventAlreadyExistsError, EventStore } from '@castore/core';
 
 export type OnEventAlreadyExistsCallback = (
   error: EventAlreadyExistsError,

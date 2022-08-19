@@ -20,5 +20,3 @@ export type {
   EventStoreAggregate,
 } from './eventStore';
 export { Command, tuple } from './command/command';
-export { JSONSchemaCommand } from './command/implementations/jsonSchema';
-export type { OnEventAlreadyExistsCallback } from './command/implementations/jsonSchema';

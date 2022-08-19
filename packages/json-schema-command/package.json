@@ -1,9 +1,9 @@
 {
-  "name": "@castore/core",
+  "name": "@castore/json-schema-command",
   "license": "MIT",
-  "homepage": "https://github.com/castore-dev/castore#readme",
-  "bugs": "https://github.com/castore-dev/castore/issues",
-  "repository": "castore-dev/castore.git",
+  "homepage": "https://github.com/theodo/castore#readme",
+  "bugs": "https://github.com/theodo/castore/issues",
+  "repository": "theodo/castore.git",
   "keywords": [
     "event",
     "source",
@@ -32,12 +32,12 @@
     "test-circular": "yarn depcruise --validate dependency-cruiser.js .",
     "test-linter": "yarn linter-base-config .",
     "test-type": "tsc --noEmit --emitDeclarationOnly false",
-    "test-unit": "yarn jest --passWithNoTests",
+    "test-unit": "yarn jest",
     "transpile": "babel src --extensions .ts --quiet",
     "watch": "rm -rf dist && concurrently 'yarn:package-* --watch'"
   },
   "dependencies": {
-    "@babel/runtime": "^7.18.3"
+    "ts-toolbelt": "^9.6.0"
   },
   "devDependencies": {
     "@babel/cli": "^7.17.6",
@@ -45,6 +45,7 @@
     "@babel/plugin-transform-runtime": "^7.17.0",
     "@babel/preset-env": "^7.16.11",
     "@babel/preset-typescript": "^7.16.7",
+    "@castore/core": "workspace:",
     "@types/node": "^17.0.29",
     "@zerollup/ts-transform-paths": "^1.7.18",
     "babel-plugin-module-resolver": "^4.1.0",
@@ -52,9 +53,9 @@
     "dependency-cruiser": "^11.7.0",
     "eslint": "^8.14.0",
     "jest": "^27.5.1",
+    "json-schema-to-ts": "^2.5.4",
     "prettier": "^2.6.2",
     "ts-node": "^10.7.0",
-    "ts-toolbelt": "^9.6.0",
     "ttypescript": "^1.5.13",
     "typescript": "^4.6.3"
   },
@@ -68,9 +69,13 @@
     "targets": {
       "package": {
         "outputs": [
-          "packages/core/dist"
+          "packages/json-schema-command/dist"
         ]
       }
     }
+  },
+  "peerDependencies": {
+    "@castore/core": "*",
+    "json-schema-to-ts": "^2.0.0"
   }
 }
