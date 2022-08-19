@@ -31,7 +31,6 @@ describe('event store', () => {
         'simulateSideEffect',
         'storageAdapter',
         'pushEvent',
-        'pushEventTransaction',
         'buildAggregate',
         'getEvents',
         'listAggregateIds',

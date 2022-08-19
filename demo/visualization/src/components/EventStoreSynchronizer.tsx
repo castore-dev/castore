@@ -64,7 +64,6 @@ export const EventStoreSynchronizer = ({
       listAggregateIds: async () => ({
         aggregateIds: Object.keys(eventsByAggregateId),
       }),
-      pushEventTransaction: () => null,
     });
   }, [eventsByAggregateId, setEventsByAggregateId]);
 
