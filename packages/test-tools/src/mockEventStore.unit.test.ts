@@ -1,5 +1,6 @@
 import {
-  counterEventsMocks,
+  counterCreatedEventMock,
+  counterIncrementedEventMock,
   counterEventStore,
   counterIdMock,
 } from '@castore/demo-blueprint';
@@ -7,34 +8,42 @@ import {
 import { mockEventStore } from './mockEventStore';
 
 describe('mockEventStore', () => {
-  it('gives the event store an in memory storage adapter and pushes the events', async () => {
-    mockEventStore(counterEventStore, counterEventsMocks);
+  const mockedCounterEventStore = mockEventStore(counterEventStore, [
+    counterCreatedEventMock,
+  ]);
 
-    expect(await counterEventStore.listAggregateIds()).toStrictEqual({
+  it('does not mutate the original event store', () => {
+    expect(counterEventStore.storageAdapter).toBeUndefined();
+  });
+
+  it('gives the event store an in memory storage adapter and pushes the events', async () => {
+    expect(await mockedCounterEventStore.listAggregateIds()).toStrictEqual({
       aggregateIds: [counterIdMock],
     });
 
-    expect(await counterEventStore.getEvents(counterIdMock)).toStrictEqual({
-      events: counterEventsMocks,
+    expect(
+      await mockedCounterEventStore.getEvents(counterIdMock),
+    ).toStrictEqual({
+      events: [counterCreatedEventMock],
     });
+  });
 
-    await counterEventStore.pushEvent({
-      aggregateId: counterIdMock,
-      version: 3,
-      type: 'COUNTER_INCREMENTED',
-      timestamp: '2024',
+  it('adds a a new event', async () => {
+    await mockedCounterEventStore.pushEvent(counterIncrementedEventMock);
+
+    expect(
+      await mockedCounterEventStore.getEvents(counterIdMock),
+    ).toStrictEqual({
+      events: [counterCreatedEventMock, counterIncrementedEventMock],
     });
+  });
 
-    expect(await counterEventStore.getEvents(counterIdMock)).toStrictEqual({
-      events: [
-        ...counterEventsMocks,
-        {
-          aggregateId: counterIdMock,
-          version: 3,
-          type: 'COUNTER_INCREMENTED',
-          timestamp: '2024',
-        },
-      ],
+  it('resets the event store to the initial events', async () => {
+    mockedCounterEventStore.reset();
+    expect(
+      await mockedCounterEventStore.getEvents(counterIdMock),
+    ).toStrictEqual({
+      events: [counterCreatedEventMock],
     });
   });
 });
