@@ -1,0 +1,16 @@
+name: Cache package builds
+description: Cache package builds
+outputs:
+  cache-hit:
+    description: True if cache was hit, false otherwise
+    value: ${{ steps.package-cache.outputs.cache-hit }}
+runs:
+  using: composite
+  steps:
+    - name: Cache package builds
+      id: package-cache
+      uses: actions/cache@v2
+      with:
+        path: |
+          node_modules/@castore/**/dist
+        key: ${{ hashFiles('./packages/**') }}-${{ hashFiles('./demo/**') }}

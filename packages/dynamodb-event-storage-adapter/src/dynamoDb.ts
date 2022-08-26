@@ -1,6 +1,7 @@
 /* eslint-disable max-lines */
 import {
   PutItemCommand,
+  PutItemCommandInput,
   QueryCommand,
   QueryCommandInput,
 } from '@aws-sdk/client-dynamodb';
@@ -18,7 +19,6 @@ import {
   ListAggregateIdsOptions,
   ListAggregateIdsOutput,
   PushEventContext,
-  PushEventTransactionContext,
   StorageAdapter,
 } from '@castore/core';
 
@@ -53,14 +53,11 @@ export class DynamoDbEventStorageAdapter implements StorageAdapter {
     aggregateId: string,
     options?: EventsQueryOptions,
   ) => Promise<{ events: EventDetail[] }>;
+  getPushEventInput: (eventDetail: EventDetail) => PutItemCommandInput;
   pushEvent: (
     eventDetail: EventDetail,
     context: PushEventContext,
   ) => Promise<void>;
-  pushEventTransaction: (
-    eventDetail: EventDetail,
-    context: PushEventTransactionContext,
-  ) => unknown;
   listAggregateIds: (
     options?: ListAggregateIdsOptions,
   ) => Promise<ListAggregateIdsOutput>;
@@ -136,11 +133,11 @@ export class DynamoDbEventStorageAdapter implements StorageAdapter {
       };
     };
 
-    this.pushEvent = async (event, context) => {
+    this.getPushEventInput = event => {
       const { aggregateId, version, type, timestamp, payload, metadata } =
         event;
 
-      const putEventCommand = new PutItemCommand({
+      return {
         TableName: this.tableName,
         Item: marshaller.marshallItem({
           aggregateId,
@@ -153,7 +150,13 @@ export class DynamoDbEventStorageAdapter implements StorageAdapter {
         }),
         ExpressionAttributeNames: { '#version': EVENT_TABLE_SK },
         ConditionExpression: 'attribute_not_exists(#version)',
-      });
+      };
+    };
+
+    this.pushEvent = async (event, context) => {
+      const putEventCommand = new PutItemCommand(this.getPushEventInput(event));
+
+      const { aggregateId, version } = event;
 
       try {
         await this.dynamoDbClient.send(putEventCommand);
@@ -171,10 +174,6 @@ export class DynamoDbEventStorageAdapter implements StorageAdapter {
           });
         }
       }
-    };
-
-    this.pushEventTransaction = () => {
-      // To re-implement
     };
 
     this.listAggregateIds = async ({

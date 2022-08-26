@@ -9,7 +9,6 @@ export { StorageAdapter } from './storageAdapter';
 export type {
   EventsQueryOptions,
   PushEventContext,
-  PushEventTransactionContext,
   ListAggregateIdsOptions,
   ListAggregateIdsOutput,
 } from './storageAdapter';

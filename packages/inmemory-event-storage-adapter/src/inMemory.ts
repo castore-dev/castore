@@ -7,7 +7,6 @@ import {
   ListAggregateIdsOptions,
   ListAggregateIdsOutput,
   PushEventContext,
-  PushEventTransactionContext,
   StorageAdapter,
 } from '@castore/core';
 
@@ -40,10 +39,6 @@ export class InMemoryStorageAdapter implements StorageAdapter {
     eventDetail: EventDetail,
     context: PushEventContext,
   ) => Promise<void>;
-  pushEventTransaction: (
-    eventDetail: EventDetail,
-    context: PushEventTransactionContext,
-  ) => unknown;
   listAggregateIds: (
     options?: ListAggregateIdsOptions,
   ) => Promise<ListAggregateIdsOutput>;
@@ -83,11 +78,6 @@ export class InMemoryStorageAdapter implements StorageAdapter {
     this.getEvents = async aggregateId => ({
       events: this.eventStore[aggregateId] ?? [],
     });
-
-    // eslint-disable-next-line @typescript-eslint/require-await
-    this.pushEventTransaction = async event => {
-      console.log(event);
-    };
 
     this.listAggregateIds = async ({
       limit: inputLimit,

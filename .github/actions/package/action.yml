@@ -1,0 +1,11 @@
+name: Run package
+description: Package all libraries in the monorepo
+runs:
+  using: composite
+  steps:
+    - name: Cache package builds
+      id: package-cache
+      uses: ./.github/actions/cache-package-builds
+    - name: Run package
+      run: if [ '${{ steps.package-cache.outputs.cache-hit }}' != 'true' ]; then yarn package; fi
+      shell: bash

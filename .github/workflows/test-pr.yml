@@ -29,6 +29,8 @@ jobs:
           fetch-depth: 0
       - name: Install & cache node dependencies
         uses: ./.github/actions/install-node-deps
+      - name: Package and cache builds
+        uses: ./.github/actions/package
 
   lint-and-tests:
     name: 🎯 Run Tests
