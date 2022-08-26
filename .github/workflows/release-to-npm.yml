@@ -12,14 +12,19 @@ jobs:
         with:
           ref: main
           fetch-depth: 0
-      - name: Install & cache node dependencies
-        uses: ./.github/actions/install-node-deps
-      - name: Build packages
-        run: yarn package
+
+      - name: Install node_modules
+        uses: ./.github/actions/install-node-modules
+
+      - name: Package
+        uses: ./.github/actions/package
+
       - name: Set packages versions
         run: yarn set-packages-versions ${{ github.event.release.tag_name }}
+
       - name: Copy paste root README to @castore/core
         run: cp README.md ./packages/core/README.md
+
       - uses: JS-DevTools/npm-publish@v1
         with:
           token: ${{ secrets.NPM_TOKEN }}

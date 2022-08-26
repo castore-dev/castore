@@ -1,25 +1,33 @@
-name: 'Install Node Dependencies'
-description: 'Install monorepo dependencies using yarn'
+name: Install Node Dependencies
+description: Install dependencies using yarn
 runs:
-  using: 'composite'
+  using: composite
   steps:
     - name: Use Node.js
       uses: actions/setup-node@v2
       with:
         node-version: ${{ env.NODE_VERSION }}
+
     - name: Get yarn cache directory path
       id: yarn-cache-dir-path
       run: echo "::set-output name=dir::$(yarn config get cacheFolder)"
       shell: bash
-    - name: Cache yarn cache
+
+    - name: Sync yarn cache
       uses: actions/cache@v2
       with:
         path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
         key: ${{ runner.os }}-yarn-${{ hashFiles('./yarn.lock') }}
         restore-keys: |
           ${{ runner.os }}-yarn-
-    - name: Cache node modules
-      uses: ./.github/actions/cache-node-modules
-    - name: Install dependencies
-      run: yarn install --immutable
+
+    - name: Sync node_modules cache
+      id: sync-node-modules-cache
+      uses: actions/cache@v2
+      with:
+        path: '**/node_modules'
+        key: ${{ runner.os }}-modules-${{ env.NODE_VERSION }}-${{ hashFiles('./yarn.lock') }}
+
+    - name: Install node_modules
+      run: if [ '${{ steps.sync-node-modules-cache.outputs.cache-hit }}' != 'true' ]; then yarn install --immutable; fi
       shell: bash

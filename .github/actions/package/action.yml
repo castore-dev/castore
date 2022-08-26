@@ -1,11 +1,15 @@
 name: Run package
-description: Package all libraries in the monorepo
+description: Package packages in the monorepo
 runs:
   using: composite
   steps:
-    - name: Cache package builds
-      id: package-cache
-      uses: ./.github/actions/cache-package-builds
-    - name: Run package
-      run: if [ '${{ steps.package-cache.outputs.cache-hit }}' != 'true' ]; then yarn package; fi
+    - name: Sync packages cache
+      id: sync-packages-cache
+      uses: actions/cache@v2
+      with:
+        path: |
+          node_modules/@castore/**/dist
+        key: ${{ hashFiles('./packages/**') }}-${{ hashFiles('./demo/**') }}
+    - name: Package
+      run: if [ '${{ steps.sync-packages-cache.outputs.cache-hit }}' != 'true' ]; then yarn package; fi
       shell: bash
