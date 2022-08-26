@@ -36,7 +36,13 @@ export class EventStore<
     aggregate: A;
   };
   eventStoreId: I;
+  /**
+   * @debt v2 "rename as eventTypes"
+   */
   eventStoreEvents: E;
+  /**
+   * @debt v2 "rename as reducer"
+   */
   reduce: R;
   simulateSideEffect: (
     indexedEvents: Record<string, Omit<D, 'version'>>,
@@ -73,6 +79,9 @@ export class EventStore<
     events: D[],
     options?: SimulationOptions,
   ) => A | undefined;
+  /**
+   * @debt v2 "rename as eventStorageAdapter"
+   */
   storageAdapter?: StorageAdapter;
 
   constructor({
@@ -86,7 +95,13 @@ export class EventStore<
     storageAdapter,
   }: {
     eventStoreId: I;
+    /**
+     * @debt v2 "rename as eventTypes"
+     */
     eventStoreEvents: E;
+    /**
+     * @debt v2 "rename as reducer"
+     */
     reduce: R;
     simulateSideEffect?: (
       indexedEvents: Record<string, Omit<D, 'version'>>,
@@ -98,6 +113,9 @@ export class EventStore<
     this.eventStoreEvents = eventStoreEvents;
     this.reduce = reduce;
     this.simulateSideEffect = simulateSideEffect;
+    /**
+     * @debt v2 "rename as eventStorageAdapter"
+     */
     this.storageAdapter = storageAdapter;
 
     this.getEvents = async (aggregateId, queryOptions) => {
