@@ -15,7 +15,10 @@ export type {
 export { EventStore } from './eventStore';
 export type {
   SimulationOptions,
+  EventStoreId,
+  EventStoreEventsTypes,
   EventStoreEventsDetails,
+  EventStoreReducer,
   EventStoreAggregate,
 } from './eventStore';
 export { Command, tuple } from './command/command';

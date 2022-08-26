@@ -45,8 +45,17 @@ export class InMemoryStorageAdapter implements StorageAdapter {
 
   eventStore: { [aggregateId: string]: EventDetail[] };
 
-  constructor() {
+  constructor({ initialEvents = [] }: { initialEvents?: EventDetail[] } = {}) {
     this.eventStore = {};
+
+    initialEvents.forEach(({ aggregateId, ...restEventDetail }) => {
+      const aggregateEvents = this.eventStore[aggregateId];
+      if (aggregateEvents) {
+        aggregateEvents.push({ aggregateId, ...restEventDetail });
+      } else {
+        this.eventStore[aggregateId] = [{ aggregateId, ...restEventDetail }];
+      }
+    });
 
     // eslint-disable-next-line @typescript-eslint/require-await
     this.pushEvent = async (event, context) => {

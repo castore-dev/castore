@@ -1,8 +1,10 @@
+import type { A } from 'ts-toolbelt';
+
 import { counterEventStore } from '@castore/demo-blueprint';
 
 import { mockEventStore } from './mockEventStore';
 
-mockEventStore(counterEventStore, [
+const mockedCounterEventStore = mockEventStore(counterEventStore, [
   {
     // valid event
     aggregateId: 'aggregateId',
@@ -31,3 +33,9 @@ mockEventStore(counterEventStore, [
     timestamp: '2022',
   },
 ]);
+
+const assertMockExtendsOriginalEventStore: A.Extends<
+  typeof mockedCounterEventStore,
+  typeof counterEventStore
+> = 1;
+assertMockExtendsOriginalEventStore;
