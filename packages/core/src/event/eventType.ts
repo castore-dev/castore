@@ -1,5 +1,9 @@
 import { EventDetail } from './eventDetail';
 
+/**
+ * @name EventType
+ * @description Base type class for all events
+ */
 export class EventType<
   T extends string = string,
   D extends EventDetail = EventDetail,

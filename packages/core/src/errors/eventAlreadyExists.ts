@@ -1,3 +1,7 @@
+/**
+ * @name EventAlreadyExistsError
+ * @description Error thrown when an event already exists
+ */
 export class EventAlreadyExistsError extends Error {
   eventStoreId?: string;
   aggregateId: string;

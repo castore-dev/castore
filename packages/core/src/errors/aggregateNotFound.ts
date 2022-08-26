@@ -1,3 +1,7 @@
+/**
+ * @name AggregateNotFoundError
+ * @description Error thrown when an aggregate is not found
+ */
 export class AggregateNotFoundError extends Error {
   constructor({
     aggregateId,

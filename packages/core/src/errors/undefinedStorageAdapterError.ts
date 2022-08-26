@@ -1,3 +1,7 @@
+/**
+ * @name UndefinedStorageAdapterError
+ * @description Error thrown when the storage adapter is undefined
+ */
 export class UndefinedStorageAdapterError extends Error {
   eventStoreId: string;
 

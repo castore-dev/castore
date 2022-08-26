@@ -7,6 +7,10 @@ export type OnEventAlreadyExistsCallback = (
   context: { attemptNumber: number; retriesLeft: number },
 ) => Promise<void>;
 
+/**
+ * @name JSONSchemaCommand
+ * @description
+ */
 export class JSONSchemaCommand<
   $E extends EventStore[] = EventStore[],
   // eslint-disable-next-line @typescript-eslint/no-explicit-any

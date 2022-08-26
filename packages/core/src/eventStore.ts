@@ -50,7 +50,7 @@ export class EventStore<
    */
   /**
    * @name eventStoreEvents
-   * @description A list of event details, or event types, the store will manipulate.
+   * @description A list of events the store will manipulate.
    */
   eventStoreEvents: E;
   /**
@@ -81,7 +81,6 @@ export class EventStore<
    * @returns void
    */
   pushEvent: (eventDetail: D) => Promise<void>;
-  pushEventTransaction: (eventDetail: D) => unknown;
   /**
    * @name listAggregateIds
    * @description Asynchronously lists all aggregateIds in the event store.
