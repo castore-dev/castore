@@ -173,6 +173,8 @@ export class DynamoDbEventStorageAdapter implements StorageAdapter {
             version,
           });
         }
+
+        throw error;
       }
     };
 
