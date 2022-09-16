@@ -4,6 +4,7 @@ import {
   counterEventsMocks,
   counterEventStore,
   getEventsMock,
+  getLastSnapshotMock,
   incrementCounter,
   incrementCounterA,
   incrementCounterANoOutput,
@@ -17,6 +18,7 @@ import {
 } from './jsonSchema.util.test';
 
 getEventsMock.mockResolvedValue({ events: counterEventsMocks });
+getLastSnapshotMock.mockResolvedValue({ snapshot: undefined });
 
 describe('jsonSchemaCommand implementation', () => {
   it('has correct properties', () => {

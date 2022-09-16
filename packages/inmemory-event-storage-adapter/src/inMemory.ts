@@ -8,6 +8,9 @@ import {
   ListAggregateIdsOutput,
   PushEventContext,
   StorageAdapter,
+  Aggregate,
+  GetLastSnapshotOptions,
+  ListSnapshotsOptions,
 } from '@castore/core';
 
 import {
@@ -42,6 +45,15 @@ export class InMemoryStorageAdapter implements StorageAdapter {
   listAggregateIds: (
     options?: ListAggregateIdsOptions,
   ) => Promise<ListAggregateIdsOutput>;
+  putSnapshot: (aggregate: Aggregate) => Promise<void>;
+  getLastSnapshot: (
+    aggregateId: string,
+    options?: GetLastSnapshotOptions,
+  ) => Promise<{ snapshot: Aggregate | undefined }>;
+  listSnapshots: (
+    aggregateId: string,
+    options?: ListSnapshotsOptions,
+  ) => Promise<{ snapshots: Aggregate[] }>;
 
   eventStore: { [aggregateId: string]: EventDetail[] };
 
@@ -130,5 +142,12 @@ export class InMemoryStorageAdapter implements StorageAdapter {
           : {}),
       };
     };
+
+    // We do not implement snapshots in this adapter
+    this.putSnapshot = () => new Promise(resolve => resolve());
+    this.getLastSnapshot = () =>
+      new Promise(resolve => resolve({ snapshot: undefined }));
+    this.listSnapshots = () =>
+      new Promise(resolve => resolve({ snapshots: [] }));
   }
 }

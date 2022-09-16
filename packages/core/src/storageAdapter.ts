@@ -1,6 +1,12 @@
 import { EventDetail } from 'event/eventDetail';
 
-export type EventsQueryOptions = { maxVersion?: number };
+import type { Aggregate } from '~/aggregate';
+
+export type EventsQueryOptions = {
+  minVersion?: number;
+  maxVersion?: number;
+};
+
 export type PushEventContext = { eventStoreId?: string };
 
 export type ListAggregateIdsOptions = {
@@ -13,7 +19,18 @@ export type ListAggregateIdsOutput = {
   nextPageToken?: string;
 };
 
-export class StorageAdapter {
+export type GetLastSnapshotOptions = {
+  maxVersion?: number;
+};
+
+export type ListSnapshotsOptions = {
+  minVersion?: number;
+  maxVersion?: number;
+  limit?: number;
+  reverse?: boolean;
+};
+
+export interface StorageAdapter {
   getEvents: (
     aggregateId: string,
     options?: EventsQueryOptions,
@@ -25,26 +42,13 @@ export class StorageAdapter {
   listAggregateIds: (
     options?: ListAggregateIdsOptions,
   ) => Promise<ListAggregateIdsOutput>;
-
-  constructor({
-    getEvents,
-    pushEvent,
-    listAggregateIds,
-  }: {
-    getEvents: (
-      aggregateId: string,
-      options?: EventsQueryOptions,
-    ) => Promise<{ events: EventDetail[] }>;
-    pushEvent: (
-      eventDetail: EventDetail,
-      context: PushEventContext,
-    ) => Promise<void>;
-    listAggregateIds: (
-      options?: ListAggregateIdsOptions,
-    ) => Promise<ListAggregateIdsOutput>;
-  }) {
-    this.getEvents = getEvents;
-    this.pushEvent = pushEvent;
-    this.listAggregateIds = listAggregateIds;
-  }
+  putSnapshot: (aggregate: Aggregate) => Promise<void>;
+  getLastSnapshot: (
+    aggregateId: string,
+    options?: GetLastSnapshotOptions,
+  ) => Promise<{ snapshot: Aggregate | undefined }>;
+  listSnapshots: (
+    aggregateId: string,
+    options?: ListSnapshotsOptions,
+  ) => Promise<{ snapshots: Aggregate[] }>;
 }
