@@ -1,16 +1,10 @@
+import cloneDeep from 'lodash/cloneDeep';
 import intersectionBy from 'lodash/intersectionBy';
 
 import {
   EventAlreadyExistsError,
   EventDetail,
-  EventsQueryOptions,
-  ListAggregateIdsOptions,
-  ListAggregateIdsOutput,
-  PushEventContext,
   StorageAdapter,
-  Aggregate,
-  GetLastSnapshotOptions,
-  ListSnapshotsOptions,
 } from '@castore/core';
 
 import {
@@ -34,26 +28,12 @@ const getInitialEventTimestamp = (
 };
 
 export class InMemoryStorageAdapter implements StorageAdapter {
-  getEvents: (
-    aggregateId: string,
-    options?: EventsQueryOptions,
-  ) => Promise<{ events: EventDetail[] }>;
-  pushEvent: (
-    eventDetail: EventDetail,
-    context: PushEventContext,
-  ) => Promise<void>;
-  listAggregateIds: (
-    options?: ListAggregateIdsOptions,
-  ) => Promise<ListAggregateIdsOutput>;
-  putSnapshot: (aggregate: Aggregate) => Promise<void>;
-  getLastSnapshot: (
-    aggregateId: string,
-    options?: GetLastSnapshotOptions,
-  ) => Promise<{ snapshot: Aggregate | undefined }>;
-  listSnapshots: (
-    aggregateId: string,
-    options?: ListSnapshotsOptions,
-  ) => Promise<{ snapshots: Aggregate[] }>;
+  getEvents: StorageAdapter['getEvents'];
+  pushEvent: StorageAdapter['pushEvent'];
+  listAggregateIds: StorageAdapter['listAggregateIds'];
+  putSnapshot: StorageAdapter['putSnapshot'];
+  getLastSnapshot: StorageAdapter['getLastSnapshot'];
+  listSnapshots: StorageAdapter['listSnapshots'];
 
   eventStore: { [aggregateId: string]: EventDetail[] };
 
@@ -69,79 +49,102 @@ export class InMemoryStorageAdapter implements StorageAdapter {
       }
     });
 
-    // eslint-disable-next-line @typescript-eslint/require-await
-    this.pushEvent = async (event, context) => {
-      const { aggregateId, version } = event;
-      const events = this.eventStore[aggregateId];
+    this.pushEvent = async (event, context) =>
+      new Promise(resolve => {
+        const { aggregateId, version } = event;
+        const events = this.eventStore[aggregateId];
 
-      if (intersectionBy(events, [event], 'version').length > 0) {
-        const { eventStoreId } = context;
+        if (intersectionBy(events, [event], 'version').length > 0) {
+          const { eventStoreId } = context;
 
-        throw new EventAlreadyExistsError({
-          eventStoreId,
-          aggregateId,
-          version,
-        });
-      }
+          throw new EventAlreadyExistsError({
+            eventStoreId,
+            aggregateId,
+            version,
+          });
+        }
 
-      const aggregateEvents = this.eventStore[aggregateId];
+        const aggregateEvents = this.eventStore[aggregateId];
 
-      if (aggregateEvents === undefined) {
-        this.eventStore[aggregateId] = [event];
+        if (aggregateEvents === undefined) {
+          this.eventStore[aggregateId] = [event];
+          resolve();
 
-        return;
-      }
+          return;
+        }
 
-      aggregateEvents.push(event);
-    };
+        aggregateEvents.push(event);
+        resolve();
+      });
 
-    // eslint-disable-next-line @typescript-eslint/require-await
-    this.getEvents = async aggregateId => ({
-      events: this.eventStore[aggregateId] ?? [],
-    });
+    this.getEvents = (
+      aggregateId,
+      { minVersion, maxVersion, reverse, limit } = {},
+    ) =>
+      new Promise(resolve => {
+        let events = cloneDeep(this.eventStore[aggregateId] ?? []);
 
-    this.listAggregateIds = async ({
+        if (minVersion !== undefined) {
+          events = events.filter(({ version }) => version >= minVersion);
+        }
+
+        if (maxVersion !== undefined) {
+          events = events.filter(({ version }) => version <= maxVersion);
+        }
+
+        if (reverse === true) {
+          events = events.reverse();
+        }
+
+        if (limit !== undefined) {
+          events = events.slice(0, limit);
+        }
+
+        resolve({ events });
+      });
+
+    this.listAggregateIds = ({
       limit: inputLimit,
       pageToken: inputPageToken,
-      // eslint-disable-next-line @typescript-eslint/require-await
-    } = {}) => {
-      const aggregateIds = Object.entries(this.eventStore)
-        .sort((entryA, entryB) => {
-          const initialEventATimestamp = getInitialEventTimestamp(...entryA);
-          const initialEventBTimestamp = getInitialEventTimestamp(...entryB);
+    } = {}) =>
+      new Promise(resolve => {
+        const aggregateIds = Object.entries(this.eventStore)
+          .sort((entryA, entryB) => {
+            const initialEventATimestamp = getInitialEventTimestamp(...entryA);
+            const initialEventBTimestamp = getInitialEventTimestamp(...entryB);
 
-          return initialEventATimestamp > initialEventBTimestamp ? 1 : -1;
-        })
-        .map(([aggregateId]) => aggregateId);
+            return initialEventATimestamp > initialEventBTimestamp ? 1 : -1;
+          })
+          .map(([aggregateId]) => aggregateId);
 
-      const { appliedLimit, appliedStartIndex = 0 } =
-        parseAppliedListAggregateIdsOptions({ inputLimit, inputPageToken });
+        const { appliedLimit, appliedStartIndex = 0 } =
+          parseAppliedListAggregateIdsOptions({ inputLimit, inputPageToken });
 
-      const appliedExclusiveEndIndex =
-        appliedLimit === undefined
-          ? undefined
-          : appliedStartIndex + appliedLimit;
+        const appliedExclusiveEndIndex =
+          appliedLimit === undefined
+            ? undefined
+            : appliedStartIndex + appliedLimit;
 
-      const hasNextPage =
-        appliedExclusiveEndIndex === undefined
-          ? false
-          : aggregateIds[appliedExclusiveEndIndex] !== undefined;
+        const hasNextPage =
+          appliedExclusiveEndIndex === undefined
+            ? false
+            : aggregateIds[appliedExclusiveEndIndex] !== undefined;
 
-      const parsedNextPageToken: ParsedPageToken = {
-        limit: appliedLimit,
-        exclusiveEndIndex: appliedExclusiveEndIndex,
-      };
+        const parsedNextPageToken: ParsedPageToken = {
+          limit: appliedLimit,
+          exclusiveEndIndex: appliedExclusiveEndIndex,
+        };
 
-      return {
-        aggregateIds: aggregateIds.slice(
-          appliedStartIndex,
-          appliedExclusiveEndIndex,
-        ),
-        ...(hasNextPage
-          ? { nextPageToken: JSON.stringify(parsedNextPageToken) }
-          : {}),
-      };
-    };
+        resolve({
+          aggregateIds: aggregateIds.slice(
+            appliedStartIndex,
+            appliedExclusiveEndIndex,
+          ),
+          ...(hasNextPage
+            ? { nextPageToken: JSON.stringify(parsedNextPageToken) }
+            : {}),
+        });
+      });
 
     // We do not implement snapshots in this adapter
     this.putSnapshot = () => new Promise(resolve => resolve());
