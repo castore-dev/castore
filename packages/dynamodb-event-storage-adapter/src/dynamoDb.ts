@@ -306,7 +306,7 @@ export class DynamoDbEventStorageAdapter implements StorageAdapter {
             : {}),
         },
         ExpressionAttributeValues: marshaller.marshallItem({
-          ':aggregateId': aggregateId,
+          ':aggregateId': getSnapshotPKFromAggregateId(aggregateId),
           ...(maxVersion !== undefined ? { ':maxVersion': maxVersion } : {}),
           ...(minVersion !== undefined ? { ':minVersion': minVersion } : {}),
         }),
@@ -331,9 +331,9 @@ export class DynamoDbEventStorageAdapter implements StorageAdapter {
       }
 
       return {
-        snapshots: marshalledSnapshots.map(item =>
-          marshaller.unmarshallItem(item),
-        ) as Aggregate[],
+        snapshots: marshalledSnapshots
+          .map(item => marshaller.unmarshallItem(item))
+          .map(item => item.aggregate) as Aggregate[],
       };
     };
   }
