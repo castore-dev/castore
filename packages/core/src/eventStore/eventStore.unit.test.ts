@@ -39,6 +39,7 @@ describe('event store', () => {
         'reduce',
         'simulateSideEffect',
         'storageAdapter',
+        'getStorageAdapter',
         'pushEvent',
         'buildAggregate',
         'getEvents',
