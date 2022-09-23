@@ -5,12 +5,15 @@ export type { EventDetail } from './event/eventDetail';
 export { AggregateNotFoundError } from './errors/aggregateNotFound';
 export { EventAlreadyExistsError } from './errors/eventAlreadyExists';
 export { UndefinedStorageAdapterError } from './errors/undefinedStorageAdapterError';
-export { StorageAdapter } from './storageAdapter';
+export { InvalidSnapshotIntervalError } from './errors/invalidSnapshotIntervalError';
+export type { StorageAdapter } from './storageAdapter';
 export type {
   EventsQueryOptions,
   PushEventContext,
   ListAggregateIdsOptions,
   ListAggregateIdsOutput,
+  GetLastSnapshotOptions,
+  ListSnapshotsOptions,
 } from './storageAdapter';
 export { EventStore } from './eventStore';
 export type {

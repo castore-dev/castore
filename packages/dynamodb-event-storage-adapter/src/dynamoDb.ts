@@ -19,7 +19,10 @@ import {
   ListAggregateIdsOptions,
   ListAggregateIdsOutput,
   PushEventContext,
+  GetLastSnapshotOptions,
+  ListSnapshotsOptions,
   StorageAdapter,
+  Aggregate,
 } from '@castore/core';
 
 import {
@@ -45,6 +48,9 @@ export const EVENT_TABLE_METADATA_KEY = 'metadata';
 export const EVENT_TABLE_IS_INITIAL_EVENT_KEY = 'isInitialEvent';
 export const EVENT_TABLE_INITIAL_EVENT_INDEX_NAME = 'initialEvents';
 
+const getSnapshotPKFromAggregateId = (aggregateId: string): string =>
+  `${aggregateId}#snapshot`;
+
 const isConditionalCheckFailedException = (error: Error): boolean =>
   get(error, 'code') === 'ConditionalCheckFailedException';
 
@@ -62,6 +68,16 @@ export class DynamoDbEventStorageAdapter implements StorageAdapter {
     options?: ListAggregateIdsOptions,
   ) => Promise<ListAggregateIdsOutput>;
 
+  putSnapshot: (aggregate: Aggregate) => Promise<void>;
+  getLastSnapshot: (
+    aggregateId: string,
+    options?: GetLastSnapshotOptions,
+  ) => Promise<{ snapshot: Aggregate | undefined }>;
+  listSnapshots: (
+    aggregateId: string,
+    options?: ListSnapshotsOptions,
+  ) => Promise<{ snapshots: Aggregate[] }>;
+
   tableName: string;
   dynamoDbClient: DynamoDBClient;
 
@@ -75,22 +91,33 @@ export class DynamoDbEventStorageAdapter implements StorageAdapter {
     this.tableName = tableName;
     this.dynamoDbClient = dynamoDbClient;
 
-    this.getEvents = async (aggregateId, { maxVersion } = {}) => {
+    // eslint-disable-next-line complexity
+    this.getEvents = async (
+      aggregateId,
+      { minVersion: minVersion, maxVersion } = {},
+    ) => {
       const marshalledEvents: Record<string, AttributeValue>[] = [];
 
       const eventsQueryCommand = new QueryCommand({
         TableName: this.tableName,
         KeyConditionExpression:
           maxVersion !== undefined
-            ? '#aggregateId = :aggregateId and #version <= :maxVersion'
+            ? minVersion !== undefined
+              ? '#aggregateId = :aggregateId and #version between :minVersion and :maxVersion'
+              : '#aggregateId = :aggregateId and #version <= :maxVersion'
+            : minVersion !== undefined
+            ? '#aggregateId = :aggregateId and #version >= :minVersion'
             : '#aggregateId = :aggregateId',
         ExpressionAttributeNames: {
           '#aggregateId': EVENT_TABLE_PK,
-          ...(maxVersion !== undefined ? { '#version': EVENT_TABLE_SK } : {}),
+          ...(maxVersion !== undefined || minVersion !== undefined
+            ? { '#version': EVENT_TABLE_SK }
+            : {}),
         },
         ExpressionAttributeValues: marshaller.marshallItem({
           ':aggregateId': aggregateId,
           ...(maxVersion !== undefined ? { ':maxVersion': maxVersion } : {}),
+          ...(minVersion !== undefined ? { ':minVersion': minVersion } : {}),
         }),
         ConsistentRead: true,
       });
@@ -229,6 +256,84 @@ export class DynamoDbEventStorageAdapter implements StorageAdapter {
         ...(lastEvaluatedKey !== undefined
           ? { nextPageToken: JSON.stringify(parsedNextPageToken) }
           : {}),
+      };
+    };
+
+    this.putSnapshot = async aggregate => {
+      await this.dynamoDbClient.send(
+        new PutItemCommand({
+          TableName: this.tableName,
+          Item: marshaller.marshallItem({
+            aggregateId: getSnapshotPKFromAggregateId(aggregate.aggregateId),
+            version: aggregate.version,
+            aggregate,
+          }),
+        }),
+      );
+    };
+
+    this.getLastSnapshot = async (aggregateId, { maxVersion } = {}) => {
+      const { snapshots } = await this.listSnapshots(aggregateId, {
+        maxVersion,
+        limit: 1,
+        reverse: true,
+      });
+
+      return { snapshot: snapshots[0] };
+    };
+
+    // eslint-disable-next-line complexity
+    this.listSnapshots = async (
+      aggregateId,
+      { minVersion, maxVersion, limit, reverse } = {},
+    ) => {
+      const marshalledSnapshots: Record<string, AttributeValue>[] = [];
+
+      const snapshotsQueryCommand = new QueryCommand({
+        TableName: this.tableName,
+        KeyConditionExpression:
+          maxVersion !== undefined
+            ? minVersion !== undefined
+              ? '#aggregateId = :aggregateId and #version between :minVersion and :maxVersion'
+              : '#aggregateId = :aggregateId and #version <= :maxVersion'
+            : minVersion !== undefined
+            ? '#aggregateId = :aggregateId and #version >= :minVersion'
+            : '#aggregateId = :aggregateId',
+        ExpressionAttributeNames: {
+          '#aggregateId': EVENT_TABLE_PK,
+          ...(maxVersion !== undefined || minVersion !== undefined
+            ? { '#version': EVENT_TABLE_SK }
+            : {}),
+        },
+        ExpressionAttributeValues: marshaller.marshallItem({
+          ':aggregateId': getSnapshotPKFromAggregateId(aggregateId),
+          ...(maxVersion !== undefined ? { ':maxVersion': maxVersion } : {}),
+          ...(minVersion !== undefined ? { ':minVersion': minVersion } : {}),
+        }),
+        ScanIndexForward: reverse !== true,
+        ConsistentRead: true,
+        ...(limit !== undefined ? { Limit: limit } : {}),
+      });
+
+      let snapshotsQueryResult = await this.dynamoDbClient.send(
+        snapshotsQueryCommand,
+      );
+      marshalledSnapshots.push(...(snapshotsQueryResult.Items ?? []));
+
+      while (snapshotsQueryResult.LastEvaluatedKey !== undefined) {
+        snapshotsQueryCommand.input.ExclusiveStartKey =
+          snapshotsQueryResult.LastEvaluatedKey;
+        snapshotsQueryResult = await this.dynamoDbClient.send(
+          snapshotsQueryCommand,
+        );
+
+        marshalledSnapshots.push(...(snapshotsQueryResult.Items ?? []));
+      }
+
+      return {
+        snapshots: marshalledSnapshots
+          .map(item => marshaller.unmarshallItem(item))
+          .map(item => item.aggregate) as Aggregate[],
       };
     };
   }

@@ -1,5 +1,7 @@
+import { createCounter } from './createCounter';
 import { createUser } from './createUser';
 import { deleteUser } from './deleteUser';
+import { incrementCounter } from './incrementCounter';
 import { logAggregateIds } from './logAggregateIds';
 import { logUserEvents } from './logUserEvents';
 
@@ -8,4 +10,6 @@ export const functions = {
   logAggregateIds,
   createUser,
   deleteUser,
+  createCounter,
+  incrementCounter,
 };

@@ -12,12 +12,18 @@ import { JSONSchemaCommand } from './jsonSchema';
 export const pushEventMock = jest.fn();
 export const getEventsMock = jest.fn();
 export const listAggregateIdsMock = jest.fn();
+export const putSnapshotMock = jest.fn();
+export const getLastSnapshotMock = jest.fn();
+export const listSnapshotsMock = jest.fn();
 
-export const mockStorageAdapter = new StorageAdapter({
+export const mockStorageAdapter: StorageAdapter = {
   pushEvent: pushEventMock,
   getEvents: getEventsMock,
   listAggregateIds: listAggregateIdsMock,
-});
+  putSnapshot: putSnapshotMock,
+  getLastSnapshot: getLastSnapshotMock,
+  listSnapshots: listSnapshotsMock,
+};
 
 // Counters
 

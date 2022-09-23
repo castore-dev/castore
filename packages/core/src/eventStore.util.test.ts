@@ -6,12 +6,18 @@ import { StorageAdapter } from '~/storageAdapter';
 export const pushEventMock = jest.fn();
 export const getEventsMock = jest.fn();
 export const listAggregateIdsMock = jest.fn();
+export const putSnapshotMock = jest.fn();
+export const getLastSnapshotMock = jest.fn();
+export const listSnapshotsMock = jest.fn();
 
-export const mockStorageAdapter = new StorageAdapter({
+export const mockStorageAdapter: StorageAdapter = {
   pushEvent: pushEventMock,
   getEvents: getEventsMock,
   listAggregateIds: listAggregateIdsMock,
-});
+  putSnapshot: putSnapshotMock,
+  getLastSnapshot: getLastSnapshotMock,
+  listSnapshots: listSnapshotsMock,
+};
 
 // Counters
 
@@ -64,21 +70,20 @@ export type CounterAggregate = {
 };
 
 export const counterIdMock = 'counterId';
+export const counterCreatedEventMock: CounterEventsDetails = {
+  aggregateId: counterIdMock,
+  version: 1,
+  type: 'COUNTER_CREATED',
+  timestamp: '2022',
+};
+export const counterIncrementedEventMock: CounterEventsDetails = {
+  aggregateId: counterIdMock,
+  version: 2,
+  type: 'COUNTER_INCREMENTED',
+  timestamp: '2023',
+};
 export const counterEventsMocks: [CounterEventsDetails, CounterEventsDetails] =
-  [
-    {
-      aggregateId: counterIdMock,
-      version: 1,
-      type: 'COUNTER_CREATED',
-      timestamp: '2022',
-    },
-    {
-      aggregateId: counterIdMock,
-      version: 2,
-      type: 'COUNTER_INCREMENTED',
-      timestamp: '2023',
-    },
-  ];
+  [counterCreatedEventMock, counterIncrementedEventMock];
 
 export const countersReducer = (
   counterAggregate: CounterAggregate,
@@ -124,6 +129,7 @@ export const counterEventStore = new EventStore({
   ],
   reduce: countersReducer,
   storageAdapter: mockStorageAdapter,
+  snapshotInterval: 2,
 });
 
 // Users

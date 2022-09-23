@@ -1,10 +1,6 @@
 import React, { useEffect } from 'react';
 
-import {
-  EventAlreadyExistsError,
-  EventDetail,
-  StorageAdapter,
-} from '@castore/core';
+import { EventAlreadyExistsError, EventDetail } from '@castore/core';
 
 import { dbByEventStoreId, eventStoresById } from '~/services/data';
 
@@ -24,7 +20,7 @@ export const EventStoreSynchronizer = ({
     // /!\ WARNING /!\ This update do not trigger a re-render
     // This is not an issue right now, but may become one in the future
     // To replace by a state in this case
-    eventStore.storageAdapter = new StorageAdapter({
+    eventStore.storageAdapter = {
       // eslint-disable-next-line @typescript-eslint/require-await
       getEvents: async (aggregateId, { maxVersion } = {}) => {
         let events = eventsByAggregateId[aggregateId] ?? [];
@@ -60,11 +56,18 @@ export const EventStoreSynchronizer = ({
           };
         });
       },
-      // eslint-disable-next-line @typescript-eslint/require-await
-      listAggregateIds: async () => ({
-        aggregateIds: Object.keys(eventsByAggregateId),
-      }),
-    });
+      listAggregateIds: () =>
+        new Promise(resolve =>
+          resolve({
+            aggregateIds: Object.keys(eventsByAggregateId),
+          }),
+        ),
+      // We do not implement snapshots in this adapter
+      putSnapshot: () => new Promise(resolve => resolve()),
+      getLastSnapshot: () =>
+        new Promise(resolve => resolve({ snapshot: undefined })),
+      listSnapshots: () => new Promise(resolve => resolve({ snapshots: [] })),
+    };
   }, [eventsByAggregateId, setEventsByAggregateId]);
 
   return <></>;

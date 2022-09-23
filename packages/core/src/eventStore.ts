@@ -1,6 +1,7 @@
 /* eslint-disable max-lines */
 import type { Aggregate } from '~/aggregate';
 import { AggregateNotFoundError } from '~/errors/aggregateNotFound';
+import { InvalidSnapshotIntervalError } from '~/errors/invalidSnapshotIntervalError';
 import { UndefinedStorageAdapterError } from '~/errors/undefinedStorageAdapterError';
 import type { EventDetail } from '~/event/eventDetail';
 import type { EventType, EventTypesDetails } from '~/event/eventType';
@@ -16,23 +17,25 @@ export type SimulationOptions = { simulationDate?: string };
 export class EventStore<
   I extends string = string,
   E extends EventType[] = EventType[],
-  $D extends EventDetail = EventTypesDetails<E>,
+  D extends EventDetail = EventTypesDetails<E>,
   // cf https://devblogs.microsoft.com/typescript/announcing-typescript-4-7-rc/#optional-variance-annotations-for-type-parameters
   // EventStore is contravariant on its fns args: We have to type them as any
   // So that EventStore implementations still extends the EventStore type
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  D extends EventDetail = EventDetail extends $D ? any : $D,
+  $D extends EventDetail = EventDetail extends D ? any : D,
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  R extends (aggregate: any, event: D) => Aggregate = (
+  R extends (aggregate: any, event: $D) => Aggregate = (
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     aggregate: any,
-    event: D,
+    event: $D,
   ) => Aggregate,
   A extends Aggregate = ReturnType<R>,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  $A extends Aggregate = Aggregate extends A ? any : A,
 > {
   // @ts-ignore _types only
   _types: {
-    details: $D;
+    details: D;
     aggregate: A;
   };
   eventStoreId: I;
@@ -45,38 +48,42 @@ export class EventStore<
    */
   reduce: R;
   simulateSideEffect: (
-    indexedEvents: Record<string, Omit<D, 'version'>>,
-    event: D,
+    indexedEvents: Record<string, Omit<$D, 'version'>>,
+    event: $D,
   ) => Record<string, Omit<D, 'version'>>;
+  snapshotInterval: number;
 
   getEvents: (
     aggregateId: string,
     options?: EventsQueryOptions,
-  ) => Promise<{ events: $D[] }>;
-  pushEvent: (eventDetail: D) => Promise<void>;
+  ) => Promise<{ events: D[] }>;
+  pushEvent: (eventDetail: $D) => Promise<void>;
   listAggregateIds: (
     listAggregateOptions?: ListAggregateIdsOptions,
   ) => Promise<ListAggregateIdsOutput>;
 
-  buildAggregate: (events: D[]) => A | undefined;
+  buildAggregate: (events: $D[], aggregate?: $A) => A | undefined;
+
   getAggregate: (
     aggregateId: string,
     options?: EventsQueryOptions,
   ) => Promise<{
     aggregate: A | undefined;
-    events: $D[];
-    lastEvent: $D | undefined;
+    events: D[];
+    lastEvent: D | undefined;
+    snapshot: A | undefined;
   }>;
   getExistingAggregate: (
     aggregateId: string,
     options?: EventsQueryOptions,
   ) => Promise<{
     aggregate: A;
-    events: $D[];
-    lastEvent: $D;
+    events: D[];
+    lastEvent: D;
+    snapshot: A | undefined;
   }>;
   simulateAggregate: (
-    events: D[],
+    events: $D[],
     options?: SimulationOptions,
   ) => A | undefined;
   /**
@@ -93,6 +100,7 @@ export class EventStore<
       [event.version]: event,
     }),
     storageAdapter,
+    snapshotInterval = Infinity,
   }: {
     eventStoreId: I;
     /**
@@ -104,10 +112,11 @@ export class EventStore<
      */
     reduce: R;
     simulateSideEffect?: (
-      indexedEvents: Record<string, Omit<D, 'version'>>,
-      event: D,
+      indexedEvents: Record<string, Omit<$D, 'version'>>,
+      event: $D,
     ) => Record<string, Omit<D, 'version'>>;
     storageAdapter?: StorageAdapter;
+    snapshotInterval?: number;
   }) {
     this.eventStoreId = eventStoreId;
     this.eventStoreEvents = eventStoreEvents;
@@ -117,6 +126,14 @@ export class EventStore<
      * @debt v2 "rename as eventStorageAdapter"
      */
     this.storageAdapter = storageAdapter;
+
+    if (
+      snapshotInterval !== Infinity &&
+      (!Number.isInteger(snapshotInterval) || snapshotInterval <= 1)
+    ) {
+      throw new InvalidSnapshotIntervalError({ snapshotInterval });
+    }
+    this.snapshotInterval = snapshotInterval;
 
     this.getEvents = async (aggregateId, queryOptions) => {
       if (!this.storageAdapter) {
@@ -131,19 +148,35 @@ export class EventStore<
       return this.storageAdapter.getEvents(
         aggregateId,
         queryOptions,
-      ) as Promise<{ events: $D[] }>;
+      ) as Promise<{ events: D[] }>;
     };
 
-    this.pushEvent = async (eventDetail: D) => {
+    this.pushEvent = async (eventDetail: $D) => {
       if (!this.storageAdapter) {
         throw new UndefinedStorageAdapterError({
           eventStoreId: this.eventStoreId,
         });
       }
 
-      return this.storageAdapter.pushEvent(eventDetail, {
+      await this.storageAdapter.pushEvent(eventDetail, {
         eventStoreId: this.eventStoreId,
       });
+
+      const { version, aggregateId } = eventDetail;
+      if (version % this.snapshotInterval === 0) {
+        /**
+         * @debt performances "In theory, events should already have been fetched. Find a way to not have to refetch aggregate (caching or input)"
+         */
+        const { aggregate } = await this.getAggregate(aggregateId);
+
+        if (!aggregate) {
+          console.error('Unable to create snapshot: Aggregate not found');
+
+          return;
+        }
+
+        await this.storageAdapter.putSnapshot(aggregate);
+      }
     };
 
     this.listAggregateIds = async (options?: ListAggregateIdsOptions) => {
@@ -156,17 +189,37 @@ export class EventStore<
       return this.storageAdapter.listAggregateIds(options);
     };
 
-    this.buildAggregate = (eventDetails: D[]) =>
-      eventDetails.reduce(this.reduce, undefined as unknown as A) as
-        | A
-        | undefined;
+    this.buildAggregate = (eventDetails: $D[], aggregate?: $A) =>
+      eventDetails.reduce(this.reduce, aggregate) as A | undefined;
 
-    this.getAggregate = async (aggregateId, options) => {
-      const { events } = await this.getEvents(aggregateId, options);
-      const aggregate = this.buildAggregate(events as unknown as D[]);
+    this.getAggregate = async (aggregateId, options = {}) => {
+      if (!this.storageAdapter) {
+        throw new UndefinedStorageAdapterError({
+          eventStoreId: this.eventStoreId,
+        });
+      }
+
+      const { maxVersion } = options;
+      let snapshot: A | undefined;
+      if (maxVersion === undefined || maxVersion >= this.snapshotInterval) {
+        snapshot = (
+          await this.storageAdapter.getLastSnapshot(aggregateId, { maxVersion })
+        ).snapshot as A | undefined;
+      }
+
+      const { events } = await this.getEvents(aggregateId, {
+        ...options,
+        minVersion: snapshot ? snapshot.version + 1 : undefined,
+      });
+
+      const aggregate = this.buildAggregate(
+        events as unknown as $D[],
+        snapshot as unknown as $A,
+      );
+
       const lastEvent = events[events.length - 1];
 
-      return { aggregate, events, lastEvent };
+      return { aggregate, events, lastEvent, snapshot };
     };
 
     this.getExistingAggregate = async (aggregateId, options) => {
@@ -188,7 +241,13 @@ export class EventStore<
       { simulationDate } = {},
     ): A | undefined => {
       let eventsWithSideEffects = Object.values(
-        events.reduce(this.simulateSideEffect, {} as Record<string, D>),
+        events.reduce(
+          this.simulateSideEffect as unknown as (
+            indexedEvents: Record<string, Omit<$D, 'version'>>,
+            event: $D,
+          ) => Record<string, Omit<$D, 'version'>>,
+          {} as Record<string, $D>,
+        ),
       );
 
       if (simulationDate !== undefined) {
@@ -201,7 +260,7 @@ export class EventStore<
         .sort(({ timestamp: timestampA }, { timestamp: timestampB }) =>
           timestampA < timestampB ? -1 : 1,
         )
-        .map((event, index) => ({ ...event, version: index + 1 })) as D[];
+        .map((event, index) => ({ ...event, version: index + 1 })) as $D[];
 
       return this.buildAggregate(sortedEventsWithSideEffects);
     };

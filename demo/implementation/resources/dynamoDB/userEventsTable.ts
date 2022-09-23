@@ -1,5 +1,4 @@
 import {
-  EVENT_TABLE_EVENT_TYPE_KEY,
   EVENT_TABLE_INITIAL_EVENT_INDEX_NAME,
   EVENT_TABLE_IS_INITIAL_EVENT_KEY,
   EVENT_TABLE_PK,
@@ -17,7 +16,6 @@ export const UserEventsTable = {
     AttributeDefinitions: [
       { AttributeName: EVENT_TABLE_PK, AttributeType: 'S' },
       { AttributeName: EVENT_TABLE_SK, AttributeType: 'N' },
-      { AttributeName: EVENT_TABLE_EVENT_TYPE_KEY, AttributeType: 'S' },
       { AttributeName: EVENT_TABLE_TIMESTAMP_KEY, AttributeType: 'S' },
       { AttributeName: EVENT_TABLE_IS_INITIAL_EVENT_KEY, AttributeType: 'N' },
     ],

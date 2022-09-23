@@ -1,3 +1,4 @@
+/* eslint-disable max-lines */
 import { AggregateNotFoundError } from './errors/aggregateNotFound';
 import {
   CounterAggregate,
@@ -11,6 +12,10 @@ import {
   getEventsMock,
   pushEventMock,
   listAggregateIdsMock,
+  getLastSnapshotMock,
+  putSnapshotMock,
+  counterCreatedEventMock,
+  counterIncrementedEventMock,
 } from './eventStore.util.test';
 
 describe('event store', () => {
@@ -20,6 +25,9 @@ describe('event store', () => {
     pushEventMock.mockClear();
     listAggregateIdsMock.mockClear();
     listAggregateIdsMock.mockReturnValue({ aggregateIds: [counterIdMock] });
+    putSnapshotMock.mockClear();
+    getLastSnapshotMock.mockClear();
+    getLastSnapshotMock.mockResolvedValue({ snapshot: undefined });
   });
 
   it('has correct properties', () => {
@@ -37,6 +45,7 @@ describe('event store', () => {
         'getAggregate',
         'getExistingAggregate',
         'simulateAggregate',
+        'snapshotInterval',
       ]),
     );
 
@@ -63,8 +72,13 @@ describe('event store', () => {
     it('gets aggregate correctly', async () => {
       const response = await counterEventStore.getAggregate(counterIdMock);
 
+      expect(getLastSnapshotMock).toHaveBeenCalledTimes(1);
+      expect(getLastSnapshotMock).toHaveBeenCalledWith(counterIdMock, {
+        maxVersion: undefined,
+      });
+
       expect(getEventsMock).toHaveBeenCalledTimes(1);
-      expect(getEventsMock).toHaveBeenCalledWith(counterIdMock, undefined);
+      expect(getEventsMock).toHaveBeenCalledWith(counterIdMock, {});
       expect(response).toStrictEqual({
         aggregate: counterEventsMocks.reduce(
           countersReducer,
@@ -72,6 +86,60 @@ describe('event store', () => {
         ),
         events: counterEventsMocks,
         lastEvent: counterEventsMocks[counterEventsMocks.length - 1],
+        snapshot: undefined,
+      });
+    });
+
+    it('gets and use last snapshot if possible', async () => {
+      const eventsAfterSnapshot = [counterIncrementedEventMock];
+      const snapshot = [counterCreatedEventMock].reduce(
+        countersReducer,
+        undefined as unknown as CounterAggregate,
+      );
+      getLastSnapshotMock.mockResolvedValue({ snapshot });
+      getEventsMock.mockResolvedValue({ events: eventsAfterSnapshot });
+
+      const response = await counterEventStore.getAggregate(counterIdMock);
+
+      expect(getLastSnapshotMock).toHaveBeenCalledTimes(1);
+      expect(getLastSnapshotMock).toHaveBeenCalledWith(counterIdMock, {
+        maxVersion: undefined,
+      });
+
+      expect(getEventsMock).toHaveBeenCalledTimes(1);
+      expect(getEventsMock).toHaveBeenCalledWith(counterIdMock, {
+        minVersion: 2,
+      });
+      expect(response).toStrictEqual({
+        aggregate: eventsAfterSnapshot.reduce(countersReducer, snapshot),
+        events: eventsAfterSnapshot,
+        lastEvent: eventsAfterSnapshot[eventsAfterSnapshot.length - 1],
+        snapshot,
+      });
+    });
+
+    it('skips fetching last snapshot if maxVersion is below snapshotInterval', async () => {
+      const events = [counterCreatedEventMock];
+      getEventsMock.mockResolvedValue({ events });
+
+      const response = await counterEventStore.getAggregate(counterIdMock, {
+        maxVersion: 1,
+      });
+
+      expect(getLastSnapshotMock).not.toHaveBeenCalled();
+
+      expect(getEventsMock).toHaveBeenCalledTimes(1);
+      expect(getEventsMock).toHaveBeenCalledWith(counterIdMock, {
+        maxVersion: 1,
+      });
+      expect(response).toStrictEqual({
+        aggregate: events.reduce(
+          countersReducer,
+          undefined as unknown as CounterAggregate,
+        ),
+        events,
+        lastEvent: events[events.length - 1],
+        snapshot: undefined,
       });
     });
   });
@@ -83,7 +151,7 @@ describe('event store', () => {
       );
 
       expect(getEventsMock).toHaveBeenCalledTimes(1);
-      expect(getEventsMock).toHaveBeenCalledWith(counterIdMock, undefined);
+      expect(getEventsMock).toHaveBeenCalledWith(counterIdMock, {});
 
       expect(response).toStrictEqual({
         aggregate: counterEventsMocks.reduce(
@@ -92,6 +160,7 @@ describe('event store', () => {
         ),
         events: counterEventsMocks,
         lastEvent: counterEventsMocks[counterEventsMocks.length - 1],
+        snapshot: undefined,
       });
     });
 
@@ -111,12 +180,22 @@ describe('event store', () => {
 
   describe('pushEvent', () => {
     it('pushes new event correctly', async () => {
-      await counterEventStore.pushEvent(counterEventsMocks[0]);
+      await counterEventStore.pushEvent(counterCreatedEventMock);
 
       expect(pushEventMock).toHaveBeenCalledTimes(1);
-      expect(pushEventMock).toHaveBeenCalledWith(counterEventsMocks[0], {
+      expect(pushEventMock).toHaveBeenCalledWith(counterCreatedEventMock, {
         eventStoreId: counterEventStore.eventStoreId,
       });
+    });
+
+    it('puts snapshot on second event pushed (because snapshot interval is 2)', async () => {
+      await counterEventStore.pushEvent(counterIncrementedEventMock);
+
+      expect(pushEventMock).toHaveBeenCalledTimes(1);
+      expect(pushEventMock).toHaveBeenCalledWith(counterIncrementedEventMock, {
+        eventStoreId: counterEventStore.eventStoreId,
+      });
+      expect(putSnapshotMock).toHaveBeenCalledTimes(1);
     });
   });
 
