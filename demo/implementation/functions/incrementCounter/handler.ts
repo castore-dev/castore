@@ -6,11 +6,7 @@ import { applyConsoleMiddleware } from '~/libs/middlewares/console';
 export const incrementCounter = async (
   event: Parameters<typeof incrementCounterCommand.handler>[0],
 ): Promise<void> => {
-  const output = await incrementCounterCommand.handler(event, [
-    counterEventStore,
-  ]);
-  console.log('output');
-  console.log(output);
+  await incrementCounterCommand.handler(event, [counterEventStore]);
 };
 
 export const main = applyConsoleMiddleware(incrementCounter, {

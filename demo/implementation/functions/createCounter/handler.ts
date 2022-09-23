@@ -6,9 +6,7 @@ import { applyConsoleMiddleware } from '~/libs/middlewares/console';
 export const createCounter = async (
   event: Parameters<typeof createCounterCommand.handler>[0],
 ): Promise<void> => {
-  const output = await createCounterCommand.handler(event, [counterEventStore]);
-  console.log('output');
-  console.log(output);
+  await createCounterCommand.handler(event, [counterEventStore]);
 };
 
 export const main = applyConsoleMiddleware(createCounter, {
