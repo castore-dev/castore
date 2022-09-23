@@ -5,7 +5,6 @@ export type { EventDetail } from './event/eventDetail';
 export { AggregateNotFoundError } from './errors/aggregateNotFound';
 export { EventAlreadyExistsError } from './errors/eventAlreadyExists';
 export { UndefinedStorageAdapterError } from './errors/undefinedStorageAdapterError';
-export { InvalidSnapshotIntervalError } from './errors/invalidSnapshotIntervalError';
 export type { StorageAdapter } from './storageAdapter';
 export type {
   EventsQueryOptions,

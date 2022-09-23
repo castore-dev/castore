@@ -1,5 +1,6 @@
 /* eslint-disable max-lines */
-import { AggregateNotFoundError } from './errors/aggregateNotFound';
+import { AggregateNotFoundError } from '~/errors/aggregateNotFound';
+
 import {
   CounterAggregate,
   counterCreatedEvent,

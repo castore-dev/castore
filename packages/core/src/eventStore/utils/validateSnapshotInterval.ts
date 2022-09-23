@@ -1,7 +1,3 @@
-/**
- * @name InvalidSnapshotIntervalError
- * @description Error thrown when the snapshot interval value is invalid
- */
 export class InvalidSnapshotIntervalError extends Error {
   snapshotInterval: number;
 
@@ -13,3 +9,14 @@ export class InvalidSnapshotIntervalError extends Error {
     this.snapshotInterval = snapshotInterval;
   }
 }
+
+export const validateSnapshotInterval = (snapshotInterval: number): number => {
+  if (
+    snapshotInterval !== Infinity &&
+    (!Number.isInteger(snapshotInterval) || snapshotInterval <= 1)
+  ) {
+    throw new InvalidSnapshotIntervalError({ snapshotInterval });
+  }
+
+  return snapshotInterval;
+};
