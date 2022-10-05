@@ -15,12 +15,6 @@ import get from 'lodash/get';
 import {
   EventAlreadyExistsError,
   EventDetail,
-  EventsQueryOptions,
-  ListAggregateIdsOptions,
-  ListAggregateIdsOutput,
-  PushEventContext,
-  GetLastSnapshotOptions,
-  ListSnapshotsOptions,
   StorageAdapter,
   Aggregate,
 } from '@castore/core';
@@ -55,28 +49,14 @@ const isConditionalCheckFailedException = (error: Error): boolean =>
   get(error, 'code') === 'ConditionalCheckFailedException';
 
 export class DynamoDbEventStorageAdapter implements StorageAdapter {
-  getEvents: (
-    aggregateId: string,
-    options?: EventsQueryOptions,
-  ) => Promise<{ events: EventDetail[] }>;
+  getEvents: StorageAdapter['getEvents'];
   getPushEventInput: (eventDetail: EventDetail) => PutItemCommandInput;
-  pushEvent: (
-    eventDetail: EventDetail,
-    context: PushEventContext,
-  ) => Promise<void>;
-  listAggregateIds: (
-    options?: ListAggregateIdsOptions,
-  ) => Promise<ListAggregateIdsOutput>;
+  pushEvent: StorageAdapter['pushEvent'];
+  listAggregateIds: StorageAdapter['listAggregateIds'];
 
-  putSnapshot: (aggregate: Aggregate) => Promise<void>;
-  getLastSnapshot: (
-    aggregateId: string,
-    options?: GetLastSnapshotOptions,
-  ) => Promise<{ snapshot: Aggregate | undefined }>;
-  listSnapshots: (
-    aggregateId: string,
-    options?: ListSnapshotsOptions,
-  ) => Promise<{ snapshots: Aggregate[] }>;
+  putSnapshot: StorageAdapter['putSnapshot'];
+  getLastSnapshot: StorageAdapter['getLastSnapshot'];
+  listSnapshots: StorageAdapter['listSnapshots'];
 
   tableName: string;
   dynamoDbClient: DynamoDBClient;
@@ -94,7 +74,7 @@ export class DynamoDbEventStorageAdapter implements StorageAdapter {
     // eslint-disable-next-line complexity
     this.getEvents = async (
       aggregateId,
-      { minVersion: minVersion, maxVersion } = {},
+      { minVersion, maxVersion, reverse, limit } = {},
     ) => {
       const marshalledEvents: Record<string, AttributeValue>[] = [];
 
@@ -120,6 +100,8 @@ export class DynamoDbEventStorageAdapter implements StorageAdapter {
           ...(minVersion !== undefined ? { ':minVersion': minVersion } : {}),
         }),
         ConsistentRead: true,
+        ...(reverse !== undefined ? { ScanIndexForward: !reverse } : {}),
+        ...(limit !== undefined ? { Limit: limit } : {}),
       });
 
       let eventsQueryResult = await this.dynamoDbClient.send(

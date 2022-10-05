@@ -5,6 +5,8 @@ import type { Aggregate } from '~/aggregate';
 export type EventsQueryOptions = {
   minVersion?: number;
   maxVersion?: number;
+  limit?: number;
+  reverse?: boolean;
 };
 
 export type PushEventContext = { eventStoreId?: string };

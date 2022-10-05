@@ -1,18 +1,20 @@
 /* eslint-disable max-lines */
 import type { Aggregate } from '~/aggregate';
 import { AggregateNotFoundError } from '~/errors/aggregateNotFound';
-import { InvalidSnapshotIntervalError } from '~/errors/invalidSnapshotIntervalError';
 import { UndefinedStorageAdapterError } from '~/errors/undefinedStorageAdapterError';
 import type { EventDetail } from '~/event/eventDetail';
 import type { EventType, EventTypesDetails } from '~/event/eventType';
-import type {
-  EventsQueryOptions,
-  ListAggregateIdsOptions,
-  ListAggregateIdsOutput,
-  StorageAdapter,
-} from '~/storageAdapter';
+import type { StorageAdapter } from '~/storageAdapter';
 
-export type SimulationOptions = { simulationDate?: string };
+import {
+  AggregateIdsLister,
+  EventPusher,
+  EventsGetter,
+  SideEffectsSimulator,
+  AggregateGetter,
+  AggregateSimulator,
+} from './types';
+import { validateSnapshotInterval } from './utils/validateSnapshotInterval';
 
 export class EventStore<
   I extends string = string,
@@ -47,49 +49,23 @@ export class EventStore<
    * @debt v2 "rename as reducer"
    */
   reduce: R;
-  simulateSideEffect: (
-    indexedEvents: Record<string, Omit<$D, 'version'>>,
-    event: $D,
-  ) => Record<string, Omit<D, 'version'>>;
+  simulateSideEffect: SideEffectsSimulator<D, $D>;
   snapshotInterval: number;
 
-  getEvents: (
-    aggregateId: string,
-    options?: EventsQueryOptions,
-  ) => Promise<{ events: D[] }>;
-  pushEvent: (eventDetail: $D) => Promise<void>;
-  listAggregateIds: (
-    listAggregateOptions?: ListAggregateIdsOptions,
-  ) => Promise<ListAggregateIdsOutput>;
+  getEvents: EventsGetter<D>;
+  pushEvent: EventPusher<$D>;
+  listAggregateIds: AggregateIdsLister;
 
   buildAggregate: (events: $D[], aggregate?: $A) => A | undefined;
 
-  getAggregate: (
-    aggregateId: string,
-    options?: EventsQueryOptions,
-  ) => Promise<{
-    aggregate: A | undefined;
-    events: D[];
-    lastEvent: D | undefined;
-    snapshot: A | undefined;
-  }>;
-  getExistingAggregate: (
-    aggregateId: string,
-    options?: EventsQueryOptions,
-  ) => Promise<{
-    aggregate: A;
-    events: D[];
-    lastEvent: D;
-    snapshot: A | undefined;
-  }>;
-  simulateAggregate: (
-    events: $D[],
-    options?: SimulationOptions,
-  ) => A | undefined;
+  getAggregate: AggregateGetter<D, A>;
+  getExistingAggregate: AggregateGetter<D, A, true>;
+  simulateAggregate: AggregateSimulator<$D, A>;
   /**
    * @debt v2 "rename as eventStorageAdapter"
    */
   storageAdapter?: StorageAdapter;
+  getStorageAdapter: () => StorageAdapter;
 
   constructor({
     eventStoreId,
@@ -99,7 +75,7 @@ export class EventStore<
       ...indexedEvents,
       [event.version]: event,
     }),
-    storageAdapter,
+    storageAdapter: $storageAdapter,
     snapshotInterval = Infinity,
   }: {
     eventStoreId: I;
@@ -111,10 +87,7 @@ export class EventStore<
      * @debt v2 "rename as reducer"
      */
     reduce: R;
-    simulateSideEffect?: (
-      indexedEvents: Record<string, Omit<$D, 'version'>>,
-      event: $D,
-    ) => Record<string, Omit<D, 'version'>>;
+    simulateSideEffect?: SideEffectsSimulator<D, $D>;
     storageAdapter?: StorageAdapter;
     snapshotInterval?: number;
   }) {
@@ -125,40 +98,33 @@ export class EventStore<
     /**
      * @debt v2 "rename as eventStorageAdapter"
      */
-    this.storageAdapter = storageAdapter;
+    this.storageAdapter = $storageAdapter;
 
-    if (
-      snapshotInterval !== Infinity &&
-      (!Number.isInteger(snapshotInterval) || snapshotInterval <= 1)
-    ) {
-      throw new InvalidSnapshotIntervalError({ snapshotInterval });
-    }
-    this.snapshotInterval = snapshotInterval;
+    this.snapshotInterval = validateSnapshotInterval(snapshotInterval);
 
-    this.getEvents = async (aggregateId, queryOptions) => {
+    this.getStorageAdapter = () => {
       if (!this.storageAdapter) {
         throw new UndefinedStorageAdapterError({
           eventStoreId: this.eventStoreId,
         });
       }
 
-      /**
-       * @debt feature "For the moment we just cast, we could implement validation + type guards at EventType level"
-       */
-      return this.storageAdapter.getEvents(
-        aggregateId,
-        queryOptions,
-      ) as Promise<{ events: D[] }>;
+      return this.storageAdapter;
     };
 
-    this.pushEvent = async (eventDetail: $D) => {
-      if (!this.storageAdapter) {
-        throw new UndefinedStorageAdapterError({
-          eventStoreId: this.eventStoreId,
-        });
-      }
+    this.getEvents = async (aggregateId, queryOptions) =>
+      this.getStorageAdapter().getEvents(
+        aggregateId,
+        queryOptions,
+        /**
+         * @debt feature "For the moment we just cast, we could implement validation + type guards at EventType level"
+         */
+      ) as Promise<{ events: D[] }>;
 
-      await this.storageAdapter.pushEvent(eventDetail, {
+    this.pushEvent = async eventDetail => {
+      const storageAdapter = this.getStorageAdapter();
+
+      await storageAdapter.pushEvent(eventDetail, {
         eventStoreId: this.eventStoreId,
       });
 
@@ -175,35 +141,25 @@ export class EventStore<
           return;
         }
 
-        await this.storageAdapter.putSnapshot(aggregate);
+        await storageAdapter.putSnapshot(aggregate);
       }
     };
 
-    this.listAggregateIds = async (options?: ListAggregateIdsOptions) => {
-      if (!this.storageAdapter) {
-        throw new UndefinedStorageAdapterError({
-          eventStoreId: this.eventStoreId,
-        });
-      }
+    this.listAggregateIds = async options =>
+      this.getStorageAdapter().listAggregateIds(options);
 
-      return this.storageAdapter.listAggregateIds(options);
-    };
-
-    this.buildAggregate = (eventDetails: $D[], aggregate?: $A) =>
+    this.buildAggregate = (eventDetails, aggregate) =>
       eventDetails.reduce(this.reduce, aggregate) as A | undefined;
 
     this.getAggregate = async (aggregateId, options = {}) => {
-      if (!this.storageAdapter) {
-        throw new UndefinedStorageAdapterError({
-          eventStoreId: this.eventStoreId,
-        });
-      }
-
       const { maxVersion } = options;
+
       let snapshot: A | undefined;
       if (maxVersion === undefined || maxVersion >= this.snapshotInterval) {
         snapshot = (
-          await this.storageAdapter.getLastSnapshot(aggregateId, { maxVersion })
+          await this.getStorageAdapter().getLastSnapshot(aggregateId, {
+            maxVersion,
+          })
         ).snapshot as A | undefined;
       }
 
@@ -236,10 +192,7 @@ export class EventStore<
       return { aggregate, lastEvent, ...restAggregate };
     };
 
-    this.simulateAggregate = (
-      events,
-      { simulationDate } = {},
-    ): A | undefined => {
+    this.simulateAggregate = (events, { simulationDate } = {}) => {
       let eventsWithSideEffects = Object.values(
         events.reduce(
           this.simulateSideEffect as unknown as (
@@ -266,15 +219,3 @@ export class EventStore<
     };
   }
 }
-
-export type EventStoreId<E extends EventStore> = E['eventStoreId'];
-
-export type EventStoreEventsTypes<E extends EventStore> = E['eventStoreEvents'];
-
-export type EventStoreEventsDetails<E extends EventStore> =
-  E['_types']['details'];
-
-export type EventStoreReducer<E extends EventStore> = E['reduce'];
-
-export type EventStoreAggregate<E extends EventStore> =
-  E['_types']['aggregate'];

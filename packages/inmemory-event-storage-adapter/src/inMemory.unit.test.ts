@@ -57,8 +57,40 @@ describe('in-memory storage adapter', () => {
     });
 
     it('pushes and gets events correctly', async () => {
-      const response = await storageAdapter.getEvents(aggregateIdMock1);
-      expect(response).toStrictEqual({ events: [eventMock1] });
+      await storageAdapter.pushEvent(eventMock2, {
+        eventStoreId: eventStoreIdMock,
+      });
+
+      const allEvents = await storageAdapter.getEvents(aggregateIdMock1);
+      expect(allEvents).toStrictEqual({ events: [eventMock1, eventMock2] });
+
+      const eventsMaxVersion = await storageAdapter.getEvents(
+        aggregateIdMock1,
+        { maxVersion: 1 },
+      );
+      expect(eventsMaxVersion).toStrictEqual({ events: [eventMock1] });
+
+      const eventsMinVersion = await storageAdapter.getEvents(
+        aggregateIdMock1,
+        { minVersion: 2 },
+      );
+      expect(eventsMinVersion).toStrictEqual({ events: [eventMock2] });
+
+      const eventsLimit = await storageAdapter.getEvents(aggregateIdMock1, {
+        limit: 1,
+      });
+      expect(eventsLimit).toStrictEqual({ events: [eventMock1] });
+
+      const eventsReverse = await storageAdapter.getEvents(aggregateIdMock1, {
+        reverse: true,
+      });
+      expect(eventsReverse).toStrictEqual({ events: [eventMock2, eventMock1] });
+
+      const eventsReverseAndLimit = await storageAdapter.getEvents(
+        aggregateIdMock1,
+        { limit: 1, reverse: true },
+      );
+      expect(eventsReverseAndLimit).toStrictEqual({ events: [eventMock2] });
     });
 
     it('list aggregate Ids', async () => {

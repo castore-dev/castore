@@ -1,5 +1,6 @@
 /* eslint-disable max-lines */
-import { AggregateNotFoundError } from './errors/aggregateNotFound';
+import { AggregateNotFoundError } from '~/errors/aggregateNotFound';
+
 import {
   CounterAggregate,
   counterCreatedEvent,
@@ -38,6 +39,7 @@ describe('event store', () => {
         'reduce',
         'simulateSideEffect',
         'storageAdapter',
+        'getStorageAdapter',
         'pushEvent',
         'buildAggregate',
         'getEvents',
