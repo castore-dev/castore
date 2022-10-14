@@ -58,18 +58,22 @@ export class DynamoDbEventStorageAdapter implements StorageAdapter {
   getLastSnapshot: StorageAdapter['getLastSnapshot'];
   listSnapshots: StorageAdapter['listSnapshots'];
 
-  tableName: string;
+  getTableName: () => string;
+  tableName: string | (() => string);
   dynamoDbClient: DynamoDBClient;
 
   constructor({
     tableName,
     dynamoDbClient,
   }: {
-    tableName: string;
+    tableName: string | (() => string);
     dynamoDbClient: DynamoDBClient;
   }) {
     this.tableName = tableName;
     this.dynamoDbClient = dynamoDbClient;
+
+    this.getTableName = () =>
+      typeof this.tableName === 'string' ? this.tableName : this.tableName();
 
     // eslint-disable-next-line complexity
     this.getEvents = async (
@@ -79,7 +83,7 @@ export class DynamoDbEventStorageAdapter implements StorageAdapter {
       const marshalledEvents: Record<string, AttributeValue>[] = [];
 
       const eventsQueryCommand = new QueryCommand({
-        TableName: this.tableName,
+        TableName: this.getTableName(),
         KeyConditionExpression:
           maxVersion !== undefined
             ? minVersion !== undefined
@@ -147,7 +151,7 @@ export class DynamoDbEventStorageAdapter implements StorageAdapter {
         event;
 
       return {
-        TableName: this.tableName,
+        TableName: this.getTableName(),
         Item: marshaller.marshallItem({
           aggregateId,
           version,
@@ -192,7 +196,7 @@ export class DynamoDbEventStorageAdapter implements StorageAdapter {
       pageToken: inputPageToken,
     } = {}) => {
       const aggregateIdsQueryCommandInput: QueryCommandInput = {
-        TableName: this.tableName,
+        TableName: this.getTableName(),
         KeyConditionExpression: '#isInitialEvent = :true',
         ExpressionAttributeNames: {
           '#isInitialEvent': EVENT_TABLE_IS_INITIAL_EVENT_KEY,
@@ -244,7 +248,7 @@ export class DynamoDbEventStorageAdapter implements StorageAdapter {
     this.putSnapshot = async aggregate => {
       await this.dynamoDbClient.send(
         new PutItemCommand({
-          TableName: this.tableName,
+          TableName: this.getTableName(),
           Item: marshaller.marshallItem({
             aggregateId: getSnapshotPKFromAggregateId(aggregate.aggregateId),
             version: aggregate.version,
@@ -272,7 +276,7 @@ export class DynamoDbEventStorageAdapter implements StorageAdapter {
       const marshalledSnapshots: Record<string, AttributeValue>[] = [];
 
       const snapshotsQueryCommand = new QueryCommand({
-        TableName: this.tableName,
+        TableName: this.getTableName(),
         KeyConditionExpression:
           maxVersion !== undefined
             ? minVersion !== undefined
