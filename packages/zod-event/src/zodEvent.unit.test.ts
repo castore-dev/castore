@@ -17,9 +17,10 @@ describe('zodEvent implementation', () => {
   type Metadata = z.infer<typeof metadataSchema>;
 
   it('has correct properties (no payload, no metadata)', () => {
-    const simpleEventType = new ZodEventType({
-      type,
-    });
+    const simpleEventType = new ZodEventType({ type });
+
+    const assertExtends: A.Extends<typeof simpleEventType, ZodEventType> = 1;
+    assertExtends;
 
     type SimpleEventTypeDetail = EventTypeDetail<typeof simpleEventType>;
     const assertSimpleEventTypeDetail: A.Equals<
@@ -40,10 +41,10 @@ describe('zodEvent implementation', () => {
   });
 
   it('has correct properties (with payload, no metadata)', () => {
-    const payloadEventType = new ZodEventType({
-      type,
-      payloadSchema,
-    });
+    const payloadEventType = new ZodEventType({ type, payloadSchema });
+
+    const assertExtends: A.Extends<typeof payloadEventType, ZodEventType> = 1;
+    assertExtends;
 
     type PayloadEventTypeDetail = EventTypeDetail<typeof payloadEventType>;
     const assertPayloadEventTypeDetail: A.Equals<
@@ -65,10 +66,10 @@ describe('zodEvent implementation', () => {
   });
 
   it('has correct properties (no payload, with metadata)', () => {
-    const metadataEventType = new ZodEventType({
-      type,
-      metadataSchema,
-    });
+    const metadataEventType = new ZodEventType({ type, metadataSchema });
+
+    const assertExtends: A.Extends<typeof metadataEventType, ZodEventType> = 1;
+    assertExtends;
 
     type MetadataEventTypeDetail = EventTypeDetail<typeof metadataEventType>;
     const assertMetadataEventTypeDetail: A.Equals<
@@ -95,6 +96,9 @@ describe('zodEvent implementation', () => {
       payloadSchema,
       metadataSchema,
     });
+
+    const assertExtends: A.Extends<typeof fullEventType, ZodEventType> = 1;
+    assertExtends;
 
     type FullEventTypeDetail = EventTypeDetail<typeof fullEventType>;
     const assertFullEventTypeDetail: A.Equals<

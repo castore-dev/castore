@@ -27,39 +27,15 @@ export const mockStorageAdapter: StorageAdapter = {
 
 // Counters
 
-export const counterCreatedEvent = new EventType<
-  'COUNTER_CREATED',
-  {
-    aggregateId: string;
-    version: number;
-    type: 'COUNTER_CREATED';
-    timestamp: string;
-  }
->({
+export const counterCreatedEvent = new EventType<'COUNTER_CREATED'>({
   type: 'COUNTER_CREATED',
 });
 
-export const counterIncrementedEvent = new EventType<
-  'COUNTER_INCREMENTED',
-  {
-    aggregateId: string;
-    version: number;
-    type: 'COUNTER_INCREMENTED';
-    timestamp: string;
-  }
->({
+export const counterIncrementedEvent = new EventType<'COUNTER_INCREMENTED'>({
   type: 'COUNTER_INCREMENTED',
 });
 
-export const counterDeletedEvent = new EventType<
-  'COUNTER_DELETED',
-  {
-    aggregateId: string;
-    version: number;
-    type: 'COUNTER_DELETED';
-    timestamp: string;
-  }
->({
+export const counterDeletedEvent = new EventType<'COUNTER_DELETED'>({
   type: 'COUNTER_DELETED',
 });
 
@@ -142,26 +118,10 @@ export const counterEventStore = new EventStore({
 
 export const userCreatedEvent = new EventType<
   'USER_CREATED',
-  {
-    aggregateId: string;
-    version: number;
-    type: 'USER_CREATED';
-    timestamp: string;
-    payload: { name: string; age: number };
-  }
->({
-  type: 'USER_CREATED',
-});
+  { name: string; age: number }
+>({ type: 'USER_CREATED' });
 
-export const userRemovedEvent = new EventType<
-  'USER_REMOVED',
-  {
-    aggregateId: string;
-    version: number;
-    type: 'USER_REMOVED';
-    timestamp: string;
-  }
->({
+export const userRemovedEvent = new EventType<'USER_REMOVED'>({
   type: 'USER_REMOVED',
 });
 

@@ -12,15 +12,22 @@ export class JSONSchemaCommand<
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   E extends EventStore[] = EventStore[] extends $E ? any : $E,
   IS extends JSONSchema | undefined = JSONSchema | undefined,
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  I = IS extends JSONSchema ? FromSchema<IS> : any,
+  I = JSONSchema extends IS
+    ? // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      any
+    : IS extends JSONSchema
+    ? FromSchema<IS>
+    : never,
   OS extends JSONSchema | undefined = JSONSchema | undefined,
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  O = OS extends JSONSchema ? FromSchema<OS> : any,
+  O = JSONSchema extends OS
+    ? // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      any
+    : OS extends JSONSchema
+    ? FromSchema<OS>
+    : never,
 > implements Command<$E, E, I, O>
 {
-  // @ts-ignore _types only
-  _types: {
+  _types?: {
     input: I;
     output: O;
   };

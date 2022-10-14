@@ -17,8 +17,7 @@ export class Command<
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   O = any,
 > {
-  // @ts-ignore _types only
-  _types: {
+  _types?: {
     input: I;
     output: O;
   };

@@ -33,6 +33,12 @@ describe('jsonSchemaEvent implementation', () => {
   it('has correct properties (no payload, no metadata)', () => {
     const simpleEventType = new JSONSchemaEventType({ type });
 
+    const assertExtends: A.Extends<
+      typeof simpleEventType,
+      JSONSchemaEventType
+    > = 1;
+    assertExtends;
+
     type SimpleEventTypeDetail = EventTypeDetail<typeof simpleEventType>;
     const assertSimpleEventTypeDetail: A.Equals<
       SimpleEventTypeDetail,
@@ -56,6 +62,12 @@ describe('jsonSchemaEvent implementation', () => {
       type,
       payloadSchema,
     });
+
+    const assertExtends: A.Extends<
+      typeof payloadEventType,
+      JSONSchemaEventType
+    > = 1;
+    assertExtends;
 
     type PayloadEventTypeDetail = EventTypeDetail<typeof payloadEventType>;
     const assertPayloadEventTypeDetail: A.Equals<
@@ -82,6 +94,12 @@ describe('jsonSchemaEvent implementation', () => {
       metadataSchema,
     });
 
+    const assertExtends: A.Extends<
+      typeof metadataEventType,
+      JSONSchemaEventType
+    > = 1;
+    assertExtends;
+
     type MetadataEventTypeDetail = EventTypeDetail<typeof metadataEventType>;
     const assertMetadataEventTypeDetail: A.Equals<
       MetadataEventTypeDetail,
@@ -107,6 +125,12 @@ describe('jsonSchemaEvent implementation', () => {
       payloadSchema,
       metadataSchema,
     });
+
+    const assertExtends: A.Extends<
+      typeof fullEventType,
+      JSONSchemaEventType
+    > = 1;
+    assertExtends;
 
     type FullEventTypeDetail = EventTypeDetail<typeof fullEventType>;
     const assertFullEventTypeDetail: A.Equals<
