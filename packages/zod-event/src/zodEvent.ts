@@ -1,32 +1,29 @@
-import { O } from 'ts-toolbelt';
 import { z, ZodType } from 'zod';
 
 import { EventDetail, EventType } from '@castore/core';
 
-export type OmitUndefinableKeys<Obj extends Record<string, unknown>> = Omit<
-  Obj,
-  O.UndefinableKeys<Obj>
->;
-
 export class ZodEventType<
   T extends string = string,
-  MS extends ZodType | undefined = ZodType | undefined,
   PS extends ZodType | undefined = ZodType | undefined,
-  $D = OmitUndefinableKeys<{
-    aggregateId: string;
-    version: number;
-    type: T;
-    timestamp: string;
-    payload: PS extends ZodType ? z.infer<PS> : undefined;
-    metadata: MS extends ZodType ? z.infer<MS> : undefined;
-  }>,
-  D extends EventDetail = $D extends EventDetail ? $D : never,
-> implements EventType<T, D>
+  P = ZodType extends PS
+    ? string extends T
+      ? unknown
+      : never
+    : PS extends ZodType
+    ? z.infer<PS>
+    : never,
+  MS extends ZodType | undefined = ZodType | undefined,
+  M = ZodType extends MS
+    ? string extends T
+      ? unknown
+      : never
+    : MS extends ZodType
+    ? z.infer<MS>
+    : never,
+> implements EventType<T, P, M>
 {
-  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-  // @ts-ignore
-  _types: {
-    detail: D;
+  _types?: {
+    detail: EventDetail<T, P, M>;
   };
   type: T;
   payloadSchema?: PS;

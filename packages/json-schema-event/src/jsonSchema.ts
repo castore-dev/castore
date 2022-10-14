@@ -1,32 +1,29 @@
 import { FromSchema, JSONSchema } from 'json-schema-to-ts';
-import { O } from 'ts-toolbelt';
 
 import { EventDetail, EventType } from '@castore/core';
 
-type OmitUndefinableKeys<Obj extends Record<string, unknown>> = Omit<
-  Obj,
-  O.UndefinableKeys<Obj>
->;
-
 export class JSONSchemaEventType<
   T extends string = string,
-  MS extends JSONSchema | undefined = JSONSchema | undefined,
   PS extends JSONSchema | undefined = JSONSchema | undefined,
-  $D = OmitUndefinableKeys<{
-    aggregateId: string;
-    version: number;
-    type: T;
-    timestamp: string;
-    payload: PS extends JSONSchema ? FromSchema<PS> : undefined;
-    metadata: MS extends JSONSchema ? FromSchema<MS> : undefined;
-  }>,
-  D extends EventDetail = $D extends EventDetail ? $D : never,
-> implements EventType<T, D>
+  P = JSONSchema extends PS
+    ? string extends T
+      ? unknown
+      : never
+    : PS extends JSONSchema
+    ? FromSchema<PS>
+    : never,
+  MS extends JSONSchema | undefined = JSONSchema | undefined,
+  M = JSONSchema extends MS
+    ? string extends T
+      ? unknown
+      : never
+    : MS extends JSONSchema
+    ? FromSchema<MS>
+    : never,
+> implements EventType<T, P, M>
 {
-  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-  // @ts-ignore
-  _types: {
-    detail: D;
+  _types?: {
+    detail: EventDetail<T, P, M>;
   };
   type: T;
   payloadSchema?: PS;

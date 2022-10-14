@@ -35,8 +35,7 @@ export class EventStore<
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   $A extends Aggregate = Aggregate extends A ? any : A,
 > {
-  // @ts-ignore _types only
-  _types: {
+  _types?: {
     details: D;
     aggregate: A;
   };
