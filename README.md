@@ -106,17 +106,17 @@ Castore packages are **released together**. Though different versions may be com
 
 Here is an example of working `package.json`:
 
-```json
+```js
 {
-  // ...
+  ...
   "dependencies": {
     "@castore/core": "1.3.1",
     "@castore/dynamodb-event-storage-adapter": "1.3.1"
-    // ...
+    ...
   },
   "devDependencies": {
     "@castore/test-tools": "1.3.1"
-    // ...
+    ...
   }
 }
 ```
@@ -127,7 +127,7 @@ Here is an example of working `package.json`:
 
 Event Sourcing is all about **saving changes in your application state**. Such changes are represented by **events**, and needless to say, they are quite important 🙃
 
-Events that concern the same "data" (like a `User`) are aggregated through a common id called `aggregateId` (and vice versa, events that have the same `aggregateId` represent changes of the same underlying data). The index of an event in such a serie of events is called its `version`.
+Events that concern the same business entity (like a `User`) are aggregated through a common id called `aggregateId` (and vice versa, events that have the same `aggregateId` represent changes of the same business entity). The index of an event in such a serie of events is called its `version`.
 
 In Castore, stored events (also called **event details**) always have exactly the following attributes:
 
@@ -172,7 +172,7 @@ export const userCreatedEventType = new EventType<
 >({ type: 'USER_CREATED' });
 ```
 
-Note that we only provide TS types for `payload` and `metadata` properties. That is because, as stated in the [core design](#🫀-core-design), **Castore is meant to be as agnostic as possible of technical preferences**, including the validation library you want to use: The `EventType` class is not meant to be used directly, but rather extended by other classes which will add run-time validation methods to it 👍
+Note that we only provide TS types for `payload` and `metadata` properties. That is because, as stated in the [core design](#🫀-core-design), **Castore is meant to be as flexible as possible**, and that includes the validation library you want to use: The `EventType` class is not meant to be used directly, but rather extended by other classes which will add run-time validation methods to it 👍
 
 See the following packages for examples:
 
@@ -232,7 +232,7 @@ type UserEventTypesDetails = EventTypesDetails<
 
 ### 🏗 `Aggregate`
 
-Eventhough data is stored as a serie of events, we still want to use a **stable interface to represent its state at time t** rather than directly using events. In Castore, it is implemented by a TS type called `Aggregate`.
+Eventhough entities are stored as series of events, we still want to use a **stable interface to represent their states at a point in time** rather than directly using events. In Castore, it is implemented by a TS type called `Aggregate`.
 
 > ☝️ Think of aggregates as _"what the data would look like in CRUD"_
 
@@ -243,7 +243,7 @@ For instance, we can include a `name`, `age` and `status` properties to our `Use
 ```ts
 import type { Aggregate } from '@castore/core';
 
-// Represents a User at time t
+// Represents a User at a point in time
 interface UserAggregate extends Aggregate {
   name: string;
   age: number;
