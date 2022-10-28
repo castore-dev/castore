@@ -14,128 +14,348 @@
     <br/>
 </p>
 
-# Better DevX for Event Sourcing in TypeScript
+# 😎 Making Event Sourcing easy
 
-Castore provides a unified interface for implementing Event Sourcing in TypeScript 🦸‍♂️.
+Event Sourcing is a data storage paradigm that saves **changes in your application state** rather than the state itself. It is powerful but tricky to implement.
 
-## 🤔 Why use Castore ?
+<!-- TODO: SCHEMA OF EVENT SOURCING -->
 
-- 💬 **Verbosity**: Castore classes are designed to increase dryness and provide the optimal developer experience. Event Sourcing is hard, don't make it harder!
+After years of using it at [Kumo](https://dev.to/kumo), we have grown to love it, but also experienced first-hand the lack of consensus and tooling around it. That's where Castore comes from!
 
-- 📝 **Strong typings**: We love type inference, we know you will to!
+Castore is a TypeScript library that **makes Event Sourcing easy** 😎
 
-- 🏄‍♂️ **Interfaces before implementations**: Castore provides a standard interface to modelize common event sourcing patterns in TypeScript. But it **DOES NOT enforce any particular implementation** (storage service, messaging system etc...). You can use Castore in React apps, containers or lambdas, it's up to you! Some common implementations are provided, but you are free to use **any implementation you want** via custom classes, as long as they follow the required interfaces.
+With it, you'll be able to:
 
-- 👍 **Enforces best practices**: Gained from years of usage like using integer versions instead of timestamps, transactions for multi-store events and state-carrying transfer events for projections.
+- Define your [event stores](#eventstore)
+- Fetch and push new [events](#events) seamlessly
+- Implement and test your [commands](#command)
+- ...and much more!
 
-- 🛠 **Rich suite of helpers**: Like mock events builder to help you write tests.
+All that with first-class developer experience and minimal boilerplate ✨
+
+<!-- > Castore is still under active development. A v1 has been released with a first set of features, but we have big plans for the future (read models, events replay, migrations...)! So 📣 STAY TUNED 📣 -->
+
+## 🫀 Core Design
+
+- 🏄‍♂️ **Abstractions first**: Castore has been designed with **flexibility** in mind. It gives you abstractions that are meant to be used **anywhere**: React apps, containers, Lambdas... you name it!
+
+  For instance, `EventStore` classes are **stack agnostic**: They need an `EventStorageAdapter` class to interact with actual data. You can code your own `EventStorageAdapter` (simply implement the interface), but it's much simpler to use an off-the-shelf adapter like [`DynamodbEventStorageAdapter`](./packages/dynamodb-event-storage-adapter/README.md).
+
+- 🙅‍♂️ **We do NOT deploy resources**: While some packages like `DynamodbEventStorageAdapter` require compatible infrastructure, Castore is not responsible for deploying it.
+
+  Though that is not something we exclude in the future, we are a small team and decided to focus on DevX first.
+
+- ⛑ **Full type safety**: Speaking of DevX, we absolutely love TypeScript! If you do too, you're in the right place: We push type-safety to the limit in everything we do!
+
+  If you don't, that's fine 👍 Castore is still available in Node/JS. And you can still profit from some nice JSDocs!
+
+- 📖 **Best practices**: The Event Sourcing journey has many hidden pitfalls. We ran into them for you!
+
+  Castore is opiniated. It comes with a collection of best practices and documented anti-patterns that we hope will help you out!
 
 ## Table of content
 
-- [Events](#events)
-- [Event Store](#event-store)
-  - [Reducer](#reducer)
-  - [Storage Adapter](#storage-adapter)
-  - [Event Store Interface](#event-store-interface)
-- [Going Further](#going-further-🏃‍♂️)
+- [Getting Started](#getting-started)
+  - [📥 Installation](#installation)
+  - [📦 Packages structure](#packages-structure)
+- [The Basics](#the-basics)
+  - [📚 Events](#events)
+  - [📐 Event Type](#eventtype)
+  - [✨ Aggregates](#aggregates)
+  - [⚙️ Reducers](#reducers)
+  - [🏪 Event Store](#event-store)
+  - [💾 Event Storage Adapter](#eventstorageadapter)
+  - [📨 Commands](#commands)
+  - [📸 Snapshots](#snapshots)
+- [Resources](#resources)
+  - [🎯 Test Tools](#test-tools)
+  - [🔗 Packages List](#packages-list)
+  - [💭 Common Patterns](#common-patterns)
 
-## Events
+## Getting Started
 
-The first step in your ✨ Castore journey ✨ is to define your business events! 🦫
+### Installation
 
-Castore lets you easily create the Event Types which will constitute your Event Store.
-Simply use the EventType class and start defining, once and for all, your events! 🎉
+```bash
+# npm
+npm install @castore/core
 
-```ts
-import { EventType } from "@castore/core"
+# yarn
+yarn add @castore/core
+```
 
-export const userCreatedEvent = new EventType<
-  // Typescript EventType
-  'USER_CREATED',
-  // Typescript EventDetails
-  {
-    aggregateId: string;
-    version: number;
-    type: 'USER_CREATED';
-    timestamp: string;
-    payload: { name: string; age: number };
+### Packages structure
+
+Castore is not a single package, but a **collection of packages** revolving around a `core` package. This is made so every line of code added to your project is _opt-in_, wether you use tree-shaking or not.
+
+Castore packages are **versioned together**. Though different versions may be compatible, you are **guaranteed** to have working code as long as you use matching versions.
+
+Here is an example of working `package.json`:
+
+```json
+{
+  // ...
+  "dependencies": {
+    "@castore/core": "1.3.1",
+    "@castore/dynamodb-event-storage-adapter": "1.3.1"
+    // ...
+  },
+  "devDependencies": {
+    "@castore/test-tools": "1.3.1"
+    // ...
   }
->({
-  // EventType
-  type: 'USER_CREATED',
-});
-
-const userRemovedEvent = ...
-
-const eventTypes = [
-  userCreatedEvent,
-  userRemovedEvent,
-];
-
+}
 ```
 
-> You can also define your events with JSON Schemas or Zod Events, see `@castore/json-schema-event` and `@castore/zod-event` documentations for implementation 🦫
+## The Basics
 
-Once you're happy with your set of EventTypes you can move on to step 2: attaching the EventTypes to an actual EventStore! 🏪.
+### `Events`
 
-## Event Store
+Event Sourcing is all about **saving changes in your application state**. Such changes are represented by **events**, and needless to say, they are quite important 🙃
 
-Welcome in the heart of Castore: the EventStore ❤️<br/>
-The `EventStore` class lets you instantiate an object containing all the methods you will need to interact with your event sourcing store. 💪
+Events that concern the same "data" (like a `User`) are aggregated through a common id called `aggregateId` (and vice versa, events that have the same `aggregateId` represent changes of the same underlying data). The index of an event in such a serie of events is called its `version`.
 
-```typescript
-const userEventStore = new EventStore({
-  eventStoreId: 'user-event-store-id',
-  eventTypes,
-  // 👇 See #reducer sub-section
-  reducer,
-  // 👇 See #storage_adapters section
-  storageAdapter,
-});
-```
+In Castore, stored events (also called **event details**) always have exactly the following attributes:
 
-### Reducer
-
-The reducer needed in the EventStore initialization is the function that will be applied to the sorted array of events in order to build the aggregates ⚙️. It works like your usual Redux reducer!
-
-Basically, it consists in a function implementing switch cases for all event types and returning the aggregate updated with your business logic. 🧠
-
-Here is an example reducer for our User Event Store.
+- <code>aggregateId <i>(string)</i></code>
+- <code>version <i>(integer ≥ 1)</i></code>
+- <code>timestamp <i>(string)</i></code>: A date in ISO 8601 format
+- <code>type <i>(string)</i></code>: A string identifying the business meaning of the event
+- <code>payload <i>(?any = never)</i></code>: A payload of any type
+- <code>metadata <i>(?any = never)</i></code>: Some metadata of any type
 
 ```ts
-export const usersReducer = (
-  userAggregate: UserAggregate,
-  event: UserEventsDetails,
-): UserAggregate => {
-  const { version, aggregateId } = event;
+import type { EventDetail } from '@castore/core';
 
-  switch (event.type) {
+type UserCreatedEventDetail = EventDetail<
+  'USER_CREATED',
+  { name: string; age: number },
+  { invitedBy?: string }
+>;
+
+// 👇 Equivalent to:
+type UserCreatedEventDetail = {
+  aggregateId: string;
+  version: number;
+  timestamp: string;
+  type: 'USER_CREATED';
+  payload: { name: string; age: number };
+  metadata: { invitedBy?: string };
+};
+```
+
+### `EventType`
+
+Events are generally classified in **events types** (not to confuse with TS types). Castore lets you declare them via the `EventType` class:
+
+```ts
+import { EventType } from '@castore/core';
+
+export const userCreatedEventType = new EventType<
+  'USER_CREATED',
+  { name: string; age: number },
+  { invitedBy?: string }
+>({ type: 'USER_CREATED' });
+```
+
+Note that we only provide TS types for `payload` and `metadata` properties. That is because, as stated in the [core design](#🫀-core-design), **Castore is meant to be as agnostic as possible of technical preferences**, including the validation library you want to use: The `EventType` class is not meant to be used directly, but rather extended by other classes which will add run-time validation methods to it 👍
+
+See the following packages for examples:
+
+- [JSON-Schema Event Type](./packages/json-schema-event/README.md)
+- [Zod Event Type](./packages/zod-event/README.md)
+
+**Constructor:**
+
+- <code>type <i>(string)</i></code>: The event type
+
+```ts
+import { EventType } from '@castore/core';
+
+export const userCreatedEventType = new EventType({ type: 'USER_CREATED' });
+```
+
+**Properties:**
+
+- <code>type <i>(string)</i>:</code> The event type
+
+```ts
+const eventType = userCreatedEventType.type;
+// => "USER_CREATED"
+```
+
+**Methods:** -
+
+**Type Helpers:**
+
+- <code>EventTypeDetail</code>: Returns the event detail TS type of an `EventType`
+
+```ts
+import type { EventTypeDetail } from '@castore/core';
+
+type UserCreatedEventTypeDetail = EventTypeDetail<typeof userCreatedEventType>;
+
+// 👇 Equivalent to:
+type UserCreatedEventTypeDetail = {
+  aggregateId: string;
+  version: number;
+  timestamp: string;
+  type: 'USER_CREATED';
+  payload: { name: string; age: number };
+  metadata: { invitedBy?: string };
+};
+```
+
+- <code>EventTypesDetails</code>: Return the events details of a list of `EventType`
+
+```ts
+import type { EventTypesDetails } from '@castore/core';
+
+type UserEventTypesDetails = EventTypesDetails<
+  [typeof userCreatedEventType, typeof userRemovedEventType]
+>;
+// => EventTypeDetail<typeof userCreatedEventType>
+// | EventTypeDetail<typeof userRemovedEventType>
+```
+
+### `Aggregate`
+
+Eventhough data is stored as a serie of events, we still want to use a **stable interface to represent its state at time t** rather than directly using events. In Castore, it is implemented by a TS type called `Aggregate`.
+
+> ☝️ Think of aggregates as _"what the data would look like in CRUD"_
+
+In Castore, aggregates necessarily contain an `aggregateId` and `version` attributes (the `version` of the latest `event`). But for the rest, it's up to you 🤷‍♂️
+
+For instance, we can include a `name`, `age` and `status` properties to our `UserAggregate`:
+
+```ts
+import type { Aggregate } from '@castore/core';
+
+// Represents a User at time t
+interface UserAggregate extends Aggregate {
+  name: string;
+  age: number;
+  status: 'CREATED' | 'REMOVED';
+}
+
+// 👇 Equivalent to:
+interface UserAggregate {
+  aggregateId: string;
+  version: number;
+  name: string;
+  age: number;
+  status: 'CREATED' | 'REMOVED';
+}
+```
+
+### `Reducers`
+
+Aggregates are derived from their events by [reducing them](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/Reduce) through a `reducer` function. It defines **how to update the aggregate when a new event is pushed**:
+
+```ts
+import type { Reducer } from '@castore/core';
+
+export const usersReducer: Reducer<UserAggregate, UserEventsDetails> = (
+  userAggregate,
+  newEvent,
+) => {
+  const { version, aggregateId } = newEvent;
+
+  switch (newEvent.type) {
     case 'USER_CREATED': {
-      const { name, age } = event.payload;
+      const { name, age } = newEvent.payload;
 
+      // 👇 Return the next version of the aggregate
       return {
         aggregateId,
-        version: event.version,
+        version,
         name,
         age,
         status: 'CREATED',
       };
     }
     case 'USER_REMOVED':
-      return {
-        ...userAggregate,
-        version,
-        status: 'REMOVED',
-      };
+      return { ...userAggregate, version, status: 'REMOVED' };
   }
 };
+
+const johnDowAggregate: UserAggregate = johnDowEvents.reduce(usersReducer);
 ```
 
-### Storage Adapter
+> ☝️ Note that aggregates are always **computed on the fly**, and NOT stored. Changing them does not require any data migration whatsoever (except if you use snapshots, an invalidation is needed first).
 
-!['Storage Adapter'](/assets/storage_adapter_schema.png)
+<!-- TODO: SCHEMA OF EVENTS AGGREGATE -->
 
-You can store your events in many different ways. To specify how to store them (in memory, DynamoDB...) Castore implements Storage Adapters.
+### `EventStore`
+
+_...coming soon_
+
+<!-- Here we are! The `store` in Castore :)
+
+```ts
+import { EventStore } from '@castore/core';
+
+const userEventStore = new EventStore({
+  eventStoreId: 'USERS',
+  eventTypes: [
+    userCreatedEventType,
+    userRemovedEventType,
+    ...
+  ],
+  reducer: usersReducer,
+});
+```
+
+**Constructor:**
+
+**TS Generics:**
+
+**Properties:**
+
+**Methods:**
+
+**Helpers:** -->
+
+<!-- EventStoreId
+
+```ts
+import type { EventStoreId } from '@castore/core';
+
+type UserEventStoreId = EventStoreId<typeof userEventStore>;
+// => "USERS"
+```
+
+EventStoreEventsTypes
+
+```ts
+import type { EventStoreEventsTypes } from '@castore/core';
+
+type UserEventsTypes = EventStoreEventsTypes<typeof userEventStore>;
+// => [typeof userCreatedEventTypeType, typeof userRemovedEventTypeType...]
+```
+
+EventStoreEventsDetails
+
+```ts
+import type { EventStoreEventsDetails } from '@castore/core';
+
+type UserEventsDetails = EventStoreEventsTypes<typeof userEventStore>;
+// =>  TODO
+```
+
+EventStoreEventsDetails
+
+```ts
+import type { EventStoreEventsDetails } from '@castore/core';
+
+type UserEventsDetails = EventStoreEventsTypes<typeof userEventStore>;
+``` -->
+
+### `EventStorageAdapter`
+
+_...coming soon_
+
+<!-- You can store your events in many different ways. To specify how to store them (in memory, DynamoDB...) Castore implements Storage Adapters.
 
 Adapters offer an interface between the Event Store class and your storage method 💾.
 
@@ -146,51 +366,22 @@ All the Storage Adapters have the same interface, and you can create your own if
 So far, castore supports 2 Storage Adapters ✨:
 
 - in-memory
-- DynamoDB
+- DynamoDB -->
 
-### Event Store Interface
+### `Command`
 
-Now that our Event Store has been instantiated with a reducer and a Storage Adapter, we can start using it to actually populate our database with events and retrieve business data from it 🌈.
+_...coming soon_
 
-To do that, the Event Store class exposes several methods, including the following two:
+### `Snapshots`
 
-- `pushEvent`: Takes an object containing event details and puts it in the database. It will throw if the event's version already exists!
+_...coming soon_
 
-- `getAggregate`: Returns the output of the reducer applied to the array of all events.
+## Resources
 
-Here is a quick example showing how an application would use these two methods:
+### Test Tools
 
-```ts
-const removeUser = async (userId: string) => {
-  // get the aggregate for that userId,
-  // which is a representation of our user's state
-  const { aggregate } = await userEventStore.getAggregate(userId);
+_...coming soon_
 
-  // use the aggregate to check the user status
-  if (aggregate.status === 'REMOVED') {
-    throw new Error('User already removed');
-  }
+### Common Patterns
 
-  // put the USER_REMOVED event in the event store 🦫
-  await userEventStore.pushEvent({
-    aggregateId: userId,
-    version: aggregate.version + 1,
-    type: 'USER_REMOVED',
-    timestamp: new Date(),
-  });
-};
-```
-
-## Going Further 🏃‍♂️
-
-We've only covered the basic functionalities of the Event Store!
-
-The Event Store class actually implements other very useful methods 💪
-
-Here is a small recap of these methods:
-
-- `getEvents`: Returns the list of all events for a given aggregateId.
-
-- `listAggregateIds`: Returns the list of all aggregateIds present in the Event Store.
-
-- `simulateAggregate`: Simulates the aggregate you would have obtained with getAggregate at a given date.
+_...coming soon_

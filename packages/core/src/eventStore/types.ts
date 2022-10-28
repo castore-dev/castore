@@ -1,14 +1,22 @@
-import { Aggregate } from '~/aggregate';
-import { EventDetail } from '~/event/eventDetail';
-import {
+import type { Aggregate } from '~/aggregate';
+import type { EventDetail } from '~/event/eventDetail';
+import type {
   EventsQueryOptions,
   ListAggregateIdsOptions,
   ListAggregateIdsOutput,
 } from '~/storageAdapter';
+import type { $Contravariant } from '~/utils';
+
+export type Reducer<
+  A extends Aggregate = Aggregate,
+  D extends EventDetail = EventDetail,
+  $D extends EventDetail = $Contravariant<D, EventDetail>,
+  $A extends Aggregate = $Contravariant<A, Aggregate>,
+> = (aggregate: $A, event: $D) => A;
 
 export type SideEffectsSimulator<
   D extends EventDetail,
-  $D extends EventDetail,
+  $D extends EventDetail = $Contravariant<D, EventDetail>,
 > = (
   indexedEvents: Record<string, Omit<$D, 'version'>>,
   event: $D,

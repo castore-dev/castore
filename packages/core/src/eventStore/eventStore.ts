@@ -5,6 +5,7 @@ import { UndefinedStorageAdapterError } from '~/errors/undefinedStorageAdapterEr
 import type { EventDetail } from '~/event/eventDetail';
 import type { EventType, EventTypesDetails } from '~/event/eventType';
 import type { StorageAdapter } from '~/storageAdapter';
+import type { $Contravariant } from '~/utils';
 
 import {
   AggregateIdsLister,
@@ -13,6 +14,7 @@ import {
   SideEffectsSimulator,
   AggregateGetter,
   AggregateSimulator,
+  Reducer,
 } from './types';
 import { validateSnapshotInterval } from './utils/validateSnapshotInterval';
 
@@ -21,19 +23,11 @@ export class EventStore<
   E extends EventType[] = EventType[],
   D extends EventDetail = EventTypesDetails<E>,
   // cf https://devblogs.microsoft.com/typescript/announcing-typescript-4-7-rc/#optional-variance-annotations-for-type-parameters
-  // EventStore is contravariant on its fns args: We have to type them as any
-  // So that EventStore implementations still extends the EventStore type
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  $D extends EventDetail = EventDetail extends D ? any : D,
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  R extends (aggregate: any, event: $D) => Aggregate = (
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    aggregate: any,
-    event: $D,
-  ) => Aggregate,
+  // EventStore is contravariant on its fns args: We have to type them as "any" so that EventStore implementations still extends the EventStore type
+  $D extends EventDetail = $Contravariant<D, EventDetail>,
+  R extends Reducer<Aggregate, $D> = Reducer<Aggregate, $D>,
   A extends Aggregate = ReturnType<R>,
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  $A extends Aggregate = Aggregate extends A ? any : A,
+  $A extends Aggregate = $Contravariant<A, Aggregate>,
 > {
   _types?: {
     details: D;

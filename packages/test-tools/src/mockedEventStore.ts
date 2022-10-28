@@ -4,33 +4,28 @@ import {
   EventStore,
   EventType,
   EventTypesDetails,
+  Reducer,
+  $Contravariant,
 } from '@castore/core';
 import { InMemoryStorageAdapter } from '@castore/inmemory-event-storage-adapter';
 
 export class MockedEventStore<
   I extends string = string,
   E extends EventType[] = EventType[],
-  $D extends EventDetail = EventTypesDetails<E>,
-  // see original EventStore implementation for more details
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  D extends EventDetail = EventDetail extends $D ? any : $D,
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  R extends (aggregate: any, event: D) => Aggregate = (
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    aggregate: any,
-    event: D,
-  ) => Aggregate,
+  D extends EventDetail = EventTypesDetails<E>,
+  $D extends EventDetail = $Contravariant<D, EventDetail>,
+  R extends Reducer<Aggregate, $D> = Reducer<Aggregate, $D>,
   A extends Aggregate = ReturnType<R>,
-> extends EventStore<I, E, $D, D, R, A> {
-  initialEvents: $D[];
+> extends EventStore<I, E, D, $D, R, A> {
+  initialEvents: D[];
   reset: () => void;
 
   constructor({
     eventStore,
     initialEvents = [],
   }: {
-    eventStore: EventStore<I, E, $D, D, R, A>;
-    initialEvents?: $D[];
+    eventStore: EventStore<I, E, D, $D, R, A>;
+    initialEvents?: D[];
   }) {
     super({
       eventStoreId: eventStore.eventStoreId,
