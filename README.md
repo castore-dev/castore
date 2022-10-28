@@ -1,6 +1,6 @@
 <p align="center">
     <img src="assets/logo.svg" height="128">
-    <h1 style="border-bottom:none;font-size:60px;margin-bottom:0;" align="center" >Castore 🦫</h1>
+    <h1 style="border-bottom:none;font-size:60px;margin-bottom:0;" align="center" >Castore</h1>
 </p>
 <p align="center">
   <a aria-label="NPM version" href="https://www.npmjs.com/package/@castore/core">
@@ -173,7 +173,7 @@ Note that we only provide TS types for `payload` and `metadata` properties. That
 
 See the following packages for examples:
 
-- [JSON-Schema Event Type](./packages/json-schema-event/README.md)
+- [JSON Schema Event Type](./packages/json-schema-event/README.md)
 - [Zod Event Type](./packages/zod-event/README.md)
 
 **Constructor:**
@@ -188,11 +188,11 @@ export const userCreatedEventType = new EventType({ type: 'USER_CREATED' });
 
 **Properties:**
 
-- <code>type <i>(string)</i>:</code> The event type
+- <code>type <i>(string)</i></code>: The event type
 
 ```ts
 const eventType = userCreatedEventType.type;
-// => "USER_CREATED"
+// => 'USER_CREATED'
 ```
 
 **Type Helpers:**
@@ -327,52 +327,232 @@ const userEventStore = new EventStore({
 
 **Constructor:**
 
-_...coming soon_
+- <code>eventStoreId <i>(string)</i></code>: A string identifying the event store
+- <code>eventStoreEvents <i>(EventType[])</i></code>: The list of event types in the event store
+- <code>reduce <i>(EventType[])</i></code>: A [reducer function](#⚙️-reducer) that can be applied to the store event types
+- <code>storageAdapter <i>(?EventStorageAdapter)</i></code>: See [`EventStorageAdapter`](#💾-eventstorageadapter)
 
-<!-- > ☝️ Note that it's the ReturnType of the `reducer` function that is used to infer the `Aggregate` type of the EventStore. -->
+> ☝️ Note that it's the return type of the `reducer` that is used to infer the `Aggregate` type of the EventStore. It is important to type it explicitely.
 
 **Properties:**
 
-_...coming soon_
+- <code>eventStoreId <i>(string)</i></code>
+
+```ts
+const userEventStoreId = userEventStore.eventStoreId;
+// => 'USERS'
+```
+
+- <code>eventStoreEvents <i>(EventType[])</i></code>
+
+```ts
+const userEventStoreEvents = userEventStore.eventStoreEvents;
+// => [userCreatedEventType, userRemovedEventType...]
+```
+
+- <code>reduce <i>((Aggregate, EventType) => Aggregate)</i></code>
+
+```ts
+const reducer = userEventStore.reduce;
+// => usersReducer
+```
+
+- <code>storageAdapter <i>?EventStorageAdapter</i></code>: See [`EventStorageAdapter`](#💾-eventstorageadapter)
+
+```ts
+const storageAdapter = userEventStore.storageAdapter;
+// => undefined (we did not provide one in this example)
+```
+
+> ☝️ The `storageAdapter` is not read-only so you do not have to provide it right away.
+
+**Sync Methods:**
+
+- <code>getStorageAdapter <i>(() => EventStorageAdapter)</i></code>: Returns the event store event storage adapter if it exists. Throws an `UndefinedStorageAdapterError` if it doesn't.
+
+```ts
+import { UndefinedStorageAdapterError } from '@castore/core';
+
+expect(() => userEventStore.getStorageAdapter()).toThrow(
+  new UndefinedStorageAdapterError({ eventStoreId: 'USERS' }),
+);
+// => true
+```
+
+- <code>buildAggregate <i>((eventDetails: EventDetail[], initialAggregate?: Aggregate) => Aggregate | undefined)</i></code>: Applies the event store reducer to a serie of events.
+
+```ts
+const johnDowAggregate = userEventStore.buildAggregate(johnDowEvents);
+```
+
+**Async Methods:**
+
+The following methods interact with the data layer of your event store through its [`EventStorageAdapter`](#💾-eventstorageadapter). They will throw an `UndefinedStorageAdapterError` if you did not provide one.
+
+- <code>getEvents <i>((aggregateId: string, opt?: OptionsObj = {}) => Promise\<ResponseObj\>)</i></code>: Retrieves the events of an aggregate, ordered by `version`. Returns an empty array if no event is found for this `aggregateId`.
+
+  `OptionsObj` contains the following attributes:
+
+  - <code>minVersion <i>(?number)</i></code>: To retrieve events above a certain version
+  - <code>maxVersion <i>(?number)</i></code>: To retrieve events below a certain version
+  - <code>limit <i>(?number)</i></code>: Maximum number of events to retrieve
+  - <code>reverse <i>(?boolean = false)</i></code>: To retrieve events in reverse order (does not require to swap `minVersion` and `maxVersion`)
+
+  `ResponseObj` contains the following attributes:
+
+  - <code>events <i>(EventDetail[])</i></code>: The aggregate events (possibly empty)
+
+```ts
+const { events: allEvents } = await userEventStore.getEvents(aggregateId);
+// => typed as UserEventDetail[] 🙌
+
+// 👇 Retrieve a range of events
+const { events: rangedEvents } = await userEventStore.getEvents(aggregateId, {
+  minVersion: 2,
+  maxVersion: 5,
+});
+
+// 👇 Retrieve the last event of the aggregate
+const { events: onlyLastEvent } = await userEventStore.getEvents(aggregateId, {
+  reverse: true,
+  limit: 1,
+});
+```
+
+- <code>getAggregate <i>((aggregateId: string, opt?: OptionsObj = {}) => Promise\<ResponseObj\>)</i></code>: Retrieves the events of an aggregate and build it.
+
+  `OptionsObj` contains the following attributes:
+
+  - <code>maxVersion <i>(?number)</i></code>: To retrieve aggregate below a certain version
+
+  `ResponseObj` contains the following attributes:
+
+  - <code>aggregate <i>(?Aggregate)</i></code>: The aggregate (possibly `undefined`)
+  - <code>events <i>(EventDetail[])</i></code>: The aggregate events (possibly empty)
+  - <code>lastEvent <i>(?EventDetail)</i></code>: The last event (possibly `undefined`)
+
+```ts
+const { aggregate: johnDow } = await userEventStore.getAggregate(aggregateId);
+// => typed as UserAggregate | undefined 🙌
+
+// 👇 Retrieve an aggregate below a certain version
+const { aggregate: aggregateBelowVersion } = await userEventStore.getAggregate(
+  aggregateId,
+  { maxVersion: 5 },
+);
+
+// 👇 Returns the events if you need them
+const { aggregate, events } = await userEventStore.getAggregate(aggregateId);
+```
+
+- <code>getExistingAggregate <i>((aggregateId: string, opt?: OptionsObj = {}) => Promise\<ResponseObj\>)</i></code>: Same as `getAggregate` method, but ensures that the aggregate exists. Throws an `AggregateNotFoundError` if no event is found for this `aggregateId`.
+
+```ts
+import { AggregateNotFoundError } from '@castore/core';
+
+expect(async () =>
+  userEventStore.getExistingAggregate(unexistingId),
+).resolves.toThrow(
+  new AggregateNotFoundError({
+    eventStoreId: 'USERS',
+    aggregateId: unexistingId,
+  }),
+);
+// true
+
+const { aggregate } = await userEventStore.getAggregate(aggregateId);
+// => 'aggregate' and 'lastEvent' are always defined 🙌
+```
+
+- <code>pushEvent <i>((eventDetail: EventDetail) => Promise\<void\>)</i></code>: Pushes a new event to the event store. Throws an `EventAlreadyExistsError` if an event already exists for the corresponding `aggregateId` and `version`.
+
+```ts
+await userEventStore.pushEvent({
+  aggregateId,
+  version: lastVersion + 1,
+  timestamp: new Date().toISOString(),
+  type: 'USER_CREATED', // <= event type is correctly typed 🙌
+  payload, // <= payload is typed according to the provided event type 🙌
+  metadata, // <= same goes for metadata 🙌
+});
+```
+
+- <code>listAggregateIds <i>((opt?: OptionsObj = {}) => Promise\<ResponseObj\>)</i></code>: Retrieves the list of `aggregateId` of an event store, ordered by `timestamp` of their first event. Returns an empty array if no aggregate is found.
+
+  `OptionsObj` contains the following attributes:
+
+  - <code>limit <i>(?number)</i></code>: Maximum number of aggregate ids to retrieve
+  - <code>pageToken <i>(?string)</i></code>: To retrieve a paginated result of aggregate ids
+
+  `ResponseObj` contains the following attributes:
+
+  - <code>aggregateIds <i>(string[])</i></code>: The list of aggregate ids
+  - <code>nextPageToken <i>(?string)</i></code>: A token for the next page of aggregate ids if one exists
+
+```ts
+const accAggregateIds: string = [];
+const { aggregateIds: firstPage, nextPageToken } =
+  await userEventStore.getAggregate({ limit: 20 });
+
+accAggregateIds.push(...firstPage);
+
+if (nextPageToken) {
+  const { aggregateIds: secondPage } = await userEventStore.getAggregate({
+    limit: 20,
+    pageToken: nextPageToken,
+  });
+  accAggregateIds.push(...secondPage);
+}
+```
 
 **Type Helpers:**
 
-_...coming soon_
-
-<!-- EventStoreId
+- <code>EventStoreId</code>: Returns the `EventStore` id
 
 ```ts
 import type { EventStoreId } from '@castore/core';
 
 type UserEventStoreId = EventStoreId<typeof userEventStore>;
-// => "USERS"
+// => 'USERS'
 ```
 
-EventStoreEventsTypes
+- <code>EventStoreEventsTypes</code>: Returns the `EventStore` list of events types
 
 ```ts
 import type { EventStoreEventsTypes } from '@castore/core';
 
 type UserEventsTypes = EventStoreEventsTypes<typeof userEventStore>;
-// => [typeof userCreatedEventTypeType, typeof userRemovedEventTypeType...]
+// => [typeof userCreatedEventType, typeof userRemovedEventType...]
 ```
 
-EventStoreEventsDetails
+- <code>EventStoreEventsDetails</code>: Returns the union of all the `EventStore` possible events details
 
 ```ts
 import type { EventStoreEventsDetails } from '@castore/core';
 
-type UserEventsDetails = EventStoreEventsTypes<typeof userEventStore>;
-// =>  TODO
+type UserEventsDetails = EventStoreEventsDetails<typeof userEventStore>;
+// => EventTypeDetail<typeof userCreatedEventType>
+// | EventTypeDetail<typeof userRemovedEventType>
+// | ...
 ```
 
-EventStoreEventsDetails
+- <code>EventStoreReducer</code>: Returns the `EventStore` reducer
 
 ```ts
-import type { EventStoreEventsDetails } from '@castore/core';
+import type { EventStoreReducer } from '@castore/core';
 
-type UserEventsDetails = EventStoreEventsTypes<typeof userEventStore>;
-``` -->
+type UserReducer = EventStoreReducer<typeof userEventStore>;
+// => Reducer<UserAggregate, UserEventsDetails>
+```
+
+- <code>EventStoreAggregate</code>: Returns the `EventStore` aggregate
+
+```ts
+import type { EventStoreAggregate } from '@castore/core';
+
+type UserReducer = EventStoreAggregate<typeof userEventStore>;
+// => UserAggregate
+```
 
 ### 💾 `EventStorageAdapter`
 
@@ -393,18 +573,51 @@ So far, castore supports 2 Storage Adapters ✨:
 
 ### 📨 `Command`
 
-_...coming soon_
+Commands represent an intent to modify the state of your application. They usually result in pushing one or several events to your event stores.
+
+They typically consist in:
+
+- Fetching the required aggregates (if not the first event of a new aggregate)
+- Validating that the intent is acceptable in regards to the state of the application\*
+- Pushing new events with incremented versions
+
+> \* ☝️ Note that commands should NOT use read models for the validation step. Read models are not the source of truth, and may not contain the freshest state.
+
+Fetching and pushing events at separate non-simultaneously exposes your application to [race conditions](https://en.wikipedia.org/wiki/Race_condition). To counter that, commands executions are designed to be retried when an `EventAlreadyExistsError` is triggered.
+
+<!-- TODO, add schema -->
+
+_...technical description coming soon_
+
+When writing on several event stores at once, it is important to use transactions, i.e. to make sure that all events are written or none. This ensures that the application is not in a corrupt state.
+
+Transactions accross event stores cannot be easily abstracted, so check you adapter library on how to achieve this. For instance, the [`DynamoDBEventStorageAdapter`](./packages/dynamodb-event-storage-adapter/README.md) exposes a [`pushEventsTransaction`](./packages/dynamodb-event-storage-adapter/src/utils/pushEventsTransaction.ts) util.
 
 ## Resources
 
 ### 🎯 Test Tools
 
-_...coming soon_
+Castore comes with a handy [Test Tool package](./packages/test-tools/README.md) that facilitates the writing of unit tests: It allows mocking event stores, populating them with an initial state and resetting them to it in a boilerplate-free and type-safe way.
 
 ### 🔗 Packages List
 
-_...coming soon_
+#### 🏷 Event Types
+
+- [JSON Schema Event Type](./packages/json-schema-event/README.md): DRY `EventType` definition using [JSON Schemas](http://json-schema.org/understanding-json-schema/reference/index.html) and [`json-schema-to-ts`](https://github.com/ThomasAribart/json-schema-to-ts)
+- [Zod Event Type](./packages/zod-event/README.md): DRY `EventType` definition using [`zod`](https://github.com/colinhacks/zod)
+
+#### 💾 Event Storage Adapters
+
+- [DynamoDB Event Storage Adapter](./packages/dynamodb-event-storage-adapter/README.md): Implementation of the `EventStorageAdapter` interface based on DynamoDB.
+- [In-Memory Event Storage Adapter](./packages/inmemory-event-storage-adapter/README.md): Implementation of the `EventStorageAdapter` interface using a local Node/JS object. To be used in manual or unit tests.
+
+#### 📨 Commands
+
+- [JSON Schema Command](./packages/json-schema-command/README.md): DRY `Command` definition using [JSON Schemas](http://json-schema.org/understanding-json-schema/reference/index.html) and [`json-schema-to-ts`](https://github.com/ThomasAribart/json-schema-to-ts)
 
 ### 📖 Common Patterns
 
-_...coming soon_
+- Simulating a future/past aggregate state: _...coming soon_
+- Projecting on read models: _...coming soon_
+- Replaying events: _...coming soon_
+- Snapshotting: _...coming soon_

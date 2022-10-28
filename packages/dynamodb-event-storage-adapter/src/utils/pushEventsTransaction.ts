@@ -17,6 +17,9 @@ export const pushEventsTransaction = async (
   const dynamodbClient =
     options.dynamoDbClient ?? eventsTransaction[0].dynamoDbClient;
 
+  /**
+   * @debt bug "TODO: ensure that pushEventsTransaction throws an EventAlreadyExists error if transaction fails"
+   */
   return dynamodbClient.send(
     new TransactWriteItemsCommand({
       TransactItems: eventsTransaction.map(({ transactItem }) => transactItem),
