@@ -14,7 +14,7 @@
     <br/>
 </p>
 
-# 😎 Making Event Sourcing easy
+# Making Event Sourcing easy 😎
 
 Event Sourcing is a data storage paradigm that saves **changes in your application state** rather than the state itself. It is powerful but tricky to implement.
 
@@ -22,9 +22,13 @@ Event Sourcing is a data storage paradigm that saves **changes in your applicati
 
 After years of using it at [Kumo](https://dev.to/kumo), we have grown to love it, but also experienced first-hand the lack of consensus and tooling around it. That's where Castore comes from!
 
-Castore is a TypeScript library that **makes Event Sourcing easy** 😎
 
-With it, you'll be able to:
+<p align="center">
+Castore is a TypeScript library that <b>makes Event Sourcing easy</b> 😎
+</p>
+
+
+With Castore, you'll be able to:
 
 - Define your [event stores](#eventstore)
 - Fetch and push new [events](#events) seamlessly
@@ -37,44 +41,54 @@ All that with first-class developer experience and minimal boilerplate ✨
 
 ## 🫀 Core Design
 
-- 🏄‍♂️ **Abstractions first**: Castore has been designed with **flexibility** in mind. It gives you abstractions that are meant to be used **anywhere**: React apps, containers, Lambdas... you name it!
+Some important decisions that we've made early on:
 
-  For instance, `EventStore` classes are **stack agnostic**: They need an `EventStorageAdapter` class to interact with actual data. You can code your own `EventStorageAdapter` (simply implement the interface), but it's much simpler to use an off-the-shelf adapter like [`DynamodbEventStorageAdapter`](./packages/dynamodb-event-storage-adapter/README.md).
+### 💭 **Abstractions first**
 
-- 🙅‍♂️ **We do NOT deploy resources**: While some packages like `DynamodbEventStorageAdapter` require compatible infrastructure, Castore is not responsible for deploying it.
+Castore has been designed with **flexibility** in mind. It gives you abstractions that are meant to be used **anywhere**: React apps, containers, Lambdas... you name it!
 
-  Though that is not something we exclude in the future, we are a small team and decided to focus on DevX first.
+For instance, `EventStore` classes are **stack agnostic**: They need an `EventStorageAdapter` class to interact with actual data. You can code your own `EventStorageAdapter` (simply implement the interface), but it's much simpler to use an off-the-shelf adapter like [`DynamoDBEventStorageAdapter`](./packages/dynamodb-event-storage-adapter/README.md).
 
-- ⛑ **Full type safety**: Speaking of DevX, we absolutely love TypeScript! If you do too, you're in the right place: We push type-safety to the limit in everything we do!
+### 🙅‍♂️ **We do NOT deploy resources**
 
-  If you don't, that's fine 👍 Castore is still available in Node/JS. And you can still profit from some nice JSDocs!
+While some packages like `DynamoDBEventStorageAdapter` require compatible infrastructure, Castore is not responsible for deploying it.
 
-- 📖 **Best practices**: The Event Sourcing journey has many hidden pitfalls. We ran into them for you!
+Though that is not something we exclude in the future, we are a small team and decided to focus on DevX first.
 
-  Castore is opiniated. It comes with a collection of best practices and documented anti-patterns that we hope will help you out!
+### ⛑ **Full type safety**
+
+Speaking of DevX, we absolutely love TypeScript! If you do too, you're in the right place: We push type-safety to the limit in everything we do!
+
+If you don't, that's fine 👍 Castore is still available in Node/JS. And you can still profit from some nice JSDocs!
+
+### 📖 **Best practices**
+
+The Event Sourcing journey has many hidden pitfalls. We ran into them for you!
+
+Castore is opiniated. It comes with a collection of best practices and documented anti-patterns that we hope will help you out!
 
 ## Table of content
 
 - [Getting Started](#getting-started)
-  - [📥 Installation](#installation)
-  - [📦 Packages structure](#packages-structure)
+  - [📥 Installation](#-installation)
+  - [📦 Packages structure](#-packages-structure)
 - [The Basics](#the-basics)
-  - [📚 Events](#events)
-  - [📐 Event Type](#eventtype)
-  - [✨ Aggregates](#aggregates)
-  - [⚙️ Reducers](#reducers)
-  - [🏪 Event Store](#event-store)
-  - [💾 Event Storage Adapter](#eventstorageadapter)
-  - [📨 Commands](#commands)
-  - [📸 Snapshots](#snapshots)
+  - [📚 Events](#-events)
+  - [🏷 Event Type](#-eventtype)
+  - [🏗 Aggregates](#-aggregate)
+  - [⚙️ Reducers](#%EF%B8%8F-reducers)
+  - [🎁 Event Store](#%EF%B8%8F-reducers)
+  - [💾 Event Storage Adapter](#-eventstorageadapter)
+  - [📨 Command](#-command)
+  - [📸 Snapshots](#-snapshots)
 - [Resources](#resources)
-  - [🎯 Test Tools](#test-tools)
-  - [🔗 Packages List](#packages-list)
-  - [💭 Common Patterns](#common-patterns)
+  - [🎯 Test Tools](#-test-tools)
+  - [🔗 Packages List](#-packages-list)
+  - [📖 Common Patterns](#-common-patterns)
 
 ## Getting Started
 
-### Installation
+### 📥 Installation
 
 ```bash
 # npm
@@ -84,11 +98,11 @@ npm install @castore/core
 yarn add @castore/core
 ```
 
-### Packages structure
+### 📦 Packages structure
 
 Castore is not a single package, but a **collection of packages** revolving around a `core` package. This is made so every line of code added to your project is _opt-in_, wether you use tree-shaking or not.
 
-Castore packages are **versioned together**. Though different versions may be compatible, you are **guaranteed** to have working code as long as you use matching versions.
+Castore packages are **released together**. Though different versions may be compatible, you are **guaranteed** to have working code as long as you use matching versions.
 
 Here is an example of working `package.json`:
 
@@ -109,7 +123,7 @@ Here is an example of working `package.json`:
 
 ## The Basics
 
-### `Events`
+### 📚 `Events`
 
 Event Sourcing is all about **saving changes in your application state**. Such changes are represented by **events**, and needless to say, they are quite important 🙃
 
@@ -144,7 +158,7 @@ type UserCreatedEventDetail = {
 };
 ```
 
-### `EventType`
+### 🏷 `EventType`
 
 Events are generally classified in **events types** (not to confuse with TS types). Castore lets you declare them via the `EventType` class:
 
@@ -184,8 +198,6 @@ const eventType = userCreatedEventType.type;
 // => "USER_CREATED"
 ```
 
-**Methods:** -
-
 **Type Helpers:**
 
 - <code>EventTypeDetail</code>: Returns the event detail TS type of an `EventType`
@@ -218,7 +230,7 @@ type UserEventTypesDetails = EventTypesDetails<
 // | EventTypeDetail<typeof userRemovedEventType>
 ```
 
-### `Aggregate`
+### 🏗 `Aggregate`
 
 Eventhough data is stored as a serie of events, we still want to use a **stable interface to represent its state at time t** rather than directly using events. In Castore, it is implemented by a TS type called `Aggregate`.
 
@@ -248,7 +260,7 @@ interface UserAggregate {
 }
 ```
 
-### `Reducers`
+### ⚙️ `Reducers`
 
 Aggregates are derived from their events by [reducing them](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/Reduce) through a `reducer` function. It defines **how to update the aggregate when a new event is pushed**:
 
@@ -286,7 +298,7 @@ const johnDowAggregate: UserAggregate = johnDowEvents.reduce(usersReducer);
 
 <!-- TODO: SCHEMA OF EVENTS AGGREGATE -->
 
-### `EventStore`
+### 🎁 `EventStore`
 
 _...coming soon_
 
@@ -351,7 +363,7 @@ import type { EventStoreEventsDetails } from '@castore/core';
 type UserEventsDetails = EventStoreEventsTypes<typeof userEventStore>;
 ``` -->
 
-### `EventStorageAdapter`
+### 💾 `EventStorageAdapter`
 
 _...coming soon_
 
@@ -368,20 +380,25 @@ So far, castore supports 2 Storage Adapters ✨:
 - in-memory
 - DynamoDB -->
 
-### `Command`
+### 📨 `Command`
 
 _...coming soon_
 
-### `Snapshots`
+### 📸 `Snapshots`
 
 _...coming soon_
 
 ## Resources
 
-### Test Tools
+### 🎯 Test Tools
 
 _...coming soon_
 
-### Common Patterns
+
+### 🔗 Packages List
+
+_...coming soon_
+
+### 📖 Common Patterns
 
 _...coming soon_
