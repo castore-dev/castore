@@ -74,9 +74,9 @@ Castore is opiniated. It comes with a collection of best practices and documente
   - [📦 Packages structure](#-packages-structure)
 - [The Basics](#the-basics)
   - [📚 Events](#-events)
-  - [🏷 Event Type](#-eventtype)
+  - [🏷 Event Types](#-eventtype)
   - [🏗 Aggregates](#-aggregate)
-  - [⚙️ Reducers](#%EF%B8%8F-reducers)
+  - [⚙️ Reducers](#%EF%B8%8F-reducer)
   - [🎁 Event Store](#%EF%B8%8F-reducers)
   - [💾 Event Storage Adapter](#-eventstorageadapter)
   - [📨 Command](#-command)
@@ -260,9 +260,11 @@ interface UserAggregate {
 }
 ```
 
-### ⚙️ `Reducers`
+### ⚙️ `Reducer`
 
 Aggregates are derived from their events by [reducing them](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/Reduce) through a `reducer` function. It defines **how to update the aggregate when a new event is pushed**:
+
+<!-- TODO: SCHEMA OF EVENTS AGGREGATE -->
 
 ```ts
 import type { Reducer } from '@castore/core';
@@ -296,13 +298,17 @@ const johnDowAggregate: UserAggregate = johnDowEvents.reduce(usersReducer);
 
 > ☝️ Note that aggregates are always **computed on the fly**, and NOT stored. Changing them does not require any data migration whatsoever (except if you use snapshots, an invalidation is needed first).
 
-<!-- TODO: SCHEMA OF EVENTS AGGREGATE -->
-
 ### 🎁 `EventStore`
 
-_...coming soon_
+Once you've defined your [event types](#-eventtype) and how to [aggregate](#%EF%B8%8F-reducer) them, you can bundle them together in an `EventStore` class.
 
-<!-- Here we are! The `store` in Castore :)
+Each event store in your application represents a business entity. Think of event stores as _"what tables would be in CRUD"_, except that instead of directly updating data, you just append new events to it!
+
+In Castore, `EventStore` classes are NOT responsible for actually storing data (this will come with [event storage adapters](#-eventstorageadapter)). But rather to provide a boilerplate-free and type-safe interface to perform many actions such as:
+- Listing aggregate ids
+- Accessing events of an aggregate
+- Building an aggregate with the reducer
+- Pushing new events etc...
 
 ```ts
 import { EventStore } from '@castore/core';
@@ -316,17 +322,24 @@ const userEventStore = new EventStore({
   ],
   reducer: usersReducer,
 });
+// ...and that's it 🥳
 ```
+
+> ☝️ The `EventStore` class is the heart of Castore, it even gave it its name!
 
 **Constructor:**
 
-**TS Generics:**
+_...coming soon_
+
+<!-- > ☝️ Note that it's the ReturnType of the `reducer` function that is used to infer the `Aggregate` type of the EventStore. -->
 
 **Properties:**
 
-**Methods:**
+_...coming soon_
 
-**Helpers:** -->
+**Type Helpers:**
+
+_...coming soon_
 
 <!-- EventStoreId
 
