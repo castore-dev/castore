@@ -22,5 +22,7 @@ export type {
   EventStoreEventsDetails,
   EventStoreReducer,
   EventStoreAggregate,
+  Reducer,
 } from './eventStore';
 export { Command, tuple } from './command/command';
+export type { $Contravariant } from './utils';

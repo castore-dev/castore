@@ -1,4 +1,5 @@
 import type { EventStore } from '~/eventStore';
+import type { $Contravariant } from '~/utils';
 
 export const tuple = <A extends unknown[]>(...args: A): A => args;
 
@@ -6,12 +7,8 @@ export const tuple = <A extends unknown[]>(...args: A): A => args;
  * @debt feature "Command should be able to take metadata/context as 2nd inputs"
  */
 export class Command<
-  $E extends EventStore[] = EventStore[],
-  // cf https://devblogs.microsoft.com/typescript/announcing-typescript-4-7-rc/#optional-variance-annotations-for-type-parameters
-  // Command is contravariant on its fns args: We have to type them as any
-  // So that Command implementations still extends the Command type
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  E extends EventStore[] = EventStore[] extends $E ? any : $E,
+  E extends EventStore[] = EventStore[],
+  $E extends EventStore[] = $Contravariant<E, EventStore[]>,
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   I = any,
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -22,8 +19,8 @@ export class Command<
     output: O;
   };
   commandId: string;
-  requiredEventStores: $E;
-  handler: (input: I, requiredEventStores: E) => Promise<O>;
+  requiredEventStores: E;
+  handler: (input: I, requiredEventStores: $E) => Promise<O>;
 
   constructor({
     commandId,
@@ -31,8 +28,8 @@ export class Command<
     handler,
   }: {
     commandId: string;
-    requiredEventStores: $E;
-    handler: (input: I, requiredEventStores: E) => Promise<O>;
+    requiredEventStores: E;
+    handler: (input: I, requiredEventStores: $E) => Promise<O>;
   }) {
     this.commandId = commandId;
     this.requiredEventStores = requiredEventStores;

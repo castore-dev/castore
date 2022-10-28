@@ -1,6 +1,11 @@
 import { FromSchema, JSONSchema } from 'json-schema-to-ts';
 
-import { Command, EventAlreadyExistsError, EventStore } from '@castore/core';
+import {
+  Command,
+  EventAlreadyExistsError,
+  EventStore,
+  $Contravariant,
+} from '@castore/core';
 
 export type OnEventAlreadyExistsCallback = (
   error: EventAlreadyExistsError,
@@ -8,9 +13,8 @@ export type OnEventAlreadyExistsCallback = (
 ) => Promise<void>;
 
 export class JSONSchemaCommand<
-  $E extends EventStore[] = EventStore[],
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  E extends EventStore[] = EventStore[] extends $E ? any : $E,
+  E extends EventStore[] = EventStore[],
+  $E extends EventStore[] = $Contravariant<E, EventStore[]>,
   IS extends JSONSchema | undefined = JSONSchema | undefined,
   I = JSONSchema extends IS
     ? // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -25,19 +29,19 @@ export class JSONSchemaCommand<
     : OS extends JSONSchema
     ? FromSchema<OS>
     : never,
-> implements Command<$E, E, I, O>
+> implements Command<E, $E, I, O>
 {
   _types?: {
     input: I;
     output: O;
   };
   commandId: string;
-  requiredEventStores: $E;
+  requiredEventStores: E;
   inputSchema?: IS;
   outputSchema?: OS;
   eventAlreadyExistsRetries: number;
   onEventAlreadyExists: OnEventAlreadyExistsCallback;
-  handler: (input: I, requiredEventStores: E) => Promise<O>;
+  handler: (input: I, requiredEventStores: $E) => Promise<O>;
 
   constructor({
     commandId,
@@ -49,12 +53,12 @@ export class JSONSchemaCommand<
     handler,
   }: {
     commandId: string;
-    requiredEventStores: $E;
+    requiredEventStores: E;
     inputSchema?: IS;
     outputSchema?: OS;
     eventAlreadyExistsRetries?: number;
     onEventAlreadyExists?: OnEventAlreadyExistsCallback;
-    handler: (input: I, requiredEventStores: E) => Promise<O>;
+    handler: (input: I, requiredEventStores: $E) => Promise<O>;
   }) {
     this.commandId = commandId;
     this.requiredEventStores = requiredEventStores;
