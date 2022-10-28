@@ -14,6 +14,7 @@ import {
   CounterEventsDetails,
   counterEventStore,
 } from './eventStore.util.test';
+import { GetAggregateOptions } from './types';
 
 // --- EXTENDS ---
 
@@ -77,7 +78,7 @@ assertGetEventsOutput;
 
 const assertGetAggregateInput: A.Equals<
   Parameters<typeof counterEventStore.getAggregate>,
-  [aggregateId: string, options?: EventsQueryOptions]
+  [aggregateId: string, options?: GetAggregateOptions]
 > = 1;
 assertGetAggregateInput;
 
