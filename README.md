@@ -573,18 +573,51 @@ So far, castore supports 2 Storage Adapters ✨:
 
 ### 📨 `Command`
 
-_...coming soon_
+Commands represent an intent to modify the state of your application. They usually result in pushing one or several events to your event stores.
+
+They typically consist in:
+
+- Fetching the required aggregates (if not the first event of a new aggregate)
+- Validating that the intent is acceptable in regards to the state of the application\*
+- Pushing new events with incremented versions
+
+> \* ☝️ Note that commands should NOT use read models for the validation step. Read models are not the source of truth, and may not contain the freshest state.
+
+Fetching and pushing events at separate non-simultaneously exposes your application to [race conditions](https://en.wikipedia.org/wiki/Race_condition). To counter that, commands executions are designed to be retried when an `EventAlreadyExistsError` is triggered.
+
+<!-- TODO, add schema -->
+
+_...technical description coming soon_
+
+When writing on several event stores at once, it is important to use transactions, i.e. to make sure that all events are written or none. This ensures that the application is not in a corrupt state.
+
+Transactions accross event stores cannot be easily abstracted, so check you adapter library on how to achieve this. For instance, the [`DynamoDBEventStorageAdapter`](./packages/dynamodb-event-storage-adapter/README.md) exposes a [`pushEventsTransaction`](./packages/dynamodb-event-storage-adapter/src/utils/pushEventsTransaction.ts) util.
 
 ## Resources
 
 ### 🎯 Test Tools
 
-_...coming soon_
+Castore comes with a handy [Test Tool package](./packages/test-tools/README.md) that facilitates the writing of unit tests: It allows mocking event stores, populating them with an initial state and resetting them to it in a boilerplate-free and type-safe way.
 
 ### 🔗 Packages List
 
-_...coming soon_
+#### 🏷 Event Types
+
+- [JSON Schema Event Type](./packages/json-schema-event/README.md): DRY `EventType` definition using [JSON Schemas](http://json-schema.org/understanding-json-schema/reference/index.html) and [`json-schema-to-ts`](https://github.com/ThomasAribart/json-schema-to-ts)
+- [Zod Event Type](./packages/zod-event/README.md): DRY `EventType` definition using [`zod`](https://github.com/colinhacks/zod)
+
+#### 💾 Event Storage Adapters
+
+- [DynamoDB Event Storage Adapter](./packages/dynamodb-event-storage-adapter/README.md): Implementation of the `EventStorageAdapter` interface based on DynamoDB.
+- [In-Memory Event Storage Adapter](./packages/inmemory-event-storage-adapter/README.md): Implementation of the `EventStorageAdapter` interface using a local Node/JS object. To be used in manual or unit tests.
+
+#### 📨 Commands
+
+- [JSON Schema Command](./packages/json-schema-command/README.md): DRY `Command` definition using [JSON Schemas](http://json-schema.org/understanding-json-schema/reference/index.html) and [`json-schema-to-ts`](https://github.com/ThomasAribart/json-schema-to-ts)
 
 ### 📖 Common Patterns
 
-_...coming soon_
+- Simulating a future/past aggregate state: _...coming soon_
+- Projecting on read models: _...coming soon_
+- Replaying events: _...coming soon_
+- Snapshotting: _...coming soon_
