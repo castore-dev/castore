@@ -46,7 +46,6 @@ export type AggregateGetter<
   aggregate: R extends true ? A : A | undefined;
   events: D[];
   lastEvent: R extends true ? D : D | undefined;
-  snapshot: A | undefined;
 }>;
 
 export type SimulationOptions = { simulationDate?: string };

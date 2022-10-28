@@ -17,7 +17,6 @@ export const counterEventStore = new EventStore({
     counterIncrementedEvent,
     counterRemovedEvent,
   ],
-  snapshotInterval: 2,
   reduce: (counterAggregate: CounterAggregate, event): CounterAggregate => {
     const { version, aggregateId } = event;
 

@@ -87,7 +87,6 @@ const assertGetAggregateOutput: A.Equals<
     aggregate: CounterAggregate | undefined;
     events: CounterEventsDetails[];
     lastEvent: CounterEventsDetails | undefined;
-    snapshot: CounterAggregate | undefined;
   }>
 > = 1;
 assertGetAggregateOutput;

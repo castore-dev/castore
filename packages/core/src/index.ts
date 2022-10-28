@@ -11,8 +11,6 @@ export type {
   PushEventContext,
   ListAggregateIdsOptions,
   ListAggregateIdsOutput,
-  GetLastSnapshotOptions,
-  ListSnapshotsOptions,
 } from './storageAdapter';
 export { EventStore } from './eventStore';
 export type {

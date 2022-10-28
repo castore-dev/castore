@@ -105,7 +105,6 @@ export const counterEventStore = new EventStore({
   ],
   reduce: countersReducer,
   storageAdapter: mockStorageAdapter,
-  snapshotInterval: 2,
 });
 
 // Users
