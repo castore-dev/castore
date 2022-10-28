@@ -122,8 +122,8 @@ export class EventStore<
     this.buildAggregate = (eventDetails, aggregate) =>
       eventDetails.reduce(this.reduce, aggregate) as A | undefined;
 
-    this.getAggregate = async (aggregateId, options = {}) => {
-      const { events } = await this.getEvents(aggregateId, options);
+    this.getAggregate = async (aggregateId, { maxVersion } = {}) => {
+      const { events } = await this.getEvents(aggregateId, { maxVersion });
 
       const aggregate = this.buildAggregate(
         events as unknown as $D[],

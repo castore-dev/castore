@@ -14,6 +14,7 @@ export type {
 } from './storageAdapter';
 export { EventStore } from './eventStore';
 export type {
+  GetAggregateOptions,
   SimulationOptions,
   EventStoreId,
   EventStoreEventsTypes,

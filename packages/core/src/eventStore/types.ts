@@ -35,13 +35,17 @@ export type AggregateIdsLister = (
   listAggregateOptions?: ListAggregateIdsOptions,
 ) => Promise<ListAggregateIdsOutput>;
 
+export type GetAggregateOptions = {
+  maxVersion?: number;
+};
+
 export type AggregateGetter<
   D extends EventDetail,
   A extends Aggregate,
   R extends boolean = false,
 > = (
   aggregateId: string,
-  options?: EventsQueryOptions,
+  options?: GetAggregateOptions,
 ) => Promise<{
   aggregate: R extends true ? A : A | undefined;
   events: D[];
