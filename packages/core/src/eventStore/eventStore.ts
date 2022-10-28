@@ -16,7 +16,6 @@ import {
   AggregateSimulator,
   Reducer,
 } from './types';
-import { validateSnapshotInterval } from './utils/validateSnapshotInterval';
 
 export class EventStore<
   I extends string = string,
@@ -43,7 +42,6 @@ export class EventStore<
    */
   reduce: R;
   simulateSideEffect: SideEffectsSimulator<D, $D>;
-  snapshotInterval: number;
 
   getEvents: EventsGetter<D>;
   pushEvent: EventPusher<$D>;
@@ -69,7 +67,6 @@ export class EventStore<
       [event.version]: event,
     }),
     storageAdapter: $storageAdapter,
-    snapshotInterval = Infinity,
   }: {
     eventStoreId: I;
     /**
@@ -82,7 +79,6 @@ export class EventStore<
     reduce: R;
     simulateSideEffect?: SideEffectsSimulator<D, $D>;
     storageAdapter?: StorageAdapter;
-    snapshotInterval?: number;
   }) {
     this.eventStoreId = eventStoreId;
     this.eventStoreEvents = eventStoreEvents;
@@ -92,8 +88,6 @@ export class EventStore<
      * @debt v2 "rename as eventStorageAdapter"
      */
     this.storageAdapter = $storageAdapter;
-
-    this.snapshotInterval = validateSnapshotInterval(snapshotInterval);
 
     this.getStorageAdapter = () => {
       if (!this.storageAdapter) {
@@ -120,22 +114,6 @@ export class EventStore<
       await storageAdapter.pushEvent(eventDetail, {
         eventStoreId: this.eventStoreId,
       });
-
-      const { version, aggregateId } = eventDetail;
-      if (version % this.snapshotInterval === 0) {
-        /**
-         * @debt performances "In theory, events should already have been fetched. Find a way to not have to refetch aggregate (caching or input)"
-         */
-        const { aggregate } = await this.getAggregate(aggregateId);
-
-        if (!aggregate) {
-          console.error('Unable to create snapshot: Aggregate not found');
-
-          return;
-        }
-
-        await storageAdapter.putSnapshot(aggregate);
-      }
     };
 
     this.listAggregateIds = async options =>
@@ -145,30 +123,16 @@ export class EventStore<
       eventDetails.reduce(this.reduce, aggregate) as A | undefined;
 
     this.getAggregate = async (aggregateId, options = {}) => {
-      const { maxVersion } = options;
-
-      let snapshot: A | undefined;
-      if (maxVersion === undefined || maxVersion >= this.snapshotInterval) {
-        snapshot = (
-          await this.getStorageAdapter().getLastSnapshot(aggregateId, {
-            maxVersion,
-          })
-        ).snapshot as A | undefined;
-      }
-
-      const { events } = await this.getEvents(aggregateId, {
-        ...options,
-        minVersion: snapshot ? snapshot.version + 1 : undefined,
-      });
+      const { events } = await this.getEvents(aggregateId, options);
 
       const aggregate = this.buildAggregate(
         events as unknown as $D[],
-        snapshot as unknown as $A,
+        undefined,
       );
 
       const lastEvent = events[events.length - 1];
 
-      return { aggregate, events, lastEvent, snapshot };
+      return { aggregate, events, lastEvent };
     };
 
     this.getExistingAggregate = async (aggregateId, options) => {

@@ -7,7 +7,6 @@ import { userCreatedEvent, userRemovedEvent } from './events';
 export const userEventStore = new EventStore({
   eventStoreId: 'USER',
   eventStoreEvents: [userCreatedEvent, userRemovedEvent],
-  snapshotInterval: 2,
   reduce: (counterAggregate: UserAggregate, event): UserAggregate => {
     const { version, aggregateId } = event;
 

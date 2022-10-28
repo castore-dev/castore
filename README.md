@@ -22,11 +22,9 @@ Event Sourcing is a data storage paradigm that saves **changes in your applicati
 
 After years of using it at [Kumo](https://dev.to/kumo), we have grown to love it, but also experienced first-hand the lack of consensus and tooling around it. That's where Castore comes from!
 
-
 <p align="center">
 Castore is a TypeScript library that <b>makes Event Sourcing easy</b> 😎
 </p>
-
 
 With Castore, you'll be able to:
 
@@ -80,7 +78,6 @@ Castore is opiniated. It comes with a collection of best practices and documente
   - [🎁 Event Store](#%EF%B8%8F-reducers)
   - [💾 Event Storage Adapter](#-eventstorageadapter)
   - [📨 Command](#-command)
-  - [📸 Snapshots](#-snapshots)
 - [Resources](#resources)
   - [🎯 Test Tools](#-test-tools)
   - [🔗 Packages List](#-packages-list)
@@ -296,7 +293,7 @@ export const usersReducer: Reducer<UserAggregate, UserEventsDetails> = (
 const johnDowAggregate: UserAggregate = johnDowEvents.reduce(usersReducer);
 ```
 
-> ☝️ Note that aggregates are always **computed on the fly**, and NOT stored. Changing them does not require any data migration whatsoever (except if you use snapshots, an invalidation is needed first).
+> ☝️ Note that aggregates are always **computed on the fly**, and NOT stored. Changing them does not require any data migration whatsoever.
 
 ### 🎁 `EventStore`
 
@@ -305,6 +302,7 @@ Once you've defined your [event types](#-eventtype) and how to [aggregate](#%EF%
 Each event store in your application represents a business entity. Think of event stores as _"what tables would be in CRUD"_, except that instead of directly updating data, you just append new events to it!
 
 In Castore, `EventStore` classes are NOT responsible for actually storing data (this will come with [event storage adapters](#-eventstorageadapter)). But rather to provide a boilerplate-free and type-safe interface to perform many actions such as:
+
 - Listing aggregate ids
 - Accessing events of an aggregate
 - Building an aggregate with the reducer
@@ -397,16 +395,11 @@ So far, castore supports 2 Storage Adapters ✨:
 
 _...coming soon_
 
-### 📸 `Snapshots`
-
-_...coming soon_
-
 ## Resources
 
 ### 🎯 Test Tools
 
 _...coming soon_
-
 
 ### 🔗 Packages List
 
