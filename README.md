@@ -556,20 +556,29 @@ type UserReducer = EventStoreAggregate<typeof userEventStore>;
 
 ### 💾 `EventStorageAdapter`
 
-_...coming soon_
+For the moment, we didn't provide any actual way to store our events data. This is the responsibility of the `EventStorageAdapter` class.
 
-<!-- You can store your events in many different ways. To specify how to store them (in memory, DynamoDB...) Castore implements Storage Adapters.
+```ts
+import { EventStore } from '@castore/core';
 
-Adapters offer an interface between the Event Store class and your storage method 💾.
+const userEventStore = new EventStore({
+  eventStoreId: 'USERS',
+  eventTypes: userEventTypes,
+  reducer: usersReducer,
+  // 👇 Provide it in the constructor
+  storageAdapter: mySuperStorageAdapter,
+});
 
-To be able to use your EventStore, you will need to attach a Storage Adapter 🔗.
+// 👇 ...or set/switch it in context later
+userEventStore.storageAdapter = mySuperStorageAdapter;
+```
 
-All the Storage Adapters have the same interface, and you can create your own if you want to implement new storage methods!
+You can choose to [build an event storage adapter](./docs/building-your-own-event-storage-adapter.md) that suits your usage. However, we highly recommend using an off-the-shelf adapter:
 
-So far, castore supports 2 Storage Adapters ✨:
+- [DynamoDB Event Storage Adapter](./packages/dynamodb-event-storage-adapter/README.md)
+- [In-Memory Event Storage Adapter](./packages/inmemory-event-storage-adapter/README.md)
 
-- in-memory
-- DynamoDB -->
+If the storage solution that you use is missing, feel free to create/upvote an issue, or contribute!
 
 ### 📨 `Command`
 
@@ -578,14 +587,55 @@ Commands represent an intent to modify the state of your application. They usual
 They typically consist in:
 
 - Fetching the required aggregates (if not the first event of a new aggregate)
-- Validating that the intent is acceptable in regards to the state of the application\*
+- Validating that the intent is acceptable in regards to the state of the application
 - Pushing new events with incremented versions
 
-> \* ☝️ Note that commands should NOT use read models for the validation step. Read models are not the source of truth, and may not contain the freshest state.
-
-Fetching and pushing events at separate non-simultaneously exposes your application to [race conditions](https://en.wikipedia.org/wiki/Race_condition). To counter that, commands executions are designed to be retried when an `EventAlreadyExistsError` is triggered.
-
 <!-- TODO, add schema -->
+
+> ☝️ Note that commands should NOT use read models for the validation step. Read models are not the source of truth, and may not contain the freshest state.
+
+Fetching and pushing events non-simultaneously exposes your application to [race conditions](https://en.wikipedia.org/wiki/Race_condition). To counter that, commands executions are designed to be retried when an `EventAlreadyExistsError` is triggered (which is part of the `EventStorageAdapter` interface).
+
+```ts
+import { Command } from '@castore/core';
+
+// 👇 You can provide several eventStores if needed
+type RequiredEventStores = [typeof userEventStore];
+type CommandInput = { name: string; age: number };
+type CommandOutput = { userId: string };
+
+export const createUserCommand = new Command<
+  RequiredEventStores,
+  // 👇 The type need to be provided twice for technical reasons
+  RequiredEventStores,
+  CommandInput,
+  CommandOutput
+>({
+  commandId: 'CREATE_USER',
+  requiredEventStores: [userEventStore],
+  // 👇 Code to execute
+  handler: async (commandInput, [userEventStore]) => {
+    const { name, age } = commandInput;
+    const userId = generateUuid();
+
+    await userEventStore.pushEvent({
+      aggregateId: userId,
+      version: 1,
+      type: 'USER_CREATED',
+      timestamp: new Date().toISOString(),
+      payload: { name, age },
+    });
+
+    return { userId };
+  },
+});
+```
+
+Note that we only provide TS types for `commandInput` and `commandOutput` properties. That is because, as stated in the [core design](#🫀-core-design), **Castore is meant to be as flexible as possible**, and that includes the validation library you want to use: The `Command` class is not meant to be used directly, but rather extended by other classes which will add run-time validation methods to it 👍
+
+See the following packages for examples:
+
+- [JSON Schema Event Type](./packages/json-schema-command/README.md)
 
 _...technical description coming soon_
 
