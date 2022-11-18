@@ -1,4 +1,4 @@
-# JSON Schema Event
+# Zod Event
 
 DRY Castore [`EventType`](https://github.com/castore-dev/castore/#-eventtype) definition using [`zod`](https://github.com/colinhacks/zod).
 
