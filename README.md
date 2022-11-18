@@ -81,12 +81,12 @@ Castore is opiniated. It comes with a collection of best practices and documente
   - [🏷 Event Types](#-eventtype)
   - [🏗 Aggregates](#-aggregate)
   - [⚙️ Reducers](#%EF%B8%8F-reducer)
-  - [🎁 Event Store](#%EF%B8%8F-reducers)
-  - [💾 Event Storage Adapter](#💾-eventstorageadapter)
-  - [✍️ Command](#✍️-command)
-  - [📨 Message Bus](#📨-message-bus)
-  - [📸 Snapshots](#📸-snapshots)
-  - [📖 Read Models](#📖-read-models)
+  - [🎁 Event Store](#-eventstore)
+  - [💾 Event Storage Adapter](#-eventstorageadapter)
+  - [✍️ Command](#%EF%B8%8F-command)
+  - [📨 Message Buses & Queues](#-message-buses--queues)
+  - [📸 Snapshots](#-snapshots)
+  - [📖 Read Models](#-read-models)
 - [Resources](#resources)
   - [🎯 Test Tools](#-test-tools)
   - [🔗 Packages List](#-packages-list)
@@ -693,7 +693,7 @@ A few notes on commands handlers:
 
 - When writing on several event stores at once, it is important to make sure that **all events are written or none**, i.e. use transactions: This ensures that the application is not in a corrupt state. Transactions accross event stores cannot be easily abstracted, so check you adapter library on how to achieve this. For instance, the [`DynamoDBEventStorageAdapter`](./packages/dynamodb-event-storage-adapter/README.md) exposes a [`pushEventsTransaction`](./packages/dynamodb-event-storage-adapter/src/utils/pushEventsTransaction.ts) util.
 
-### 📨 Message Bus & Queues
+### 📨 Message Buses & Queues
 
 As mentioned in the introduction, Event Sourcing integrates very well with [event-driven architectures](https://en.wikipedia.org/wiki/Event-driven_architecture). After having successfully run a command, it can be very useful to push the freshly written events in a [Message Bus](https://en.wikipedia.org/wiki/Publish%E2%80%93subscribe_pattern) or a [Message Queue](https://en.wikipedia.org/wiki/Message_queue) system.
 
