@@ -24,8 +24,6 @@ yarn add @castore/core zod
 
 ## 👩‍💻 Usage
 
-/
-
 ```ts
 import z from 'zod';
 
@@ -40,6 +38,7 @@ const userCreatedMetadataSchema = z.object({
   invitedBy: z.string().optional(),
 });
 
+// 👇 generics are correctly inferred
 const userCreatedEventType = new ZodEventType({
   type: 'USER_CREATED',
   payloadSchema: userCreatedPayloadSchema,

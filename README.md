@@ -607,7 +607,7 @@ type RequiredEventStores = [typeof userEventStore];
 type CommandInput = { name: string; age: number };
 type CommandOutput = { userId: string };
 
-export const createUserCommand = new Command<
+const createUserCommand = new Command<
   RequiredEventStores,
   // 👇 The type need to be provided twice for technical reasons
   RequiredEventStores,
@@ -649,7 +649,7 @@ See the following packages for examples:
 ```ts
 import { Command, tuple } from '@castore/core';
 
-export const doSomethingCommand = new Command({
+const doSomethingCommand = new Command({
   commandId: 'DO_SOMETHING',
   requiredEventStores: tuple(eventStore1, eventStore2),
   handler: async (commandInput, [eventStore1, eventStore2]) => {
