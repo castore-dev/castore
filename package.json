@@ -1,6 +1,6 @@
 {
   "name": "@castore/castore",
-  "description": "🦫 Better DevX for Event Sourcing in TypeScript",
+  "description": "Making Event Sourcing easy 😎",
   "license": "MIT",
   "homepage": "https://github.com/castore-dev/castore#readme",
   "bugs": "https://github.com/castore-dev/castore/issues",

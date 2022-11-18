@@ -16,15 +16,23 @@
 
 # Making Event Sourcing easy 😎
 
-Event Sourcing is a data storage paradigm that saves **changes in your application state** rather than the state itself. It is powerful but tricky to implement.
+[Event Sourcing](https://learn.microsoft.com/en-us/azure/architecture/patterns/event-sourcing) is a data storage paradigm that saves **changes in your application state** rather than the state itself.
+
+It is powerful as it enables **rewinding to a previous state** and **exploring audit trails** for debugging or business/legal purposes. It also integrates very well with [event-driven architectures](https://en.wikipedia.org/wiki/Event-driven_architecture).
+
+However, it is **tricky to implement** 😅
 
 <!-- TODO: SCHEMA OF EVENT SOURCING -->
 
 After years of using it at [Kumo](https://dev.to/kumo), we have grown to love it, but also experienced first-hand the lack of consensus and tooling around it. That's where Castore comes from!
 
+---
+
 <p align="center">
-Castore is a TypeScript library that <b>makes Event Sourcing easy</b> 😎
+  Castore is a TypeScript library that <b>makes Event Sourcing easy</b> 😎
 </p>
+
+---
 
 With Castore, you'll be able to:
 
