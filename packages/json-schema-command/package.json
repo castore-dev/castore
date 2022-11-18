@@ -1,5 +1,6 @@
 {
   "name": "@castore/json-schema-command",
+  "description": "DRY Castore Command definition using JSON Schemas and json-schema-to-ts",
   "license": "MIT",
   "homepage": "https://github.com/theodo/castore#readme",
   "bugs": "https://github.com/theodo/castore/issues",

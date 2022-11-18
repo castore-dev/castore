@@ -46,6 +46,7 @@ const userCreatedMetadataSchema = {
   additionalProperties: false,
 } as const;
 
+// 👇 generics are correctly inferred
 const userCreatedEventType = new JSONSchemaEventType({
   type: 'USER_CREATED',
   payloadSchema: userCreatedPayloadSchema,
