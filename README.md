@@ -43,8 +43,6 @@ With Castore, you'll be able to:
 
 All that with first-class developer experience and minimal boilerplate ✨
 
-<!-- > Castore is still under active development. A v1 has been released with a first set of features, but we have big plans for the future (read models, events replay, migrations...)! So 📣 STAY TUNED 📣 -->
-
 ## 🫀 Core Design
 
 Some important decisions that we've made early on:
@@ -84,8 +82,11 @@ Castore is opiniated. It comes with a collection of best practices and documente
   - [🏗 Aggregates](#-aggregate)
   - [⚙️ Reducers](#%EF%B8%8F-reducer)
   - [🎁 Event Store](#%EF%B8%8F-reducers)
-  - [💾 Event Storage Adapter](#-eventstorageadapter)
-  - [📨 Command](#-command)
+  - [💾 Event Storage Adapter](#💾-eventstorageadapter)
+  - [✍️ Command](#✍️-command)
+  - [📨 Message Bus](#📨-message-bus)
+  - [📸 Snapshots](#📸-snapshots)
+  - [📖 Read Models](#📖-read-models)
 - [Resources](#resources)
   - [🎯 Test Tools](#-test-tools)
   - [🔗 Packages List](#-packages-list)
@@ -301,7 +302,7 @@ export const usersReducer: Reducer<UserAggregate, UserEventsDetails> = (
 const johnDowAggregate: UserAggregate = johnDowEvents.reduce(usersReducer);
 ```
 
-> ☝️ Note that aggregates are always **computed on the fly**, and NOT stored. Changing them does not require any data migration whatsoever.
+> ☝️ Aggregates are always **computed on the fly**, and NOT stored. Changing them does not require any data migration whatsoever.
 
 ### 🎁 `EventStore`
 
@@ -340,7 +341,7 @@ const userEventStore = new EventStore({
 - <code>reduce <i>(EventType[])</i></code>: A [reducer function](#⚙️-reducer) that can be applied to the store event types
 - <code>storageAdapter <i>(?EventStorageAdapter)</i></code>: See [`EventStorageAdapter`](#💾-eventstorageadapter)
 
-> ☝️ Note that it's the return type of the `reducer` that is used to infer the `Aggregate` type of the EventStore. It is important to type it explicitely.
+> ☝️ The return type of the `reducer` is used to infer the `Aggregate` type of the `EventStore`, so it is important to type it explicitely.
 
 **Properties:**
 
@@ -588,21 +589,15 @@ You can choose to [build an event storage adapter](./docs/building-your-own-even
 
 If the storage solution that you use is missing, feel free to create/upvote an issue, or contribute!
 
-### 📨 `Command`
+### ✍️ `Command`
 
-Commands represent an intent to modify the state of your application. They usually result in pushing one or several events to your event stores.
-
-They typically consist in:
+Modifying the state of your application (i.e. pushing new events to your event stores) is done by executing **commands**. They typically consist in:
 
 - Fetching the required aggregates (if not the first event of a new aggregate)
-- Validating that the intent is acceptable in regards to the state of the application
+- Validating that the modification is acceptable
 - Pushing new events with incremented versions
 
 <!-- TODO, add schema -->
-
-> ☝️ Note that commands should NOT use read models for the validation step. Read models are not the source of truth, and may not contain the freshest state.
-
-Fetching and pushing events non-simultaneously exposes your application to [race conditions](https://en.wikipedia.org/wiki/Race_condition). To counter that, commands executions are designed to be retried when an `EventAlreadyExistsError` is triggered (which is part of the `EventStorageAdapter` interface).
 
 ```ts
 import { Command } from '@castore/core';
@@ -645,11 +640,89 @@ See the following packages for examples:
 
 - [JSON Schema Event Type](./packages/json-schema-command/README.md)
 
-_...technical description coming soon_
+**Constructor:**
 
-When writing on several event stores at once, it is important to use transactions, i.e. to make sure that all events are written or none. This ensures that the application is not in a corrupt state.
+- <code>commandId <i>(string)</i></code>: A string identifying the command
+- <code>handler <i>((input: Input, requiredEventsStores: EventStore[]) => Promise\<Output\>)</i></code>: The code to execute
+- <code>requiredEventStores <i>(EventStore[])</i></code>: A tuple of `EventStores` that are required by the command for read/write purposes. In TS, you should use the `tuple` util to preserve tuple ordering in the handler (`tuple` doesn't mute its input, it simply returns them)
 
-Transactions accross event stores cannot be easily abstracted, so check you adapter library on how to achieve this. For instance, the [`DynamoDBEventStorageAdapter`](./packages/dynamodb-event-storage-adapter/README.md) exposes a [`pushEventsTransaction`](./packages/dynamodb-event-storage-adapter/src/utils/pushEventsTransaction.ts) util.
+```ts
+import { Command, tuple } from '@castore/core';
+
+export const doSomethingCommand = new Command({
+  commandId: 'DO_SOMETHING',
+  requiredEventStores: tuple(eventStore1, eventStore2),
+  handler: async (commandInput, [eventStore1, eventStore2]) => {
+    // ...do something here
+  },
+});
+```
+
+**Properties:**
+
+- <code>commandId <i>(string)</i></code>: The command id
+
+```ts
+const commandId = doSomethingCommand.commandId;
+// => 'DO_SOMETHING'
+```
+
+- <code>requiredEventStores <i>(EventStore[])</i></code>: The required event stores
+
+```ts
+const requiredEventStores = doSomethingCommand.requiredEventStores;
+// => [eventStore1, eventStore2]
+```
+
+- <code>handler <i>((input: Input, requiredEventsStores: EventStore[]) => Promise\<Output\>)</i></code>: Function to invoke the command
+
+```ts
+const output = await doSomethingCommand.handler(input, [
+  eventStore1,
+  eventStore2,
+]);
+```
+
+A few notes on commands handlers:
+
+- `Commands` handlers should NOT use [read models](#📖-read-models) when validating that a modification is acceptable. Read models are like cache: They are not the source of truth, and may not represent the freshest state.
+
+- Fetching and pushing events non-simultaneously exposes your application to [race conditions](https://en.wikipedia.org/wiki/Race_condition). To counter that, commands are designed to be retried when an `EventAlreadyExistsError` is triggered (which is part of the `EventStorageAdapter` interface).
+
+<!-- TODO, add schema -->
+
+- When writing on several event stores at once, it is important to make sure that **all events are written or none**, i.e. use transactions: This ensures that the application is not in a corrupt state. Transactions accross event stores cannot be easily abstracted, so check you adapter library on how to achieve this. For instance, the [`DynamoDBEventStorageAdapter`](./packages/dynamodb-event-storage-adapter/README.md) exposes a [`pushEventsTransaction`](./packages/dynamodb-event-storage-adapter/src/utils/pushEventsTransaction.ts) util.
+
+### 📨 Message Bus & Queues
+
+As mentioned in the introduction, Event Sourcing integrates very well with [event-driven architectures](https://en.wikipedia.org/wiki/Event-driven_architecture). After having successfully run a command, it can be very useful to push the freshly written events in a [Message Bus](https://en.wikipedia.org/wiki/Publish%E2%80%93subscribe_pattern) or a [Message Queue](https://en.wikipedia.org/wiki/Message_queue) system.
+
+There are two kind of messages:
+
+- **Notification messages** which only carry the events details
+- **Stateful messages** which also carry the corresponding aggregates
+
+<!-- TODO, add schema -->
+
+Message buses and queues are not implemented in Castore yet, but we have big plans for them, so stay tuned 🙂
+
+### 📸 Snapshots
+
+As events pile up in your event stores, the performances and costs of your commands can become an issue.
+
+One solution is to periodially persist **snapshots** of your aggregates (e.g. through a message bus subscription), and only fetch them plus the subsequent events instead of all the events.
+
+Snapshots are not implemented in Castore yet, but we have big plans for them, so stay tuned 🙂
+
+### 📖 Read Models
+
+Even with snapshots, using the event store for querying needs (like displaying data in a web page) would be slow and inefficient, if not impossible depending on the access pattern.
+
+In Event Sourcing, it is common to use a special type of message bus subscription called **projections**, responsible for maintaining data specifically designed for querying needs, called **read models**.
+
+Read models allow for faster read operations and re-indexing. Keep in mind that they are [eventually consistent](https://en.wikipedia.org/wiki/Eventual_consistency) by design, which can be annoying in some use cases (like opening a resource page directly after its creation).
+
+Read models are not implemented in Castore yet, but we have big plans for them, so stay tuned 🙂
 
 ## Resources
 
@@ -676,6 +749,6 @@ Castore comes with a handy [Test Tool package](./packages/test-tools/README.md) 
 ### 📖 Common Patterns
 
 - Simulating a future/past aggregate state: _...coming soon_
+- Snapshotting: _...coming soon_
 - Projecting on read models: _...coming soon_
 - Replaying events: _...coming soon_
-- Snapshotting: _...coming soon_
