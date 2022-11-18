@@ -1,5 +1,6 @@
 {
   "name": "@castore/zod-event",
+  "description": "DRY Castore EventType definition using zod",
   "license": "MIT",
   "homepage": "https://github.com/castore-dev/castore#readme",
   "bugs": "https://github.com/castore-dev/castore/issues",

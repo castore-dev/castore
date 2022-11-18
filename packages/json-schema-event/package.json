@@ -1,5 +1,6 @@
 {
   "name": "@castore/json-schema-event",
+  "description": "DRY Castore EventType definition using JSON Schemas and json-schema-to-ts",
   "license": "MIT",
   "homepage": "https://github.com/castore-dev/castore#readme",
   "bugs": "https://github.com/castore-dev/castore/issues",
