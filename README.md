@@ -171,7 +171,7 @@ Events are generally classified in **events types** (not to confuse with TS type
 ```ts
 import { EventType } from '@castore/core';
 
-export const userCreatedEventType = new EventType<
+const userCreatedEventType = new EventType<
   'USER_CREATED',
   { name: string; age: number },
   { invitedBy?: string }
@@ -192,7 +192,7 @@ See the following packages for examples:
 ```ts
 import { EventType } from '@castore/core';
 
-export const userCreatedEventType = new EventType({ type: 'USER_CREATED' });
+const userCreatedEventType = new EventType({ type: 'USER_CREATED' });
 ```
 
 **Properties:**
@@ -275,7 +275,7 @@ Aggregates are derived from their events by [reducing them](https://developer.mo
 ```ts
 import type { Reducer } from '@castore/core';
 
-export const usersReducer: Reducer<UserAggregate, UserEventsDetails> = (
+const usersReducer: Reducer<UserAggregate, UserEventsDetails> = (
   userAggregate,
   newEvent,
 ) => {
