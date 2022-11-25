@@ -501,13 +501,13 @@ await userEventStore.pushEvent({
 ```ts
 const accAggregateIds: string = [];
 const { aggregateIds: firstPage, nextPageToken } =
-  await userEventStore.getAggregate({ limit: 20 });
+  await userEventStore.listAggregateIds({ limit: 20 });
 
 accAggregateIds.push(...firstPage);
 
 if (nextPageToken) {
-  const { aggregateIds: secondPage } = await userEventStore.getAggregate({
-    limit: 20,
+  const { aggregateIds: secondPage } = await userEventStore.listAggregateIds({
+    // 👇 Previous limit of 20 is passed through the page token
     pageToken: nextPageToken,
   });
   accAggregateIds.push(...secondPage);
