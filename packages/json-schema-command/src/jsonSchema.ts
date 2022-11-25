@@ -3,6 +3,7 @@ import { FromSchema, JSONSchema } from 'json-schema-to-ts';
 import {
   Command,
   EventAlreadyExistsError,
+  isEventAlreadyExistsError,
   EventStore,
   $Contravariant,
 } from '@castore/core';
@@ -83,7 +84,7 @@ export class JSONSchemaCommand<
 
           return output;
         } catch (error) {
-          if (!(error instanceof EventAlreadyExistsError)) {
+          if (!isEventAlreadyExistsError(error)) {
             throw error;
           }
 

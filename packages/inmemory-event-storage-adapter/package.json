@@ -1,5 +1,6 @@
 {
   "name": "@castore/inmemory-event-storage-adapter",
+  "description": "DRY Castore EventStorageAdapter implementation using a JS object",
   "license": "MIT",
   "homepage": "https://github.com/castore-dev/castore#readme",
   "bugs": "https://github.com/castore-dev/castore/issues",

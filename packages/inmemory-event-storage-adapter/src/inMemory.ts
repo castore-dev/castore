@@ -1,12 +1,9 @@
 import cloneDeep from 'lodash/cloneDeep';
 import intersectionBy from 'lodash/intersectionBy';
 
-import {
-  EventAlreadyExistsError,
-  EventDetail,
-  StorageAdapter,
-} from '@castore/core';
+import type { EventDetail, StorageAdapter } from '@castore/core';
 
+import { InMemoryEventAlreadyExistsError } from './error';
 import {
   parseAppliedListAggregateIdsOptions,
   ParsedPageToken,
@@ -57,7 +54,7 @@ export class InMemoryStorageAdapter implements StorageAdapter {
         if (intersectionBy(events, [event], 'version').length > 0) {
           const { eventStoreId } = context;
 
-          throw new EventAlreadyExistsError({
+          throw new InMemoryEventAlreadyExistsError({
             eventStoreId,
             aggregateId,
             version,
