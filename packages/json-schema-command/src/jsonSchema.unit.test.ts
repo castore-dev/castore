@@ -1,4 +1,4 @@
-import { EventDetail, EventAlreadyExistsError } from '@castore/core';
+import { EventDetail } from '@castore/core';
 
 import {
   counterEventsMocks,
@@ -10,6 +10,7 @@ import {
   incrementCounterANoOutput,
   incrementCounterNoOutput,
   inputSchema,
+  MockedEventAlreadyExistsError,
   onEventAlreadyExistsMock,
   outputSchema,
   pushEventMock,
@@ -65,7 +66,7 @@ describe('jsonSchemaCommand implementation', () => {
       { aggregateId, version }: EventDetail,
       { eventStoreId }: { eventStoreId: string },
     ) => {
-      throw new EventAlreadyExistsError({
+      throw new MockedEventAlreadyExistsError({
         eventStoreId,
         aggregateId,
         version,
@@ -74,7 +75,7 @@ describe('jsonSchemaCommand implementation', () => {
 
     const counterId = '123';
 
-    const expectedError = new EventAlreadyExistsError({
+    const expectedError = new MockedEventAlreadyExistsError({
       eventStoreId: counterEventStore.eventStoreId,
       aggregateId: counterId,
       version: counterEventsMocks.length + 1,

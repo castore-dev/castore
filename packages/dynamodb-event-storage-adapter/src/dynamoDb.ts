@@ -9,16 +9,9 @@ import type { AttributeValue, DynamoDBClient } from '@aws-sdk/client-dynamodb';
 import { Marshaller } from '@aws/dynamodb-auto-marshaller';
 import get from 'lodash/get';
 
-/**
- * @debt decoupling "TODO: Only import types here, EventAlreadyExistsError is problematic"
- */
-import {
-  EventAlreadyExistsError,
-  EventDetail,
-  StorageAdapter,
-  Aggregate,
-} from '@castore/core';
+import type { EventDetail, StorageAdapter, Aggregate } from '@castore/core';
 
+import { DynamoDBEventAlreadyExistsError } from './error';
 import {
   parseAppliedListAggregateIdsOptions,
   ParsedPageToken,
@@ -180,7 +173,7 @@ export class DynamoDbEventStorageAdapter implements StorageAdapter {
         ) {
           const { eventStoreId } = context;
 
-          throw new EventAlreadyExistsError({
+          throw new DynamoDBEventAlreadyExistsError({
             eventStoreId,
             aggregateId,
             version,

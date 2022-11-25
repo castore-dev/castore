@@ -70,7 +70,7 @@ await customStorageAdapter.pushEvent({
 The `pushEvent` method should check at write time that an event doesn't already exist for the given `aggregateId` and `version`. If one exists, it should throw a custom error implementing the `EventAlreadyExistsError` interface for the corresponding `aggregateId` and `version`.
 
 ```ts
-import type {
+import {
   eventAlreadyExistsErrorCode,
   EventAlreadyExistsError,
 } from '@castore/core';

@@ -1,7 +1,6 @@
 import { randomUUID } from 'crypto';
 
-import { EventAlreadyExistsError } from '@castore/core';
-
+import { InMemoryEventAlreadyExistsError } from './error';
 import { InMemoryStorageAdapter } from './inMemory';
 
 const eventStoreIdMock = 'eventStoreIdMock';
@@ -53,7 +52,7 @@ describe('in-memory storage adapter', () => {
         storageAdapter.pushEvent(eventMock1, {
           eventStoreId: eventStoreIdMock,
         }),
-      ).rejects.toThrow(EventAlreadyExistsError);
+      ).rejects.toThrow(InMemoryEventAlreadyExistsError);
     });
 
     it('pushes and gets events correctly', async () => {

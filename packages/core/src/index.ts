@@ -3,7 +3,11 @@ export { EventType } from './event/eventType';
 export type { EventTypeDetail, EventTypesDetails } from './event/eventType';
 export type { EventDetail } from './event/eventDetail';
 export { AggregateNotFoundError } from './errors/aggregateNotFound';
-export { EventAlreadyExistsError } from './errors/eventAlreadyExists';
+export {
+  EventAlreadyExistsError,
+  isEventAlreadyExistsError,
+  eventAlreadyExistsErrorCode,
+} from './errors/eventAlreadyExists';
 export { UndefinedStorageAdapterError } from './errors/undefinedStorageAdapterError';
 export type { StorageAdapter } from './storageAdapter';
 export type {

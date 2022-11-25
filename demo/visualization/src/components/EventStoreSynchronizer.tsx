@@ -1,8 +1,10 @@
 import React, { useEffect } from 'react';
 
-import { EventAlreadyExistsError, EventDetail } from '@castore/core';
+import { EventDetail } from '@castore/core';
 
 import { dbByEventStoreId, eventStoresById } from '~/services/data';
+
+import { SynchronizerEventAlreadyExistsError } from './error';
 
 export const EventStoreSynchronizer = ({
   eventStoreId,
@@ -43,7 +45,7 @@ export const EventStoreSynchronizer = ({
                 ({ version: prevVersion }) => prevVersion === nextVersion,
               )
             ) {
-              throw new EventAlreadyExistsError({
+              throw new SynchronizerEventAlreadyExistsError({
                 eventStoreId,
                 aggregateId,
                 version: nextVersion,
