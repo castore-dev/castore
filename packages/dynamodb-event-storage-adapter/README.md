@@ -197,6 +197,35 @@ resource "aws_dynamodb_table" "user-events-table" {
 }
 ```
 
+## 🤝 Transactions
+
+As stated in the [main documentation](https://github.com/castore-dev/castore/#%EF%B8%8F-command):
+
+> When writing on several event stores at once, it is important to make sure that **all events are written or none**, i.e. use transactions: This ensures that the application is not in a corrupt state.
+
+This package exposes a `pushEventsTransaction` util to do just that, using the [DynamoDb Transactions API](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/transaction-apis.html):
+
+```ts
+import {
+  formatEventForTransaction,
+  pushEventsTransaction,
+} from '@castore/dynamodb-event-storage-adapter';
+
+// 👇 Does N pushEvent operations simultaneously
+await pushEventsTransaction([
+  // events are correctly typed 🙌
+  formatEventForTransaction(eventStoreA, eventA1),
+  formatEventForTransaction(eventStoreA, eventA2),
+  formatEventForTransaction(eventStoreB, eventB),
+  ...
+]);
+```
+
+Note that:
+
+- All the event stores involved in the transaction need to use the `DynamoDbEventStorageAdapter`
+- This util inherits of the [`TransactWriteItem` API](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/transaction-apis.html#transaction-apis-txwriteitems) limitations: It can target up to 100 distinct events in one or more DynamoDB tables within the same AWS account and in the same Region.
+
 ## 🔑 IAM
 
 Required IAM permissions for each operations:

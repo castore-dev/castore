@@ -36,9 +36,9 @@ After years of using it at [Kumo](https://dev.to/kumo), we have grown to love it
 
 With Castore, you'll be able to:
 
-- Define your [event stores](#eventstore)
-- Fetch and push new [events](#events) seamlessly
-- Implement and test your [commands](#command)
+- Define your [event stores](#-eventstore)
+- Fetch and push new [events](#-events) seamlessly
+- Implement and test your [commands](#%EF%B8%8F-command)
 - ...and much more!
 
 All that with first-class developer experience and minimal boilerplate ✨
