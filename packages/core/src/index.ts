@@ -3,8 +3,8 @@ export { EventType } from './event/eventType';
 export type { EventTypeDetail, EventTypesDetails } from './event/eventType';
 export type { EventDetail } from './event/eventDetail';
 export { AggregateNotFoundError } from './errors/aggregateNotFound';
+export type { EventAlreadyExistsError } from './errors/eventAlreadyExists';
 export {
-  EventAlreadyExistsError,
   isEventAlreadyExistsError,
   eventAlreadyExistsErrorCode,
 } from './errors/eventAlreadyExists';
