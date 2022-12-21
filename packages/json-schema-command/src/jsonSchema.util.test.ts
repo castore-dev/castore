@@ -1,12 +1,9 @@
-/* eslint-disable max-lines */
 import {
   EventStore,
   EventType,
   EventTypeDetail,
   StorageAdapter,
   tuple,
-  eventAlreadyExistsErrorCode,
-  EventAlreadyExistsError,
 } from '@castore/core';
 
 import { JSONSchemaCommand } from './jsonSchema';
@@ -27,20 +24,15 @@ export const mockStorageAdapter: StorageAdapter = {
   listSnapshots: listSnapshotsMock,
 };
 
-// Counters
-
 export const counterCreatedEvent = new EventType<'COUNTER_CREATED'>({
   type: 'COUNTER_CREATED',
 });
-
 export const counterIncrementedEvent = new EventType<'COUNTER_INCREMENTED'>({
   type: 'COUNTER_INCREMENTED',
 });
-
 export const counterDeletedEvent = new EventType<'COUNTER_DELETED'>({
   type: 'COUNTER_DELETED',
 });
-
 export type CounterEventsDetails =
   | EventTypeDetail<typeof counterCreatedEvent>
   | EventTypeDetail<typeof counterIncrementedEvent>
@@ -75,15 +67,9 @@ export const countersReducer = (
   event: CounterEventsDetails,
 ): CounterAggregate => {
   const { version, aggregateId } = event;
-
   switch (event.type) {
     case 'COUNTER_CREATED':
-      return {
-        aggregateId,
-        version: event.version,
-        count: 0,
-        status: 'LIVE',
-      };
+      return { aggregateId, version: event.version, count: 0, status: 'LIVE' };
     case 'COUNTER_INCREMENTED':
       return {
         ...counterAggregate,
@@ -91,16 +77,9 @@ export const countersReducer = (
         count: counterAggregate.count + 1,
       };
     case 'COUNTER_DELETED':
-      return {
-        ...counterAggregate,
-        version,
-        status: 'DELETED',
-      };
+      return { ...counterAggregate, version, status: 'DELETED' };
     default: {
-      return {
-        ...counterAggregate,
-        version,
-      };
+      return { ...counterAggregate, version };
     }
   }
 };
@@ -113,80 +92,6 @@ export const counterEventStore = new EventStore({
     counterDeletedEvent,
   ],
   reduce: countersReducer,
-  storageAdapter: mockStorageAdapter,
-});
-
-// Users
-
-export const userCreatedEvent = new EventType<
-  'USER_CREATED',
-  { name: string; age: number }
->({ type: 'USER_CREATED' });
-
-export const userRemovedEvent = new EventType<'USER_REMOVED'>({
-  type: 'USER_REMOVED',
-});
-
-export type UserEventsDetails =
-  | EventTypeDetail<typeof userCreatedEvent>
-  | EventTypeDetail<typeof userRemovedEvent>;
-
-export type UserAggregate = {
-  aggregateId: string;
-  version: number;
-  name: string;
-  age: number;
-  status: string;
-};
-
-export const userIdMock = 'userId';
-export const userEventsMocks: UserEventsDetails[] = [
-  {
-    aggregateId: counterIdMock,
-    version: 1,
-    type: 'USER_CREATED',
-    timestamp: '2022',
-    payload: { name: 'Toto', age: 42 },
-  },
-  {
-    aggregateId: counterIdMock,
-    version: 2,
-    type: 'USER_REMOVED',
-    timestamp: '2023',
-  },
-];
-
-export const usersReducer = (
-  userAggregate: UserAggregate,
-  event: UserEventsDetails,
-): UserAggregate => {
-  const { version, aggregateId } = event;
-
-  switch (event.type) {
-    case 'USER_CREATED': {
-      const { name, age } = event.payload;
-
-      return {
-        aggregateId,
-        version: event.version,
-        name,
-        age,
-        status: 'CREATED',
-      };
-    }
-    case 'USER_REMOVED':
-      return {
-        ...userAggregate,
-        version,
-        status: 'DELETED',
-      };
-  }
-};
-
-export const userEventStore = new EventStore({
-  eventStoreId: 'Users',
-  eventStoreEvents: [userCreatedEvent, userRemovedEvent],
-  reduce: usersReducer,
   storageAdapter: mockStorageAdapter,
 });
 
@@ -208,9 +113,7 @@ export const outputSchema = {
   additionalProperties: false,
 } as const;
 
-export const requiredEventStores = tuple(counterEventStore, userEventStore);
-
-export const onEventAlreadyExistsMock = jest.fn();
+export const requiredEventStores = tuple(counterEventStore);
 
 export const incrementCounter = new JSONSchemaCommand({
   commandId: 'INCREMENT_COUNTER',
@@ -221,9 +124,7 @@ export const incrementCounter = new JSONSchemaCommand({
     const { counterId } = input;
     const [countersStore] = eventStores;
 
-    const { aggregate } = await countersStore.getAggregate(counterId);
-    if (!aggregate) throw new Error();
-
+    const { aggregate } = await countersStore.getExistingAggregate(counterId);
     const { count, version } = aggregate;
 
     await countersStore.pushEvent({
@@ -235,21 +136,17 @@ export const incrementCounter = new JSONSchemaCommand({
 
     return { nextCount: count + 1 };
   },
-  eventAlreadyExistsRetries: 2,
-  onEventAlreadyExists: onEventAlreadyExistsMock,
 });
 
 export const incrementCounterNoOutput = new JSONSchemaCommand({
   commandId: 'INCREMENT_COUNTER_NO_OUTPUT',
-  requiredEventStores: tuple(counterEventStore, userEventStore),
+  requiredEventStores: tuple(counterEventStore),
   inputSchema,
   handler: async (input, eventStores) => {
     const { counterId } = input;
     const [countersStore] = eventStores;
 
-    const { aggregate } = await countersStore.getAggregate(counterId);
-    if (!aggregate) throw new Error();
-
+    const { aggregate } = await countersStore.getExistingAggregate(counterId);
     const { version } = aggregate;
 
     await countersStore.pushEvent({
@@ -263,15 +160,13 @@ export const incrementCounterNoOutput = new JSONSchemaCommand({
 
 export const incrementCounterA = new JSONSchemaCommand({
   commandId: 'INCREMENT_COUNTER_A',
-  requiredEventStores: tuple(counterEventStore, userEventStore),
+  requiredEventStores: tuple(counterEventStore),
   outputSchema,
   handler: async (_, eventStores) => {
     const counterId = 'A';
     const [countersStore] = eventStores;
 
-    const { aggregate } = await countersStore.getAggregate(counterId);
-    if (!aggregate) throw new Error();
-
+    const { aggregate } = await countersStore.getExistingAggregate(counterId);
     const { count, version } = aggregate;
 
     await countersStore.pushEvent({
@@ -287,14 +182,12 @@ export const incrementCounterA = new JSONSchemaCommand({
 
 export const incrementCounterANoOutput = new JSONSchemaCommand({
   commandId: 'INCREMENT_COUNTER_A_NO_OUTPUT',
-  requiredEventStores: tuple(counterEventStore, userEventStore),
+  requiredEventStores: tuple(counterEventStore),
   handler: async (_, eventStores) => {
     const counterId = 'A';
     const [countersStore] = eventStores;
 
-    const { aggregate } = await countersStore.getAggregate(counterId);
-    if (!aggregate) throw new Error();
-
+    const { aggregate } = await countersStore.getExistingAggregate(counterId);
     const { version } = aggregate;
 
     await countersStore.pushEvent({
@@ -305,34 +198,3 @@ export const incrementCounterANoOutput = new JSONSchemaCommand({
     });
   },
 });
-
-export class MockedEventAlreadyExistsError
-  extends Error
-  implements EventAlreadyExistsError
-{
-  code: typeof eventAlreadyExistsErrorCode;
-  eventStoreId?: string;
-  aggregateId: string;
-  version: number;
-
-  constructor({
-    eventStoreId = '',
-    aggregateId,
-    version,
-  }: {
-    eventStoreId?: string;
-    aggregateId: string;
-    version: number;
-  }) {
-    super(
-      `Event already exists for ${eventStoreId} aggregate ${aggregateId} and version ${version}`,
-    );
-
-    this.code = eventAlreadyExistsErrorCode;
-    if (eventStoreId) {
-      this.eventStoreId = eventStoreId;
-    }
-    this.aggregateId = aggregateId;
-    this.version = version;
-  }
-}

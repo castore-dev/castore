@@ -1,5 +1,11 @@
+import { EventAlreadyExistsError, isEventAlreadyExistsError } from '~/errors';
 import type { EventStore } from '~/eventStore';
 import type { $Contravariant } from '~/utils';
+
+export type OnEventAlreadyExistsCallback = (
+  error: EventAlreadyExistsError,
+  context: { attemptNumber: number; retriesLeft: number },
+) => Promise<void>;
 
 export const tuple = <A extends unknown[]>(...args: A): A => args;
 
@@ -20,19 +26,60 @@ export class Command<
   };
   commandId: string;
   requiredEventStores: E;
+  eventAlreadyExistsRetries: number;
+  onEventAlreadyExists: OnEventAlreadyExistsCallback;
   handler: (input: I, requiredEventStores: $E) => Promise<O>;
 
   constructor({
     commandId,
     requiredEventStores,
+    eventAlreadyExistsRetries = 2,
+    onEventAlreadyExists = async () => new Promise(resolve => resolve()),
     handler,
   }: {
     commandId: string;
     requiredEventStores: E;
+    eventAlreadyExistsRetries?: number;
+    onEventAlreadyExists?: OnEventAlreadyExistsCallback;
     handler: (input: I, requiredEventStores: $E) => Promise<O>;
   }) {
     this.commandId = commandId;
     this.requiredEventStores = requiredEventStores;
-    this.handler = handler;
+    this.eventAlreadyExistsRetries = eventAlreadyExistsRetries;
+    this.onEventAlreadyExists = onEventAlreadyExists;
+
+    this.handler = async (input, eventStores) => {
+      let retriesLeft = this.eventAlreadyExistsRetries;
+      let attemptNumber = 1;
+
+      while (retriesLeft >= 0) {
+        try {
+          const output = await handler(input, eventStores);
+
+          return output;
+        } catch (error) {
+          if (!isEventAlreadyExistsError(error)) {
+            throw error;
+          }
+
+          await this.onEventAlreadyExists(error, {
+            attemptNumber,
+            retriesLeft,
+          });
+
+          if (retriesLeft === 0) {
+            throw error;
+          }
+
+          retriesLeft -= 1;
+          attemptNumber += 1;
+        }
+      }
+
+      /**
+       * @debt interface "find a better thing to do in this case (which should not happen anyway)"
+       */
+      throw new Error('Handler failed to execute');
+    };
   }
 }

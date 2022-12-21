@@ -645,6 +645,19 @@ See the following packages for examples:
 - <code>commandId <i>(string)</i></code>: A string identifying the command
 - <code>handler <i>((input: Input, requiredEventsStores: EventStore[]) => Promise\<Output\>)</i></code>: The code to execute
 - <code>requiredEventStores <i>(EventStore[])</i></code>: A tuple of `EventStores` that are required by the command for read/write purposes. In TS, you should use the `tuple` util to preserve tuple ordering in the handler (`tuple` doesn't mute its input, it simply returns them)
+- <code>eventAlreadyExistsRetries <i>(?number = 2)</i></code>: Number of handler execution retries before breaking out of the retry loop (See section below on race conditions)
+- <code>onEventAlreadyExists <i>(?(error: EventAlreadyExistsError, context: ContextObj) => Promise\<void\>)</i></code>: Optional callback to execute when an `EventAlreadyExistsError` is raised.
+
+  The `EventAlreadyExistsError` class contains the following attribute:
+
+  - <code>eventStoreId <i>(?string)</i></code>: The `eventStoreId` of the aggregate on which the `pushEvent` attempt failed
+  - <code>aggregateId <i>(string)</i></code>: The `aggregateId` of the aggregate
+  - <code>version <i>(number)</i></code>: The `version` of the aggregate
+
+  The `ContextObj` contains the following attributes:
+
+  - <code>attemptNumber <i>(?number)</i></code>: The number of handler execution attempts in the retry loop
+  - <code>retriesLeft <i>(?number)</i></code>: The number of retries left before breaking out of the retry loop
 
 ```ts
 import { Command, tuple } from '@castore/core';

@@ -11,11 +11,11 @@
     "linter-base-config": "eslint --ext=js,ts .",
     "log": "env-cmd sls logs -t -f",
     "print": "env-cmd sls print",
-    "test": "yarn test-linter && yarn test-type && yarn test-circular && yarn test-unit",
-    "test-circular": "yarn depcruise --validate dependency-cruiser.js .",
-    "test-linter": "yarn linter-base-config .",
+    "test": "yarn test-type && yarn test-unit && yarn test-circular && yarn test-linter",
     "test-type": "tsc --noEmit --emitDeclarationOnly false",
-    "test-unit": "jest --maxWorkers=4 --passWithNoTests"
+    "test-unit": "jest --maxWorkers=4 --passWithNoTests",
+    "test-circular": "yarn depcruise --validate dependency-cruiser.js .",
+    "test-linter": "yarn linter-base-config ."
   },
   "dependencies": {
     "@aws-sdk/client-dynamodb": "^3.121.0",
