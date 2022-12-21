@@ -322,7 +322,7 @@ import { EventStore } from '@castore/core';
 
 const userEventStore = new EventStore({
   eventStoreId: 'USERS',
-  eventTypes: [
+  eventStoreEvents: [
     userCreatedEventType,
     userRemovedEventType,
     ...
