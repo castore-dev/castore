@@ -17,19 +17,17 @@ export class JSONSchemaCommand<
   E extends EventStore[] = EventStore[],
   $E extends EventStore[] = $Contravariant<E, EventStore[]>,
   IS extends JSONSchema | undefined = JSONSchema | undefined,
-  I = JSONSchema extends IS
-    ? // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      any
-    : IS extends JSONSchema
-    ? FromSchema<IS>
-    : never,
+  I = $Contravariant<
+    IS,
+    JSONSchema,
+    IS extends JSONSchema ? FromSchema<IS> : never
+  >,
   OS extends JSONSchema | undefined = JSONSchema | undefined,
-  O = JSONSchema extends OS
-    ? // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      any
-    : OS extends JSONSchema
-    ? FromSchema<OS>
-    : never,
+  O = $Contravariant<
+    OS,
+    JSONSchema,
+    OS extends JSONSchema ? FromSchema<OS> : never
+  >,
 > implements Command<E, $E, I, O>
 {
   _types?: {
