@@ -1,18 +1,18 @@
 # Test tools
 
-Test tooling for [Castore](https://github.com/castore-dev/castore) definition.
+Test tooling for the [Castore](https://github.com/castore-dev/castore) library.
 
 ## 📥 Installation
 
 ```bash
 # npm
-npm install @castore/test-tools
+npm install --save-dev @castore/test-tools
 
 # yarn
-yarn add @castore/test-tools
+yarn add --dev @castore/test-tools
 ```
 
-This package has `castore/core` as peer dependencies, so you will have to it them as well:
+This package has `castore/core` as peer dependencies, so you will have to install it as well:
 
 ```bash
 # npm
@@ -40,11 +40,11 @@ const createUserCommand = new Command({
   // ...
 });
 
-describe('My super test', () => {
+describe('My awesome test', () => {
   const mockedUserEventStore = mockEventStore(userEventStore, [
     // 👇 Provide initial state (list of event details) in a type-safe way
     {
-      aggregateId: 'someUserId',
+      aggregateId: '123',
       version: 1,
       type: 'COUNTER_CREATED',
       // ...
@@ -56,22 +56,22 @@ describe('My super test', () => {
     mockedUserEventStore.reset();
   });
 
-  it('adds a USER_CREATED event', async () => {
+  it('pushes a USER_CREATED event', async () => {
     const { userId } = await createUserCommand.handler({
       requiredEventsStores: [mockedUserEventStore],
       // ...
     });
 
-    const userEvents = mockedUserEventStore.getEvents(userId);
+    const { events } = mockedUserEventStore.getEvents(userId);
 
-    expect(userEvents).toHaveLength(1);
+    expect(events).toHaveLength(1);
   });
 });
 ```
 
 ### MuteEventStore
 
-Unlike `mockEventStore`, the `muteEventStore` util mutes the original event store and replace its storage adapter with an `InMemoryStorageAdapter` filled with the provided initial state.
+Unlike `mockEventStore`, the `muteEventStore` util mutes the original event store and replace its storage adapter with an `InMemoryStorageAdapter` matching the provided initial state.
 
 ```ts
 import { EventStore } from '@castore/core';
@@ -85,11 +85,11 @@ const functionUsingTheEventStore = async () => {
   // ...
 };
 
-describe('My super test', () => {
+describe('My awesome test', () => {
   muteEventStore(userEventStore, [
     // 👇 Provide initial state (list of event details) in a type-safe way
     {
-      aggregateId: 'someUserId',
+      aggregateId: '123',
       version: 1,
       type: 'COUNTER_CREATED',
       // ...
@@ -100,9 +100,9 @@ describe('My super test', () => {
     await functionUsingTheEventStore();
 
     // 👇 Use the original event store
-    const userEvents = await userEventStore.getEvents('someUserId');
+    const { events } = await userEventStore.getEvents('123');
 
-    expect(userEvents).toHaveLength(1);
+    expect(events).toHaveLength(1);
   });
 });
 ```
