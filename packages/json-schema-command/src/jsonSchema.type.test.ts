@@ -12,13 +12,12 @@ import {
   incrementCounterNoOutput,
   inputSchema,
   outputSchema,
-  userEventStore,
 } from './jsonSchema.util.test';
 
 type Input = FromSchema<typeof inputSchema>;
 type Output = FromSchema<typeof outputSchema>;
 
-// --- EVENTS DETAILS ---
+// --- CLASS ---
 
 const assertJsonSchemaCommandExtendsCommand: A.Equals<
   JSONSchemaCommand extends Command ? true : false,
@@ -118,7 +117,7 @@ const assertIncrementCounterHandler: A.Equals<
   typeof incrementCounter.handler,
   (
     input: Input,
-    requiredEventStores: [typeof counterEventStore, typeof userEventStore],
+    requiredEventStores: [typeof counterEventStore],
   ) => Promise<Output>
 > = 1;
 assertIncrementCounterHandler;
@@ -127,7 +126,7 @@ const assertIncrementCounterNoOutputHandler: A.Equals<
   typeof incrementCounterNoOutput.handler,
   (
     input: Input,
-    requiredEventStores: [typeof counterEventStore, typeof userEventStore],
+    requiredEventStores: [typeof counterEventStore],
   ) => Promise<void>
 > = 1;
 assertIncrementCounterNoOutputHandler;
@@ -140,7 +139,7 @@ const assertIncrementCounterAHandler: A.Equals<
      */
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     input: any,
-    requiredEventStores: [typeof counterEventStore, typeof userEventStore],
+    requiredEventStores: [typeof counterEventStore],
   ) => Promise<Output>
 > = 1;
 assertIncrementCounterAHandler;
@@ -153,7 +152,7 @@ const assertIncrementCounterANoOutputHandler: A.Equals<
      */
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     input: any,
-    requiredEventStores: [typeof counterEventStore, typeof userEventStore],
+    requiredEventStores: [typeof counterEventStore],
   ) => Promise<void>
 > = 1;
 assertIncrementCounterANoOutputHandler;
