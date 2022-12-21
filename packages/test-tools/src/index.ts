@@ -1,1 +1,2 @@
-export * from './mockEventStore';
+export { mockEventStore } from './mockEventStore';
+export { muteEventStore } from './muteEventStore';
