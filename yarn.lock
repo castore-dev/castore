@@ -3721,13 +3721,13 @@ __metadata:
     concurrently: ^7.1.0
     dependency-cruiser: ^11.7.0
     eslint: ^8.14.0
-    jest: ^27.5.1
     json-schema-to-ts: ^2.5.4
     prettier: ^2.6.2
     ts-node: ^10.7.0
     ts-toolbelt: ^9.6.0
     ttypescript: ^1.5.13
     typescript: ^4.6.3
+    vitest: ^0.26.2
   peerDependencies:
     "@castore/core": "*"
     json-schema-to-ts: ^2.0.0
@@ -3778,7 +3778,6 @@ __metadata:
     concurrently: ^7.1.0
     dependency-cruiser: ^11.7.0
     eslint: ^8.14.0
-    jest: ^27.5.1
     prettier: ^2.6.2
     ts-node: ^10.7.0
     ts-toolbelt: ^9.6.0
