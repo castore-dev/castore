@@ -27,7 +27,7 @@ yarn add @castore/core
 ## 👩‍💻 Usage
 
 ```ts
-import { DynamoDbEventStorageAdapter } from '@castore/inmemory-event-storage-adapter';
+import { InMemoryStorageAdapter } from '@castore/inmemory-event-storage-adapter';
 
 const userEventsStorageAdapter = new InMemoryStorageAdapter({
   // 👇 You can specify an initial state for your event store
