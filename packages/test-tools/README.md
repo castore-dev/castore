@@ -1,53 +1,108 @@
-# 🦫 Castore/Test Tools - Tooling to test your EventStore 🔧
+# Test tools
 
-You already defined your EventStore? Now you probably want to test it! 🧪
+Test tooling for [Castore](https://github.com/castore-dev/castore) definition.
 
-## MockEventStore
+## 📥 Installation
 
-You can test your EventStore by using the mockEventStore function. It only needs your EventStore and the events you want to initialize your MockedEventStore with (optional).
+```bash
+# npm
+npm install @castore/test-tools
+
+# yarn
+yarn add @castore/test-tools
+```
+
+This package has `castore/core` as peer dependencies, so you will have to it them as well:
+
+```bash
+# npm
+npm install @castore/core
+
+# yarn
+yarn add @castore/core
+```
+
+## 👩‍💻 Usage
+
+### MockEventStore
+
+The `mockEventStore` util returns a copy of the provided `EventStore` connected to an [`InMemoryStorageAdapter`](https://github.com/castore-dev/castore/tree/main/packages/inmemory-event-storage-adapter), empty or with a given initial state. It follows the `EventStore` interface but adds a `reset` method to reset it to the provided initial state. The original event store is not muted.
 
 ```ts
-export const counterEventStore = new EventStore({
-  eventStoreId: 'COUNTER',
-  eventStoreEvents: [
-    counterCreatedEvent,
-    ...
-  ],
-  reducer,
-  storageAdapter,
+import { EventStore } from '@castore/core';
+import { mockEventStore } from '@castore/test-tools';
+
+const userEventStore = new EventStore({
+  // ...
 });
 
-export const counterCreatedEventMock: EventStoreEventsDetails<
-  typeof counterEventStore
-> = {
-  aggregateId: counterIdMock,
-  version: 1,
-  type: 'COUNTER_CREATED',
-  timestamp: '2022',
-  payload: {
-    userId: 'c358dbfb-8a5e-47ca-82f4-ece787ffe224',
-  },
+const createUserCommand = new Command({
+  // ...
+});
+
+describe('My super test', () => {
+  const mockedUserEventStore = mockEventStore(userEventStore, [
+    // 👇 Provide initial state (list of event details) in a type-safe way
+    {
+      aggregateId: 'someUserId',
+      version: 1,
+      type: 'COUNTER_CREATED',
+      // ...
+    },
+  ]);
+
+  beforeEach(() => {
+    // 👇 Reset to initial state
+    mockedUserEventStore.reset();
+  });
+
+  it('adds a USER_CREATED event', async () => {
+    const { userId } = await createUserCommand.handler({
+      requiredEventsStores: [mockedUserEventStore],
+      // ...
+    });
+
+    const userEvents = mockedUserEventStore.getEvents(userId);
+
+    expect(userEvents).toHaveLength(1);
+  });
+});
+```
+
+### MuteEventStore
+
+Unlike `mockEventStore`, the `muteEventStore` util mutes the original event store and replace its storage adapter with an `InMemoryStorageAdapter` filled with the provided initial state.
+
+```ts
+import { EventStore } from '@castore/core';
+import { muteEventStore } from '@castore/test-tools';
+
+const userEventStore = new EventStore({
+  // ...
+});
+
+const functionUsingTheEventStore = async () => {
+  // ...
 };
 
-const mockedCounterEventStore = mockEventStore(counterEventStore, [
-  counterCreatedEventMock,
-]);
-```
+describe('My super test', () => {
+  muteEventStore(userEventStore, [
+    // 👇 Provide initial state (list of event details) in a type-safe way
+    {
+      aggregateId: 'someUserId',
+      version: 1,
+      type: 'COUNTER_CREATED',
+      // ...
+    },
+  ]);
 
-## MockedEventStore
+  it('does something incredible', async () => {
+    await functionUsingTheEventStore();
 
-The MockEventStore function creates and returns a MockedEventStore.🤡  
-It can be used exactly the same way as your EventStore, without impacting it.
-The MockedEventStore has an InMemoryStorageAdapter. It means that the events you add to your mocked store in your tests will be stored in-memory, whatever is the storage adapter of your EventStore.
+    // 👇 Use the original event store
+    const userEvents = await userEventStore.getEvents('someUserId');
 
-```ts
-await mockedCounterEventStore.pushEvent(counterIncrementedEventMock);
-
-await mockedCounterEventStore.getEvents(counterIdMock);
-```
-
-The only additional method of MockedEventStore is the reset. By calling it, you can go back to the initial state, ie your store with the initial events you gave at the creation of the MockedEventStore.
-
-```ts
-mockedCounterEventStore.reset();
+    expect(userEvents).toHaveLength(1);
+  });
+});
 ```
