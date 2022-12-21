@@ -3699,6 +3699,7 @@ __metadata:
     ts-toolbelt: ^9.6.0
     ttypescript: ^1.5.13
     typescript: ^4.6.3
+    vitest: ^0.26.2
   peerDependencies:
     "@castore/core": "*"
     json-schema-to-ts: ^2.0.0
