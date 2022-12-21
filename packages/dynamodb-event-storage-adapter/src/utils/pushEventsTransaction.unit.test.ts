@@ -67,16 +67,16 @@ describe('pushEventsTransaction', () => {
     ]);
 
     expect(dynamoDbClientMockSeemless.calls()).toHaveLength(1);
-    expect(dynamoDbClientMockSeemless).toHaveReceivedCommandWith(
+    expect(dynamoDbClientMockSeemless.calls()[0].args[0]).toBeInstanceOf(
       TransactWriteItemsCommand,
-      {
-        TransactItems: [
-          formatEventForTransaction(counterEventStore, counterEventMock)
-            .transactItem,
-          formatEventForTransaction(userEventStore, userEventMock).transactItem,
-        ],
-      },
     );
+    expect(dynamoDbClientMockSeemless.calls()[0].args[0].input).toStrictEqual({
+      TransactItems: [
+        formatEventForTransaction(counterEventStore, counterEventMock)
+          .transactItem,
+        formatEventForTransaction(userEventStore, userEventMock).transactItem,
+      ],
+    });
 
     expect(dynamoDbClientMockOption.calls()).toHaveLength(0);
   });
@@ -93,15 +93,15 @@ describe('pushEventsTransaction', () => {
     expect(dynamoDbClientMockSeemless.calls()).toHaveLength(0);
 
     expect(dynamoDbClientMockOption.calls()).toHaveLength(1);
-    expect(dynamoDbClientMockOption).toHaveReceivedCommandWith(
+    expect(dynamoDbClientMockOption.calls()[0].args[0]).toBeInstanceOf(
       TransactWriteItemsCommand,
-      {
-        TransactItems: [
-          formatEventForTransaction(counterEventStore, counterEventMock)
-            .transactItem,
-          formatEventForTransaction(userEventStore, userEventMock).transactItem,
-        ],
-      },
     );
+    expect(dynamoDbClientMockOption.calls()[0].args[0].input).toStrictEqual({
+      TransactItems: [
+        formatEventForTransaction(counterEventStore, counterEventMock)
+          .transactItem,
+        formatEventForTransaction(userEventStore, userEventMock).transactItem,
+      ],
+    });
   });
 });
