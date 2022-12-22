@@ -135,7 +135,7 @@ Event Sourcing is all about **saving changes in your application state**. Such c
 
 Events that concern the same business entity (like a `User`) are aggregated through a common id called `aggregateId` (and vice versa, events that have the same `aggregateId` represent changes of the same business entity). The index of an event in such a serie of events is called its `version`.
 
-In Castore, stored events (also called **event details**) always have exactly the following attributes:
+In Castore, stored events (also called **event details**) always have exactly the following properties:
 
 - <code>aggregateId <i>(string)</i></code>
 - <code>version <i>(integer ≥ 1)</i></code>
@@ -178,63 +178,69 @@ const userCreatedEventType = new EventType<
 >({ type: 'USER_CREATED' });
 ```
 
-Note that we only provide TS types for `payload` and `metadata` properties. That is because, as stated in the [core design](#🫀-core-design), **Castore is meant to be as flexible as possible**, and that includes the validation library you want to use: The `EventType` class is not meant to be used directly, but rather extended by other classes which will add run-time validation methods to it 👍
+Note that we only provided TS types for `payload` and `metadata` properties. That is because, as stated in the [core design](#🫀-core-design), **Castore is meant to be as flexible as possible**, and that includes the validation library you want to use: The `EventType` class is not meant to be used directly, but rather implemented by other classes which will add run-time validation methods to it 👍
 
 See the following packages for examples:
 
 - [JSON Schema Event Type](./packages/json-schema-event/README.md)
 - [Zod Event Type](./packages/zod-event/README.md)
 
-**Constructor:**
-
-- <code>type <i>(string)</i></code>: The event type
-
-```ts
-import { EventType } from '@castore/core';
-
-const userCreatedEventType = new EventType({ type: 'USER_CREATED' });
-```
-
-**Properties:**
-
-- <code>type <i>(string)</i></code>: The event type
-
-```ts
-const eventType = userCreatedEventType.type;
-// => 'USER_CREATED'
-```
-
-**Type Helpers:**
-
-- <code>EventTypeDetail</code>: Returns the event detail TS type of an `EventType`
-
-```ts
-import type { EventTypeDetail } from '@castore/core';
-
-type UserCreatedEventTypeDetail = EventTypeDetail<typeof userCreatedEventType>;
-
-// 👇 Equivalent to:
-type UserCreatedEventTypeDetail = {
-  aggregateId: string;
-  version: number;
-  timestamp: string;
-  type: 'USER_CREATED';
-  payload: { name: string; age: number };
-  metadata: { invitedBy?: string };
-};
-```
-
-- <code>EventTypesDetails</code>: Return the events details of a list of `EventType`
-
-```ts
-import type { EventTypesDetails } from '@castore/core';
-
-type UserEventTypesDetails = EventTypesDetails<
-  [typeof userCreatedEventType, typeof userRemovedEventType]
->;
-// => EventTypeDetail<typeof userCreatedEventType>
-// | EventTypeDetail<typeof userRemovedEventType>
-```
+> <details>
+> <summary><b>🔧 Technical description</b></summary>
+> <p></p>
+>
+> **Constructor:**
+>
+> - <code>type <i>(string)</i></code>: The event type
+>
+> ```ts
+> import { EventType } from '@castore/core';
+>
+> const userCreatedEventType = new EventType({ type: 'USER_CREATED' });
+> ```
+>
+> **Properties:**
+>
+> - <code>type <i>(string)</i></code>: The event type
+>
+> ```ts
+> const eventType = userCreatedEventType.type;
+> // => 'USER_CREATED'
+> ```
+>
+> **Type Helpers:**
+>
+> - <code>EventTypeDetail</code>: Returns the event detail TS type of an `EventType`
+>
+> ```ts
+> import type { EventTypeDetail } from '@castore/core';
+>
+> type UserCreatedEventTypeDetail = EventTypeDetail<typeof userCreatedEventType>;
+>
+> // 👇 Equivalent to:
+> type UserCreatedEventTypeDetail = {
+>   aggregateId: string;
+>   version: number;
+>   timestamp: string;
+>   type: 'USER_CREATED';
+>   payload: { name: string; age: number };
+>   metadata: { invitedBy?: string };
+> };
+> ```
+>
+> - <code>EventTypesDetails</code>: Return the events details of a list of `EventType`
+>
+> ```ts
+> import type { EventTypesDetails } from '@castore/core';
+>
+> type UserEventTypesDetails = EventTypesDetails<
+>   [typeof userCreatedEventType, typeof userRemovedEventType]
+> >;
+> // => EventTypeDetail<typeof userCreatedEventType>
+> // | EventTypeDetail<typeof userRemovedEventType>
+> ```
+>
+> </details>
 
 ### 🏗 `Aggregate`
 
@@ -242,7 +248,7 @@ Eventhough entities are stored as series of events, we still want to use a **sta
 
 > ☝️ Think of aggregates as _"what the data would look like in CRUD"_
 
-In Castore, aggregates necessarily contain an `aggregateId` and `version` attributes (the `version` of the latest `event`). But for the rest, it's up to you 🤷‍♂️
+In Castore, aggregates necessarily contain an `aggregateId` and `version` properties (the `version` of the latest `event`). But for the rest, it's up to you 🤷‍♂️
 
 For instance, we can include a `name`, `age` and `status` properties to our `UserAggregate`:
 
@@ -334,234 +340,241 @@ const userEventStore = new EventStore({
 
 > ☝️ The `EventStore` class is the heart of Castore, it even gave it its name!
 
-**Constructor:**
-
-- <code>eventStoreId <i>(string)</i></code>: A string identifying the event store
-- <code>eventStoreEvents <i>(EventType[])</i></code>: The list of event types in the event store
-- <code>reduce <i>(EventType[])</i></code>: A [reducer function](#⚙️-reducer) that can be applied to the store event types
-- <code>storageAdapter <i>(?EventStorageAdapter)</i></code>: See [`EventStorageAdapter`](#💾-eventstorageadapter)
-
+> <details>
+> <summary><b>🔧 Technical description</b></summary>
+> <p></p>
+>
+> **Constructor:**
+>
+> - <code>eventStoreId <i>(string)</i></code>: A string identifying the event store
+> - <code>eventStoreEvents <i>(EventType[])</i></code>: The list of event types in the event store
+> - <code>reduce <i>(EventType[])</i></code>: A [reducer function](#⚙️-reducer) that can be applied to the store event types
+> - <code>storageAdapter <i>(?EventStorageAdapter)</i></code>: See [`EventStorageAdapter`](#💾-eventstorageadapter)
+>
 > ☝️ The return type of the `reducer` is used to infer the `Aggregate` type of the `EventStore`, so it is important to type it explicitely.
-
-**Properties:**
-
-- <code>eventStoreId <i>(string)</i></code>
-
-```ts
-const userEventStoreId = userEventStore.eventStoreId;
-// => 'USERS'
-```
-
-- <code>eventStoreEvents <i>(EventType[])</i></code>
-
-```ts
-const userEventStoreEvents = userEventStore.eventStoreEvents;
-// => [userCreatedEventType, userRemovedEventType...]
-```
-
-- <code>reduce <i>((Aggregate, EventType) => Aggregate)</i></code>
-
-```ts
-const reducer = userEventStore.reduce;
-// => usersReducer
-```
-
-- <code>storageAdapter <i>?EventStorageAdapter</i></code>: See [`EventStorageAdapter`](#💾-eventstorageadapter)
-
-```ts
-const storageAdapter = userEventStore.storageAdapter;
-// => undefined (we did not provide one in this example)
-```
-
+>
+> **Properties:**
+>
+> - <code>eventStoreId <i>(string)</i></code>
+>
+> ```ts
+> const userEventStoreId = userEventStore.eventStoreId;
+> // => 'USERS'
+> ```
+>
+> - <code>eventStoreEvents <i>(EventType[])</i></code>
+>
+> ```ts
+> const userEventStoreEvents = userEventStore.eventStoreEvents;
+> // => [userCreatedEventType, userRemovedEventType...]
+> ```
+>
+> - <code>reduce <i>((Aggregate, EventType) => Aggregate)</i></code>
+>
+> ```ts
+> const reducer = userEventStore.reduce;
+> // => usersReducer
+> ```
+>
+> - <code>storageAdapter <i>?EventStorageAdapter</i></code>: See [`EventStorageAdapter`](#💾-eventstorageadapter)
+>
+> ```ts
+> const storageAdapter = userEventStore.storageAdapter;
+> // => undefined (we did not provide one in this example)
+> ```
+>
 > ☝️ The `storageAdapter` is not read-only so you do not have to provide it right away.
-
-**Sync Methods:**
-
-- <code>getStorageAdapter <i>(() => EventStorageAdapter)</i></code>: Returns the event store event storage adapter if it exists. Throws an `UndefinedStorageAdapterError` if it doesn't.
-
-```ts
-import { UndefinedStorageAdapterError } from '@castore/core';
-
-expect(() => userEventStore.getStorageAdapter()).toThrow(
-  new UndefinedStorageAdapterError({ eventStoreId: 'USERS' }),
-);
-// => true
-```
-
-- <code>buildAggregate <i>((eventDetails: EventDetail[], initialAggregate?: Aggregate) => Aggregate | undefined)</i></code>: Applies the event store reducer to a serie of events.
-
-```ts
-const johnDowAggregate = userEventStore.buildAggregate(johnDowEvents);
-```
-
-**Async Methods:**
-
-The following methods interact with the data layer of your event store through its [`EventStorageAdapter`](#💾-eventstorageadapter). They will throw an `UndefinedStorageAdapterError` if you did not provide one.
-
-- <code>getEvents <i>((aggregateId: string, opt?: OptionsObj = {}) => Promise\<ResponseObj\>)</i></code>: Retrieves the events of an aggregate, ordered by `version`. Returns an empty array if no event is found for this `aggregateId`.
-
-  `OptionsObj` contains the following attributes:
-
-  - <code>minVersion <i>(?number)</i></code>: To retrieve events above a certain version
-  - <code>maxVersion <i>(?number)</i></code>: To retrieve events below a certain version
-  - <code>limit <i>(?number)</i></code>: Maximum number of events to retrieve
-  - <code>reverse <i>(?boolean = false)</i></code>: To retrieve events in reverse order (does not require to swap `minVersion` and `maxVersion`)
-
-  `ResponseObj` contains the following attributes:
-
-  - <code>events <i>(EventDetail[])</i></code>: The aggregate events (possibly empty)
-
-```ts
-const { events: allEvents } = await userEventStore.getEvents(aggregateId);
-// => typed as UserEventDetail[] 🙌
-
-// 👇 Retrieve a range of events
-const { events: rangedEvents } = await userEventStore.getEvents(aggregateId, {
-  minVersion: 2,
-  maxVersion: 5,
-});
-
-// 👇 Retrieve the last event of the aggregate
-const { events: onlyLastEvent } = await userEventStore.getEvents(aggregateId, {
-  reverse: true,
-  limit: 1,
-});
-```
-
-- <code>getAggregate <i>((aggregateId: string, opt?: OptionsObj = {}) => Promise\<ResponseObj\>)</i></code>: Retrieves the events of an aggregate and build it.
-
-  `OptionsObj` contains the following attributes:
-
-  - <code>maxVersion <i>(?number)</i></code>: To retrieve aggregate below a certain version
-
-  `ResponseObj` contains the following attributes:
-
-  - <code>aggregate <i>(?Aggregate)</i></code>: The aggregate (possibly `undefined`)
-  - <code>events <i>(EventDetail[])</i></code>: The aggregate events (possibly empty)
-  - <code>lastEvent <i>(?EventDetail)</i></code>: The last event (possibly `undefined`)
-
-```ts
-const { aggregate: johnDow } = await userEventStore.getAggregate(aggregateId);
-// => typed as UserAggregate | undefined 🙌
-
-// 👇 Retrieve an aggregate below a certain version
-const { aggregate: aggregateBelowVersion } = await userEventStore.getAggregate(
-  aggregateId,
-  { maxVersion: 5 },
-);
-
-// 👇 Returns the events if you need them
-const { aggregate, events } = await userEventStore.getAggregate(aggregateId);
-```
-
-- <code>getExistingAggregate <i>((aggregateId: string, opt?: OptionsObj = {}) => Promise\<ResponseObj\>)</i></code>: Same as `getAggregate` method, but ensures that the aggregate exists. Throws an `AggregateNotFoundError` if no event is found for this `aggregateId`.
-
-```ts
-import { AggregateNotFoundError } from '@castore/core';
-
-expect(async () =>
-  userEventStore.getExistingAggregate(unexistingId),
-).resolves.toThrow(
-  new AggregateNotFoundError({
-    eventStoreId: 'USERS',
-    aggregateId: unexistingId,
-  }),
-);
-// true
-
-const { aggregate } = await userEventStore.getAggregate(aggregateId);
-// => 'aggregate' and 'lastEvent' are always defined 🙌
-```
-
-- <code>pushEvent <i>((eventDetail: EventDetail) => Promise\<void\>)</i></code>: Pushes a new event to the event store. Throws an `EventAlreadyExistsError` if an event already exists for the corresponding `aggregateId` and `version`.
-
-```ts
-await userEventStore.pushEvent({
-  aggregateId,
-  version: lastVersion + 1,
-  timestamp: new Date().toISOString(),
-  type: 'USER_CREATED', // <= event type is correctly typed 🙌
-  payload, // <= payload is typed according to the provided event type 🙌
-  metadata, // <= same goes for metadata 🙌
-});
-```
-
-- <code>listAggregateIds <i>((opt?: OptionsObj = {}) => Promise\<ResponseObj\>)</i></code>: Retrieves the list of `aggregateId` of an event store, ordered by `timestamp` of their first event. Returns an empty array if no aggregate is found.
-
-  `OptionsObj` contains the following attributes:
-
-  - <code>limit <i>(?number)</i></code>: Maximum number of aggregate ids to retrieve
-  - <code>pageToken <i>(?string)</i></code>: To retrieve a paginated result of aggregate ids
-
-  `ResponseObj` contains the following attributes:
-
-  - <code>aggregateIds <i>(string[])</i></code>: The list of aggregate ids
-  - <code>nextPageToken <i>(?string)</i></code>: A token for the next page of aggregate ids if one exists
-
-```ts
-const accAggregateIds: string = [];
-const { aggregateIds: firstPage, nextPageToken } =
-  await userEventStore.listAggregateIds({ limit: 20 });
-
-accAggregateIds.push(...firstPage);
-
-if (nextPageToken) {
-  const { aggregateIds: secondPage } = await userEventStore.listAggregateIds({
-    // 👇 Previous limit of 20 is passed through the page token
-    pageToken: nextPageToken,
-  });
-  accAggregateIds.push(...secondPage);
-}
-```
-
-**Type Helpers:**
-
-- <code>EventStoreId</code>: Returns the `EventStore` id
-
-```ts
-import type { EventStoreId } from '@castore/core';
-
-type UserEventStoreId = EventStoreId<typeof userEventStore>;
-// => 'USERS'
-```
-
-- <code>EventStoreEventsTypes</code>: Returns the `EventStore` list of events types
-
-```ts
-import type { EventStoreEventsTypes } from '@castore/core';
-
-type UserEventsTypes = EventStoreEventsTypes<typeof userEventStore>;
-// => [typeof userCreatedEventType, typeof userRemovedEventType...]
-```
-
-- <code>EventStoreEventsDetails</code>: Returns the union of all the `EventStore` possible events details
-
-```ts
-import type { EventStoreEventsDetails } from '@castore/core';
-
-type UserEventsDetails = EventStoreEventsDetails<typeof userEventStore>;
-// => EventTypeDetail<typeof userCreatedEventType>
-// | EventTypeDetail<typeof userRemovedEventType>
-// | ...
-```
-
-- <code>EventStoreReducer</code>: Returns the `EventStore` reducer
-
-```ts
-import type { EventStoreReducer } from '@castore/core';
-
-type UserReducer = EventStoreReducer<typeof userEventStore>;
-// => Reducer<UserAggregate, UserEventsDetails>
-```
-
-- <code>EventStoreAggregate</code>: Returns the `EventStore` aggregate
-
-```ts
-import type { EventStoreAggregate } from '@castore/core';
-
-type UserReducer = EventStoreAggregate<typeof userEventStore>;
-// => UserAggregate
-```
+>
+> **Sync Methods:**
+>
+> - <code>getStorageAdapter <i>(() => EventStorageAdapter)</i></code>: Returns the event store event storage adapter if it exists. Throws an `UndefinedStorageAdapterError` if it doesn't.
+>
+> ```ts
+> import { UndefinedStorageAdapterError } from '@castore/core';
+>
+> expect(() => userEventStore.getStorageAdapter()).toThrow(
+>   new UndefinedStorageAdapterError({ eventStoreId: 'USERS' }),
+> );
+> // => true
+> ```
+>
+> - <code>buildAggregate <i>((eventDetails: EventDetail[], initialAggregate?: Aggregate) => Aggregate | undefined)</i></code>: Applies the event store reducer to a serie of events.
+>
+> ```ts
+> const johnDowAggregate = userEventStore.buildAggregate(johnDowEvents);
+> ```
+>
+> **Async Methods:**
+>
+> The following methods interact with the data layer of your event store through its [`EventStorageAdapter`](#💾-eventstorageadapter). They will throw an `UndefinedStorageAdapterError` if you did not provide one.
+>
+> - <code>getEvents <i>((aggregateId: string, opt?: OptionsObj = {}) => Promise\<ResponseObj\>)</i></code>: Retrieves the events of an aggregate, ordered by `version`. Returns an empty array if no event is found for this `aggregateId`.
+>
+>   `OptionsObj` contains the following properties:
+>
+>   - <code>minVersion <i>(?number)</i></code>: To retrieve events above a certain version
+>   - <code>maxVersion <i>(?number)</i></code>: To retrieve events below a certain version
+>   - <code>limit <i>(?number)</i></code>: Maximum number of events to retrieve
+>   - <code>reverse <i>(?boolean = false)</i></code>: To retrieve events in reverse order (does not require to swap `minVersion` and `maxVersion`)
+>
+>   `ResponseObj` contains the following properties:
+>
+>   - <code>events <i>(EventDetail[])</i></code>: The aggregate events (possibly empty)
+>
+> ```ts
+> const { events: allEvents } = await userEventStore.getEvents(aggregateId);
+> // => typed as UserEventDetail[] 🙌
+>
+> // 👇 Retrieve a range of events
+> const { events: rangedEvents } = await userEventStore.getEvents(aggregateId, {
+>   minVersion: 2,
+>   maxVersion: 5,
+> });
+>
+> // 👇 Retrieve the last event of the aggregate
+> const { events: onlyLastEvent } = await userEventStore.getEvents(
+>   aggregateId,
+>   {
+>     reverse: true,
+>     limit: 1,
+>   },
+> );
+> ```
+>
+> - <code>getAggregate <i>((aggregateId: string, opt?: OptionsObj = {}) => Promise\<ResponseObj\>)</i></code>: Retrieves the events of an aggregate and build it.
+>
+>   `OptionsObj` contains the following properties:
+>
+>   - <code>maxVersion <i>(?number)</i></code>: To retrieve aggregate below a certain version
+>
+>   `ResponseObj` contains the following properties:
+>
+>   - <code>aggregate <i>(?Aggregate)</i></code>: The aggregate (possibly `undefined`)
+>   - <code>events <i>(EventDetail[])</i></code>: The aggregate events (possibly empty)
+>   - <code>lastEvent <i>(?EventDetail)</i></code>: The last event (possibly `undefined`)
+>
+> ```ts
+> const { aggregate: johnDow } = await userEventStore.getAggregate(aggregateId);
+> // => typed as UserAggregate | undefined 🙌
+>
+> // 👇 Retrieve an aggregate below a certain version
+> const { aggregate: aggregateBelowVersion } =
+>   await userEventStore.getAggregate(aggregateId, { maxVersion: 5 });
+>
+> // 👇 Returns the events if you need them
+> const { aggregate, events } = await userEventStore.getAggregate(aggregateId);
+> ```
+>
+> - <code>getExistingAggregate <i>((aggregateId: string, opt?: OptionsObj = {}) => Promise\<ResponseObj\>)</i></code>: Same as `getAggregate` method, but ensures that the aggregate exists. Throws an `AggregateNotFoundError` if no event is found for this `aggregateId`.
+>
+> ```ts
+> import { AggregateNotFoundError } from '@castore/core';
+>
+> expect(async () =>
+>   userEventStore.getExistingAggregate(unexistingId),
+> ).resolves.toThrow(
+>   new AggregateNotFoundError({
+>     eventStoreId: 'USERS',
+>     aggregateId: unexistingId,
+>   }),
+> );
+> // true
+>
+> const { aggregate } = await userEventStore.getAggregate(aggregateId);
+> // => 'aggregate' and 'lastEvent' are always defined 🙌
+> ```
+>
+> - <code>pushEvent <i>((eventDetail: EventDetail) => Promise\<void\>)</i></code>: Pushes a new event to the event store. Throws an `EventAlreadyExistsError` if an event already exists for the corresponding `aggregateId` and `version`.
+>
+> ```ts
+> await userEventStore.pushEvent({
+>   aggregateId,
+>   version: lastVersion + 1,
+>   timestamp: new Date().toISOString(),
+>   type: 'USER_CREATED', // <= event type is correctly typed 🙌
+>   payload, // <= payload is typed according to the provided event type 🙌
+>   metadata, // <= same goes for metadata 🙌
+> });
+> ```
+>
+> - <code>listAggregateIds <i>((opt?: OptionsObj = {}) => Promise\<ResponseObj\>)</i></code>: Retrieves the list of `aggregateId` of an event store, ordered by `timestamp` of their first event. Returns an empty array if no aggregate is found.
+>
+>   `OptionsObj` contains the following properties:
+>
+>   - <code>limit <i>(?number)</i></code>: Maximum number of aggregate ids to retrieve
+>   - <code>pageToken <i>(?string)</i></code>: To retrieve a paginated result of aggregate ids
+>
+>   `ResponseObj` contains the following properties:
+>
+>   - <code>aggregateIds <i>(string[])</i></code>: The list of aggregate ids
+>   - <code>nextPageToken <i>(?string)</i></code>: A token for the next page of aggregate ids if one exists
+>
+> ```ts
+> const accAggregateIds: string = [];
+> const { aggregateIds: firstPage, nextPageToken } =
+>   await userEventStore.listAggregateIds({ limit: 20 });
+>
+> accAggregateIds.push(...firstPage);
+>
+> if (nextPageToken) {
+>   const { aggregateIds: secondPage } = await userEventStore.listAggregateIds({
+>     // 👇 Previous limit of 20 is passed through the page token
+>     pageToken: nextPageToken,
+>   });
+>   accAggregateIds.push(...secondPage);
+> }
+> ```
+>
+> **Type Helpers:**
+>
+> - <code>EventStoreId</code>: Returns the `EventStore` id
+>
+> ```ts
+> import type { EventStoreId } from '@castore/core';
+>
+> type UserEventStoreId = EventStoreId<typeof userEventStore>;
+> // => 'USERS'
+> ```
+>
+> - <code>EventStoreEventsTypes</code>: Returns the `EventStore` list of events types
+>
+> ```ts
+> import type { EventStoreEventsTypes } from '@castore/core';
+>
+> type UserEventsTypes = EventStoreEventsTypes<typeof userEventStore>;
+> // => [typeof userCreatedEventType, typeof userRemovedEventType...]
+> ```
+>
+> - <code>EventStoreEventsDetails</code>: Returns the union of all the `EventStore` possible events details
+>
+> ```ts
+> import type { EventStoreEventsDetails } from '@castore/core';
+>
+> type UserEventsDetails = EventStoreEventsDetails<typeof userEventStore>;
+> // => EventTypeDetail<typeof userCreatedEventType>
+> // | EventTypeDetail<typeof userRemovedEventType>
+> // | ...
+> ```
+>
+> - <code>EventStoreReducer</code>: Returns the `EventStore` reducer
+>
+> ```ts
+> import type { EventStoreReducer } from '@castore/core';
+>
+> type UserReducer = EventStoreReducer<typeof userEventStore>;
+> // => Reducer<UserAggregate, UserEventsDetails>
+> ```
+>
+> - <code>EventStoreAggregate</code>: Returns the `EventStore` aggregate
+>
+> ```ts
+> import type { EventStoreAggregate } from '@castore/core';
+>
+> type UserReducer = EventStoreAggregate<typeof userEventStore>;
+> // => UserAggregate
+> ```
+>
+> </details>
 
 ### 💾 `EventStorageAdapter`
 
@@ -609,7 +622,7 @@ type CommandOutput = { userId: string };
 
 const createUserCommand = new Command<
   RequiredEventStores,
-  // 👇 The type need to be provided twice for technical reasons
+  // 👇 The type needs to be provided twice for technical reasons
   RequiredEventStores,
   CommandInput,
   CommandOutput
@@ -634,67 +647,73 @@ const createUserCommand = new Command<
 });
 ```
 
-Note that we only provide TS types for `commandInput` and `commandOutput` properties. That is because, as stated in the [core design](#🫀-core-design), **Castore is meant to be as flexible as possible**, and that includes the validation library you want to use: The `Command` class is not meant to be used directly, but rather extended by other classes which will add run-time validation methods to it 👍
+Note that we only provided TS types for `commandInput` and `commandOutput` properties. That is because, as stated in the [core design](#🫀-core-design), **Castore is meant to be as flexible as possible**, and that includes the validation library you want to use: The `Command` class is not meant to be used directly, but rather extended by other classes which will add run-time validation methods to it 👍
 
 See the following packages for examples:
 
 - [JSON Schema Event Type](./packages/json-schema-command/README.md)
 
-**Constructor:**
-
-- <code>commandId <i>(string)</i></code>: A string identifying the command
-- <code>handler <i>((input: Input, requiredEventsStores: EventStore[]) => Promise\<Output\>)</i></code>: The code to execute
-- <code>requiredEventStores <i>(EventStore[])</i></code>: A tuple of `EventStores` that are required by the command for read/write purposes. In TS, you should use the `tuple` util to preserve tuple ordering in the handler (`tuple` doesn't mute its input, it simply returns them)
-- <code>eventAlreadyExistsRetries <i>(?number = 2)</i></code>: Number of handler execution retries before breaking out of the retry loop (See section below on race conditions)
-- <code>onEventAlreadyExists <i>(?(error: EventAlreadyExistsError, context: ContextObj) => Promise\<void\>)</i></code>: Optional callback to execute when an `EventAlreadyExistsError` is raised.
-
-  The `EventAlreadyExistsError` class contains the following attribute:
-
-  - <code>eventStoreId <i>(?string)</i></code>: The `eventStoreId` of the aggregate on which the `pushEvent` attempt failed
-  - <code>aggregateId <i>(string)</i></code>: The `aggregateId` of the aggregate
-  - <code>version <i>(number)</i></code>: The `version` of the aggregate
-
-  The `ContextObj` contains the following attributes:
-
-  - <code>attemptNumber <i>(?number)</i></code>: The number of handler execution attempts in the retry loop
-  - <code>retriesLeft <i>(?number)</i></code>: The number of retries left before breaking out of the retry loop
-
-```ts
-import { Command, tuple } from '@castore/core';
-
-const doSomethingCommand = new Command({
-  commandId: 'DO_SOMETHING',
-  requiredEventStores: tuple(eventStore1, eventStore2),
-  handler: async (commandInput, [eventStore1, eventStore2]) => {
-    // ...do something here
-  },
-});
-```
-
-**Properties:**
-
-- <code>commandId <i>(string)</i></code>: The command id
-
-```ts
-const commandId = doSomethingCommand.commandId;
-// => 'DO_SOMETHING'
-```
-
-- <code>requiredEventStores <i>(EventStore[])</i></code>: The required event stores
-
-```ts
-const requiredEventStores = doSomethingCommand.requiredEventStores;
-// => [eventStore1, eventStore2]
-```
-
-- <code>handler <i>((input: Input, requiredEventsStores: EventStore[]) => Promise\<Output\>)</i></code>: Function to invoke the command
-
-```ts
-const output = await doSomethingCommand.handler(input, [
-  eventStore1,
-  eventStore2,
-]);
-```
+> <details>
+> <summary><b>🔧 Technical description</b></summary>
+> <p></p>
+>
+> **Constructor:**
+>
+> - <code>commandId <i>(string)</i></code>: A string identifying the command
+> - <code>handler <i>((input: Input, requiredEventsStores: EventStore[]) => Promise\<Output\>)</i></code>: The code to execute
+> - <code>requiredEventStores <i>(EventStore[])</i></code>: A tuple of `EventStores` that are required by the command for read/write purposes. In TS, you should use the `tuple` util to preserve tuple ordering in the handler (`tuple` doesn't mute its input, it simply returns them)
+> - <code>eventAlreadyExistsRetries <i>(?number = 2)</i></code>: Number of handler execution retries before breaking out of the retry loop (See section below on race conditions)
+> - <code>onEventAlreadyExists <i>(?(error: EventAlreadyExistsError, context: ContextObj) => Promise\<void\>)</i></code>: Optional callback to execute when an `EventAlreadyExistsError` is raised.
+>
+>   The `EventAlreadyExistsError` class contains the following properties:
+>
+>   - <code>eventStoreId <i>(?string)</i></code>: The `eventStoreId` of the aggregate on which the `pushEvent` attempt failed
+>   - <code>aggregateId <i>(string)</i></code>: The `aggregateId` of the aggregate
+>   - <code>version <i>(number)</i></code>: The `version` of the aggregate
+>
+>   The `ContextObj` contains the following properties:
+>
+>   - <code>attemptNumber <i>(?number)</i></code>: The number of handler execution attempts in the retry loop
+>   - <code>retriesLeft <i>(?number)</i></code>: The number of retries left before breaking out of the retry loop
+>
+> ```ts
+> import { Command, tuple } from '@castore/core';
+>
+> const doSomethingCommand = new Command({
+>   commandId: 'DO_SOMETHING',
+>   requiredEventStores: tuple(eventStore1, eventStore2),
+>   handler: async (commandInput, [eventStore1, eventStore2]) => {
+>     // ...do something here
+>   },
+> });
+> ```
+>
+> **Properties:**
+>
+> - <code>commandId <i>(string)</i></code>: The command id
+>
+> ```ts
+> const commandId = doSomethingCommand.commandId;
+> // => 'DO_SOMETHING'
+> ```
+>
+> - <code>requiredEventStores <i>(EventStore[])</i></code>: The required event stores
+>
+> ```ts
+> const requiredEventStores = doSomethingCommand.requiredEventStores;
+> // => [eventStore1, eventStore2]
+> ```
+>
+> - <code>handler <i>((input: Input, requiredEventsStores: EventStore[]) => Promise\<Output\>)</i></code>: Function to invoke the command
+>
+> ```ts
+> const output = await doSomethingCommand.handler(input, [
+>   eventStore1,
+>   eventStore2,
+> ]);
+> ```
+>
+> </details>
 
 A few notes on commands handlers:
 
