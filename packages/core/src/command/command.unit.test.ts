@@ -56,6 +56,11 @@ describe('command implementation', () => {
       version: counterEventsMocks.length + 1,
     });
 
+    beforeEach(() => {
+      pushEventMock.mockClear();
+      onEventAlreadyExistsMock.mockClear();
+    });
+
     it('retries 3 times on EventAlreadyExists error (success at 3rd attempt)', async () => {
       pushEventMock
         .mockImplementationOnce(throwEventAlreadyExistsError)

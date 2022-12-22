@@ -1,14 +1,16 @@
 /* eslint-disable max-lines */
+import { vi } from 'vitest';
+
 import { EventType, EventTypeDetail } from '~/event/eventType';
 import { EventStore } from '~/eventStore';
 import { StorageAdapter } from '~/storageAdapter';
 
-export const pushEventMock = jest.fn();
-export const getEventsMock = jest.fn();
-export const listAggregateIdsMock = jest.fn();
-export const putSnapshotMock = jest.fn();
-export const getLastSnapshotMock = jest.fn();
-export const listSnapshotsMock = jest.fn();
+export const pushEventMock = vi.fn();
+export const getEventsMock = vi.fn();
+export const listAggregateIdsMock = vi.fn();
+export const putSnapshotMock = vi.fn();
+export const getLastSnapshotMock = vi.fn();
+export const listSnapshotsMock = vi.fn();
 
 export const mockStorageAdapter: StorageAdapter = {
   pushEvent: pushEventMock,
