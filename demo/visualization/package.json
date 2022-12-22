@@ -5,9 +5,8 @@
     "lint-fix-all": "yarn lint-fix .",
     "linter-base-config": "eslint --ext=js,ts .",
     "start": "vite",
-    "test": "yarn test-type && yarn test-unit && yarn test-circular && yarn test-linter",
+    "test": "yarn test-type && yarn test-circular && yarn test-linter",
     "test-type": "tsc --noEmit --emitDeclarationOnly false",
-    "test-unit": "jest --maxWorkers=4 --passWithNoTests --watchAll=false",
     "test-circular": "yarn depcruise --validate dependency-cruiser.js .",
     "test-linter": "yarn linter-base-config ."
   },

@@ -31,7 +31,7 @@
     "package-types": "ttsc -p tsconfig.build.json",
     "test": "yarn test-type && yarn test-unit && yarn test-circular && yarn test-linter",
     "test-type": "tsc --noEmit --emitDeclarationOnly false",
-    "test-unit": "yarn jest --passWithNoTests",
+    "test-unit": "yarn vitest run --passWithNoTests",
     "test-circular": "yarn depcruise --validate dependency-cruiser.js .",
     "test-linter": "yarn linter-base-config .",
     "transpile": "babel src --extensions .ts --quiet",
@@ -54,11 +54,11 @@
     "concurrently": "^7.1.0",
     "dependency-cruiser": "^11.7.0",
     "eslint": "^8.14.0",
-    "jest": "^27.5.1",
     "prettier": "^2.6.2",
     "ts-node": "^10.7.0",
     "ttypescript": "^1.5.13",
-    "typescript": "^4.6.3"
+    "typescript": "^4.6.3",
+    "vitest": "^0.26.2"
   },
   "maintainers": [
     "Thomas Aribart",
