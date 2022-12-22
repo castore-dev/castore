@@ -2,7 +2,7 @@
   "compilerOptions": {
     "target": "es2019",
     "esModuleInterop": true,
-    "types": ["node", "jest"],
+    "types": ["node", "vitest/globals"],
     "lib": ["es2020"],
     "removeComments": true,
     "moduleResolution": "node",
