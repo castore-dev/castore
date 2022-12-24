@@ -8,15 +8,17 @@ import {
 } from '@mui/material';
 import React from 'react';
 
+import type { EventStore } from '@castore/core';
 import type { JSONSchemaCommand } from '@castore/json-schema-command';
 
 import { Form } from '~/components/Form';
-import { eventStoresById } from '~/services/data';
 
 export const CommandCard = ({
   command,
+  eventStoresById,
 }: {
   command: JSONSchemaCommand;
+  eventStoresById: Record<string, EventStore>;
 }): JSX.Element => {
   const { commandId, inputSchema, requiredEventStores, handler } = command;
 
