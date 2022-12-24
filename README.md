@@ -598,6 +598,7 @@ userEventStore.storageAdapter = mySuperStorageAdapter;
 You can choose to [build an event storage adapter](./docs/building-your-own-event-storage-adapter.md) that suits your usage. However, we highly recommend using an off-the-shelf adapter:
 
 - [DynamoDB Event Storage Adapter](./packages/dynamodb-event-storage-adapter/README.md)
+- [Redux Event Storage Adapter](./packages/redux-event-storage-adapter/README.md)
 - [In-Memory Event Storage Adapter](./packages/inmemory-event-storage-adapter/README.md)
 
 If the storage solution that you use is missing, feel free to create/upvote an issue, or contribute!
@@ -772,6 +773,7 @@ Castore comes with a handy [Test Tool package](./packages/test-tools/README.md) 
 #### 💾 Event Storage Adapters
 
 - [DynamoDB Event Storage Adapter](./packages/dynamodb-event-storage-adapter/README.md): Implementation of the `EventStorageAdapter` interface based on DynamoDB.
+- [Redux Event Storage Adapter](./packages/redux-event-storage-adapter/README.md): Implementation of the `EventStorageAdapter` interface based on a Redux store, along with tooling to configure the store and hooks to read from it efficiently.
 - [In-Memory Event Storage Adapter](./packages/inmemory-event-storage-adapter/README.md): Implementation of the `EventStorageAdapter` interface using a local Node/JS object. To be used in manual or unit tests.
 
 #### 📨 Commands

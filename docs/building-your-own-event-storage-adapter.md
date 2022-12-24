@@ -9,6 +9,7 @@ export class CustomStorageAdapter implements StorageAdapter {
   getEvents: StorageAdapter['getEvents'];
   pushEvent: StorageAdapter['pushEvent'];
   listAggregateIds: StorageAdapter['listAggregateIds'];
+  // 👇 Not used for the moment
   putSnapshot: StorageAdapter['putSnapshot'];
   getLastSnapshot: StorageAdapter['getLastSnapshot'];
   listSnapshots: StorageAdapter['listSnapshots'];
