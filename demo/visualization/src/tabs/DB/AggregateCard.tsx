@@ -12,7 +12,8 @@ import {
 } from '@mui/material';
 import React, { useState } from 'react';
 
-import type { EventDetail, EventStore } from '@castore/core';
+import type { EventStore } from '@castore/core';
+import { useAggregateEvents } from '@castore/redux-event-storage-adapter';
 
 import { JsonView } from '~/components/JsonView';
 
@@ -21,12 +22,12 @@ import { formatDate } from '../../libs/utils';
 export const AggregateCard = ({
   eventStore,
   aggregateId,
-  events,
 }: {
   aggregateId: string;
   eventStore: EventStore;
-  events: EventDetail[];
 }): JSX.Element => {
+  const { events } = useAggregateEvents(eventStore, aggregateId);
+
   const firstEventDate = events[0]?.timestamp as string | undefined;
   const maxVersion = events.length;
 
@@ -69,7 +70,7 @@ export const AggregateCard = ({
               </AccordionSummary>
               <AccordionDetails>
                 <Stack spacing={2}>
-                  {events
+                  {[...events]
                     .sort((eventA, eventB) =>
                       eventA.timestamp < eventB.timestamp ? -1 : 1,
                     )

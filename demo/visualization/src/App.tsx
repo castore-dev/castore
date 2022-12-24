@@ -1,13 +1,11 @@
 import { TabContext, TabList, TabPanel } from '@mui/lab';
 import { CssBaseline, Tab, ThemeProvider } from '@mui/material';
 import React, { useState } from 'react';
-import { createGlobalState } from 'react-use';
+import { Provider } from 'react-redux';
 
 import type { EventStore } from '@castore/core';
 import type { JSONSchemaCommand } from '@castore/json-schema-command';
-
-import { EventStoreSynchronizer } from '~/components/EventStoreSynchronizer';
-import { dbByEventStoreId, eventStoresById } from '~/services/data';
+import { configureCastore } from '@castore/redux-event-storage-adapter';
 
 import { DB as $DB, Commands } from './tabs';
 import { theme } from './theme';
@@ -19,15 +17,17 @@ enum TabName {
 
 const { COMMANDS, DB } = TabName;
 
-const defaultTabName = TabName.COMMANDS;
+const defaultTabName = COMMANDS;
 const orderedTabNames = [COMMANDS, DB];
 
-const App = ({
+const Simulator = ({
   commands,
   eventStores,
+  eventStoresById,
 }: {
   commands: JSONSchemaCommand[];
   eventStores: EventStore[];
+  eventStoresById: Record<string, EventStore>;
 }): JSX.Element => {
   const [activeTabName, setActiveTabName] = useState<TabName>(defaultTabName);
 
@@ -52,7 +52,7 @@ const App = ({
         ))}
       </TabList>
       <TabPanel value={COMMANDS}>
-        <Commands commands={commands} />
+        <Commands commands={commands} eventStoresById={eventStoresById} />
       </TabPanel>
       <TabPanel value={DB}>
         <$DB eventStores={eventStores} />
@@ -61,30 +61,42 @@ const App = ({
   );
 };
 
-const AppProvider = ({
+const SimulatorWrapper = ({
   commands,
   eventStores,
 }: {
   commands: JSONSchemaCommand[];
   eventStores: EventStore[];
 }): JSX.Element => {
+  const store = configureCastore({ eventStores });
+
+  const eventStoresById: Record<string, EventStore> = {};
   eventStores.forEach(eventStore => {
-    dbByEventStoreId[eventStore.eventStoreId] = createGlobalState({});
     eventStoresById[eventStore.eventStoreId] = eventStore;
   });
 
   return (
-    <ThemeProvider theme={theme}>
-      <CssBaseline />
-      {eventStores.map(({ eventStoreId }) => (
-        <EventStoreSynchronizer
-          key={eventStoreId}
-          eventStoreId={eventStoreId}
-        />
-      ))}
-      <App commands={commands} eventStores={eventStores} />
-    </ThemeProvider>
+    <Provider store={store}>
+      <Simulator
+        commands={commands}
+        eventStores={eventStores}
+        eventStoresById={eventStoresById}
+      />
+    </Provider>
   );
 };
 
-export default AppProvider;
+const App = ({
+  commands,
+  eventStores,
+}: {
+  commands: JSONSchemaCommand[];
+  eventStores: EventStore[];
+}): JSX.Element => (
+  <ThemeProvider theme={theme}>
+    <CssBaseline />
+    <SimulatorWrapper commands={commands} eventStores={eventStores} />
+  </ThemeProvider>
+);
+
+export default App;
