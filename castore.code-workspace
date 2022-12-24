@@ -44,6 +44,10 @@
       "name": "🔌  DynamoDb"
     },
     {
+      "path": "packages/redux-event-storage-adapter",
+      "name": "🔌  Redux"
+    },
+    {
       "path": "packages/inmemory-event-storage-adapter",
       "name": "🔌  InMemory"
     },

@@ -1,0 +1,6 @@
+{
+  "root": "packages/redux-event-storage-adapter",
+  "projectType": "library",
+  "tags": [],
+  "implicitDependencies": ["core"]
+}
