@@ -51,7 +51,6 @@
     "eslint-plugin-prettier": "^4.0.0",
     "husky": "^7.0.4",
     "lint-staged": "^12.4.1",
-    "lodash": "^4.17.21",
     "npm-audit-resolver": "^3.0.0-7",
     "nx": "^14.0.3",
     "prettier": "^2.6.2",

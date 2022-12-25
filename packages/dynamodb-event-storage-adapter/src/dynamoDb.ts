@@ -7,7 +7,6 @@ import {
 } from '@aws-sdk/client-dynamodb';
 import type { AttributeValue, DynamoDBClient } from '@aws-sdk/client-dynamodb';
 import { Marshaller } from '@aws/dynamodb-auto-marshaller';
-import get from 'lodash/get';
 
 import type { EventDetail, StorageAdapter, Aggregate } from '@castore/core';
 
@@ -39,7 +38,8 @@ const getSnapshotPKFromAggregateId = (aggregateId: string): string =>
   `${aggregateId}#snapshot`;
 
 const isConditionalCheckFailedException = (error: Error): boolean =>
-  get(error, 'code') === 'ConditionalCheckFailedException';
+  typeof error === 'object' &&
+  (error as { code?: unknown }).code === 'ConditionalCheckFailedException';
 
 export class DynamoDbEventStorageAdapter implements StorageAdapter {
   getEvents: StorageAdapter['getEvents'];

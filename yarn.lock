@@ -3438,7 +3438,6 @@ __metadata:
     eslint-plugin-prettier: ^4.0.0
     husky: ^7.0.4
     lint-staged: ^12.4.1
-    lodash: ^4.17.21
     npm-audit-resolver: ^3.0.0-7
     nx: ^14.0.3
     prettier: ^2.6.2
@@ -3600,7 +3599,6 @@ __metadata:
     "@castore/core": "workspace:"
     "@castore/demo-blueprint": "workspace:"
     "@serverless/typescript": ^3.15.2
-    "@types/lodash": ^4.14.182
     "@types/node": ^17.0.29
     "@zerollup/ts-transform-paths": ^1.7.18
     aws-sdk-client-mock: ^2.0.1
@@ -3608,7 +3606,6 @@ __metadata:
     concurrently: ^7.1.0
     dependency-cruiser: ^11.7.0
     eslint: ^8.14.0
-    lodash: ^4.17.21
     prettier: ^2.6.2
     ts-node: ^10.7.0
     ttypescript: ^1.5.13
@@ -3630,14 +3627,12 @@ __metadata:
     "@babel/preset-env": ^7.16.11
     "@babel/preset-typescript": ^7.16.7
     "@castore/core": "workspace:"
-    "@types/lodash": ^4.14.182
     "@types/node": ^17.0.29
     "@zerollup/ts-transform-paths": ^1.7.18
     babel-plugin-module-resolver: ^4.1.0
     concurrently: ^7.1.0
     dependency-cruiser: ^11.7.0
     eslint: ^8.14.0
-    lodash: ^4.17.21
     prettier: ^2.6.2
     ts-node: ^10.7.0
     ttypescript: ^1.5.13
@@ -3717,7 +3712,6 @@ __metadata:
     "@babel/preset-typescript": ^7.16.7
     "@castore/core": "workspace:"
     "@reduxjs/toolkit": ^1.9.1
-    "@types/lodash": ^4.14.182
     "@types/node": ^17.0.29
     "@zerollup/ts-transform-paths": ^1.7.18
     babel-plugin-module-resolver: ^4.1.0
@@ -6748,7 +6742,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/lodash@npm:^4.14.123, @types/lodash@npm:^4.14.182":
+"@types/lodash@npm:^4.14.123":
   version: 4.14.182
   resolution: "@types/lodash@npm:4.14.182"
   checksum: 7dd137aa9dbabd632408bd37009d984655164fa1ecc3f2b6eb94afe35bf0a5852cbab6183148d883e9c73a958b7fec9a9bcf7c8e45d41195add6a18c34958209
