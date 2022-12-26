@@ -140,7 +140,6 @@ export const incrementCounter = new Command<
       aggregateId: counterId,
       version: version + 1,
       type: 'COUNTER_INCREMENTED',
-      timestamp: new Date().toISOString(),
     });
 
     return { nextCount: count + 1 };

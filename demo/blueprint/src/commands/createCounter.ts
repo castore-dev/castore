@@ -35,7 +35,6 @@ export const createCounterCommand = new JSONSchemaCommand({
       aggregateId: counterId,
       version: 1,
       type: 'COUNTER_CREATED',
-      timestamp: new Date().toISOString(),
       payload: {
         userId,
         startCount,

@@ -35,7 +35,6 @@ export const createUserCommand = new JSONSchemaCommand({
       aggregateId: userId,
       version: 1,
       type: 'USER_CREATED',
-      timestamp: new Date().toISOString(),
       payload: {
         firstName,
         lastName,

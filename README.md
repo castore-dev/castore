@@ -484,16 +484,20 @@ const userEventStore = new EventStore({
 > // => 'aggregate' and 'lastEvent' are always defined 🙌
 > ```
 >
-> - <code>pushEvent <i>((eventDetail: EventDetail) => Promise\<void\>)</i></code>: Pushes a new event to the event store. Throws an `EventAlreadyExistsError` if an event already exists for the corresponding `aggregateId` and `version`.
+> - <code>pushEvent <i>((eventDetail: EventDetail) => Promise\<ResponseObj\>)</i></code>: Pushes a new event to the event store, with the timestamp automatically set as `new Date().toISOString()`. Throws an `EventAlreadyExistsError` if an event already exists for the corresponding `aggregateId` and `version`.
+>
+>   `ResponseObj` contains the following properties:
+>
+>   - <code>event <i>(EventDetail)</i></code>: The complete event (including the `timestamp`)
 >
 > ```ts
 > await userEventStore.pushEvent({
 >   aggregateId,
 >   version: lastVersion + 1,
->   timestamp: new Date().toISOString(),
 >   type: 'USER_CREATED', // <= event type is correctly typed 🙌
 >   payload, // <= payload is typed according to the provided event type 🙌
 >   metadata, // <= same goes for metadata 🙌
+>   // timestamp is automatically set
 > });
 > ```
 >
@@ -639,7 +643,6 @@ const createUserCommand = new Command<
       aggregateId: userId,
       version: 1,
       type: 'USER_CREATED',
-      timestamp: new Date().toISOString(),
       payload: { name, age },
     });
 

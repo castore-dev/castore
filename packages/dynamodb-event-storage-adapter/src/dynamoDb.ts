@@ -159,7 +159,9 @@ export class DynamoDbEventStorageAdapter implements StorageAdapter {
       };
     };
 
-    this.pushEvent = async (event, context) => {
+    this.pushEvent = async (eventWithoutTimestamp, context) => {
+      const timestamp = new Date().toISOString();
+      const event = { ...eventWithoutTimestamp, timestamp };
       const putEventCommand = new PutItemCommand(this.getPushEventInput(event));
 
       const { aggregateId, version } = event;
@@ -182,6 +184,8 @@ export class DynamoDbEventStorageAdapter implements StorageAdapter {
 
         throw error;
       }
+
+      return { event };
     };
 
     this.listAggregateIds = async ({

@@ -1,3 +1,5 @@
+import MockDate from 'mockdate';
+
 import {
   counterCreatedEventMock,
   counterIncrementedEventMock,
@@ -25,7 +27,9 @@ describe('muteEventStore', () => {
   });
 
   it('adds a a new event', async () => {
-    await counterEventStore.pushEvent(counterIncrementedEventMock);
+    const { timestamp, ...event } = counterIncrementedEventMock;
+    MockDate.set(timestamp);
+    await counterEventStore.pushEvent(event);
 
     expect(await counterEventStore.getEvents(counterIdMock)).toStrictEqual({
       events: [counterCreatedEventMock, counterIncrementedEventMock],

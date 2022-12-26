@@ -38,9 +38,9 @@ export interface StorageAdapter {
     options?: EventsQueryOptions,
   ) => Promise<{ events: EventDetail[] }>;
   pushEvent: (
-    eventDetail: EventDetail,
+    eventDetail: Omit<EventDetail, 'timestamp'>,
     context: PushEventContext,
-  ) => Promise<void>;
+  ) => Promise<{ event: EventDetail }>;
   listAggregateIds: (
     options?: ListAggregateIdsOptions,
   ) => Promise<ListAggregateIdsOutput>;

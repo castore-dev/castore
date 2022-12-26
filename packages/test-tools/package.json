@@ -53,6 +53,7 @@
     "concurrently": "^7.1.0",
     "dependency-cruiser": "^11.7.0",
     "eslint": "^8.14.0",
+    "mockdate": "^3.0.5",
     "prettier": "^2.6.2",
     "ts-node": "^10.7.0",
     "ttypescript": "^1.5.13",

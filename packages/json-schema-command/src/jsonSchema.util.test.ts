@@ -134,7 +134,6 @@ export const incrementCounter = new JSONSchemaCommand({
       aggregateId: counterId,
       version: version + 1,
       type: 'COUNTER_INCREMENTED',
-      timestamp: new Date().toISOString(),
     });
 
     return { nextCount: count + 1 };
@@ -155,7 +154,6 @@ export const incrementCounterNoOutput = new JSONSchemaCommand({
     await countersStore.pushEvent({
       aggregateId: counterId,
       type: 'COUNTER_INCREMENTED',
-      timestamp: new Date().toISOString(),
       version: version + 1,
     });
   },
@@ -175,7 +173,6 @@ export const incrementCounterA = new JSONSchemaCommand({
     await countersStore.pushEvent({
       aggregateId: counterId,
       type: 'COUNTER_INCREMENTED',
-      timestamp: new Date().toISOString(),
       version: version + 1,
     });
 
@@ -196,7 +193,6 @@ export const incrementCounterANoOutput = new JSONSchemaCommand({
     await countersStore.pushEvent({
       aggregateId: counterId,
       type: 'COUNTER_INCREMENTED',
-      timestamp: new Date().toISOString(),
       version: version + 1,
     });
   },

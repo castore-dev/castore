@@ -1,4 +1,5 @@
 import { randomUUID } from 'crypto';
+import MockDate from 'mockdate';
 
 import { InMemoryEventAlreadyExistsError } from './error';
 import { InMemoryStorageAdapter } from './inMemory';
@@ -13,13 +14,13 @@ const eventMock1 = {
   aggregateId: aggregateIdMock1,
   version: 1,
   type: 'EVENT_TYPE',
-  timestamp: '2021',
+  timestamp: '2021-01-01T00:00:00.000Z',
 };
 const eventMock2 = {
   aggregateId: aggregateIdMock1,
   version: 2,
   type: 'EVENT_TYPE',
-  timestamp: '2022',
+  timestamp: '2022-01-01T00:00:00.000Z',
 };
 
 describe('in-memory storage adapter', () => {
@@ -44,7 +45,9 @@ describe('in-memory storage adapter', () => {
     });
 
     it('throws an error if version already exists', async () => {
-      await storageAdapter.pushEvent(eventMock1, {
+      const { timestamp, ...event } = eventMock1;
+      MockDate.set(timestamp);
+      await storageAdapter.pushEvent(event, {
         eventStoreId: eventStoreIdMock,
       });
 
@@ -56,7 +59,9 @@ describe('in-memory storage adapter', () => {
     });
 
     it('pushes and gets events correctly', async () => {
-      await storageAdapter.pushEvent(eventMock2, {
+      const { timestamp, ...event } = eventMock2;
+      MockDate.set(timestamp);
+      await storageAdapter.pushEvent(event, {
         eventStoreId: eventStoreIdMock,
       });
 
@@ -93,11 +98,13 @@ describe('in-memory storage adapter', () => {
     });
 
     it('list aggregate Ids', async () => {
+      const aggregate2InitialEventTimestamp = '2022-01-01T00:00:00.000Z';
+      MockDate.set(aggregate2InitialEventTimestamp);
       await storageAdapter.pushEvent(
         {
-          ...eventMock1,
+          version: 1,
+          type: 'EVENT_TYPE',
           aggregateId: aggregateIdMock2,
-          timestamp: '2022',
         },
         { eventStoreId: eventStoreIdMock },
       );
@@ -110,20 +117,24 @@ describe('in-memory storage adapter', () => {
     });
 
     it('paginates aggregate Ids', async () => {
+      const aggregate3InitialEventTimestamp = '2023-01-01T00:00:00.000Z';
+      MockDate.set(aggregate3InitialEventTimestamp);
       await storageAdapter.pushEvent(
         {
-          ...eventMock1,
+          version: 1,
+          type: 'EVENT_TYPE',
           aggregateId: aggregateIdMock3,
-          timestamp: '2023',
         },
         { eventStoreId: eventStoreIdMock },
       );
 
+      const aggregate4InitialEventTimestamp = '2024-01-01T00:00:00.000Z';
+      MockDate.set(aggregate4InitialEventTimestamp);
       await storageAdapter.pushEvent(
         {
-          ...eventMock1,
+          version: 1,
+          type: 'EVENT_TYPE',
           aggregateId: aggregateIdMock4,
-          timestamp: '2024',
         },
         { eventStoreId: eventStoreIdMock },
       );
