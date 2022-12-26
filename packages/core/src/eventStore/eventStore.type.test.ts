@@ -2,6 +2,7 @@ import { A } from 'ts-toolbelt';
 
 import { Aggregate } from '~/aggregate';
 import { EventDetail } from '~/event/eventDetail';
+import { EventTypeDetail } from '~/event/eventType';
 import {
   EventStore,
   EventStoreAggregate,
@@ -13,6 +14,9 @@ import {
   CounterAggregate,
   CounterEventsDetails,
   counterEventStore,
+  counterCreatedEvent,
+  counterIncrementedEvent,
+  counterDeletedEvent,
 } from './eventStore.util.test';
 import { GetAggregateOptions } from './types';
 
@@ -96,7 +100,11 @@ assertGetAggregateOutput;
 
 const assertPushEventInput: A.Equals<
   Parameters<typeof counterEventStore.pushEvent>,
-  [CounterEventsDetails]
+  [
+    | Omit<EventTypeDetail<typeof counterCreatedEvent>, 'timestamp'>
+    | Omit<EventTypeDetail<typeof counterIncrementedEvent>, 'timestamp'>
+    | Omit<EventTypeDetail<typeof counterDeletedEvent>, 'timestamp'>,
+  ]
 > = 1;
 assertPushEventInput;
 

@@ -23,7 +23,10 @@ export const mockStorageAdapter: StorageAdapter = {
 
 // Counters
 
-export const counterCreatedEvent = new EventType<'COUNTER_CREATED'>({
+export const counterCreatedEvent = new EventType<
+  'COUNTER_CREATED',
+  { initialCount?: number }
+>({
   type: 'COUNTER_CREATED',
 });
 
@@ -53,6 +56,7 @@ export const counterCreatedEventMock: CounterEventsDetails = {
   version: 1,
   type: 'COUNTER_CREATED',
   timestamp: '2022',
+  payload: {},
 };
 export const counterIncrementedEventMock: CounterEventsDetails = {
   aggregateId: counterIdMock,

@@ -33,7 +33,6 @@ export const deleteUserCommand = new JSONSchemaCommand({
       aggregateId: userId,
       version: version + 1,
       type: 'USER_REMOVED',
-      timestamp: new Date().toISOString(),
     });
   },
 });

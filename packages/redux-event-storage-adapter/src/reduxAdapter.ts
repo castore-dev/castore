@@ -47,8 +47,10 @@ export class ReduxEventStorageAdapter implements StorageAdapter {
       return eventStoreState;
     };
 
-    this.pushEvent = async event =>
+    this.pushEvent = async eventWithoutTimestamp =>
       new Promise(resolve => {
+        const timestamp = new Date().toISOString();
+        const event = { ...eventWithoutTimestamp, timestamp };
         const { aggregateId } = event;
 
         const eventStoreState = this.getEventStoreState();
@@ -68,7 +70,7 @@ export class ReduxEventStorageAdapter implements StorageAdapter {
           payload: event,
         });
 
-        resolve();
+        resolve({ event });
       });
 
     this.getEvents = (

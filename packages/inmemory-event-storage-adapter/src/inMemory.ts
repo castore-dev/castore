@@ -43,14 +43,17 @@ export class InMemoryStorageAdapter implements StorageAdapter {
       }
     });
 
-    this.pushEvent = async (event, context) =>
+    this.pushEvent = async (eventWithoutTimestamp, context) =>
       new Promise(resolve => {
+        const timestamp = new Date().toISOString();
+        const event = { ...eventWithoutTimestamp, timestamp };
+
         const { aggregateId, version } = event;
         const events = this.eventStore[aggregateId];
 
         if (events === undefined) {
           this.eventStore[aggregateId] = [event];
-          resolve();
+          resolve({ event });
 
           return;
         }
@@ -70,7 +73,7 @@ export class InMemoryStorageAdapter implements StorageAdapter {
         }
 
         events.push(event);
-        resolve();
+        resolve({ event });
       });
 
     this.getEvents = (

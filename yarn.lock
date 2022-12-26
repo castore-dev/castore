@@ -3633,6 +3633,7 @@ __metadata:
     concurrently: ^7.1.0
     dependency-cruiser: ^11.7.0
     eslint: ^8.14.0
+    mockdate: ^3.0.5
     prettier: ^2.6.2
     ts-node: ^10.7.0
     ttypescript: ^1.5.13
@@ -3749,6 +3750,7 @@ __metadata:
     concurrently: ^7.1.0
     dependency-cruiser: ^11.7.0
     eslint: ^8.14.0
+    mockdate: ^3.0.5
     prettier: ^2.6.2
     ts-node: ^10.7.0
     ttypescript: ^1.5.13
@@ -15919,6 +15921,13 @@ __metadata:
   dependencies:
     obliterator: ^1.6.1
   checksum: 894237fc6fd71ec0056eb4a20d9b16dbcd3d77620098dcd3888bdfe3d7a6c9b94355f480aba61a277a16e63c0b99c43f517c0bb283033f982e24b9fcae797447
+  languageName: node
+  linkType: hard
+
+"mockdate@npm:^3.0.5":
+  version: 3.0.5
+  resolution: "mockdate@npm:3.0.5"
+  checksum: 72b66786d9e072379693f80bf9fb82eb5153c9741030a4294184e3ccaf952d0713fae8966f77780580cf902f8ec7ccc95577b0ad47980d255e2ffb71fc7ca49c
   languageName: node
   linkType: hard
 

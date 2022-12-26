@@ -41,7 +41,6 @@ export const incrementCounterCommand = new JSONSchemaCommand({
       aggregateId: counterId,
       version: version + 1,
       type: 'COUNTER_INCREMENTED',
-      timestamp: new Date().toISOString(),
     });
 
     return { counterId };

@@ -28,7 +28,7 @@ export type EventsGetter<D extends EventDetail> = (
 ) => Promise<{ events: D[] }>;
 
 export type EventPusher<$D extends EventDetail> = (
-  eventDetail: $D,
+  eventDetail: $D extends infer U ? Omit<U, 'timestamp'> : never,
 ) => Promise<void>;
 
 export type AggregateIdsLister = (
