@@ -1,6 +1,3 @@
-import cloneDeep from 'lodash/cloneDeep';
-import intersectionBy from 'lodash/intersectionBy';
-
 import type { EventDetail, StorageAdapter } from '@castore/core';
 
 import { InMemoryEventAlreadyExistsError } from './error';
@@ -51,7 +48,18 @@ export class InMemoryStorageAdapter implements StorageAdapter {
         const { aggregateId, version } = event;
         const events = this.eventStore[aggregateId];
 
-        if (intersectionBy(events, [event], 'version').length > 0) {
+        if (events === undefined) {
+          this.eventStore[aggregateId] = [event];
+          resolve();
+
+          return;
+        }
+
+        if (
+          events.some(
+            ({ version: existingVersion }) => existingVersion === version,
+          )
+        ) {
           const { eventStoreId } = context;
 
           throw new InMemoryEventAlreadyExistsError({
@@ -61,16 +69,7 @@ export class InMemoryStorageAdapter implements StorageAdapter {
           });
         }
 
-        const aggregateEvents = this.eventStore[aggregateId];
-
-        if (aggregateEvents === undefined) {
-          this.eventStore[aggregateId] = [event];
-          resolve();
-
-          return;
-        }
-
-        aggregateEvents.push(event);
+        events.push(event);
         resolve();
       });
 
@@ -79,7 +78,7 @@ export class InMemoryStorageAdapter implements StorageAdapter {
       { minVersion, maxVersion, reverse, limit } = {},
     ) =>
       new Promise(resolve => {
-        let events = cloneDeep(this.eventStore[aggregateId] ?? []);
+        let events = [...(this.eventStore[aggregateId] ?? [])];
 
         if (minVersion !== undefined) {
           events = events.filter(({ version }) => version >= minVersion);
