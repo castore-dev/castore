@@ -1,11 +1,17 @@
 import { A } from 'ts-toolbelt';
 
-import { Command } from './command';
+import {
+  Command,
+  CommandInput,
+  CommandOutput,
+  CommandContext,
+} from './command';
 import {
   counterEventStore,
   incrementCounter,
   Input,
   Output,
+  Context,
 } from './command.util.test';
 
 // --- CLASS ---
@@ -23,6 +29,24 @@ const assertIncrementCounterHandler: A.Equals<
   (
     input: Input,
     requiredEventStores: [typeof counterEventStore],
+    context: Context,
   ) => Promise<Output>
 > = 1;
 assertIncrementCounterHandler;
+
+// --- HELPERS ---
+
+const assertInput: A.Equals<CommandInput<typeof incrementCounter>, Input> = 1;
+assertInput;
+
+const assertOutput: A.Equals<
+  CommandOutput<typeof incrementCounter>,
+  Output
+> = 1;
+assertOutput;
+
+const assertContext: A.Equals<
+  CommandContext<typeof incrementCounter>,
+  [Context]
+> = 1;
+assertContext;

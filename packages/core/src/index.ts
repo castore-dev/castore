@@ -28,5 +28,10 @@ export type {
   Reducer,
 } from './eventStore';
 export { Command, tuple } from './command/command';
+export type {
+  CommandInput,
+  CommandOutput,
+  CommandContext,
+} from './command/command';
 export type { OnEventAlreadyExistsCallback } from './command/command';
 export type { $Contravariant } from './utils';

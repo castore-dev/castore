@@ -118,16 +118,19 @@ export const onEventAlreadyExistsMock = vi.fn();
 
 export type Input = { counterId: string };
 export type Output = { nextCount: number };
+export type Context = { generateUuid: () => string };
 
-export const incrementCounter = new Command<
-  typeof requiredEventStores,
-  typeof requiredEventStores,
-  Input,
-  Output
->({
+export const incrementCounter = new Command({
   commandId: 'INCREMENT_COUNTER',
   requiredEventStores,
-  handler: async (input, eventStores) => {
+  handler: async (
+    input: Input,
+    eventStores: typeof requiredEventStores,
+    context: Context,
+  ): Promise<Output> => {
+    const { generateUuid } = context;
+    generateUuid();
+
     const { counterId } = input;
     const [countersStore] = eventStores;
 
