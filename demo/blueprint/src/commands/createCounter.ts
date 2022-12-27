@@ -1,5 +1,3 @@
-import { v4 as uuid } from 'uuid';
-
 import { tuple } from '@castore/core';
 import { JSONSchemaCommand } from '@castore/json-schema-command';
 
@@ -25,11 +23,15 @@ export const createCounterCommand = new JSONSchemaCommand({
     required: ['counterId'],
     additionalProperties: false,
   } as const,
-  handler: async (input, eventStores) => {
+  handler: async (
+    input,
+    eventStores,
+    { generateUuid }: { generateUuid: () => string },
+  ) => {
     const { userId, startCount } = input;
     const [countersStore] = eventStores;
 
-    const counterId = uuid();
+    const counterId = generateUuid();
 
     await countersStore.pushEvent({
       aggregateId: counterId,
