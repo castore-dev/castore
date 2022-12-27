@@ -13,6 +13,7 @@ export type OnEventAlreadyExistsCallback = (
 ) => Promise<void>;
 
 export class JSONSchemaCommand<
+  C extends string = string,
   E extends EventStore[] = EventStore[],
   $E extends EventStore[] = $Contravariant<E, EventStore[]>,
   IS extends JSONSchema | undefined = JSONSchema | undefined,
@@ -27,7 +28,9 @@ export class JSONSchemaCommand<
     JSONSchema,
     OS extends JSONSchema ? FromSchema<OS> : never
   >,
-> extends Command<E, $E, I, O> {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  T extends any[] = any[],
+> extends Command<C, E, $E, I, O, T> {
   inputSchema?: IS;
   outputSchema?: OS;
 
@@ -40,11 +43,11 @@ export class JSONSchemaCommand<
     inputSchema,
     outputSchema,
   }: {
-    commandId: string;
+    commandId: C;
     requiredEventStores: E;
     eventAlreadyExistsRetries?: number;
     onEventAlreadyExists?: OnEventAlreadyExistsCallback;
-    handler: (input: I, requiredEventStores: $E) => Promise<O>;
+    handler: (input: I, eventStores: $E, ...context: T) => Promise<O>;
     inputSchema?: IS;
     outputSchema?: OS;
   }) {
