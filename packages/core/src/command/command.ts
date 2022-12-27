@@ -85,6 +85,8 @@ export class Command<
   }
 }
 
+export type CommandId<C extends Command> = C['commandId'];
+
 export type CommandInput<C extends Command> = NonNullable<C['_types']>['input'];
 
 export type CommandOutput<C extends Command> = NonNullable<

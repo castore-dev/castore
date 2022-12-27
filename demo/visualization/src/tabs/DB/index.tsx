@@ -7,13 +7,13 @@ import type { EventStore } from '@castore/core';
 import { EventStoreDB } from './EventStoreDB';
 
 export const DB = ({
-  eventStores,
+  eventStoreIds,
+  eventStoresById,
 }: {
-  eventStores: EventStore[];
+  eventStoreIds: string[];
+  eventStoresById: Record<string, EventStore>;
 }): JSX.Element => {
-  const [selectedEventStoreId, selectEventStoreId] = useState(
-    eventStores[0].eventStoreId,
-  );
+  const [selectedEventStoreId, selectEventStoreId] = useState(eventStoreIds[0]);
 
   return (
     <TabContext value={selectedEventStoreId}>
@@ -24,13 +24,13 @@ export const DB = ({
         aria-label="Event-store section"
         centered
       >
-        {eventStores.map(({ eventStoreId }) => (
+        {eventStoreIds.map(eventStoreId => (
           <Tab key={eventStoreId} label={eventStoreId} value={eventStoreId} />
         ))}
       </TabList>
-      {eventStores.map(eventStore => (
-        <TabPanel key={eventStore.eventStoreId} value={eventStore.eventStoreId}>
-          <EventStoreDB eventStore={eventStore} />
+      {eventStoreIds.map(eventStoreId => (
+        <TabPanel key={eventStoreId} value={eventStoreId}>
+          <EventStoreDB eventStore={eventStoresById[eventStoreId]} />
         </TabPanel>
       ))}
     </TabContext>

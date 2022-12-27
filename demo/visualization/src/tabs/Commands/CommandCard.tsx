@@ -16,15 +16,19 @@ import { Form } from '~/components/Form';
 export const CommandCard = ({
   command,
   eventStoresById,
+  contextsByCommandId,
 }: {
   command: JSONSchemaCommand;
   eventStoresById: Record<string, EventStore>;
+  contextsByCommandId: Record<string, unknown[]>;
 }): JSX.Element => {
   const { commandId, inputSchema, requiredEventStores, handler } = command;
 
   const requiredEvStores = requiredEventStores.map(
     ({ eventStoreId }) => eventStoresById[eventStoreId],
   );
+
+  const context = contextsByCommandId[commandId];
 
   return (
     <Accordion>
@@ -45,6 +49,8 @@ export const CommandCard = ({
                   const output: unknown = await handler(
                     formData,
                     requiredEvStores,
+                    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+                    ...(context ?? []),
                   );
                   console.log(output);
 

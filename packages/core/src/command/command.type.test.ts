@@ -1,7 +1,8 @@
-import { A } from 'ts-toolbelt';
+import type { A } from 'ts-toolbelt';
 
-import {
+import type {
   Command,
+  CommandId,
   CommandInput,
   CommandOutput,
   CommandContext,
@@ -35,6 +36,12 @@ const assertIncrementCounterHandler: A.Equals<
 assertIncrementCounterHandler;
 
 // --- HELPERS ---
+
+const assertId: A.Equals<
+  CommandId<typeof incrementCounter>,
+  'INCREMENT_COUNTER'
+> = 1;
+assertId;
 
 const assertInput: A.Equals<CommandInput<typeof incrementCounter>, Input> = 1;
 assertInput;

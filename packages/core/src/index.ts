@@ -29,6 +29,7 @@ export type {
 } from './eventStore';
 export { Command, tuple } from './command/command';
 export type {
+  CommandId,
   CommandInput,
   CommandOutput,
   CommandContext,
