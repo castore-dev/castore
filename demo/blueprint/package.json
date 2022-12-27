@@ -27,8 +27,7 @@
     "watch": "rm -rf dist && concurrently 'yarn:package-* --watch'"
   },
   "dependencies": {
-    "@babel/runtime": "^7.18.3",
-    "uuid": "^8.3.2"
+    "@babel/runtime": "^7.18.3"
   },
   "devDependencies": {
     "@babel/cli": "^7.17.6",
@@ -70,7 +69,6 @@
   "peerDependencies": {
     "@castore/core": "*",
     "@castore/json-schema-event": "*",
-    "json-schema-to-ts": "^2.0.0",
-    "uuid": "^8.3.2"
+    "json-schema-to-ts": "^2.0.0"
   }
 }

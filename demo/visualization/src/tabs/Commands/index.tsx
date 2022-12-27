@@ -9,9 +9,11 @@ import { CommandCard } from './CommandCard';
 export const Commands = ({
   commands,
   eventStoresById,
+  contextsByCommandId,
 }: {
   commands: JSONSchemaCommand[];
   eventStoresById: Record<string, EventStore>;
+  contextsByCommandId: Record<string, unknown[]>;
 }): JSX.Element => (
   <Stack spacing={2}>
     {commands.map(command => (
@@ -19,6 +21,7 @@ export const Commands = ({
         key={command.commandId}
         command={command}
         eventStoresById={eventStoresById}
+        contextsByCommandId={contextsByCommandId}
       />
     ))}
   </Stack>

@@ -1,3 +1,5 @@
+import { randomUUID } from 'crypto';
+
 import type { EventDetail } from '~/event/eventDetail';
 
 import {
@@ -67,7 +69,11 @@ describe('command implementation', () => {
         .mockImplementationOnce(throwEventAlreadyExistsError)
         .mockResolvedValue(undefined);
 
-      await incrementCounter.handler({ counterId: '123' }, [counterEventStore]);
+      await incrementCounter.handler(
+        { counterId: '123' },
+        [counterEventStore],
+        { generateUuid: randomUUID },
+      );
 
       expect(pushEventMock).toHaveBeenCalledTimes(3);
 
@@ -86,7 +92,9 @@ describe('command implementation', () => {
       pushEventMock.mockImplementation(throwEventAlreadyExistsError);
 
       await expect(() =>
-        incrementCounter.handler({ counterId: '123' }, [counterEventStore]),
+        incrementCounter.handler({ counterId: '123' }, [counterEventStore], {
+          generateUuid: randomUUID,
+        }),
       ).rejects.toThrow(expectedError);
 
       expect(pushEventMock).toHaveBeenCalledTimes(3);

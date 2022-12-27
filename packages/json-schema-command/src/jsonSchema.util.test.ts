@@ -118,6 +118,27 @@ export const outputSchema = {
 
 export const requiredEventStores = tuple(counterEventStore);
 
+export const createCounter = new JSONSchemaCommand({
+  commandId: 'CREATE_COUNTER',
+  requiredEventStores: tuple(counterEventStore),
+  outputSchema: inputSchema,
+  handler: async (
+    _,
+    [countersStore],
+    { generateUuid }: { generateUuid: () => string },
+  ) => {
+    const counterId = generateUuid();
+
+    await countersStore.pushEvent({
+      aggregateId: counterId,
+      type: 'COUNTER_CREATED',
+      version: 1,
+    });
+
+    return { counterId };
+  },
+});
+
 export const incrementCounter = new JSONSchemaCommand({
   commandId: 'INCREMENT_COUNTER',
   requiredEventStores,

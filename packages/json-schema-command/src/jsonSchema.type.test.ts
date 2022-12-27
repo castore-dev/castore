@@ -6,6 +6,7 @@ import { Command } from '@castore/core';
 import { JSONSchemaCommand } from './jsonSchema';
 import {
   counterEventStore,
+  createCounter,
   incrementCounter,
   incrementCounterA,
   incrementCounterANoOutput,
@@ -24,6 +25,18 @@ const assertJsonSchemaCommandExtendsCommand: A.Equals<
   true
 > = 1;
 assertJsonSchemaCommandExtendsCommand;
+
+const assertCreateCounterExtendsJsonSchemaCommand: A.Equals<
+  typeof createCounter extends JSONSchemaCommand ? true : false,
+  true
+> = 1;
+assertCreateCounterExtendsJsonSchemaCommand;
+
+const assertCreateCounterExtendsCommand: A.Equals<
+  typeof createCounter extends Command ? true : false,
+  true
+> = 1;
+assertCreateCounterExtendsCommand;
 
 const assertIncrementCounterExtendsJsonSchemaCommand: A.Equals<
   typeof incrementCounter extends JSONSchemaCommand ? true : false,
@@ -112,6 +125,17 @@ const assertIncrementCounterASchemaOutputSchema: A.Equals<
 assertIncrementCounterASchemaOutputSchema;
 
 // --- HANDLER ---
+
+const assertCreateCounterHandler: A.Equals<
+  typeof createCounter.handler,
+  (
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    input: any,
+    requiredEventStores: [typeof counterEventStore],
+    context: { generateUuid: () => string },
+  ) => Promise<Input>
+> = 1;
+assertCreateCounterHandler;
 
 const assertIncrementCounterHandler: A.Equals<
   typeof incrementCounter.handler,

@@ -1,5 +1,3 @@
-import { v4 as uuid } from 'uuid';
-
 import { tuple } from '@castore/core';
 import { JSONSchemaCommand } from '@castore/json-schema-command';
 
@@ -25,11 +23,15 @@ export const createUserCommand = new JSONSchemaCommand({
     required: ['userId'],
     additionalProperties: false,
   } as const,
-  handler: async (input, eventStores) => {
+  handler: async (
+    input,
+    eventStores,
+    { generateUuid }: { generateUuid: () => string },
+  ) => {
     const { firstName, lastName } = input;
     const [usersStore] = eventStores;
 
-    const userId = uuid();
+    const userId = generateUuid();
 
     await usersStore.pushEvent({
       aggregateId: userId,

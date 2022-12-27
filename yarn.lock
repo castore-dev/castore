@@ -3500,12 +3500,10 @@ __metadata:
     ts-toolbelt: ^9.6.0
     ttypescript: ^1.5.13
     typescript: ^4.6.3
-    uuid: ^8.3.2
   peerDependencies:
     "@castore/core": "*"
     "@castore/json-schema-event": "*"
     json-schema-to-ts: ^2.0.0
-    uuid: ^8.3.2
   languageName: unknown
   linkType: soft
 

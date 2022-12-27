@@ -1,6 +1,8 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
+import { v4 as uuid } from 'uuid';
 
+import { tuple } from '@castore/core';
 import {
   counterEventStore,
   createUserCommand,
@@ -15,7 +17,10 @@ ReactDOM.render(
   <React.StrictMode>
     <App
       eventStores={[userEventStore, counterEventStore]}
-      commands={[createUserCommand, deleteUserCommand]}
+      commands={tuple(createUserCommand, deleteUserCommand)}
+      contextsByCommandId={{
+        CREATE_USER: [{ generateUuid: uuid }],
+      }}
     />
   </React.StrictMode>,
   document.getElementById('root'),
