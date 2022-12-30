@@ -7,6 +7,8 @@ import {
 } from '@castore/core';
 
 import { EventStoreReduxStateNotFoundError } from '~/errors/eventStoreReduxStateNotFound';
+import { EventStoreReduxStorageAdapterNotFoundError } from '~/errors/reduxEventStorageAdapterNotFound';
+import { ReduxEventStorageAdapter } from '~/reduxAdapter';
 import { EventStoresReduxState } from '~/types';
 
 export const useAggregateEvents = <E extends EventStore>(
@@ -15,12 +17,19 @@ export const useAggregateEvents = <E extends EventStore>(
   { minVersion, maxVersion, reverse, limit }: EventsQueryOptions = {},
 ): { events: EventStoreEventsDetails<E>[] } => {
   let events = (useSelector<EventStoresReduxState>(state => {
-    const eventStoreState = state[eventStore.eventStoreId];
+    const storageAdapter = eventStore.getStorageAdapter();
 
-    if (!eventStoreState) {
-      throw new EventStoreReduxStateNotFoundError({
+    if (!(storageAdapter instanceof ReduxEventStorageAdapter)) {
+      throw new EventStoreReduxStorageAdapterNotFoundError({
         eventStoreId: eventStore.eventStoreId,
       });
+    }
+
+    const eventStoreSliceName = storageAdapter.eventStoreSliceName;
+    const eventStoreState = state[eventStoreSliceName];
+
+    if (!eventStoreState) {
+      throw new EventStoreReduxStateNotFoundError({ eventStoreSliceName });
     }
 
     return eventStoreState.eventsByAggregateId[aggregateId];

@@ -1,9 +1,9 @@
 export class EventStoreReduxStateNotFoundError extends Error {
-  eventStoreId: string;
+  eventStoreSliceName: string;
 
-  constructor({ eventStoreId }: { eventStoreId: string }) {
-    super(`Unable to find redux state for eventStoreId ${eventStoreId}`);
+  constructor({ eventStoreSliceName }: { eventStoreSliceName: string }) {
+    super(`Unable to find redux slice at path ${eventStoreSliceName}`);
 
-    this.eventStoreId = eventStoreId;
+    this.eventStoreSliceName = eventStoreSliceName;
   }
 }
