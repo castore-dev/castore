@@ -12,7 +12,7 @@ npm install --save-dev @castore/test-tools
 yarn add --dev @castore/test-tools
 ```
 
-This package has `castore/core` as peer dependencies, so you will have to install it as well:
+This package has `@castore/core` as peer dependencies, so you will have to install it as well:
 
 ```bash
 # npm

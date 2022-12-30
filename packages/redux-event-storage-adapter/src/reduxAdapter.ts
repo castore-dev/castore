@@ -8,6 +8,7 @@ import {
 } from '~/errors';
 
 import type { EventStoreReduxState, EventStoresReduxState } from './types';
+import { getEventStoreSliceName } from './utils/getEventStoreSliceName';
 import {
   parseAppliedListAggregateIdsOptions,
   ParsedPageToken,
@@ -22,26 +23,29 @@ export class ReduxEventStorageAdapter implements StorageAdapter {
   listSnapshots: StorageAdapter['listSnapshots'];
 
   store: EnhancedStore<EventStoresReduxState>;
-  // TODO: see if it's possible to get eventStoreId from operations context and provide one adapter for all event stores in configureCastore
   eventStoreId: string;
+  eventStoreSliceName: string;
   getEventStoreState: () => EventStoreReduxState;
 
   constructor({
     store,
     eventStoreId,
+    prefix,
   }: {
     store: EnhancedStore<EventStoresReduxState>;
     eventStoreId: string;
+    prefix?: string;
   }) {
     this.store = store;
     this.eventStoreId = eventStoreId;
+    this.eventStoreSliceName = getEventStoreSliceName({ eventStoreId, prefix });
 
     this.getEventStoreState = () => {
-      const eventStoreState = this.store.getState()[this.eventStoreId];
+      const eventStoreState = this.store.getState()[this.eventStoreSliceName];
 
       if (eventStoreState === undefined)
         throw new EventStoreReduxStateNotFoundError({
-          eventStoreId: this.eventStoreId,
+          eventStoreSliceName: this.eventStoreSliceName,
         });
 
       return eventStoreState;
@@ -66,7 +70,7 @@ export class ReduxEventStorageAdapter implements StorageAdapter {
         }
 
         this.store.dispatch({
-          type: `${this.eventStoreId}/eventPushed`,
+          type: `${this.eventStoreSliceName}/eventPushed`,
           payload: event,
         });
 

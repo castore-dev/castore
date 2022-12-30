@@ -1,67 +1,28 @@
-import {
-  configureStore,
-  createSlice,
-  Draft,
-  EnhancedStore,
-} from '@reduxjs/toolkit';
+import { configureStore, EnhancedStore } from '@reduxjs/toolkit';
 
-import { EventDetail, EventStore } from '@castore/core';
+import { EventStore } from '@castore/core';
 
+import { getCastoreReducers } from '~/getCastoreReducers';
 import { ReduxEventStorageAdapter } from '~/reduxAdapter';
-import { EventStoresReduxState, EventStoreReduxReducer } from '~/types';
+import { EventStoresReduxState } from '~/types';
+import { DEFAULT_PREFIX } from '~/utils/getEventStoreSliceName';
 
 export const configureCastore = <E extends EventStore[]>({
   eventStores,
+  prefix = DEFAULT_PREFIX,
 }: {
   eventStores: E;
+  prefix?: string;
 }): EnhancedStore<EventStoresReduxState<E>> => {
-  const reducersByEventStoreId: Record<string, EventStoreReduxReducer> = {};
+  const castoreReducers = getCastoreReducers({ eventStores, prefix });
 
-  eventStores.forEach(eventStore => {
-    const { reducer } = createSlice({
-      name: eventStore.eventStoreId,
-      initialState: {
-        eventsByAggregateId: {} as Record<string, EventDetail[]>,
-        aggregateIds: [] as {
-          aggregateId: string;
-          initialEventTimestamp: string;
-        }[],
-      },
-      reducers: {
-        eventPushed: (
-          state,
-          action: {
-            type: string;
-            payload: Draft<EventDetail>;
-          },
-        ) => {
-          const event = action.payload;
-          const { aggregateId, timestamp } = event;
-
-          const aggregateEvents = state.eventsByAggregateId[aggregateId];
-
-          if (aggregateEvents === undefined) {
-            state.eventsByAggregateId[aggregateId] = [event];
-            state.aggregateIds.push({
-              aggregateId,
-              initialEventTimestamp: timestamp,
-            });
-          } else {
-            aggregateEvents.push(event);
-          }
-        },
-      },
-    });
-
-    reducersByEventStoreId[eventStore.eventStoreId] = reducer;
-  });
-
-  const store = configureStore({ reducer: reducersByEventStoreId });
+  const store = configureStore({ reducer: castoreReducers });
 
   eventStores.forEach(eventStore => {
     eventStore.storageAdapter = new ReduxEventStorageAdapter({
       store,
       eventStoreId: eventStore.eventStoreId,
+      prefix,
     });
   });
 
