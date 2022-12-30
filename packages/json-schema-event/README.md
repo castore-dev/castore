@@ -12,7 +12,7 @@ npm install @castore/json-schema-event
 yarn add @castore/json-schema-event
 ```
 
-This package has `castore/core` and `json-schema-to-ts` (above v2) as peer dependencies, so you will have to install them as well:
+This package has `@castore/core` and `json-schema-to-ts` (above v2) as peer dependencies, so you will have to install them as well:
 
 ```bash
 # npm

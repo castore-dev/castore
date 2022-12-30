@@ -12,7 +12,7 @@ npm install @castore/dynamodb-event-storage-adapter
 yarn add @castore/dynamodb-event-storage-adapter
 ```
 
-This package has `castore/core` and `@aws-sdk/client-dynamodb` (above v3) as peer dependencies, so you will have to install them as well:
+This package has `@castore/core` and `@aws-sdk/client-dynamodb` (above v3) as peer dependencies, so you will have to install them as well:
 
 ```bash
 # npm

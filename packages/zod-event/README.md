@@ -12,7 +12,7 @@ npm install @castore/zod-event
 yarn add @castore/zod-event
 ```
 
-This package has `castore/core` and `zod` (above v3) as peer dependencies, so you will have to install them as well:
+This package has `@castore/core` and `zod` (above v3) as peer dependencies, so you will have to install them as well:
 
 ```bash
 # npm
