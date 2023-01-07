@@ -9,13 +9,13 @@ import {
   deleteUserCommand,
   userEventStore,
 } from '@castore/demo-blueprint';
+import { Visualizer } from '@castore/react-visualizer';
 
-import App from './App';
 import './index.css';
 
 ReactDOM.render(
   <React.StrictMode>
-    <App
+    <Visualizer
       eventStores={[userEventStore, counterEventStore]}
       commands={tuple(createUserCommand, deleteUserCommand)}
       contextsByCommandId={{
