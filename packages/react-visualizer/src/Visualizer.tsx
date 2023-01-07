@@ -2,9 +2,9 @@ import { CssBaseline, ThemeProvider } from '@mui/material';
 import React from 'react';
 
 import { EventStore, Command, CommandId, CommandContext } from '@castore/core';
-import { JSONSchemaCommand } from '@castore/json-schema-command';
+import type { JSONSchemaCommand } from '@castore/json-schema-command';
 
-import { UnthemedReactVisualizer } from './UnthemedReactVisualizer';
+import { UnthemedVisualizer } from './UnthemedVisualizer';
 import { defaultTheme } from './defaultTheme';
 
 type ContextsByCommandId<C extends Command[]> = C extends [infer H, ...infer T]
@@ -17,7 +17,7 @@ type ContextsByCommandId<C extends Command[]> = C extends [infer H, ...infer T]
     : never
   : Record<never, unknown[]>;
 
-export const ReactVisualizer = <C extends JSONSchemaCommand[]>({
+export const Visualizer = <C extends JSONSchemaCommand[]>({
   commands,
   eventStores,
   contextsByCommandId,
@@ -28,7 +28,7 @@ export const ReactVisualizer = <C extends JSONSchemaCommand[]>({
 }): JSX.Element => (
   <ThemeProvider theme={defaultTheme}>
     <CssBaseline />
-    <UnthemedReactVisualizer
+    <UnthemedVisualizer
       commands={commands}
       eventStores={eventStores}
       contextsByCommandId={contextsByCommandId}

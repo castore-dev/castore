@@ -17,7 +17,7 @@ const { COMMANDS, DB } = TabName;
 const defaultTabName = COMMANDS;
 const orderedTabNames = [COMMANDS, DB];
 
-export const ReactVisualizerContent = ({
+export const VisualizerContent = ({
   commands,
   eventStoreIds,
   eventStoresById,

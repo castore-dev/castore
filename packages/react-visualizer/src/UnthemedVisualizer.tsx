@@ -1,13 +1,13 @@
 import React from 'react';
 import { Provider } from 'react-redux';
 
-import { EventStore } from '@castore/core';
-import { JSONSchemaCommand } from '@castore/json-schema-command';
+import type { EventStore } from '@castore/core';
+import type { JSONSchemaCommand } from '@castore/json-schema-command';
 import { configureCastore } from '@castore/redux-event-storage-adapter';
 
-import { ReactVisualizerContent } from './ReactVisualizerContent';
+import { VisualizerContent } from './VisualizerContent';
 
-export const UnthemedReactVisualizer = ({
+export const UnthemedVisualizer = ({
   commands,
   eventStores,
   contextsByCommandId,
@@ -27,7 +27,7 @@ export const UnthemedReactVisualizer = ({
 
   return (
     <Provider store={store}>
-      <ReactVisualizerContent
+      <VisualizerContent
         commands={commands}
         eventStoreIds={eventStoreIds}
         eventStoresById={eventStoresById}

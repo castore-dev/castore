@@ -1,6 +1,6 @@
 # React Visualizer
 
-Test tooling for the [Castore](https://github.com/castore-dev/castore) library.
+React component to visualize, manually test and design [Castore](https://github.com/castore-dev/castore) event stores and commands.
 
 ## 📥 Installation
 
@@ -12,14 +12,14 @@ npm install --save-dev @castore/react-visualizer
 yarn add --dev @castore/react-visualizer
 ```
 
-This package has `@castore/core`, `@castore/json-schema-command`, `react` (above v17) and `@mui/material` (above v5) as peer dependencies, so you will have to install them as well:
+This package has `@castore/core`, `@castore/json-schema-command` and `react` (above v17) as peer dependencies, so you will have to install them as well:
 
 ```bash
 # npm
-npm install @castore/core @castore/json-schema-command react @mui/material
+npm install @castore/core @castore/json-schema-command react
 
 # yarn
-yarn add @castore/core @castore/json-schema-command react @mui/material
+yarn add @castore/core @castore/json-schema-command react
 ```
 
 ## 👩‍💻 Usage
