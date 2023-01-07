@@ -618,24 +618,23 @@ Modifying the state of your application (i.e. pushing new events to your event s
 <!-- TODO, add schema -->
 
 ```ts
-import { Command } from '@castore/core';
+import { Command, tuple } from '@castore/core';
 
-// 👇 You can provide several eventStores if needed
-type RequiredEventStores = [typeof userEventStore];
-type CommandInput = { name: string; age: number };
-type CommandOutput = { userId: string };
+type Input = { name: string; age: number };
+type Output = { userId: string };
+type Context = { generateUuid: () => string };
 
-const createUserCommand = new Command<
-  RequiredEventStores,
-  // 👇 The type needs to be provided twice for technical reasons
-  RequiredEventStores,
-  CommandInput,
-  CommandOutput
->({
+const createUserCommand = new Command({
   commandId: 'CREATE_USER',
-  requiredEventStores: [userEventStore],
+  // 👇 "tuple" is needed to keep ordering in inferred type
+  requiredEventStores: tuple(userEventStore, otherEventStore),
   // 👇 Code to execute
-  handler: async (commandInput, [userEventStore]) => {
+  handler: async (
+    commandInput: Input,
+    [userEventStore, otherEventStore],
+    // 👇 Additional context arguments can be provided
+    { generateUuid }: Context,
+  ): Promise<Output> => {
     const { name, age } = commandInput;
     const userId = generateUuid();
 
@@ -651,7 +650,7 @@ const createUserCommand = new Command<
 });
 ```
 
-Note that we only provided TS types for `commandInput` and `commandOutput` properties. That is because, as stated in the [core design](#🫀-core-design), **Castore is meant to be as flexible as possible**, and that includes the validation library you want to use: The `Command` class is not meant to be used directly, but rather extended by other classes which will add run-time validation methods to it 👍
+Note that we only provided TS types for `Input` and `Output` properties. That is because, as stated in the [core design](#🫀-core-design), **Castore is meant to be as flexible as possible**, and that includes the validation library you want to use: The `Command` class is not meant to be used directly, but rather extended by other classes which will add run-time validation methods to it 👍
 
 See the following packages for examples:
 
@@ -727,7 +726,9 @@ A few notes on commands handlers:
 
 <!-- TODO, add schema -->
 
-- When writing on several event stores at once, it is important to make sure that **all events are written or none**, i.e. use transactions: This ensures that the application is not in a corrupt state. Transactions accross event stores cannot be easily abstracted, so check you adapter library on how to achieve this. For instance, the [`DynamoDBEventStorageAdapter`](./packages/dynamodb-event-storage-adapter/README.md) exposes a [`pushEventsTransaction`](./packages/dynamodb-event-storage-adapter/src/utils/pushEventsTransaction.ts) util.
+- Command handlers should be, as much as possible, [pure functions](https://en.wikipedia.org/wiki/Pure_function). If it depends on impure functions like functions with unpredictable outputs (like id generation), mutating effects, side effects or state dependency (like external data fetching), you should pass them through the additional context arguments rather than directly importing and using them. This will make them easier to test and to re-use in different contexts.
+
+- Finally, when writing on several event stores at once, it is important to make sure that **all events are written or none**, i.e. use transactions: This ensures that the application is not in a corrupt state. Transactions accross event stores cannot be easily abstracted, so check you adapter library on how to achieve this. For instance, the [`DynamoDBEventStorageAdapter`](./packages/dynamodb-event-storage-adapter/README.md) exposes a [`pushEventsTransaction`](./packages/dynamodb-event-storage-adapter/src/utils/pushEventsTransaction.ts) util.
 
 ### 📨 Message Buses & Queues
 
