@@ -767,6 +767,10 @@ Read models are not implemented in Castore yet, but we have big plans for them, 
 
 Castore comes with a handy [Test Tool package](./packages/test-tools/README.md) that facilitates the writing of unit tests: It allows mocking event stores, populating them with an initial state and resetting them to it in a boilerplate-free and type-safe way.
 
+### 🌈 React Visualizer
+
+Castore also comes with a handy [React Visualizer](./packages/react-visualizer/README.md) library: It exposes a React component to visualize, design and manually test Castore event stores and commands.
+
 ### 🔗 Packages List
 
 #### 🏷 Event Types

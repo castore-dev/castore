@@ -1,6 +1,6 @@
 # React Visualizer
 
-React component to visualize, manually test and design [Castore](https://github.com/castore-dev/castore) event stores and commands.
+React component to visualize, design and manually test [Castore](https://github.com/castore-dev/castore) event stores and commands.
 
 ## 📥 Installation
 

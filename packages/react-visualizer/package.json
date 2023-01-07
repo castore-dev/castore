@@ -1,6 +1,6 @@
 {
   "name": "@castore/react-visualizer",
-  "description": "React component to visualize, manually test and design Castore event stores and commands.",
+  "description": "React component to visualize, design and manually test Castore event stores and commands.",
   "license": "MIT",
   "homepage": "https://github.com/castore-dev/castore#readme",
   "bugs": "https://github.com/castore-dev/castore/issues",
