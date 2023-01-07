@@ -46,7 +46,7 @@ describe('My awesome test', () => {
     {
       aggregateId: '123',
       version: 1,
-      type: 'COUNTER_CREATED',
+      type: 'USER_CREATED',
       // ...
     },
   ]);
@@ -91,7 +91,7 @@ describe('My awesome test', () => {
     {
       aggregateId: '123',
       version: 1,
-      type: 'COUNTER_CREATED',
+      type: 'USER_CREATED',
       // ...
     },
   ]);
