@@ -726,7 +726,7 @@ A few notes on commands handlers:
 
 <!-- TODO, add schema -->
 
-- Command handlers should be, as much as possible, [pure functions](https://en.wikipedia.org/wiki/Pure_function). If it depends on impure functions like functions with unpredictable outputs (like id generation), mutating effects, side effects or state dependency (like external data fetching), you should pass them through the additional context arguments rather than directly importing and using them. This will make them easier to test and to re-use in different contexts.
+- Command handlers should be, as much as possible, [pure functions](https://en.wikipedia.org/wiki/Pure_function). If it depends on impure functions like functions with unpredictable outputs (like id generation), mutating effects, side effects or state dependency (like external data fetching), you should pass them through the additional context arguments rather than directly importing and using them. This will make them easier to test and to re-use in different contexts, such as in the [React Visualizer](./packages/react-visualizer/README.md).
 
 - Finally, when writing on several event stores at once, it is important to make sure that **all events are written or none**, i.e. use transactions: This ensures that the application is not in a corrupt state. Transactions accross event stores cannot be easily abstracted, so check you adapter library on how to achieve this. For instance, the [`DynamoDBEventStorageAdapter`](./packages/dynamodb-event-storage-adapter/README.md) exposes a [`pushEventsTransaction`](./packages/dynamodb-event-storage-adapter/src/utils/pushEventsTransaction.ts) util.
 
