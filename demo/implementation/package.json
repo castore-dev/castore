@@ -8,7 +8,7 @@
     "invoke-local": "env-cmd sls invoke local -f",
     "lint-fix": "yarn linter-base-config --fix",
     "lint-fix-all": "yarn lint-fix .",
-    "linter-base-config": "eslint --ext=js,ts .",
+    "linter-base-config": "eslint --ext=js,ts",
     "log": "env-cmd sls logs -t -f",
     "print": "env-cmd sls print",
     "test": "yarn test-type && yarn test-circular && yarn test-linter",
