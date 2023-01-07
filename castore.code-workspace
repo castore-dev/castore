@@ -68,6 +68,10 @@
       "name": "🔨 Test Tools"
     },
     {
+      "path": "packages/react-visualizer",
+      "name": "🔨 React Visualizer"
+    },
+    {
       "path": "demo/blueprint",
       "name": "✨  Blueprint"
     },

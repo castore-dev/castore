@@ -1,0 +1,6 @@
+{
+  "root": "packages/react-visualizer",
+  "projectType": "library",
+  "tags": [],
+  "implicitDependencies": []
+}

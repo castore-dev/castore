@@ -6,6 +6,8 @@ import {
   Stack,
   Typography,
 } from '@mui/material';
+import type { IChangeEvent } from '@rjsf/core';
+import validator from '@rjsf/validator-ajv8';
 import React from 'react';
 
 import type { EventStore } from '@castore/core';
@@ -30,6 +32,33 @@ export const CommandCard = ({
 
   const context = contextsByCommandId[commandId];
 
+  const onSubmit = async ({ formData }: IChangeEvent<unknown>) => {
+    try {
+      const output: unknown = await handler(
+        formData,
+        requiredEvStores,
+        // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+        ...(context ?? []),
+      );
+      console.log(output);
+
+      // TODO: Re-introduce
+      // notification.success({
+      //   message: 'Success',
+      //   description: (<JsonView src={output} />),
+      // });
+    } catch (e: unknown) {
+      console.error(e);
+      // TODO: Re-introduce
+      // notification.error({
+      //   message: `Error ${
+      //     (e as { statusCode: string }).statusCode
+      //   }`,
+      //   description: (e as { message: string }).message,
+      // });
+    }
+  };
+
   return (
     <Accordion>
       <AccordionSummary
@@ -44,32 +73,8 @@ export const CommandCard = ({
           {inputSchema !== undefined && (
             <Form
               schema={inputSchema}
-              onSubmit={async ({ formData }) => {
-                try {
-                  const output: unknown = await handler(
-                    formData,
-                    requiredEvStores,
-                    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
-                    ...(context ?? []),
-                  );
-                  console.log(output);
-
-                  // TODO: Re-introduce
-                  // notification.success({
-                  //   message: 'Success',
-                  //   description: (<JsonView src={output} />),
-                  // });
-                } catch (e: unknown) {
-                  console.error(e);
-                  // TODO: Re-introduce
-                  // notification.error({
-                  //   message: `Error ${
-                  //     (e as { statusCode: string }).statusCode
-                  //   }`,
-                  //   description: (e as { message: string }).message,
-                  // });
-                }
-              }}
+              validator={validator}
+              onSubmit={(data: IChangeEvent<unknown>) => void onSubmit(data)}
             />
           )}
         </Stack>

@@ -1,0 +1,31 @@
+{
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "baseUrl": "src",
+    "composite": true,
+    "plugins": [{ "transform": "@zerollup/ts-transform-paths" }],
+    "emitDeclarationOnly": true,
+    "outDir": "./dist/types",
+    "esModuleInterop": true,
+    "lib": ["dom", "dom.iterable", "esnext"],
+    "removeComments": true,
+    "forceConsistentCasingInFileNames": true,
+    "moduleResolution": "node",
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "sourceMap": true,
+    "target": "es2017",
+    "resolveJsonModule": true,
+    "allowSyntheticDefaultImports": true,
+    "allowJs": true,
+    "strict": true,
+    "skipLibCheck": true,
+    "preserveSymlinks": true,
+    "isolatedModules": true,
+    "jsx": "react",
+    "module": "esnext",
+    "noFallthroughCasesInSwitch": true
+  },
+  "include": ["./config", "./src", "./vite.config.ts"],
+  "exclude": ["./dist"]
+}

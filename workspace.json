@@ -8,9 +8,10 @@
     "json-schema-event": "packages/json-schema-event",
     "zod-event": "packages/zod-event",
     "json-schema-command": "packages/json-schema-command",
+    "test-tools": "packages/test-tools",
+    "react-visualizer": "packages/react-visualizer",
     "demo-blueprint": "demo/blueprint",
     "demo-implementation": "demo/implementation",
-    "demo-visualization": "demo/visualization",
-    "test-tools": "packages/test-tools"
+    "demo-visualization": "demo/visualization"
   }
 }
