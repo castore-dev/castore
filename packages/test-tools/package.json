@@ -1,5 +1,6 @@
 {
   "name": "@castore/test-tools",
+  "description": "Test tooling for the Castore library.",
   "license": "MIT",
   "homepage": "https://github.com/castore-dev/castore#readme",
   "bugs": "https://github.com/castore-dev/castore/issues",
