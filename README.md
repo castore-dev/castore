@@ -333,7 +333,7 @@ const userEventStore = new EventStore({
     userRemovedEventType,
     ...
   ],
-  reducer: usersReducer,
+  reduce: usersReducer,
 });
 // ...and that's it 🥳
 ```
