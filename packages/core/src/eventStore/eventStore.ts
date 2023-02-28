@@ -1,12 +1,12 @@
 /* eslint-disable max-lines */
 import type { Aggregate } from '~/aggregate';
-import { AggregateNotFoundError } from '~/errors/aggregateNotFound';
-import { UndefinedStorageAdapterError } from '~/errors/undefinedStorageAdapterError';
 import type { EventDetail } from '~/event/eventDetail';
 import type { EventType, EventTypesDetails } from '~/event/eventType';
 import type { StorageAdapter } from '~/storageAdapter';
 import type { $Contravariant } from '~/utils';
 
+import { AggregateNotFoundError } from './errors/aggregateNotFound';
+import { UndefinedStorageAdapterError } from './errors/undefinedStorageAdapter';
 import {
   AggregateIdsLister,
   EventPusher,

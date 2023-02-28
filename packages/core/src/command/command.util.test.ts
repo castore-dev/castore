@@ -1,8 +1,11 @@
 import { vi } from 'vitest';
 
-import { eventAlreadyExistsErrorCode, EventAlreadyExistsError } from '~/errors';
 import { EventType, EventTypeDetail } from '~/event/eventType';
-import { EventStore } from '~/eventStore';
+import {
+  eventAlreadyExistsErrorCode,
+  EventAlreadyExistsError,
+  EventStore,
+} from '~/eventStore';
 import { StorageAdapter } from '~/storageAdapter';
 
 import { tuple, Command } from './command';

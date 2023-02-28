@@ -1,5 +1,8 @@
-import { EventAlreadyExistsError, isEventAlreadyExistsError } from '~/errors';
-import type { EventStore } from '~/eventStore';
+import {
+  EventAlreadyExistsError,
+  isEventAlreadyExistsError,
+  EventStore,
+} from '~/eventStore';
 import type { $Contravariant } from '~/utils';
 
 export type OnEventAlreadyExistsCallback = (
