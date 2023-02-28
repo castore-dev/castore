@@ -38,7 +38,7 @@
     "watch": "rm -rf dist && concurrently 'yarn:package-* --watch'"
   },
   "dependencies": {
-    "@aws-sdk/client-dynamodb": "^3.0.0",
+    "@aws-sdk/client-dynamodb": "^3.2.0",
     "@aws/dynamodb-auto-marshaller": "^0.7.1"
   },
   "devDependencies": {

@@ -38,7 +38,7 @@
     "watch": "rm -rf dist && concurrently 'yarn:package-* --watch'"
   },
   "devDependencies": {
-    "@aws-sdk/client-eventbridge": "^3.137.0",
+    "@aws-sdk/client-eventbridge": "^3.2.0",
     "@babel/cli": "^7.17.6",
     "@babel/core": "^7.17.9",
     "@babel/plugin-transform-runtime": "^7.17.0",
