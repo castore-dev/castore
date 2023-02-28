@@ -75,6 +75,7 @@ export const CommandCard = ({
               schema={inputSchema}
               validator={validator}
               onSubmit={(data: IChangeEvent<unknown>) => void onSubmit(data)}
+              noHtml5Validate
             />
           )}
         </Stack>
