@@ -36,3 +36,17 @@ export type {
 } from './command/command';
 export type { OnEventAlreadyExistsCallback } from './command/command';
 export type { $Contravariant } from './utils';
+export {
+  EventStoreNotFoundError,
+  UndefinedMessageBusAdapterError,
+  NotificationMessageBus,
+  StatefulMessageBus,
+} from './messageBus';
+export type {
+  MessageBusSourceEventStores,
+  MessageBusSourceEventStoresIds,
+  MessageBusSourceEventStoreIdTypes,
+  MessageBusAdapter,
+  NotificationMessage,
+  StatefulMessage,
+} from './messageBus';
