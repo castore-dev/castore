@@ -5,7 +5,7 @@ import type {
   EventStoreId,
 } from '~/eventStore/generics';
 
-export type StatefulMessage<E extends EventStore = EventStore> =
+export type StateCarryingMessage<E extends EventStore = EventStore> =
   E extends infer M
     ? M extends EventStore
       ? EventStoreEventsDetails<M> & {

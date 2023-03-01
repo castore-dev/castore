@@ -1,11 +1,11 @@
 import type { EventStore } from '~/eventStore/eventStore';
 
+import type { NotificationMessage } from '../notificationMessage';
 import {
-  EventStoreNotFoundError,
+  MessageBusEventStoreNotFoundError,
   UndefinedMessageBusAdapterError,
 } from './errors';
 import type { MessageBusAdapter } from './messageBusAdapter';
-import type { NotificationMessage } from './notificationMessage';
 
 export class NotificationMessageBus<E extends EventStore = EventStore> {
   messageBusId: string;
@@ -55,7 +55,7 @@ export class NotificationMessageBus<E extends EventStore = EventStore> {
       const eventStore = this.sourceEventStoresById[eventStoreId];
 
       if (eventStore === undefined) {
-        throw new EventStoreNotFoundError({
+        throw new MessageBusEventStoreNotFoundError({
           eventStoreId,
           messageBusId: this.messageBusId,
         });

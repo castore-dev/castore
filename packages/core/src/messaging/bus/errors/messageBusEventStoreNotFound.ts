@@ -1,4 +1,4 @@
-export class EventStoreNotFoundError extends Error {
+export class MessageBusEventStoreNotFoundError extends Error {
   constructor({
     messageBusId,
     eventStoreId,

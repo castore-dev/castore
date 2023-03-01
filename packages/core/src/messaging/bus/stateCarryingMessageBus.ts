@@ -1,14 +1,14 @@
 import type { EventStore } from '~/eventStore/eventStore';
 
+import type { NotificationMessage } from '../notificationMessage';
+import type { StateCarryingMessage } from '../stateCarryingMessage';
 import {
-  EventStoreNotFoundError,
+  MessageBusEventStoreNotFoundError,
   UndefinedMessageBusAdapterError,
 } from './errors';
 import type { MessageBusAdapter } from './messageBusAdapter';
-import type { NotificationMessage } from './notificationMessage';
-import type { StatefulMessage } from './statefulMessage';
 
-export class StatefulMessageBus<E extends EventStore = EventStore> {
+export class StateCarryingMessageBus<E extends EventStore = EventStore> {
   messageBusId: string;
   sourceEventStores: E[];
   sourceEventStoresById: Record<string, E>;
@@ -17,7 +17,9 @@ export class StatefulMessageBus<E extends EventStore = EventStore> {
   getMessageBusAdapter: () => MessageBusAdapter;
   getEventStore: (eventStoreId: string) => E;
 
-  publishMessage: (statefulMessage: StatefulMessage<E>) => Promise<void>;
+  publishMessage: (
+    stateCarryingMessage: StateCarryingMessage<E>,
+  ) => Promise<void>;
   getAggregateAndPublishMessage: (
     notificationMessage: NotificationMessage<E>,
   ) => Promise<void>;
@@ -57,7 +59,7 @@ export class StatefulMessageBus<E extends EventStore = EventStore> {
       const eventStore = this.sourceEventStoresById[eventStoreId];
 
       if (eventStore === undefined) {
-        throw new EventStoreNotFoundError({
+        throw new MessageBusEventStoreNotFoundError({
           eventStoreId,
           messageBusId: this.messageBusId,
         });
@@ -66,13 +68,13 @@ export class StatefulMessageBus<E extends EventStore = EventStore> {
       return eventStore;
     };
 
-    this.publishMessage = async statefulMessage => {
-      const { eventStoreId } = statefulMessage;
+    this.publishMessage = async stateCarryingMessage => {
+      const { eventStoreId } = stateCarryingMessage;
       this.getEventStore(eventStoreId);
 
       const messageBusAdapter = this.getMessageBusAdapter();
 
-      await messageBusAdapter.publishMessage(statefulMessage);
+      await messageBusAdapter.publishMessage(stateCarryingMessage);
     };
 
     this.getAggregateAndPublishMessage = async notificationMessage => {
