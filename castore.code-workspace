@@ -64,6 +64,10 @@
       "name": "👮‍♀️ Json Schema Command"
     },
     {
+      "path": "packages/event-bridge-message-bus-adapter",
+      "name": "🚌 EventBridge"
+    },
+    {
       "path": "packages/test-tools",
       "name": "🔨 Test Tools"
     },

@@ -1,6 +1,6 @@
 # DynamoDB Event Storage Adapter
 
-DRY Castore [`EventStorageAdapter`](https://github.com/castore-dev/castore/#-eventstorageadapter) implementation using [DynamoDB](https://aws.amazon.com/dynamodb/).
+DRY Castore [`EventStorageAdapter`](https://github.com/castore-dev/castore/#-eventstorageadapter) implementation using [AWS DynamoDB](https://aws.amazon.com/dynamodb/).
 
 ## 📥 Installation
 

@@ -1,10 +1,10 @@
 {
-  "name": "@castore/dynamodb-event-storage-adapter",
-  "description": "DRY Castore EventStorageAdapter implementation using DynamoDB",
+  "name": "@castore/event-bridge-message-bus-adapter",
+  "description": "DRY Castore MessageBus definition using AWS EventBridge",
   "license": "MIT",
-  "homepage": "https://github.com/castore-dev/castore#readme",
-  "bugs": "https://github.com/castore-dev/castore/issues",
-  "repository": "castore-dev/castore.git",
+  "homepage": "https://github.com/theodo/castore#readme",
+  "bugs": "https://github.com/theodo/castore/issues",
+  "repository": "theodo/castore.git",
   "keywords": [
     "event",
     "source",
@@ -37,22 +37,16 @@
     "transpile": "babel src --extensions .ts --quiet",
     "watch": "rm -rf dist && concurrently 'yarn:package-* --watch'"
   },
-  "dependencies": {
-    "@aws-sdk/client-dynamodb": "^3.2.0",
-    "@aws/dynamodb-auto-marshaller": "^0.7.1"
-  },
   "devDependencies": {
+    "@aws-sdk/client-eventbridge": "^3.2.0",
     "@babel/cli": "^7.17.6",
     "@babel/core": "^7.17.9",
     "@babel/plugin-transform-runtime": "^7.17.0",
     "@babel/preset-env": "^7.16.11",
     "@babel/preset-typescript": "^7.16.7",
     "@castore/core": "workspace:",
-    "@castore/demo-blueprint": "workspace:",
-    "@serverless/typescript": "^3.15.2",
     "@types/node": "^17.0.29",
     "@zerollup/ts-transform-paths": "^1.7.18",
-    "aws-sdk-client-mock": "^2.0.1",
     "babel-plugin-module-resolver": "^4.1.0",
     "concurrently": "^7.1.0",
     "dependency-cruiser": "^11.7.0",
@@ -73,13 +67,16 @@
     "targets": {
       "package": {
         "outputs": [
-          "packages/dynamodb-event-storage-adapter/dist"
+          "packages/event-bridge-message-bus-adapter/dist"
         ]
       }
     }
   },
   "peerDependencies": {
-    "@aws-sdk/client-dynamodb": "^3.0.0",
+    "@aws-sdk/client-eventbridge": "^3.0.0",
     "@castore/core": "*"
+  },
+  "dependencies": {
+    "@types/aws-lambda": "^8.10.111"
   }
 }
