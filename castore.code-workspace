@@ -53,27 +53,31 @@
     },
     {
       "path": "packages/json-schema-event",
-      "name": "📬  Json Schema Event"
+      "name": "📆  Json Schema Event"
     },
     {
       "path": "packages/zod-event",
-      "name": "📬  Zod Event"
+      "name": "📆  Zod Event"
     },
     {
       "path": "packages/json-schema-command",
-      "name": "👮‍♀️ Json Schema Command"
+      "name": "👮‍♀️  Json Schema Command"
     },
     {
       "path": "packages/event-bridge-message-bus-adapter",
-      "name": "🚌 EventBridge"
+      "name": "🚌  EventBridge"
+    },
+    {
+      "path": "packages/sqs-message-queue-adapter",
+      "name": "📨  SQS"
     },
     {
       "path": "packages/test-tools",
-      "name": "🔨 Test Tools"
+      "name": "🔨  Test Tools"
     },
     {
       "path": "packages/react-visualizer",
-      "name": "🔨 React Visualizer"
+      "name": "🔨  React Visualizer"
     },
     {
       "path": "demo/blueprint",
