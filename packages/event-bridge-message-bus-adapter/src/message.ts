@@ -30,9 +30,13 @@ export type EventBridgeMessageBusMessage<
         ? U extends MessageBusSourceEventStoreIdTypes<M, I>
           ? EventBridgeEvent<
               U,
-              EventStoreEventsDetails<
-                Extract<MessageBusSourceEventStores<M>, { eventStoreId: S }>
-              > & { type: U } & (M extends StateCarryingMessageBus
+              Extract<
+                EventStoreEventsDetails<
+                  Extract<MessageBusSourceEventStores<M>, { eventStoreId: S }>
+                >,
+                { type: U }
+              > &
+                (M extends StateCarryingMessageBus
                   ? {
                       aggregate: EventStoreAggregate<
                         Extract<
