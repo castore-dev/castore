@@ -1,4 +1,3 @@
-export * from './errors';
 export type {
   MessageBusSourceEventStores,
   MessageBusSourceEventStoresIds,
@@ -6,6 +5,8 @@ export type {
 } from './generics';
 export type { MessageBusAdapter } from './messageBusAdapter';
 export { NotificationMessageBus } from './notificationMessageBus';
-export { StatefulMessageBus } from './statefulMessageBus';
-export type { NotificationMessage } from './notificationMessage';
-export type { StatefulMessage } from './statefulMessage';
+export { StateCarryingMessageBus } from './stateCarryingMessageBus';
+export {
+  MessageBusEventStoreNotFoundError,
+  UndefinedMessageBusAdapterError,
+} from './errors';

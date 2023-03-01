@@ -4,7 +4,7 @@ import type {
   EventStoreEventsDetails,
   EventStoreAggregate,
   NotificationMessageBus,
-  StatefulMessageBus,
+  StateCarryingMessageBus,
   MessageBusSourceEventStoresIds,
   MessageBusSourceEventStoreIdTypes,
   MessageBusSourceEventStores,
@@ -17,7 +17,7 @@ type Prettify<T extends Record<string, unknown>> = T extends infer U
   : never;
 
 export type EventBridgeMessageBusMessage<
-  M extends NotificationMessageBus | StatefulMessageBus,
+  M extends NotificationMessageBus | StateCarryingMessageBus,
   S extends MessageBusSourceEventStoresIds<M> = MessageBusSourceEventStoresIds<M>,
   T extends MessageBusSourceEventStoreIdTypes<
     M,
@@ -32,7 +32,7 @@ export type EventBridgeMessageBusMessage<
               U,
               EventStoreEventsDetails<
                 Extract<MessageBusSourceEventStores<M>, { eventStoreId: S }>
-              > & { type: U } & (M extends StatefulMessageBus
+              > & { type: U } & (M extends StateCarryingMessageBus
                   ? {
                       aggregate: EventStoreAggregate<
                         Extract<

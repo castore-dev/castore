@@ -737,7 +737,7 @@ As mentioned in the introduction, Event Sourcing integrates very well with [even
 There are two kind of messages:
 
 - **Notification messages** which only carry the events details
-- **Stateful messages** which also carry the corresponding aggregates
+- **State-carrying messages** which also carry the corresponding aggregates
 
 <!-- TODO, add schema -->
 
