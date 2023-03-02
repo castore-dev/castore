@@ -1,0 +1,1 @@
+export { InMemoryMessageQueueAdapter } from './queue';

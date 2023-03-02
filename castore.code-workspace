@@ -72,6 +72,10 @@
       "name": "📨  SQS"
     },
     {
+      "path": "packages/in-memory-message-queue-adapter",
+      "name": "📨  InMemory"
+    },
+    {
       "path": "packages/test-tools",
       "name": "🔨  Test Tools"
     },

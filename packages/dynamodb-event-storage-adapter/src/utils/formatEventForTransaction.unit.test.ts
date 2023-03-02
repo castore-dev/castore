@@ -1,9 +1,8 @@
 import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
 import { mockClient } from 'aws-sdk-client-mock';
 
+import type { EventStoreEventsDetails } from '@castore/core';
 import { counterEventStore } from '@castore/demo-blueprint';
-
-import { EventStoreEventsDetails } from '~/../../core/dist/types';
 
 import { DynamoDbEventStorageAdapter } from '../dynamoDb';
 import { formatEventForTransaction } from './formatEventForTransaction';
