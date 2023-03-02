@@ -10,6 +10,7 @@
     "json-schema-command": "packages/json-schema-command",
     "event-bridge-message-bus-adapter": "packages/event-bridge-message-bus-adapter",
     "sqs-message-queue-adapter": "packages/sqs-message-queue-adapter",
+    "in-memory-message-queue-adapter": "packages/in-memory-message-queue-adapter",
     "test-tools": "packages/test-tools",
     "react-visualizer": "packages/react-visualizer",
     "demo-blueprint": "demo/blueprint",

@@ -4146,6 +4146,35 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@castore/in-memory-message-queue-adapter@workspace:packages/in-memory-message-queue-adapter":
+  version: 0.0.0-use.local
+  resolution: "@castore/in-memory-message-queue-adapter@workspace:packages/in-memory-message-queue-adapter"
+  dependencies:
+    "@babel/cli": ^7.17.6
+    "@babel/core": ^7.17.9
+    "@babel/plugin-transform-runtime": ^7.17.0
+    "@babel/preset-env": ^7.16.11
+    "@babel/preset-typescript": ^7.16.7
+    "@castore/core": "workspace:"
+    "@castore/demo-blueprint": "workspace:"
+    "@types/node": ^17.0.29
+    "@zerollup/ts-transform-paths": ^1.7.18
+    babel-plugin-module-resolver: ^4.1.0
+    concurrently: ^7.1.0
+    dependency-cruiser: ^11.7.0
+    eslint: ^8.14.0
+    fastq: ^1.15.0
+    prettier: ^2.6.2
+    ts-node: ^10.7.0
+    ts-toolbelt: ^9.6.0
+    ttypescript: ^1.5.13
+    typescript: ^4.6.3
+    vitest: ^0.26.2
+  peerDependencies:
+    "@castore/core": "*"
+  languageName: unknown
+  linkType: soft
+
 "@castore/inmemory-event-storage-adapter@workspace:, @castore/inmemory-event-storage-adapter@workspace:packages/inmemory-event-storage-adapter":
   version: 0.0.0-use.local
   resolution: "@castore/inmemory-event-storage-adapter@workspace:packages/inmemory-event-storage-adapter"
@@ -10530,6 +10559,15 @@ __metadata:
   version: 1.0.12
   resolution: "fastest-levenshtein@npm:1.0.12"
   checksum: e1a013698dd1d302c7a78150130c7d50bb678c2c2f8839842a796d66cc7cdf50ea6b3d7ca930b0c8e7e8c2cd84fea8ab831023b382f7aab6922c318c1451beab
+  languageName: node
+  linkType: hard
+
+"fastq@npm:^1.15.0":
+  version: 1.15.0
+  resolution: "fastq@npm:1.15.0"
+  dependencies:
+    reusify: ^1.0.4
+  checksum: 0170e6bfcd5d57a70412440b8ef600da6de3b2a6c5966aeaf0a852d542daff506a0ee92d6de7679d1de82e644bce69d7a574a6c93f0b03964b5337eed75ada1a
   languageName: node
   linkType: hard
 
