@@ -60,6 +60,10 @@ jobs:
       - uses: JS-DevTools/npm-publish@v1
         with:
           token: ${{ secrets.NPM_TOKEN }}
+          package: ./packages/in-memory-message-bus-adapter/package.json
+      - uses: JS-DevTools/npm-publish@v1
+        with:
+          token: ${{ secrets.NPM_TOKEN }}
           package: ./packages/sqs-message-queue-adapter/package.json
       - uses: JS-DevTools/npm-publish@v1
         with:

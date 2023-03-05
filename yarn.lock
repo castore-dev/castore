@@ -4146,6 +4146,33 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@castore/in-memory-message-bus-adapter@workspace:packages/in-memory-message-bus-adapter":
+  version: 0.0.0-use.local
+  resolution: "@castore/in-memory-message-bus-adapter@workspace:packages/in-memory-message-bus-adapter"
+  dependencies:
+    "@babel/cli": ^7.17.6
+    "@babel/core": ^7.17.9
+    "@babel/plugin-transform-runtime": ^7.17.0
+    "@babel/preset-env": ^7.16.11
+    "@babel/preset-typescript": ^7.16.7
+    "@castore/core": "workspace:"
+    "@castore/demo-blueprint": "workspace:"
+    "@types/node": ^17.0.29
+    "@zerollup/ts-transform-paths": ^1.7.18
+    babel-plugin-module-resolver: ^4.1.0
+    concurrently: ^7.1.0
+    dependency-cruiser: ^11.7.0
+    eslint: ^8.14.0
+    prettier: ^2.6.2
+    ts-node: ^10.7.0
+    ttypescript: ^1.5.13
+    typescript: ^4.6.3
+    vitest: ^0.26.2
+  peerDependencies:
+    "@castore/core": "*"
+  languageName: unknown
+  linkType: soft
+
 "@castore/in-memory-message-queue-adapter@workspace:packages/in-memory-message-queue-adapter":
   version: 0.0.0-use.local
   resolution: "@castore/in-memory-message-queue-adapter@workspace:packages/in-memory-message-queue-adapter"

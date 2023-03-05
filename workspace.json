@@ -9,6 +9,7 @@
     "zod-event": "packages/zod-event",
     "json-schema-command": "packages/json-schema-command",
     "event-bridge-message-bus-adapter": "packages/event-bridge-message-bus-adapter",
+    "in-memory-message-bus-adapter": "packages/in-memory-message-bus-adapter",
     "sqs-message-queue-adapter": "packages/sqs-message-queue-adapter",
     "in-memory-message-queue-adapter": "packages/in-memory-message-queue-adapter",
     "test-tools": "packages/test-tools",
