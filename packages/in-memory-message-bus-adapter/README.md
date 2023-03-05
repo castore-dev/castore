@@ -6,10 +6,10 @@ DRY Castore [`MessageBus`](https://github.com/castore-dev/castore/#-message-buse
 
 ```bash
 # npm
-npm install @castore/in-memory-message-queue-adapter
+npm install @castore/in-memory-message-bus-adapter
 
 # yarn
-yarn add @castore/in-memory-message-queue-adapter
+yarn add @castore/in-memory-message-bus-adapter
 ```
 
 This package has `@castore/core` as peer dependencies, so you will have to install it as well:
