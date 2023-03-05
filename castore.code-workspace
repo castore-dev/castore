@@ -68,6 +68,10 @@
       "name": "🚌  EventBridge"
     },
     {
+      "path": "packages/in-memory-message-bus-adapter",
+      "name": "🚌  InMemory"
+    },
+    {
       "path": "packages/sqs-message-queue-adapter",
       "name": "📨  SQS"
     },
