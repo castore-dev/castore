@@ -1,3 +1,4 @@
+/* eslint-disable max-lines */
 import { EventEmitter } from 'events';
 import type { A } from 'ts-toolbelt';
 
@@ -10,7 +11,14 @@ import { userEventStore, counterEventStore } from '@castore/demo-blueprint';
 
 import { InMemoryMessageBusAdapter } from './inMemory';
 
-const eventEmitter = new EventEmitter();
+const messageBus = new NotificationMessageBus({
+  messageBusId: 'messageBusId',
+  sourceEventStores: [userEventStore, counterEventStore],
+});
+
+type ExpectedMessage = NotificationMessage<
+  MessageBusSourceEventStores<typeof messageBus>
+>;
 
 const userCreatedEvent: NotificationMessage<typeof userEventStore> = {
   eventStoreId: 'USER',
@@ -32,9 +40,12 @@ const userRemovedEvent: NotificationMessage<typeof userEventStore> = {
   timestamp: '2021-01-01T00:00:00.000Z',
 };
 
+const sleep = (ms: number): Promise<void> =>
+  new Promise(resolve => setTimeout(resolve, ms));
+
 describe('in-memory message queue adapter', () => {
   describe('with constructor (typed)', () => {
-    const callback1 = vi.fn(
+    const handler1 = vi.fn(
       (event: NotificationMessage<typeof userEventStore>) =>
         new Promise<void>(resolve => {
           event;
@@ -42,7 +53,7 @@ describe('in-memory message queue adapter', () => {
         }),
     );
 
-    const callback2 = vi.fn(
+    const handler2 = vi.fn(
       (event: NotificationMessage<typeof userEventStore>) =>
         new Promise<void>(resolve => {
           event;
@@ -50,7 +61,7 @@ describe('in-memory message queue adapter', () => {
         }),
     );
 
-    const callback3 = vi.fn(
+    const handler3 = vi.fn(
       (event: NotificationMessage<typeof counterEventStore>) =>
         new Promise<void>(resolve => {
           event;
@@ -58,103 +69,80 @@ describe('in-memory message queue adapter', () => {
         }),
     );
 
-    let inMemoryMessageQueueAdapter: InMemoryMessageBusAdapter<
+    const inMemoryMessageQueueAdapter = new InMemoryMessageBusAdapter<
       NotificationMessage<typeof userEventStore>
-    >;
+    >({ eventEmitter: new EventEmitter() });
 
     beforeEach(() => {
-      callback1.mockClear();
-      callback2.mockClear();
+      handler1.mockClear();
+      handler2.mockClear();
     });
 
-    it('correctly instanciates a class', () => {
-      inMemoryMessageQueueAdapter = new InMemoryMessageBusAdapter({
-        eventEmitter,
-      });
-
-      expect(Object.keys(inMemoryMessageQueueAdapter)).toStrictEqual([
-        'eventEmitter',
-        'publishMessage',
-        'callbacks',
-        'filterPatterns',
-        'on',
-      ]);
-    });
-
-    it('does nothing if no callback is set', async () => {
+    it('does nothing if no handler is set', async () => {
       await inMemoryMessageQueueAdapter.publishMessage(userCreatedEvent);
 
-      expect(callback1).not.toHaveBeenCalled();
-      expect(callback2).not.toHaveBeenCalled();
+      expect(handler1).not.toHaveBeenCalled();
+      expect(handler2).not.toHaveBeenCalled();
     });
 
-    it('calls callback if it has been set', async () => {
+    it('calls handler if it has been set', async () => {
       inMemoryMessageQueueAdapter.on(
         { eventStoreId: 'USER', type: 'USER_CREATED' },
-        callback1,
+        handler1,
       );
 
       await inMemoryMessageQueueAdapter.publishMessage(userCreatedEvent);
       await inMemoryMessageQueueAdapter.publishMessage(userRemovedEvent);
 
-      expect(callback1).toHaveBeenCalledOnce();
-      expect(callback1).toHaveBeenCalledWith(userCreatedEvent);
+      expect(handler1).toHaveBeenCalledOnce();
+      expect(handler1).toHaveBeenCalledWith(userCreatedEvent);
 
       inMemoryMessageQueueAdapter.on(
         { eventStoreId: 'USER', type: 'USER_REMOVED' },
-        callback1,
+        handler1,
       );
 
       await inMemoryMessageQueueAdapter.publishMessage(userRemovedEvent);
-      expect(callback1).toHaveBeenCalledTimes(2);
-      expect(callback1).toHaveBeenCalledWith(userRemovedEvent);
+      expect(handler1).toHaveBeenCalledTimes(2);
+      expect(handler1).toHaveBeenCalledWith(userRemovedEvent);
     });
 
-    it('calls callback only once, event if matches several filter patterns', async () => {
-      inMemoryMessageQueueAdapter.on({ eventStoreId: 'USER' }, callback1);
+    it('calls handler only once, event if matches several filter patterns', async () => {
+      inMemoryMessageQueueAdapter.on({ eventStoreId: 'USER' }, handler1);
       await inMemoryMessageQueueAdapter.publishMessage(userCreatedEvent);
 
-      expect(callback1).toHaveBeenCalledOnce();
-      expect(callback1).toHaveBeenCalledWith(userCreatedEvent);
+      expect(handler1).toHaveBeenCalledOnce();
+      expect(handler1).toHaveBeenCalledWith(userCreatedEvent);
     });
 
-    it('calls all callbacks if needed', async () => {
-      inMemoryMessageQueueAdapter.on({}, callback2);
+    it('calls all handlers if needed', async () => {
+      inMemoryMessageQueueAdapter.on({}, handler2);
 
       await inMemoryMessageQueueAdapter.publishMessage(userCreatedEvent);
 
-      expect(callback1).toHaveBeenCalledWith(userCreatedEvent);
-      expect(callback2).toHaveBeenCalledWith(userCreatedEvent);
+      expect(handler1).toHaveBeenCalledWith(userCreatedEvent);
+      expect(handler2).toHaveBeenCalledWith(userCreatedEvent);
     });
 
-    it('statically rejects invalid callbacks', async () => {
+    it('statically rejects invalid handlers', async () => {
       inMemoryMessageQueueAdapter.on(
         { eventStoreId: 'USER', type: 'USER_REMOVED' },
-        // @ts-expect-error callback doesn't handle USER event store
-        callback3,
+        // @ts-expect-error handler doesn't handle USER event store
+        handler3,
       );
       inMemoryMessageQueueAdapter.on(
         // @ts-expect-error COUNTERS is not a possible event store id
         { eventStoreId: 'COUNTERS' },
-        callback3,
+        handler3,
       );
 
       await inMemoryMessageQueueAdapter.publishMessage(userCreatedEvent);
-      expect(callback3).not.toHaveBeenCalled();
+      expect(handler3).not.toHaveBeenCalled();
     });
   });
 
   describe('through static method', () => {
-    const messageBus = new NotificationMessageBus({
-      messageBusId: 'messageBusId',
-      sourceEventStores: [userEventStore, counterEventStore],
-    });
-
-    type ExpectedMessage = NotificationMessage<
-      MessageBusSourceEventStores<typeof messageBus>
-    >;
-
-    const callback = vi.fn(
+    const handler = vi.fn(
       (event: ExpectedMessage) =>
         new Promise<void>(resolve => {
           event;
@@ -163,22 +151,16 @@ describe('in-memory message queue adapter', () => {
     );
 
     beforeEach(() => {
-      callback.mockClear();
+      handler.mockClear();
     });
 
     it('correctly instanciates a class and attach it', async () => {
       const inMemoryMessageQueueAdapter = InMemoryMessageBusAdapter.attachTo(
         messageBus,
-        eventEmitter,
+        { eventEmitter: new EventEmitter() },
       );
 
-      expect(Object.keys(inMemoryMessageQueueAdapter)).toStrictEqual([
-        'eventEmitter',
-        'publishMessage',
-        'callbacks',
-        'filterPatterns',
-        'on',
-      ]);
+      expect(messageBus.messageBusAdapter).toBe(inMemoryMessageQueueAdapter);
 
       const assertQueueType: A.Equals<
         typeof inMemoryMessageQueueAdapter,
@@ -186,10 +168,90 @@ describe('in-memory message queue adapter', () => {
       > = 1;
       assertQueueType;
 
-      inMemoryMessageQueueAdapter.on({}, callback);
+      inMemoryMessageQueueAdapter.on({}, handler);
 
       await messageBus.publishMessage(userCreatedEvent);
-      expect(callback).toHaveBeenCalledWith(userCreatedEvent);
+      expect(handler).toHaveBeenCalledWith(userCreatedEvent);
     });
+  });
+
+  describe('retry policy', () => {
+    const failingHandler = vi.fn(
+      (event: ExpectedMessage) =>
+        new Promise<void>(resolve => {
+          event;
+          resolve();
+        }),
+    );
+    const succeedingHandler = vi.fn(
+      (event: ExpectedMessage) =>
+        new Promise<void>(resolve => {
+          event;
+          resolve();
+        }),
+    );
+
+    const retryAttempts = 3;
+    const retryDelayInMs = 1000;
+    const retryBackoffRate = 1.5;
+
+    const failingHandlerExecutionsDates: Date[] = [];
+
+    let testWaitTime = 1000; // margin of 1 sec
+    for (let attempt = 1; attempt <= retryAttempts; attempt++) {
+      testWaitTime += retryDelayInMs * Math.pow(retryBackoffRate, attempt - 1);
+
+      // eslint-disable-next-line @typescript-eslint/require-await
+      failingHandler.mockImplementationOnce(async () => {
+        failingHandlerExecutionsDates.push(new Date());
+        throw new Error();
+      });
+    }
+
+    // eslint-disable-next-line @typescript-eslint/require-await
+    failingHandler.mockImplementationOnce(async () => {
+      failingHandlerExecutionsDates.push(new Date());
+    });
+
+    it(
+      'successfully retries',
+      async () => {
+        const inMemoryMessageQueueAdapter = InMemoryMessageBusAdapter.attachTo(
+          messageBus,
+          {
+            eventEmitter: new EventEmitter(),
+            retryAttempts,
+            retryDelayInMs,
+            retryBackoffRate,
+          },
+        );
+
+        inMemoryMessageQueueAdapter.on({}, failingHandler);
+        inMemoryMessageQueueAdapter.on({}, succeedingHandler);
+
+        await messageBus.publishMessage(userCreatedEvent);
+
+        await sleep(testWaitTime);
+
+        expect(failingHandler).toHaveBeenCalledTimes(retryAttempts + 1);
+        expect(succeedingHandler).toHaveBeenCalledTimes(1);
+
+        expect(failingHandlerExecutionsDates).toHaveLength(retryAttempts + 1);
+
+        for (let attempt = 1; attempt <= retryAttempts; attempt++) {
+          const receivedDelay =
+            failingHandlerExecutionsDates[attempt].getTime() -
+            failingHandlerExecutionsDates[attempt - 1].getTime();
+          const expectedDelay =
+            retryDelayInMs * Math.pow(retryBackoffRate, attempt - 1);
+
+          // Expect delay imprecision to be less than 1%
+          expect(
+            Math.abs((receivedDelay - expectedDelay) / expectedDelay),
+          ).toBeLessThan(0.01);
+        }
+      },
+      { timeout: testWaitTime + 1000 },
+    );
   });
 });
