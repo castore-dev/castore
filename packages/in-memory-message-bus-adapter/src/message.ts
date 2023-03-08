@@ -7,7 +7,7 @@ type Prettify<T extends Record<string, unknown>> = T extends infer U
   : never;
 
 export type InMemoryMessageBusMessage<
-  M extends AnyMessage,
+  M extends AnyMessage = AnyMessage,
   S extends M['eventStoreId'] = M['eventStoreId'],
   T extends Extract<M, { eventStoreId: S }>['type'] = Extract<
     M,
@@ -22,3 +22,12 @@ export type InMemoryMessageBusMessage<
       : never
     : never
 >;
+
+export type Task<
+  Message extends InMemoryMessageBusMessage = InMemoryMessageBusMessage,
+> = {
+  message: Message;
+  retryHandlerIndex?: number;
+  attempt: number;
+  retryAttemptsLeft: number;
+};
