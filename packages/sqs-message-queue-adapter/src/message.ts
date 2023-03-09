@@ -5,7 +5,7 @@ import type {
   EventStoreAggregate,
   NotificationMessageQueue,
   StateCarryingMessageQueue,
-  MessageQueueSourceEventStoresIds,
+  MessageQueueSourceEventStoreIds,
   MessageQueueSourceEventStoreIdTypes,
   MessageQueueSourceEventStores,
 } from '@castore/core';
@@ -20,7 +20,7 @@ type Prettify<T extends Record<string, unknown>> = T extends infer U
 
 export type SQSMessageQueueMessageBody<
   M extends NotificationMessageQueue | StateCarryingMessageQueue,
-  S extends MessageQueueSourceEventStoresIds<M> = MessageQueueSourceEventStoresIds<M>,
+  S extends MessageQueueSourceEventStoreIds<M> = MessageQueueSourceEventStoreIds<M>,
   T extends MessageQueueSourceEventStoreIdTypes<
     M,
     S

@@ -10,13 +10,13 @@ export type MessageQueueSourceEventStores<
   M extends NotificationMessageQueue | StateCarryingMessageQueue,
 > = M['sourceEventStores'][number];
 
-export type MessageQueueSourceEventStoresIds<
+export type MessageQueueSourceEventStoreIds<
   M extends NotificationMessageQueue | StateCarryingMessageQueue,
 > = EventStoreId<MessageQueueSourceEventStores<M>>;
 
 export type MessageQueueSourceEventStoreIdTypes<
   M extends NotificationMessageQueue | StateCarryingMessageQueue,
-  S extends MessageQueueSourceEventStoresIds<M> = MessageQueueSourceEventStoresIds<M>,
+  S extends MessageQueueSourceEventStoreIds<M> = MessageQueueSourceEventStoreIds<M>,
 > = EventStoreEventsTypes<
   Extract<MessageQueueSourceEventStores<M>, { eventStoreId: S }>
 >[number]['type'];
