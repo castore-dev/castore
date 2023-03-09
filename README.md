@@ -88,6 +88,8 @@ Castore is opiniated. It comes with a collection of best practices and documente
   - [Event-driven architecture](#-event-driven-architecture)
   - [Message queues](#-messagequeue)
   - [Message queue adapters](#-messagequeueadapter)
+  - [Message buses](#-message-buses)
+  - [Message bus adapters](#-message-buses)
   - [Snapshotting](#-snapshotting)
   - [Read Models](#-read-models)
 - [📖 Resources](#-resources)
@@ -898,6 +900,118 @@ const appMessagesHandler = async ({ Records }: SQSMessageQueueMessage) => {
     const recordBody: SQSMessageQueueMessageBody<typeof appMessageQueue> =
       JSON.parse(body);
   });
+};
+```
+
+### - `MessageBus`
+
+[Message Buses](https://en.wikipedia.org/wiki/Publish%E2%80%93subscribe_pattern) are used to spread messages to multiple **listeners**. Contrary to message queues, they do not store the message or wait for the listeners to respond. Often, **filter patterns** can also be used to trigger listeners or not based on the message content.
+
+<!-- TODO: SCHEMA OF MESSAGE BUSES -->
+
+You can use the `NotificationMessageBus` or the `StateCarryingMessageBus` classes to implement message buses:
+
+```ts
+import { NotificationMessageBus } from '@castore/core';
+
+const appMessageBus = new NotificationMessageBus({
+  messageBusId: 'APP_MESSAGE_BUSES',
+  sourceEventStores: [userEventStore, counterEventStore...],
+});
+
+await appMessageBus.publishMessage({
+  // 👇 Typed as NotificationMessage of one of the source event stores
+  eventStoreId: 'USERS',
+  type: 'USER_CREATED',
+  ...
+})
+
+// Same usage for StateCarryingMessageBus
+```
+
+> <details>
+> <summary><b>🔧 Technical description</b></summary>
+> <p></p>
+>
+> **Constructor:**
+>
+> - <code>messageBusId <i>(string)</i></code>: A string identifying the message bus
+> - <code>sourceEventStores <i>(EventStore[])</i></code>: List of event stores that the message bus will broadcast events from
+> - <code>messageBusAdapter <i>(?MessageBusAdapter)</i></code>: See section on [`MessageBusAdapters`](#-messagebusadapter)
+>
+> **Properties:**
+>
+> - <code>messageBusId <i>(string)</i></code>
+>
+> ```ts
+> const appMessageBusId = appMessageBus.messageBusId;
+> // => 'APP_MESSAGE_BUS'
+> ```
+>
+> - <code>sourceEventStores <i>(EventStore[])</i></code>
+>
+> ```ts
+> const appMessageBusSourceEventStores = appMessageBus.sourceEventStores;
+> // => [userEventStore, counterEventStore...]
+> ```
+>
+> - <code>messageBusAdapter <i>?MessageBusAdapter</i></code>: See section on [`MessageBusAdapters`](#-messagebusadapter)
+>
+> ```ts
+> const appMessageBusAdapter = appMessageBus.messageBusAdapter;
+> // => undefined (we did not provide one in this example)
+> ```
+>
+> ☝️ The `messageBusAdapter` is not read-only so you do not have to provide it right away.
+>
+> **Async Methods:**
+>
+> The following methods interact with the messaging solution of your application through a `MessageBusAdapter`. They will throw an `UndefinedMessageBusAdapterError` if you did not provide one.
+>
+> - <code>publishMessage <i>((message: NotificationMessage | StateCarryingMessage) => Promise\<void\>)</i></code>: Publish a `NotificationMessage` (for `NotificationMessageBuses`) or a `StateCarryingMessage` (for `StateCarryingMessageBuses`) to the message bus.
+>
+> - <code>getAggregateAndPublishMessage <i>((message: NotificationMessage) => Promise\<void\>)</i></code>: _(StateCarryingMessageBuses only)_ Append the matching aggregate (with correct version) to a `NotificationMessage` and turn it into a `StateCarryingMessage` before publishing it to the message bus. Uses the message bus event stores: Make sure that they have correct adapters set up.
+>
+> </details>
+
+### - `MessageBusAdapter`
+
+Similarly to event stores, `MessageBus` classes provide a boilerplate-free and type-safe interface to publish messages, but are NOT responsible for actually doing so. This is the responsibility of the `MessageBusAdapter`, that will connect it to your actual messaging solution:
+
+```ts
+import { EventStore } from '@castore/core';
+
+const messageBus = new NotificationMessageBus({
+  ...
+  // 👇 Provide it in the constructor
+  messageBusAdapter: mySuperMessageBusAdapter,
+});
+
+// 👇 ...or set/switch it in context later
+messageBus.messageBusAdapter = mySuperMessageBusAdapter;
+```
+
+You can code your own `MessageBusAdapter` (simply implement the interface), but we highly recommend using an off-the-shelf adapter:
+
+- [EventBridge Message Bus Adapter](./packages/event-bridge-message-bus-adapter/README.md)
+- [In-Memory Message Bus Adapter](./packages/in-memory-message-bus-adapter/README.md)
+
+If the messaging solution that you use is missing, feel free to create/upvote an issue, or contribute 🤗
+
+The adapter packages will also expose useful generics to type the arguments of your bus listeners. For instance:
+
+```ts
+import type { EventBridgeMessageBusMessage } from '@castore/event-bridge-message-bus-adapter';
+
+const userMessagesListener = async (
+  // 👇 Specify that you only listen to the userEventStore messages
+  eventBridgeMessage: EventBridgeMessageBusMessage<
+    typeof appMessageQueue,
+    'USERS'
+  >,
+) => {
+  // 👇 Correctly typed!
+  const message = eventBridgeMessage.detail;
 };
 ```
 
