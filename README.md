@@ -286,7 +286,7 @@ Aggregates are derived from their events by [reducing them](https://developer.mo
 ```ts
 import type { Reducer } from '@castore/core';
 
-const usersReducer: Reducer<UserAggregate, UserEventsDetails> = (
+const usersReducer: Reducer<UserAggregate, UserEventDetails> = (
   userAggregate,
   newEvent,
 ) => {
@@ -559,7 +559,7 @@ const userEventStore = new EventStore({
 > ```ts
 > import type { EventStoreEventsDetails } from '@castore/core';
 >
-> type UserEventsDetails = EventStoreEventsDetails<typeof userEventStore>;
+> type UserEventDetails = EventStoreEventsDetails<typeof userEventStore>;
 > // => EventTypeDetail<typeof userCreatedEventType>
 > // | EventTypeDetail<typeof userRemovedEventType>
 > // | ...
@@ -571,7 +571,7 @@ const userEventStore = new EventStore({
 > import type { EventStoreReducer } from '@castore/core';
 >
 > type UserReducer = EventStoreReducer<typeof userEventStore>;
-> // => Reducer<UserAggregate, UserEventsDetails>
+> // => Reducer<UserAggregate, UserEventDetails>
 > ```
 >
 > - <code>EventStoreAggregate</code>: Returns the `EventStore` aggregate
@@ -749,44 +749,51 @@ There are two kinds of messages:
 In Castore, they are implemented by the `NotificationMessage` and `StateCarryingMessage` TS types:
 
 ```ts
-import type { NotificationMessage, StateCarryingMessage } from '@castore/core';
+// NotificationMessage
+import type {
+  NotificationMessage,
+  EventStoreNotificationMessage,
+} from '@castore/core';
 
-type UserEventNotificationMessage = NotificationMessage<typeof userEventStore>
+type UserEventNotificationMessage = NotificationMessage<
+  'USER',
+  UserEventDetails
+>;
 
 // 👇 Equivalent to:
 type UserEventNotificationMessage = {
-  // 👇 Messages contain the eventStoreId
-  eventStoreId: 'USERS';
-  type: 'USER_CREATED';
-  aggregateId: string;
-  version: number;
-  timestamp: string;
-  payload: ...;
-  metadata: ...;
-} & {
-  eventStoreId: 'USERS';
-  type: 'USER_REMOVED';
-  ...
-} & ...
+  eventStoreId: 'USER';
+  event: UserEventDetails;
+};
 
-type UserEventStateCarryingMessage = StateCarryingMessage<typeof userEventStore>
+// 👇 Also equivalent to:
+type UserEventNotificationMessage = EventStoreNotificationMessage<
+  typeof userEventStore
+>;
+
+// StateCarryingMessage
+import type {
+  StateCarryingMessage,
+  EventStoreStateCarryingMessage,
+} from '@castore/core';
+
+type UserEventStateCarryingMessage = StateCarryingMessage<
+  'USER',
+  UserEventDetails,
+  UserAggregate
+>;
 
 // 👇 Equivalent to:
 type UserEventStateCarryingMessage = {
-  eventStoreId: 'USERS';
-  type: 'USER_CREATED';
-  aggregateId: string;
-  version: number;
-  timestamp: string;
-  payload: ...;
-  metadata: ...;
-  // 👇 State-carrying messages also contain the aggregate
-  aggregate: UserAggregate;
-} & {
-  eventStoreId: 'USERS';
-  type: 'USER_REMOVED';
-  ...
-} & ...
+  eventStoreId: 'USER';
+  event: UserEventDetails;
+  aggregate: UserAggregate
+};
+
+// 👇 Also equivalent to:
+type UserEventStateCarryingMessage = EventStoreStateCarryingMessage<
+  typeof userEventStore
+>;
 ```
 
 Both kinds of messages can be published to [Message Queues](#-messagequeue) or [Message Buses](#-messagebus).
@@ -810,8 +817,10 @@ const appMessageQueue = new NotificationMessageQueue({
 await appMessageQueue.publishMessage({
   // 👇 Typed as NotificationMessage of one of the source event stores
   eventStoreId: 'USERS',
-  type: 'USER_CREATED',
-  ...
+  event: {
+    type: 'USER_CREATED',
+    ...
+  }
 })
 
 // Same usage for StateCarryingMessageQueues
@@ -922,8 +931,10 @@ const appMessageBus = new NotificationMessageBus({
 await appMessageBus.publishMessage({
   // 👇 Typed as NotificationMessage of one of the source event stores
   eventStoreId: 'USERS',
-  type: 'USER_CREATED',
-  ...
+  event: {
+    type: 'USER_CREATED',
+    ...
+  }
 })
 
 // Same usage for StateCarryingMessageBus

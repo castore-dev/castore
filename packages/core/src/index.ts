@@ -55,7 +55,9 @@ export type {
   MessageQueueSourceEventStoreIds,
   MessageQueueSourceEventStoreIdTypes,
   MessageQueueAdapter,
-  AnyMessage,
   NotificationMessage,
   StateCarryingMessage,
+  Message,
+  EventStoreNotificationMessage,
+  EventStoreStateCarryingMessage,
 } from './messaging';

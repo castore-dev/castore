@@ -28,25 +28,28 @@ export type SQSMessageQueueMessageBody<
 > = Prettify<
   S extends infer I
     ? I extends string
-      ? T extends infer U
-        ? U extends MessageQueueSourceEventStoreIdTypes<M, I>
-          ? Extract<
-              EventStoreEventsDetails<
+      ? {
+          eventStoreId: I;
+          event: T extends infer U
+            ? U extends MessageQueueSourceEventStoreIdTypes<M, I>
+              ? Extract<
+                  EventStoreEventsDetails<
+                    Extract<
+                      MessageQueueSourceEventStores<M>,
+                      { eventStoreId: S }
+                    >
+                  >,
+                  { type: U }
+                >
+              : never
+            : never;
+        } & (M extends StateCarryingMessageQueue
+          ? {
+              aggregate: EventStoreAggregate<
                 Extract<MessageQueueSourceEventStores<M>, { eventStoreId: S }>
-              >,
-              { type: U }
-            > & { eventStoreId: I } & (M extends StateCarryingMessageQueue
-                ? {
-                    aggregate: EventStoreAggregate<
-                      Extract<
-                        MessageQueueSourceEventStores<M>,
-                        { eventStoreId: S }
-                      >
-                    >;
-                  }
-                : unknown)
-          : never
-        : never
+              >;
+            }
+          : unknown)
       : never
     : never
 >;

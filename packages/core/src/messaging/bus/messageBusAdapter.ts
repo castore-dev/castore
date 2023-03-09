@@ -1,8 +1,5 @@
-import type { Aggregate } from '~/aggregate';
-import type { EventDetail } from '~/event/eventDetail';
+import type { Message } from '../message';
 
 export interface MessageBusAdapter {
-  publishMessage: (
-    event: EventDetail & { aggregate?: Aggregate; eventStoreId: string },
-  ) => Promise<void>;
+  publishMessage: (message: Message) => Promise<void>;
 }
