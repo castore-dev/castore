@@ -88,8 +88,8 @@ Castore is opiniated. It comes with a collection of best practices and documente
   - [Event-driven architecture](#--event-driven-architecture)
   - [Message queues](#--messagequeue)
   - [Message queue adapters](#--messagequeueadapter)
-  - [Message buses](#--message-bus)
-  - [Message bus adapters](#--message-bus)
+  - [Message buses](#--messagebus)
+  - [Message bus adapters](#--messagebusadapter)
   - [Snapshotting](#--snapshotting)
   - [Read Models](#--read-models)
 - [📖 Resources](#-resources)
@@ -904,7 +904,7 @@ import type {
   SQSMessageQueueMessageBody,
 } from '@castore/sqs-message-queue-adapter';
 
-const appMessagesHandler = async ({ Records }: SQSMessageQueueMessage) => {
+const appMessagesWorker = async ({ Records }: SQSMessageQueueMessage) => {
   Records.forEach(({ body }) => {
     // 👇 Correctly typed!
     const recordBody: SQSMessageQueueMessageBody<typeof appMessageQueue> =

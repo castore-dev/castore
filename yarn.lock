@@ -4131,12 +4131,14 @@ __metadata:
     "@types/aws-lambda": ^8.10.111
     "@types/node": ^17.0.29
     "@zerollup/ts-transform-paths": ^1.7.18
+    aws-sdk-client-mock: ^2.1.0
     babel-plugin-module-resolver: ^4.1.0
     concurrently: ^7.1.0
     dependency-cruiser: ^11.7.0
     eslint: ^8.14.0
     prettier: ^2.6.2
     ts-node: ^10.7.0
+    ts-toolbelt: ^9.6.0
     ttypescript: ^1.5.13
     typescript: ^4.6.3
     vitest: ^0.26.2
@@ -4378,12 +4380,14 @@ __metadata:
     "@types/aws-lambda": ^8.10.111
     "@types/node": ^17.0.29
     "@zerollup/ts-transform-paths": ^1.7.18
+    aws-sdk-client-mock: ^2.1.0
     babel-plugin-module-resolver: ^4.1.0
     concurrently: ^7.1.0
     dependency-cruiser: ^11.7.0
     eslint: ^8.14.0
     prettier: ^2.6.2
     ts-node: ^10.7.0
+    ts-toolbelt: ^9.6.0
     ttypescript: ^1.5.13
     typescript: ^4.6.3
     vitest: ^0.26.2
@@ -7567,6 +7571,17 @@ __metadata:
     sinon: ^14.0.2
     tslib: ^2.1.0
   checksum: 447502ba9270777db129ddcf0245502771c1415d4293f7b001e0a3dc18ab0ce778a7f2d40a86dadb2637d3b83be2df4e833d7f4f6c49678495c932340558c465
+  languageName: node
+  linkType: hard
+
+"aws-sdk-client-mock@npm:^2.1.0":
+  version: 2.1.0
+  resolution: "aws-sdk-client-mock@npm:2.1.0"
+  dependencies:
+    "@types/sinon": ^10.0.10
+    sinon: ^14.0.2
+    tslib: ^2.1.0
+  checksum: c6179c5528709ff1ad7e7308d03c74850fb5b973ca3d63836ca9973ca70de0c3dd7846fcbd3fd02bf4dabe6cae1095683b38c4202878458c8369e7e837962cd2
   languageName: node
   linkType: hard
 
