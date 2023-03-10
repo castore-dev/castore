@@ -32,7 +32,7 @@ import { EventBridgeMessageBusAdapter } from '@castore/event-bridge-message-bus-
 const eventBridgeClient = new EventBridgeClient({});
 
 const messageBusAdapter = new EventBridgeMessageBusAdapter({
-  eventBusName: 'my-table-name',
+  eventBusName: 'my-event-bus-name',
   eventBridgeClient,
 });
 
@@ -54,13 +54,13 @@ This will directly plug your MessageBus to EventBridge 🙌
 
 When publishing a message, its `eventStoreId` is used as the message `source` and its event `type` is used as `detail-type`. The whole message is passed to the `detail` property.
 
-```json
+```ts
 // 👇 Entry example
 {
   "source": "USERS", // <= eventStoreId
   "detail-type": "USER_CREATED", // <= event type
   "detail": {
-    "eventSourceId": "USERS",
+    "eventStoreId": "USERS",
     "event": {
       "aggregateId": "123",
       "version": 1,
