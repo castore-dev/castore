@@ -3,11 +3,11 @@ import { promise as fastQ, queueAsPromised } from 'fastq';
 import type {
   MessageQueueSourceEventStores,
   NotificationMessageQueue,
-  NotificationMessage,
+  EventStoreNotificationMessage,
   StateCarryingMessageQueue,
-  StateCarryingMessage,
+  EventStoreStateCarryingMessage,
   MessageQueueAdapter,
-  AnyMessage,
+  Message,
 } from '@castore/core';
 
 import {
@@ -19,27 +19,27 @@ import {
 type InMemoryQueueMessage<
   Q extends NotificationMessageQueue | StateCarryingMessageQueue,
 > = NotificationMessageQueue | StateCarryingMessageQueue extends Q
-  ? AnyMessage
+  ? Message
   : Q extends NotificationMessageQueue
-  ? NotificationMessage<MessageQueueSourceEventStores<Q>>
+  ? EventStoreNotificationMessage<MessageQueueSourceEventStores<Q>>
   : Q extends StateCarryingMessageQueue
-  ? StateCarryingMessage<MessageQueueSourceEventStores<Q>>
+  ? EventStoreStateCarryingMessage<MessageQueueSourceEventStores<Q>>
   : never;
 
-export type Task<M extends AnyMessage = AnyMessage> = {
+export type Task<M extends Message = Message> = {
   message: M;
   attempt: number;
   retryAttemptsLeft: number;
 };
 
-type ConstructorArgs<M extends AnyMessage = AnyMessage> = {
+type ConstructorArgs<M extends Message = Message> = {
   handler?: (message: M) => Promise<void>;
   retryAttempts?: number;
   retryDelayInMs?: number;
   retryBackoffRate?: number;
 };
 
-export class InMemoryMessageQueueAdapter<M extends AnyMessage = AnyMessage>
+export class InMemoryMessageQueueAdapter<M extends Message = Message>
   implements MessageQueueAdapter
 {
   static attachTo<

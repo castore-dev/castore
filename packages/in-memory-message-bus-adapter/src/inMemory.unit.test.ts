@@ -3,7 +3,7 @@ import { EventEmitter } from 'events';
 import type { A } from 'ts-toolbelt';
 
 import {
-  NotificationMessage,
+  EventStoreNotificationMessage,
   NotificationMessageBus,
   MessageBusSourceEventStores,
 } from '@castore/core';
@@ -16,28 +16,32 @@ const messageBus = new NotificationMessageBus({
   sourceEventStores: [userEventStore, counterEventStore],
 });
 
-type ExpectedMessage = NotificationMessage<
+type ExpectedMessage = EventStoreNotificationMessage<
   MessageBusSourceEventStores<typeof messageBus>
 >;
 
-const userCreatedEvent: NotificationMessage<typeof userEventStore> = {
+const userCreatedEvent: EventStoreNotificationMessage<typeof userEventStore> = {
   eventStoreId: 'USER',
-  aggregateId: '1',
-  version: 1,
-  type: 'USER_CREATED',
-  timestamp: '2021-01-01T00:00:00.000Z',
-  payload: {
-    firstName: 'gandalf',
-    lastName: 'the grey',
+  event: {
+    aggregateId: '1',
+    version: 1,
+    type: 'USER_CREATED',
+    timestamp: '2021-01-01T00:00:00.000Z',
+    payload: {
+      firstName: 'gandalf',
+      lastName: 'the grey',
+    },
   },
 };
 
-const userRemovedEvent: NotificationMessage<typeof userEventStore> = {
+const userRemovedEvent: EventStoreNotificationMessage<typeof userEventStore> = {
   eventStoreId: 'USER',
-  aggregateId: '1',
-  version: 1,
-  type: 'USER_REMOVED',
-  timestamp: '2021-01-01T00:00:00.000Z',
+  event: {
+    aggregateId: '1',
+    version: 1,
+    type: 'USER_REMOVED',
+    timestamp: '2021-01-01T00:00:00.000Z',
+  },
 };
 
 const sleep = (ms: number): Promise<void> =>
@@ -46,7 +50,7 @@ const sleep = (ms: number): Promise<void> =>
 describe('in-memory message queue adapter', () => {
   describe('with constructor (typed)', () => {
     const handler1 = vi.fn(
-      (event: NotificationMessage<typeof userEventStore>) =>
+      (event: EventStoreNotificationMessage<typeof userEventStore>) =>
         new Promise<void>(resolve => {
           event;
           resolve();
@@ -54,7 +58,7 @@ describe('in-memory message queue adapter', () => {
     );
 
     const handler2 = vi.fn(
-      (event: NotificationMessage<typeof userEventStore>) =>
+      (event: EventStoreNotificationMessage<typeof userEventStore>) =>
         new Promise<void>(resolve => {
           event;
           resolve();
@@ -62,7 +66,7 @@ describe('in-memory message queue adapter', () => {
     );
 
     const handler3 = vi.fn(
-      (event: NotificationMessage<typeof counterEventStore>) =>
+      (event: EventStoreNotificationMessage<typeof counterEventStore>) =>
         new Promise<void>(resolve => {
           event;
           resolve();
@@ -70,7 +74,7 @@ describe('in-memory message queue adapter', () => {
     );
 
     const inMemoryMessageQueueAdapter = new InMemoryMessageBusAdapter<
-      NotificationMessage<typeof userEventStore>
+      EventStoreNotificationMessage<typeof userEventStore>
     >({ eventEmitter: new EventEmitter() });
 
     beforeEach(() => {
@@ -87,7 +91,7 @@ describe('in-memory message queue adapter', () => {
 
     it('calls handler if it has been set', async () => {
       inMemoryMessageQueueAdapter.on(
-        { eventStoreId: 'USER', type: 'USER_CREATED' },
+        { eventStoreId: 'USER', eventType: 'USER_CREATED' },
         handler1,
       );
 
@@ -98,7 +102,7 @@ describe('in-memory message queue adapter', () => {
       expect(handler1).toHaveBeenCalledWith(userCreatedEvent);
 
       inMemoryMessageQueueAdapter.on(
-        { eventStoreId: 'USER', type: 'USER_REMOVED' },
+        { eventStoreId: 'USER', eventType: 'USER_REMOVED' },
         handler1,
       );
 
@@ -126,7 +130,7 @@ describe('in-memory message queue adapter', () => {
 
     it('statically rejects invalid handlers', async () => {
       inMemoryMessageQueueAdapter.on(
-        { eventStoreId: 'USER', type: 'USER_REMOVED' },
+        { eventStoreId: 'USER', eventType: 'USER_REMOVED' },
         // @ts-expect-error handler doesn't handle USER event store
         handler3,
       );

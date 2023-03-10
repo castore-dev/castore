@@ -5,6 +5,8 @@ import type {
   EventStoreAggregate,
   NotificationMessageQueue,
   StateCarryingMessageQueue,
+  NotificationMessage,
+  StateCarryingMessage,
   MessageQueueSourceEventStoreIds,
   MessageQueueSourceEventStoreIdTypes,
   MessageQueueSourceEventStores,
@@ -28,28 +30,44 @@ export type SQSMessageQueueMessageBody<
 > = Prettify<
   S extends infer I
     ? I extends string
-      ? {
-          eventStoreId: I;
-          event: T extends infer U
-            ? U extends MessageQueueSourceEventStoreIdTypes<M, I>
-              ? Extract<
-                  EventStoreEventsDetails<
-                    Extract<
-                      MessageQueueSourceEventStores<M>,
-                      { eventStoreId: S }
-                    >
-                  >,
-                  { type: U }
-                >
+      ? M extends NotificationMessageQueue
+        ? NotificationMessage<
+            I,
+            T extends infer U
+              ? U extends MessageQueueSourceEventStoreIdTypes<M, I>
+                ? Extract<
+                    EventStoreEventsDetails<
+                      Extract<
+                        MessageQueueSourceEventStores<M>,
+                        { eventStoreId: S }
+                      >
+                    >,
+                    { type: U }
+                  >
+                : never
               : never
-            : never;
-        } & (M extends StateCarryingMessageQueue
-          ? {
-              aggregate: EventStoreAggregate<
-                Extract<MessageQueueSourceEventStores<M>, { eventStoreId: S }>
-              >;
-            }
-          : unknown)
+          >
+        : M extends StateCarryingMessageQueue
+        ? StateCarryingMessage<
+            I,
+            T extends infer U
+              ? U extends MessageQueueSourceEventStoreIdTypes<M, I>
+                ? Extract<
+                    EventStoreEventsDetails<
+                      Extract<
+                        MessageQueueSourceEventStores<M>,
+                        { eventStoreId: S }
+                      >
+                    >,
+                    { type: U }
+                  >
+                : never
+              : never,
+            EventStoreAggregate<
+              Extract<MessageQueueSourceEventStores<M>, { eventStoreId: S }>
+            >
+          >
+        : never
       : never
     : never
 >;

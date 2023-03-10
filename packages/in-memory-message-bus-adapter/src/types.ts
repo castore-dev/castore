@@ -1,12 +1,12 @@
 import type { EventEmitter } from 'node:events';
 
 import type {
-  AnyMessage,
+  Message,
   MessageBusSourceEventStores,
   NotificationMessageBus,
-  NotificationMessage,
+  EventStoreNotificationMessage,
   StateCarryingMessageBus,
-  StateCarryingMessage,
+  EventStoreStateCarryingMessage,
 } from '@castore/core';
 
 export type ConstructorArgs = {
@@ -19,14 +19,16 @@ export type ConstructorArgs = {
 export type InMemoryBusMessage<
   Q extends NotificationMessageBus | StateCarryingMessageBus,
 > = NotificationMessageBus | StateCarryingMessageBus extends Q
-  ? AnyMessage
+  ? Message
   : Q extends NotificationMessageBus
-  ? NotificationMessage<MessageBusSourceEventStores<Q>>
+  ? EventStoreNotificationMessage<MessageBusSourceEventStores<Q>>
   : Q extends StateCarryingMessageBus
-  ? StateCarryingMessage<MessageBusSourceEventStores<Q>>
+  ? EventStoreStateCarryingMessage<MessageBusSourceEventStores<Q>>
   : never;
 
 export type FilterPattern<
   E extends string = string,
   T extends string = string,
-> = { eventStoreId?: E; type?: never } | { eventStoreId: E; type?: T };
+> =
+  | { eventStoreId?: E; eventType?: never }
+  | { eventStoreId: E; eventType?: T };

@@ -3,7 +3,7 @@ import type { queueAsPromised } from 'fastq';
 import type { A } from 'ts-toolbelt';
 
 import {
-  NotificationMessage,
+  EventStoreNotificationMessage,
   NotificationMessageQueue,
   MessageQueueSourceEventStores,
 } from '@castore/core';
@@ -16,19 +16,21 @@ const messageQueue = new NotificationMessageQueue({
   sourceEventStores: [userEventStore, counterEventStore],
 });
 
-type ExpectedMessage = NotificationMessage<
+type ExpectedMessage = EventStoreNotificationMessage<
   MessageQueueSourceEventStores<typeof messageQueue>
 >;
 
-const userCreatedEvent: NotificationMessage<typeof userEventStore> = {
+const userCreatedEvent: EventStoreNotificationMessage<typeof userEventStore> = {
   eventStoreId: 'USER',
-  aggregateId: '1',
-  version: 1,
-  type: 'USER_CREATED',
-  timestamp: '2021-01-01T00:00:00.000Z',
-  payload: {
-    firstName: 'gandalf',
-    lastName: 'the grey',
+  event: {
+    aggregateId: '1',
+    version: 1,
+    type: 'USER_CREATED',
+    timestamp: '2021-01-01T00:00:00.000Z',
+    payload: {
+      firstName: 'gandalf',
+      lastName: 'the grey',
+    },
   },
 };
 
@@ -38,7 +40,7 @@ const sleep = (ms: number): Promise<void> =>
 describe('in-memory message queue adapter', () => {
   describe('with constructor (typed)', () => {
     const handler1 = vi.fn(
-      (event: NotificationMessage<typeof userEventStore>) =>
+      (event: EventStoreNotificationMessage<typeof userEventStore>) =>
         new Promise<void>(resolve => {
           event;
           resolve();
@@ -46,7 +48,7 @@ describe('in-memory message queue adapter', () => {
     );
 
     const handler2 = vi.fn(
-      (event: NotificationMessage<typeof userEventStore>) =>
+      (event: EventStoreNotificationMessage<typeof userEventStore>) =>
         new Promise<void>(resolve => {
           event;
           resolve();
@@ -54,7 +56,7 @@ describe('in-memory message queue adapter', () => {
     );
 
     let inMemoryMessageQueueAdapter: InMemoryMessageQueueAdapter<
-      NotificationMessage<typeof userEventStore>
+      EventStoreNotificationMessage<typeof userEventStore>
     >;
 
     beforeEach(() => {
@@ -112,7 +114,10 @@ describe('in-memory message queue adapter', () => {
 
       const assertQueueType: A.Equals<
         NonNullable<typeof inMemoryMessageQueueAdapter2.queue>,
-        queueAsPromised<Task<NotificationMessage<typeof userEventStore>>, void>
+        queueAsPromised<
+          Task<EventStoreNotificationMessage<typeof userEventStore>>,
+          void
+        >
       > = 1;
       assertQueueType;
     });

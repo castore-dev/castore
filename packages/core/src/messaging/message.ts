@@ -10,20 +10,28 @@ import type {
 export type NotificationMessage<
   I extends string = string,
   E extends EventDetail = EventDetail,
-> = {
-  eventStoreId: I;
-  event: E;
-};
+> = E extends infer U
+  ? U extends EventDetail
+    ? {
+        eventStoreId: I;
+        event: U;
+      }
+    : never
+  : never;
 
 export type StateCarryingMessage<
   I extends string = string,
   E extends EventDetail = EventDetail,
   A extends Aggregate = Aggregate,
-> = {
-  eventStoreId: I;
-  event: E;
-  aggregate: A;
-};
+> = E extends infer U
+  ? U extends EventDetail
+    ? {
+        eventStoreId: I;
+        event: U;
+        aggregate: A;
+      }
+    : never
+  : never;
 
 export type Message = NotificationMessage | StateCarryingMessage;
 
