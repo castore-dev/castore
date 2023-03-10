@@ -1,6 +1,6 @@
 # In Memory Message Bus Adapter
 
-DRY Castore [`MessageBus`](https://github.com/castore-dev/castore/#-message-buses--queues) definition using [Event Emitters](https://nodejs.org/api/events.html#events).
+DRY Castore [`MessageBus`](https://github.com/castore-dev/castore/#--messagebus) definition using [Event Emitters](https://nodejs.org/api/events.html#events).
 
 ## 📥 Installation
 

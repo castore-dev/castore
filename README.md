@@ -36,9 +36,9 @@ After years of using it at [Kumo](https://dev.to/kumo), we have grown to love it
 
 With Castore, you'll be able to:
 
-- Define your [event stores](#-eventstore)
-- Fetch and push new [events](#-events) seamlessly
-- Implement and test your [commands](#%EF%B8%8F-command)
+- Define your [event stores](#--eventstore)
+- Fetch and push new [events](#--events) seamlessly
+- Implement and test your [commands](#--command)
 - ...and much more!
 
 All that with first-class developer experience and minimal boilerplate ✨
@@ -74,28 +74,29 @@ Castore is opiniated. It comes with a collection of best practices and documente
 ## Table of content
 
 - [🎬 Getting Started](#-getting-started)
-  - [Installation](#-installation)
-  - [Packages structure](#-packages-structure)
-- [🚀 The Basics](#the-basics)
-  - [Events](#-events)
-  - [Event Types](#-eventtype)
-  - [Aggregates](#-aggregate)
-  - [Reducers](#-reducer)
-  - [Event Store](#-eventstore)
-  - [Event Storage Adapter](#-eventstorageadapter)
-  - [Command](#-command)
+  - [Installation](#--installation)
+  - [Packages structure](#--packages-structure)
+- [🚀 The Basics](#-the-basics)
+  - [Events](#--events)
+  - [Event Types](#--eventtype)
+  - [Aggregates](#--aggregate)
+  - [Reducers](#--reducer)
+  - [Event Store](#--eventstore)
+  - [Event Storage Adapter](#---eventstorageadapter)
+  - [Command](#--command)
 - [💪 Advanced Usage](#-advanced-usage)
-  - [Event-driven architecture](#-event-driven-architecture)
-  - [Message queues](#-messagequeue)
-  - [Message queue adapters](#-messagequeueadapter)
-  - [Message buses](#-message-buses)
-  - [Message bus adapters](#-message-buses)
-  - [Snapshotting](#-snapshotting)
-  - [Read Models](#-read-models)
+  - [Event-driven architecture](#--event-driven-architecture)
+  - [Message queues](#--messagequeue)
+  - [Message queue adapters](#--messagequeueadapter)
+  - [Message buses](#--message-bus)
+  - [Message bus adapters](#--message-bus)
+  - [Snapshotting](#--snapshotting)
+  - [Read Models](#--read-models)
 - [📖 Resources](#-resources)
-  - [Test Tools](#-test-tools)
-  - [Packages List](#-packages-list)
-  - [Common Patterns](#-common-patterns)
+  - [Test Tools](#--test-tools)
+  - [React Visualizer](#--react-visualizer)
+  - [Packages List](#--packages-list)
+  - [Common Patterns](#--common-patterns)
 
 ## 🎬 Getting Started
 
@@ -183,7 +184,7 @@ const userCreatedEventType = new EventType<
 >({ type: 'USER_CREATED' });
 ```
 
-Note that we only provided TS types for `payload` and `metadata` properties. That is because, as stated in the [core design](#🫀-core-design), **Castore is meant to be as flexible as possible**, and that includes the validation library you want to use: The `EventType` class is not meant to be used directly, but rather implemented by other classes which will add run-time validation methods to it 👍
+Note that we only provided TS types for `payload` and `metadata` properties. That is because, as stated in the [core design](#-core-design), **Castore is meant to be as flexible as possible**, and that includes the validation library you want to use: The `EventType` class is not meant to be used directly, but rather implemented by other classes which will add run-time validation methods to it 👍
 
 See the following packages for examples:
 
@@ -317,11 +318,11 @@ const johnDowAggregate: UserAggregate = johnDowEvents.reduce(usersReducer);
 
 ### - `EventStore`
 
-Once you've defined your [event types](#-eventtype) and how to [aggregate](#%EF%B8%8F-reducer) them, you can bundle them together in an `EventStore` class.
+Once you've defined your [event types](#--eventtype) and how to [aggregate](#--reducer) them, you can bundle them together in an `EventStore` class.
 
 Each event store in your application represents a business entity. Think of event stores as _"what tables would be in CRUD"_, except that instead of directly updating data, you just append new events to it!
 
-In Castore, `EventStore` classes are NOT responsible for actually storing data (this will come with [event storage adapters](#-eventstorageadapter)). But rather to provide a boilerplate-free and type-safe interface to perform many actions such as:
+In Castore, `EventStore` classes are NOT responsible for actually storing data (this will come with [event storage adapters](#--eventstorageadapter)). But rather to provide a boilerplate-free and type-safe interface to perform many actions such as:
 
 - Listing aggregate ids
 - Accessing events of an aggregate
@@ -353,8 +354,8 @@ const userEventStore = new EventStore({
 >
 > - <code>eventStoreId <i>(string)</i></code>: A string identifying the event store
 > - <code>eventStoreEvents <i>(EventType[])</i></code>: The list of event types in the event store
-> - <code>reduce <i>(EventType[])</i></code>: A [reducer function](#⚙️-reducer) that can be applied to the store event types
-> - <code>storageAdapter <i>(?EventStorageAdapter)</i></code>: See [`EventStorageAdapter`](#eventstorageadapter)
+> - <code>reduce <i>(EventType[])</i></code>: A [reducer function](#--reducer) that can be applied to the store event types
+> - <code>storageAdapter <i>(?EventStorageAdapter)</i></code>: See [`EventStorageAdapter`](#--eventstorageadapter)
 >
 > ☝️ The return type of the `reducer` is used to infer the `Aggregate` type of the `EventStore`, so it is important to type it explicitely.
 >
@@ -381,7 +382,7 @@ const userEventStore = new EventStore({
 > // => usersReducer
 > ```
 >
-> - <code>storageAdapter <i>?EventStorageAdapter</i></code>: See [`EventStorageAdapter`](#eventstorageadapter)
+> - <code>storageAdapter <i>?EventStorageAdapter</i></code>: See [`EventStorageAdapter`](#--eventstorageadapter)
 >
 > ```ts
 > const storageAdapter = userEventStore.storageAdapter;
@@ -411,7 +412,7 @@ const userEventStore = new EventStore({
 >
 > **Async Methods:**
 >
-> The following methods interact with the data layer of your event store through its [`EventStorageAdapter`](#eventstorageadapter). They will throw an `UndefinedStorageAdapterError` if you did not provide one.
+> The following methods interact with the data layer of your event store through its [`EventStorageAdapter`](#--eventstorageadapter). They will throw an `UndefinedStorageAdapterError` if you did not provide one.
 >
 > - <code>getEvents <i>((aggregateId: string, opt?: OptionsObj = {}) => Promise\<ResponseObj\>)</i></code>: Retrieves the events of an aggregate, ordered by `version`. Returns an empty array if no event is found for this `aggregateId`.
 >
@@ -655,7 +656,7 @@ const createUserCommand = new Command({
 });
 ```
 
-Note that we only provided TS types for `Input` and `Output` properties. That is because, as stated in the [core design](#🫀-core-design), **Castore is meant to be as flexible as possible**, and that includes the validation library you want to use: The `Command` class is not meant to be used directly, but rather extended by other classes which will add run-time validation methods to it 👍
+Note that we only provided TS types for `Input` and `Output` properties. That is because, as stated in the [core design](#-core-design), **Castore is meant to be as flexible as possible**, and that includes the validation library you want to use: The `Command` class is not meant to be used directly, but rather extended by other classes which will add run-time validation methods to it 👍
 
 See the following packages for examples:
 
@@ -725,7 +726,7 @@ See the following packages for examples:
 
 A few notes on commands handlers:
 
-- `Commands` handlers should NOT use [read models](#📖-read-models) when validating that a modification is acceptable. Read models are like cache: They are not the source of truth, and may not represent the freshest state.
+- `Commands` handlers should NOT use [read models](#--read-models) when validating that a modification is acceptable. Read models are like cache: They are not the source of truth, and may not represent the freshest state.
 
 - Fetching and pushing events non-simultaneously exposes your application to [race conditions](https://en.wikipedia.org/wiki/Race_condition). To counter that, commands are designed to be retried when an `EventAlreadyExistsError` is triggered (which is part of the `EventStorageAdapter` interface).
 
@@ -796,7 +797,7 @@ type UserEventStateCarryingMessage = EventStoreStateCarryingMessage<
 >;
 ```
 
-Both kinds of messages can be published to [Message Queues](#-messagequeue) or [Message Buses](#-messagebus).
+Both kinds of messages can be published to [Message Queues](#--messagequeue) or [Message Buses](#--messagebus).
 
 ### - `MessageQueue`
 
@@ -834,7 +835,7 @@ await appMessageQueue.publishMessage({
 >
 > - <code>messageQueueId <i>(string)</i></code>: A string identifying the message queue
 > - <code>sourceEventStores <i>(EventStore[])</i></code>: List of event stores that the message queue will broadcast events from
-> - <code>messageQueueAdapter <i>(?MessageQueueAdapter)</i></code>: See section on [`MessageQueueAdapters`](#-messagequeueadapter)
+> - <code>messageQueueAdapter <i>(?MessageQueueAdapter)</i></code>: See section on [`MessageQueueAdapters`](#--messagequeueadapter)
 >
 > **Properties:**
 >
@@ -852,7 +853,7 @@ await appMessageQueue.publishMessage({
 > // => [userEventStore, counterEventStore...]
 > ```
 >
-> - <code>messageQueueAdapter <i>?MessageQueueAdapter</i></code>: See section on [`MessageQueueAdapters`](#-messagequeueadapter)
+> - <code>messageQueueAdapter <i>?MessageQueueAdapter</i></code>: See section on [`MessageQueueAdapters`](#--messagequeueadapter)
 >
 > ```ts
 > const appMessageQueueAdapter = appMessageQueue.messageQueueAdapter;
@@ -948,7 +949,7 @@ await appMessageBus.publishMessage({
 >
 > - <code>messageBusId <i>(string)</i></code>: A string identifying the message bus
 > - <code>sourceEventStores <i>(EventStore[])</i></code>: List of event stores that the message bus will broadcast events from
-> - <code>messageBusAdapter <i>(?MessageBusAdapter)</i></code>: See section on [`MessageBusAdapters`](#-messagebusadapter)
+> - <code>messageBusAdapter <i>(?MessageBusAdapter)</i></code>: See section on [`MessageBusAdapters`](#--messagebusadapter)
 >
 > **Properties:**
 >
@@ -966,7 +967,7 @@ await appMessageBus.publishMessage({
 > // => [userEventStore, counterEventStore...]
 > ```
 >
-> - <code>messageBusAdapter <i>?MessageBusAdapter</i></code>: See section on [`MessageBusAdapters`](#-messagebusadapter)
+> - <code>messageBusAdapter <i>?MessageBusAdapter</i></code>: See section on [`MessageBusAdapters`](#--messagebusadapter)
 >
 > ```ts
 > const appMessageBusAdapter = appMessageBus.messageBusAdapter;

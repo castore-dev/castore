@@ -1,6 +1,6 @@
 # EventBridge Message Bus Adapter
 
-DRY Castore [`MessageBus`](https://github.com/castore-dev/castore/#-message-buses--queues) definition using [AWS EventBridge](https://aws.amazon.com/eventbridge/).
+DRY Castore [`MessageBus`](https://github.com/castore-dev/castore/#--messagebus) definition using [AWS EventBridge](https://aws.amazon.com/eventbridge/).
 
 ## 📥 Installation
 

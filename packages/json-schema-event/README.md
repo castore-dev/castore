@@ -1,6 +1,6 @@
 # JSON Schema Event
 
-DRY Castore [`EventType`](https://github.com/castore-dev/castore/#-eventtype) definition using [JSON Schemas](http://json-schema.org/understanding-json-schema/reference/index.html) and [`json-schema-to-ts`](https://github.com/ThomasAribart/json-schema-to-ts)
+DRY Castore [`EventType`](https://github.com/castore-dev/castore/#--eventtype) definition using [JSON Schemas](http://json-schema.org/understanding-json-schema/reference/index.html) and [`json-schema-to-ts`](https://github.com/ThomasAribart/json-schema-to-ts)
 
 ## 📥 Installation
 
@@ -68,7 +68,7 @@ const userCreatedEventType = new EventType<
 
 ## ⚙️ Properties & Methods
 
-`JSONSchemaEventType` implements the [`EventType`](https://github.com/castore-dev/castore/#-eventtype) class and adds the following properties to it:
+`JSONSchemaEventType` implements the [`EventType`](https://github.com/castore-dev/castore/#--eventtype) class and adds the following properties to it:
 
 - <code>payloadSchema <i>(?object)</i></code>: The event type payload JSON schema
 
