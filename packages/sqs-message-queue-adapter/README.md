@@ -54,11 +54,11 @@ This will directly plug your MessageQueue to SQS 🙌
 
 When publishing a message, it is JSON stringified and passed as the record body.
 
-```json
+```ts
 // 👇 Record example
 {
   "body": "{
-    \"eventSourceId\": \"USERS\",
+    \"eventStoreId\": \"USERS\",
     \"event\": {
       \"aggregateId\": \"123\",
       \"version\": 1,

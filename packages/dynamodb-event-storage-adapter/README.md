@@ -56,7 +56,7 @@ This adapter persists aggregates in **separate partitions**: When persisting an 
 
 A [Global Secondary Index](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/GSI.html) is also required to efficiently retrieve the event store aggregates ids (`listAggregateIds` operation). Only initial events (`version = 1`) are projected. A `KEYS_ONLY` projection type is sufficient.
 
-```json
+```ts
 // 👇 Initial event
 {
   "aggregateId": "123", // <= Partition key
