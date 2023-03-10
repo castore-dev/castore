@@ -62,7 +62,7 @@ describe('My awesome test', () => {
       // ...
     });
 
-    const { events } = mockedUserEventStore.getEvents(userId);
+    const { events } = await mockedUserEventStore.getEvents(userId);
 
     expect(events).toHaveLength(1);
   });

@@ -1,6 +1,6 @@
 # SQS Message Queue Adapter
 
-DRY Castore [`MessageQueue`](https://github.com/castore-dev/castore/#-message-buses--queues) definition using [AWS SQS](https://aws.amazon.com/sqs/).
+DRY Castore [`MessageQueue`](https://github.com/castore-dev/castore/#--messagequeue) definition using [AWS SQS](https://aws.amazon.com/sqs/).
 
 ## 📥 Installation
 

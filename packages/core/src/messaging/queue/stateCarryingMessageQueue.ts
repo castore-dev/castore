@@ -1,7 +1,9 @@
 import type { EventStore } from '~/eventStore/eventStore';
 
-import type { NotificationMessage } from '../notificationMessage';
-import type { StateCarryingMessage } from '../stateCarryingMessage';
+import type {
+  EventStoreStateCarryingMessage,
+  EventStoreNotificationMessage,
+} from '../message';
 import {
   MessageQueueEventStoreNotFoundError,
   UndefinedMessageQueueAdapterError,
@@ -18,10 +20,10 @@ export class StateCarryingMessageQueue<E extends EventStore = EventStore> {
   getEventStore: (eventStoreId: string) => E;
 
   publishMessage: (
-    stateCarryingMessage: StateCarryingMessage<E>,
+    stateCarryingMessage: EventStoreStateCarryingMessage<E>,
   ) => Promise<void>;
   getAggregateAndPublishMessage: (
-    notificationMessage: NotificationMessage<E>,
+    notificationMessage: EventStoreNotificationMessage<E>,
   ) => Promise<void>;
 
   constructor({
@@ -78,7 +80,8 @@ export class StateCarryingMessageQueue<E extends EventStore = EventStore> {
     };
 
     this.getAggregateAndPublishMessage = async notificationMessage => {
-      const { eventStoreId, aggregateId, version } = notificationMessage;
+      const { eventStoreId, event } = notificationMessage;
+      const { aggregateId, version } = event;
 
       const eventStore = this.getEventStore(eventStoreId);
 

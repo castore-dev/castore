@@ -5,7 +5,9 @@ import type {
   EventStoreAggregate,
   NotificationMessageQueue,
   StateCarryingMessageQueue,
-  MessageQueueSourceEventStoresIds,
+  NotificationMessage,
+  StateCarryingMessage,
+  MessageQueueSourceEventStoreIds,
   MessageQueueSourceEventStoreIdTypes,
   MessageQueueSourceEventStores,
 } from '@castore/core';
@@ -20,7 +22,7 @@ type Prettify<T extends Record<string, unknown>> = T extends infer U
 
 export type SQSMessageQueueMessageBody<
   M extends NotificationMessageQueue | StateCarryingMessageQueue,
-  S extends MessageQueueSourceEventStoresIds<M> = MessageQueueSourceEventStoresIds<M>,
+  S extends MessageQueueSourceEventStoreIds<M> = MessageQueueSourceEventStoreIds<M>,
   T extends MessageQueueSourceEventStoreIdTypes<
     M,
     S
@@ -28,24 +30,43 @@ export type SQSMessageQueueMessageBody<
 > = Prettify<
   S extends infer I
     ? I extends string
-      ? T extends infer U
-        ? U extends MessageQueueSourceEventStoreIdTypes<M, I>
-          ? Extract<
-              EventStoreEventsDetails<
-                Extract<MessageQueueSourceEventStores<M>, { eventStoreId: S }>
-              >,
-              { type: U }
-            > & { eventStoreId: I } & (M extends StateCarryingMessageQueue
-                ? {
-                    aggregate: EventStoreAggregate<
+      ? M extends NotificationMessageQueue
+        ? NotificationMessage<
+            I,
+            T extends infer U
+              ? U extends MessageQueueSourceEventStoreIdTypes<M, I>
+                ? Extract<
+                    EventStoreEventsDetails<
                       Extract<
                         MessageQueueSourceEventStores<M>,
                         { eventStoreId: S }
                       >
-                    >;
-                  }
-                : unknown)
-          : never
+                    >,
+                    { type: U }
+                  >
+                : never
+              : never
+          >
+        : M extends StateCarryingMessageQueue
+        ? StateCarryingMessage<
+            I,
+            T extends infer U
+              ? U extends MessageQueueSourceEventStoreIdTypes<M, I>
+                ? Extract<
+                    EventStoreEventsDetails<
+                      Extract<
+                        MessageQueueSourceEventStores<M>,
+                        { eventStoreId: S }
+                      >
+                    >,
+                    { type: U }
+                  >
+                : never
+              : never,
+            EventStoreAggregate<
+              Extract<MessageQueueSourceEventStores<M>, { eventStoreId: S }>
+            >
+          >
         : never
       : never
     : never

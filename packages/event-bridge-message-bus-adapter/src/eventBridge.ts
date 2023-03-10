@@ -26,14 +26,17 @@ export class EventBridgeMessageBusAdapter implements MessageBusAdapter {
         ? this.eventBusName
         : this.eventBusName();
 
-    this.publishMessage = async ({ eventStoreId, ...message }) => {
+    this.publishMessage = async message => {
+      const { eventStoreId, event } = message;
+      const { type } = event;
+
       await this.eventBridgeClient.send(
         new PutEventsCommand({
           Entries: [
             {
               EventBusName: this.getEventBusName(),
               Source: eventStoreId,
-              DetailType: message.type,
+              DetailType: type,
               Detail: JSON.stringify(message),
             },
           ],

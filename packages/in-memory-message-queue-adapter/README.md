@@ -1,6 +1,6 @@
 # In Memory Message Queue Adapter
 
-DRY Castore [`MessageQueue`](https://github.com/castore-dev/castore/#-message-buses--queues) definition using [FastQ](https://github.com/mcollina/fastq).
+DRY Castore [`MessageQueue`](https://github.com/castore-dev/castore/#--messagequeue) definition using [FastQ](https://github.com/mcollina/fastq).
 
 ## 📥 Installation
 

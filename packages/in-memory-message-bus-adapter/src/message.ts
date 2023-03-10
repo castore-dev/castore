@@ -1,4 +1,4 @@
-import type { AnyMessage } from '@castore/core';
+import type { Message } from '@castore/core';
 
 type Prettify<T extends Record<string, unknown>> = T extends infer U
   ? {
@@ -7,26 +7,26 @@ type Prettify<T extends Record<string, unknown>> = T extends infer U
   : never;
 
 export type InMemoryMessageBusMessage<
-  M extends AnyMessage = AnyMessage,
+  M extends Message = Message,
   S extends M['eventStoreId'] = M['eventStoreId'],
-  T extends Extract<M, { eventStoreId: S }>['type'] = Extract<
+  T extends Extract<M, { eventStoreId: S }>['event']['type'] = Extract<
     M,
     { eventStoreId: S }
-  >['type'],
+  >['event']['type'],
 > = Prettify<
   S extends infer I
     ? I extends string
       ? T extends infer U
-        ? Extract<Extract<M, { eventStoreId: S }>, { type: U }>
+        ? Extract<M, { eventStoreId: S; event: { type: U } }>
         : never
       : never
     : never
 >;
 
 export type Task<
-  Message extends InMemoryMessageBusMessage = InMemoryMessageBusMessage,
+  M extends InMemoryMessageBusMessage = InMemoryMessageBusMessage,
 > = {
-  message: Message;
+  message: M;
   retryHandlerIndex?: number;
   attempt: number;
   retryAttemptsLeft: number;

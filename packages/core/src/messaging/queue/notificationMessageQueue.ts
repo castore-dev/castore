@@ -1,6 +1,6 @@
 import type { EventStore } from '~/eventStore/eventStore';
 
-import type { NotificationMessage } from '../notificationMessage';
+import type { EventStoreNotificationMessage } from '../message';
 import {
   MessageQueueEventStoreNotFoundError,
   UndefinedMessageQueueAdapterError,
@@ -17,7 +17,7 @@ export class NotificationMessageQueue<E extends EventStore = EventStore> {
   getEventStore: (eventStoreId: string) => E;
 
   publishMessage: (
-    notificationMessage: NotificationMessage<E>,
+    notificationMessage: EventStoreNotificationMessage<E>,
   ) => Promise<void>;
 
   constructor({

@@ -5,6 +5,8 @@ import type {
   EventStoreAggregate,
   NotificationMessageBus,
   StateCarryingMessageBus,
+  NotificationMessage,
+  StateCarryingMessage,
   MessageBusSourceEventStoresIds,
   MessageBusSourceEventStoreIdTypes,
   MessageBusSourceEventStores,
@@ -30,22 +32,39 @@ export type EventBridgeMessageBusMessage<
         ? U extends MessageBusSourceEventStoreIdTypes<M, I>
           ? EventBridgeEvent<
               U,
-              Extract<
-                EventStoreEventsDetails<
-                  Extract<MessageBusSourceEventStores<M>, { eventStoreId: S }>
-                >,
-                { type: U }
-              > &
-                (M extends StateCarryingMessageBus
-                  ? {
-                      aggregate: EventStoreAggregate<
+              M extends NotificationMessageBus
+                ? NotificationMessage<
+                    I,
+                    Extract<
+                      EventStoreEventsDetails<
                         Extract<
                           MessageBusSourceEventStores<M>,
                           { eventStoreId: S }
                         >
-                      >;
-                    }
-                  : unknown)
+                      >,
+                      { type: U }
+                    >
+                  >
+                : M extends StateCarryingMessageBus
+                ? StateCarryingMessage<
+                    I,
+                    Extract<
+                      EventStoreEventsDetails<
+                        Extract<
+                          MessageBusSourceEventStores<M>,
+                          { eventStoreId: S }
+                        >
+                      >,
+                      { type: U }
+                    >,
+                    EventStoreAggregate<
+                      Extract<
+                        MessageBusSourceEventStores<M>,
+                        { eventStoreId: S }
+                      >
+                    >
+                  >
+                : never
             > & { source: I }
           : never
         : never

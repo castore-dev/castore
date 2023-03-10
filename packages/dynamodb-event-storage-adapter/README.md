@@ -1,6 +1,6 @@
 # DynamoDB Event Storage Adapter
 
-DRY Castore [`EventStorageAdapter`](https://github.com/castore-dev/castore/#-eventstorageadapter) implementation using [AWS DynamoDB](https://aws.amazon.com/dynamodb/).
+DRY Castore [`EventStorageAdapter`](https://github.com/castore-dev/castore/#--eventstorageadapter) implementation using [AWS DynamoDB](https://aws.amazon.com/dynamodb/).
 
 ## 📥 Installation
 
@@ -199,7 +199,7 @@ resource "aws_dynamodb_table" "user-events-table" {
 
 ## 🤝 Transactions
 
-As stated in the [main documentation](https://github.com/castore-dev/castore/#%EF%B8%8F-command):
+As stated in the [main documentation](https://github.com/castore-dev/castore/#--command):
 
 > When writing on several event stores at once, it is important to make sure that **all events are written or none**, i.e. use transactions: This ensures that the application is not in a corrupt state.
 

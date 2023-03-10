@@ -2,7 +2,7 @@ import type { EventEmitter } from 'node:events';
 
 import type {
   MessageBusAdapter,
-  AnyMessage,
+  Message,
   NotificationMessageBus,
   StateCarryingMessageBus,
 } from '@castore/core';
@@ -20,7 +20,7 @@ import {
   parseRetryDelayInMs,
 } from './utils';
 
-export class InMemoryMessageBusAdapter<M extends AnyMessage = AnyMessage>
+export class InMemoryMessageBusAdapter<M extends Message = Message>
   implements MessageBusAdapter
 {
   static attachTo<Q extends NotificationMessageBus | StateCarryingMessageBus>(
@@ -46,10 +46,10 @@ export class InMemoryMessageBusAdapter<M extends AnyMessage = AnyMessage>
 
   on: <
     E extends M['eventStoreId'] = M['eventStoreId'],
-    T extends Extract<M, { eventStoreId: E }>['type'] = Extract<
+    T extends Extract<M, { eventStoreId: E }>['event']['type'] = Extract<
       M,
       { eventStoreId: E }
-    >['type'],
+    >['event']['type'],
   >(
     filterPattern: FilterPattern<E, T>,
     handler: (message: InMemoryMessageBusMessage<M, E, T>) => Promise<void>,
@@ -112,10 +112,10 @@ export class InMemoryMessageBusAdapter<M extends AnyMessage = AnyMessage>
 
     this.on = <
       E extends M['eventStoreId'] = M['eventStoreId'],
-      T extends Extract<M, { eventStoreId: E }>['type'] = Extract<
+      T extends Extract<M, { eventStoreId: E }>['event']['type'] = Extract<
         M,
         { eventStoreId: E }
-      >['type'],
+      >['event']['type'],
     >(
       filterPattern: FilterPattern<E, T>,
       handler: (message: InMemoryMessageBusMessage<M, E, T>) => Promise<void>,

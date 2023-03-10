@@ -1,27 +1,32 @@
-import { AnyMessage } from '@castore/core';
+import { Message } from '@castore/core';
 
 import { FilterPattern } from './types';
 
 export const doesMessageMatchFilterPattern = (
-  message: AnyMessage,
+  message: Message,
   filterPattern: FilterPattern,
 ): boolean => {
-  const { type, eventStoreId } = filterPattern;
-  const { type: messageType, eventStoreId: messageEventStoreId } = message;
+  const { eventStoreId: filterEventStoreId, eventType: filterEventType } =
+    filterPattern;
+  const { eventStoreId: messageEventStoreId, event } = message;
+  const { type: messageEventType } = event;
 
-  if (eventStoreId !== undefined && type !== undefined) {
-    return messageEventStoreId === eventStoreId && messageType === type;
+  if (filterEventStoreId !== undefined && filterEventType !== undefined) {
+    return (
+      messageEventStoreId === filterEventStoreId &&
+      messageEventType === filterEventType
+    );
   }
 
-  if (eventStoreId !== undefined) {
-    return messageEventStoreId === eventStoreId;
+  if (filterEventStoreId !== undefined) {
+    return messageEventStoreId === filterEventStoreId;
   }
 
   return true;
 };
 
 export const doesMessageMatchAnyFilterPattern = (
-  message: AnyMessage,
+  message: Message,
   filterPatterns: FilterPattern[],
 ): boolean =>
   filterPatterns.some(filterPattern =>
