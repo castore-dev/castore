@@ -24,4 +24,71 @@ yarn add @castore/core @aws-sdk/client-sqs
 
 ## 👩‍💻 Usage
 
-_coming soon_
+```ts
+import { SQSClient } from '@aws-sdk/client-sqs';
+
+import { SQSMessageQueueAdapter } from '@castore/sqs-message-queue-adapter';
+
+const sqsClient = new SQSClient({});
+
+const messageQueueAdapter = new SQSMessageQueueAdapter({
+  queueUrl: 'https://sqs.us-east-1.amazonaws.com/111122223333/my-super-queue',
+  sqsClient,
+});
+
+// 👇 Alternatively, provide a getter
+const messageQueueAdapter = new SQSMessageQueueAdapter({
+  queueUrl: () => process.env.MY_SQS_QUEUE_URL,
+  sqsClient,
+});
+
+const appMessageQueue = new NotificationMessageQueue({
+  ...
+  messageQueueAdapter
+})
+```
+
+This will directly plug your MessageQueue to SQS 🙌
+
+## 🤔 How it works
+
+When publishing a message, it is JSON stringified and passed as the record body.
+
+```json
+// 👇 Record example
+{
+  "body": "{
+    \"eventSourceId\": \"USERS\",
+    \"event\": {
+      \"aggregateId\": \"123\",
+      \"version\": 1,
+      \"type\": \"USER_CREATED\",
+      \"timestamp\": ...
+      ...
+    },
+    \"aggregate\": ... // <= for state-carrying message queues
+  }",
+  ... // <= Other technical SQS properties
+}
+```
+
+On the worker side, you can use the `SQSMessageQueueMessage` and `SQSMessageQueueMessageBody` TS types to type your argument:
+
+```ts
+import type {
+  SQSMessageQueueMessage,
+  SQSMessageQueueMessageBody,
+} from '@castore/sqs-message-queue-adapter';
+
+const appMessagesWorker = async ({ Records }: SQSMessageQueueMessage) => {
+  Records.forEach(({ body }) => {
+    // 👇 Correctly typed!
+    const recordBody: SQSMessageQueueMessageBody<typeof appMessageQueue> =
+      JSON.parse(body);
+  });
+};
+```
+
+## 🔑 IAM
+
+The `publishMessage` method requires the `sqs:SendMessage` IAM permission on the provided SQS queue.

@@ -904,7 +904,7 @@ import type {
   SQSMessageQueueMessageBody,
 } from '@castore/sqs-message-queue-adapter';
 
-const appMessagesHandler = async ({ Records }: SQSMessageQueueMessage) => {
+const appMessagesWorker = async ({ Records }: SQSMessageQueueMessage) => {
   Records.forEach(({ body }) => {
     // 👇 Correctly typed!
     const recordBody: SQSMessageQueueMessageBody<typeof appMessageQueue> =
