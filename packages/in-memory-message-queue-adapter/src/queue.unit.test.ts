@@ -3,9 +3,9 @@ import type { queueAsPromised } from 'fastq';
 import type { A } from 'ts-toolbelt';
 
 import {
+  MessageQueueMessage,
   EventStoreNotificationMessage,
   NotificationMessageQueue,
-  MessageQueueSourceEventStores,
 } from '@castore/core';
 import { userEventStore, counterEventStore } from '@castore/demo-blueprint';
 
@@ -16,9 +16,7 @@ const messageQueue = new NotificationMessageQueue({
   sourceEventStores: [userEventStore, counterEventStore],
 });
 
-type ExpectedMessage = EventStoreNotificationMessage<
-  MessageQueueSourceEventStores<typeof messageQueue>
->;
+type ExpectedMessage = MessageQueueMessage<typeof messageQueue>;
 
 const userCreatedEvent: EventStoreNotificationMessage<typeof userEventStore> = {
   eventStoreId: 'USER',
@@ -39,7 +37,7 @@ const sleep = (ms: number): Promise<void> =>
 
 describe('in-memory message queue adapter', () => {
   describe('with constructor (typed)', () => {
-    const handler1 = vi.fn(
+    const worker1 = vi.fn(
       (event: EventStoreNotificationMessage<typeof userEventStore>) =>
         new Promise<void>(resolve => {
           event;
@@ -47,7 +45,7 @@ describe('in-memory message queue adapter', () => {
         }),
     );
 
-    const handler2 = vi.fn(
+    const worker2 = vi.fn(
       (event: EventStoreNotificationMessage<typeof userEventStore>) =>
         new Promise<void>(resolve => {
           event;
@@ -60,39 +58,39 @@ describe('in-memory message queue adapter', () => {
     >;
 
     beforeEach(() => {
-      handler1.mockClear();
-      handler2.mockClear();
+      worker1.mockClear();
+      worker2.mockClear();
     });
 
-    it('does nothing if no handler is set', async () => {
+    it('does nothing if no worker is set', async () => {
       inMemoryMessageQueueAdapter = new InMemoryMessageQueueAdapter({});
 
       expect(inMemoryMessageQueueAdapter.queue).toBeUndefined();
 
       await inMemoryMessageQueueAdapter.publishMessage(userCreatedEvent);
 
-      expect(handler1).not.toHaveBeenCalled();
-      expect(handler2).not.toHaveBeenCalled();
+      expect(worker1).not.toHaveBeenCalled();
+      expect(worker2).not.toHaveBeenCalled();
     });
 
-    it('has queue once handler has been set', async () => {
-      inMemoryMessageQueueAdapter.handler = handler1;
+    it('has queue once worker has been set', async () => {
+      inMemoryMessageQueueAdapter.worker = worker1;
 
       expect(inMemoryMessageQueueAdapter.queue).toBeDefined();
 
       await inMemoryMessageQueueAdapter.publishMessage(userCreatedEvent);
 
-      expect(handler1).toHaveBeenCalledWith(userCreatedEvent);
-      expect(handler2).not.toHaveBeenCalled();
+      expect(worker1).toHaveBeenCalledWith(userCreatedEvent);
+      expect(worker2).not.toHaveBeenCalled();
     });
 
-    it('recreates queue if new handler is set', async () => {
-      inMemoryMessageQueueAdapter.handler = handler2;
+    it('recreates queue if new worker is set', async () => {
+      inMemoryMessageQueueAdapter.worker = worker2;
 
       await inMemoryMessageQueueAdapter.publishMessage(userCreatedEvent);
 
-      expect(handler1).not.toHaveBeenCalled();
-      expect(handler2).toHaveBeenCalledWith(userCreatedEvent);
+      expect(worker1).not.toHaveBeenCalled();
+      expect(worker2).toHaveBeenCalledWith(userCreatedEvent);
     });
 
     it('actually connects to a messageQueue', async () => {
@@ -100,17 +98,17 @@ describe('in-memory message queue adapter', () => {
 
       await messageQueue.publishMessage(userCreatedEvent);
 
-      expect(handler2).toHaveBeenCalledWith(userCreatedEvent);
+      expect(worker2).toHaveBeenCalledWith(userCreatedEvent);
     });
 
-    it('accepts handler in constructor', async () => {
+    it('accepts worker in constructor', async () => {
       const inMemoryMessageQueueAdapter2 = new InMemoryMessageQueueAdapter({
-        handler: handler1,
+        worker: worker1,
       });
 
       await inMemoryMessageQueueAdapter2.publishMessage(userCreatedEvent);
 
-      expect(handler1).toHaveBeenCalled();
+      expect(worker1).toHaveBeenCalled();
 
       const assertQueueType: A.Equals<
         NonNullable<typeof inMemoryMessageQueueAdapter2.queue>,
@@ -124,7 +122,7 @@ describe('in-memory message queue adapter', () => {
   });
 
   describe('through static method', () => {
-    const handler = vi.fn(
+    const worker = vi.fn(
       (event: ExpectedMessage) =>
         new Promise<void>(resolve => {
           event;
@@ -133,7 +131,7 @@ describe('in-memory message queue adapter', () => {
     );
 
     beforeEach(() => {
-      handler.mockClear();
+      worker.mockClear();
     });
 
     it('correctly instanciates a class and attach it', async () => {
@@ -146,15 +144,15 @@ describe('in-memory message queue adapter', () => {
       > = 1;
       assertQueueType;
 
-      inMemoryMessageQueueAdapter.handler = handler;
+      inMemoryMessageQueueAdapter.worker = worker;
 
       await messageQueue.publishMessage(userCreatedEvent);
-      expect(handler).toHaveBeenCalledWith(userCreatedEvent);
+      expect(worker).toHaveBeenCalledWith(userCreatedEvent);
     });
 
-    it('correctly instanciates a class and attach it (with handler)', async () => {
+    it('correctly instanciates a class and attach it (with worker)', async () => {
       InMemoryMessageQueueAdapter.attachTo(messageQueue, {
-        handler: message =>
+        worker: message =>
           new Promise(resolve => {
             const assertMessage: A.Equals<typeof message, ExpectedMessage> = 1;
             assertMessage;
@@ -165,7 +163,7 @@ describe('in-memory message queue adapter', () => {
 
       const inMemoryMessageQueueAdapter = InMemoryMessageQueueAdapter.attachTo(
         messageQueue,
-        { handler },
+        { worker },
       );
 
       const assertQueueType: A.Equals<
@@ -175,12 +173,12 @@ describe('in-memory message queue adapter', () => {
       assertQueueType;
 
       await messageQueue.publishMessage(userCreatedEvent);
-      expect(handler).toHaveBeenCalledWith(userCreatedEvent);
+      expect(worker).toHaveBeenCalledWith(userCreatedEvent);
     });
   });
 
   describe('retry policy', () => {
-    const handler = vi.fn(
+    const worker = vi.fn(
       (event: ExpectedMessage) =>
         new Promise<void>(resolve => {
           event;
@@ -192,22 +190,22 @@ describe('in-memory message queue adapter', () => {
     const retryDelayInMs = 1000;
     const retryBackoffRate = 1.5;
 
-    const handlerExecutionsDates: Date[] = [];
+    const workerExecutionsDates: Date[] = [];
 
     let testWaitTime = 1000; // margin of 1 sec
     for (let attempt = 1; attempt <= retryAttempts; attempt++) {
       testWaitTime += retryDelayInMs * Math.pow(retryBackoffRate, attempt - 1);
 
       // eslint-disable-next-line @typescript-eslint/require-await
-      handler.mockImplementationOnce(async () => {
-        handlerExecutionsDates.push(new Date());
+      worker.mockImplementationOnce(async () => {
+        workerExecutionsDates.push(new Date());
         throw new Error();
       });
     }
 
     // eslint-disable-next-line @typescript-eslint/require-await
-    handler.mockImplementationOnce(async () => {
-      handlerExecutionsDates.push(new Date());
+    worker.mockImplementationOnce(async () => {
+      workerExecutionsDates.push(new Date());
     });
 
     it(
@@ -217,21 +215,21 @@ describe('in-memory message queue adapter', () => {
           retryAttempts,
           retryDelayInMs,
           retryBackoffRate,
-          handler,
+          worker,
         });
 
         await messageQueue.publishMessage(userCreatedEvent);
 
         await sleep(testWaitTime);
 
-        expect(handler).toHaveBeenCalledTimes(retryAttempts + 1);
+        expect(worker).toHaveBeenCalledTimes(retryAttempts + 1);
 
-        expect(handlerExecutionsDates).toHaveLength(retryAttempts + 1);
+        expect(workerExecutionsDates).toHaveLength(retryAttempts + 1);
 
         for (let attempt = 1; attempt <= retryAttempts; attempt++) {
           const receivedDelay =
-            handlerExecutionsDates[attempt].getTime() -
-            handlerExecutionsDates[attempt - 1].getTime();
+            workerExecutionsDates[attempt].getTime() -
+            workerExecutionsDates[attempt - 1].getTime();
           const expectedDelay =
             retryDelayInMs * Math.pow(retryBackoffRate, attempt - 1);
 

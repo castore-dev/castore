@@ -33,7 +33,7 @@ export type Task<M extends Message = Message> = {
 };
 
 type ConstructorArgs<M extends Message = Message> = {
-  handler?: (message: M) => Promise<void>;
+  worker?: (message: M) => Promise<void>;
   retryAttempts?: number;
   retryDelayInMs?: number;
   retryBackoffRate?: number;
@@ -66,7 +66,7 @@ export class InMemoryMessageQueueAdapter<M extends Message = Message>
   queue?: queueAsPromised<Task<M>, void>;
 
   constructor({
-    handler,
+    worker,
     retryAttempts = 2,
     retryDelayInMs = 30000,
     retryBackoffRate = 2,
@@ -106,8 +106,8 @@ export class InMemoryMessageQueueAdapter<M extends Message = Message>
       });
     };
 
-    if (handler !== undefined) {
-      this.subscribe(handler);
+    if (worker !== undefined) {
+      this.subscribe(worker);
     }
 
     this.publishMessage = async message =>
@@ -130,7 +130,7 @@ export class InMemoryMessageQueueAdapter<M extends Message = Message>
       });
   }
 
-  set handler(handler: (message: M) => Promise<void>) {
-    this.subscribe(handler);
+  set worker(worker: (message: M) => Promise<void>) {
+    this.subscribe(worker);
   }
 }

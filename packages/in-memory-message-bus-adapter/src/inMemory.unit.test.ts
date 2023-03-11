@@ -3,9 +3,9 @@ import { EventEmitter } from 'events';
 import type { A } from 'ts-toolbelt';
 
 import {
+  MessageBusMessage,
   EventStoreNotificationMessage,
   NotificationMessageBus,
-  MessageBusSourceEventStores,
 } from '@castore/core';
 import { userEventStore, counterEventStore } from '@castore/demo-blueprint';
 
@@ -16,9 +16,7 @@ const messageBus = new NotificationMessageBus({
   sourceEventStores: [userEventStore, counterEventStore],
 });
 
-type ExpectedMessage = EventStoreNotificationMessage<
-  MessageBusSourceEventStores<typeof messageBus>
->;
+type ExpectedMessage = MessageBusMessage<typeof messageBus>;
 
 const userCreatedEvent: EventStoreNotificationMessage<typeof userEventStore> = {
   eventStoreId: 'USER',
