@@ -12,7 +12,7 @@ npm install @castore/in-memory-message-queue-adapter
 yarn add @castore/in-memory-message-queue-adapter
 ```
 
-This package has `@castore/core` as peer dependencies, so you will have to install it as well:
+This package has `@castore/core` as peer dependency, so you will have to install it as well:
 
 ```bash
 # npm

@@ -14,7 +14,7 @@ npm install @castore/inmemory-event-storage-adapter
 yarn add @castore/inmemory-event-storage-adapter
 ```
 
-This package has `@castore/core` as peer dependencies, so you will have to install it as well:
+This package has `@castore/core` as peer dependency, so you will have to install it as well:
 
 ```bash
 # npm
