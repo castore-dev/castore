@@ -1,5 +1,6 @@
 export type {
   MessageQueueSourceEventStores,
+  MessageQueueMessage,
   MessageQueueSourceEventStoreIds,
   MessageQueueSourceEventStoreIdTypes,
 } from './generics';

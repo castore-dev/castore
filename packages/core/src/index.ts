@@ -48,10 +48,12 @@ export {
 } from './messaging';
 export type {
   MessageBusSourceEventStores,
+  MessageBusMessage,
   MessageBusSourceEventStoresIds,
   MessageBusSourceEventStoreIdTypes,
   MessageBusAdapter,
   MessageQueueSourceEventStores,
+  MessageQueueMessage,
   MessageQueueSourceEventStoreIds,
   MessageQueueSourceEventStoreIdTypes,
   MessageQueueAdapter,

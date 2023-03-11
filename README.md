@@ -870,6 +870,21 @@ await appMessageQueue.publishMessage({
 >
 > - <code>getAggregateAndPublishMessage <i>((message: NotificationMessage) => Promise\<void\>)</i></code>: _(StateCarryingMessageQueues only)_ Append the matching aggregate (with correct version) to a `NotificationMessage` and turn it into a `StateCarryingMessage` before publishing it to the message queue. Uses the message queue event stores: Make sure that they have correct adapters set up.
 >
+> **Type Helpers:**
+>
+> - <code>MessageQueueMessage</code>: Given a `MessageQueue`, returns the TS type of its messages
+>
+> ```ts
+> import type { MessageQueueMessage } from '@castore/core';
+>
+> type AppMessage = MessageQueueMessage<typeof appMessageQueue>;
+>
+> // 👇 Equivalent to:
+> type AppMessage = EventStoreNotificationMessage<
+>   typeof userEventStore | typeof counterEventStore...
+> >;
+> ```
+>
 > </details>
 
 ### - `MessageQueueAdapter`
@@ -983,6 +998,21 @@ await appMessageBus.publishMessage({
 > - <code>publishMessage <i>((message: NotificationMessage | StateCarryingMessage) => Promise\<void\>)</i></code>: Publish a `NotificationMessage` (for `NotificationMessageBuses`) or a `StateCarryingMessage` (for `StateCarryingMessageBuses`) to the message bus.
 >
 > - <code>getAggregateAndPublishMessage <i>((message: NotificationMessage) => Promise\<void\>)</i></code>: _(StateCarryingMessageBuses only)_ Append the matching aggregate (with correct version) to a `NotificationMessage` and turn it into a `StateCarryingMessage` before publishing it to the message bus. Uses the message bus event stores: Make sure that they have correct adapters set up.
+>
+> **Type Helpers:**
+>
+> - <code>MessageBusMessage</code>: Given a `MessageBus`, returns the TS type of its messages
+>
+> ```ts
+> import type { MessageBusMessage } from '@castore/core';
+>
+> type AppMessage = MessageBusMessage<typeof appMessageBus>;
+>
+> // 👇 Equivalent to:
+> type AppMessage = EventStoreNotificationMessage<
+>   typeof userEventStore | typeof counterEventStore...
+> >;
+> ```
 >
 > </details>
 
