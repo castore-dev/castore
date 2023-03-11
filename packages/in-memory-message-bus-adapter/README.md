@@ -24,4 +24,122 @@ yarn add @castore/core
 
 ## 👩‍💻 Usage
 
-_coming soon_
+The simplest way to use this adapter is to use the `attachTo` static method:
+
+```ts
+// 👇 Note: EventEmitter is a native NodeJS library
+// Outside of NodeJS (like browsers) you can use the event-emitter package
+import { EventEmitter } from 'events';
+
+import { InMemoryMessageBusAdapter } from '@castore/in-memory-message-bus-adapter';
+
+const eventEmitter = new EventEmitter();
+
+const messageBusAdapter = InMemoryMessageBusAdapter.attachTo(
+  appMessageBus,
+  { eventEmitter }, // <= Constructor arguments
+);
+```
+
+This will make your `messageBusAdapter` inherit from your `appMessageBus` types while plugging them together 🙌
+
+You can also instanciate one on its own, but notice the code duplication:
+
+```ts
+import type { MessageBusMessage } from '@castore/core';
+import { InMemoryMessageBusAdapter } from '@castore/in-memory-message-bus-adapter';
+
+const messageBusAdapter = new InMemoryMessageBusAdapter<
+  MessageBusMessage<typeof appMessageBus>
+>({ eventEmitter });
+
+appMessageBus.messageBusAdapter = messageBusAdapter;
+```
+
+## 👂 Add listeners
+
+Similarly to event emitters, the `inMemoryMessageBusAdapter` exposes an `on` method that takes two arguments:
+
+- A filter patterns to optionally specify an `eventStoreId` and an event `type` to listen to
+- An async callback to execute if the message matches the filter pattern
+
+```ts
+// 👇 Listen to all messages
+messageBusAdapter.on({}, async message => {
+  // 🙌 Correctly typed!
+  const { eventStoreId, event } = message;
+});
+
+// 👇 Listen to users messages
+messageBusAdapter.on({ eventStoreId: 'USERS' }, async message => {
+  // 🙌 Correctly typed!
+  const { eventStoreId, event } = message;
+});
+
+// 👇 Listen only to user created messages
+messageBusAdapter.on(
+  { eventStoreId: 'USERS', eventType: 'USER_CREATED' },
+  async message => {
+    // 🙌 Correctly typed!
+    const { eventStoreId, event } = message;
+  },
+);
+```
+
+The same callback can be re-used with different filter patterns. If a message matches several of them, it will still be triggered once:
+
+```ts
+const logSomething = async () => {
+  console.log('Received message!');
+};
+
+messageBusAdapter.on({ eventStoreId: 'USERS' }, logSomething);
+messageBusAdapter.on(
+  { eventStoreId: 'USERS', eventType: 'USER_CREATED' },
+  logSomething,
+);
+
+await appMessageBus.publishMessage(userCreatedEvent);
+
+// 👇 Console output (only once):
+// "Received message!"
+```
+
+> Listeners cannot be removed for now.
+
+## ♻️ Retry policy
+
+This adapter will retry failed messages handling on a per listener basis. You can specify a different retry policy than the default one via its constructor arguments:
+
+- <code>retryAttempts <i>(?number = 2)</i></code>: The maximum number of retry attempts for a message in case of listener execution failure. If all the retries fail, the error is logged with `console.error`, and the message ignored.
+- <code>retryDelayInMs <i>(?number = 30000)</i></code>: The minimum delay in milliseconds between a listener execution failure and its first retry.
+- <code>retryBackoffRate <i>(?number = 2)</i></code>: A factor applied to the `retryDelayInMs` at each subsequent retry.
+
+```ts
+const messageBusAdapter = InMemoryMessageBusAdapter.attachTo(appMessageBus, {
+  eventEmitter,
+  retryAttempts: 3,
+  retryDelayInMs: 10000,
+  retryBackoffRate: 1.5,
+});
+
+// 👇 Alternatively
+const messageBusAdapter = new InMemoryMessageBusAdapter<
+  MessageBusMessage<typeof appMessageBus>
+>({
+  eventEmitter,
+  retryAttempts: 3,
+  retryDelayInMs: 10000,
+  retryBackoffRate: 1.5,
+});
+```
+
+For instance, if a message is listened by two listeners A and B, with listener A continously failing, the sequence of code execution (with the default retry policy) will look like this:
+
+- Listener A execution: ❌ Failure
+- Listener B execution: ✅ Success
+- _30 seconds of delay_
+- Listener A execution: ❌ Failure
+- _60 seconds of delay (30x2)_
+- Listener A execution: ❌ Failure
+- _No more retry attempt, error is logged_
