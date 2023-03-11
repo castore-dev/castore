@@ -740,7 +740,7 @@ A few notes on commands handlers:
 
 ### - Event-driven architecture
 
-Event Sourcing integrates very well with [event-driven architectures](https://en.wikipedia.org/wiki/Event-driven_architecture). In a traditional architecture, you would need design your system events (or **messages** for clarity) separately from your database. With Event Sourcing, they can simply **broadcast the business events you already designed**.
+Event Sourcing integrates very well with [event-driven architectures](https://en.wikipedia.org/wiki/Event-driven_architecture). In a traditional architecture, you would need design your system events (or **messages** for clarity) separately from your data. With Event Sourcing, they can simply **broadcast the business events you already designed**.
 
 There are two kinds of messages:
 
@@ -1031,7 +1031,7 @@ const userMessagesListener = async (
 
 As events pile up in your event stores, the performances and costs of your commands can become an issue.
 
-One solution is to periodially persist **snapshots** of your aggregates (e.g. through a message bus subscription), and only fetch them plus the subsequent events instead of all the events.
+One solution is to periodially persist **snapshots** of your aggregates (e.g. through a message bus listener), and only fetch them plus the subsequent events instead of all the events.
 
 Snapshots are not implemented in Castore yet, but we have big plans for them, so stay tuned 🙂
 
@@ -1039,9 +1039,9 @@ Snapshots are not implemented in Castore yet, but we have big plans for them, so
 
 Even with snapshots, using the event store for querying needs (like displaying data in a web page) would be slow and inefficient, if not impossible depending on the access pattern.
 
-In Event Sourcing, it is common to use a special type of message bus subscription called **projections**, responsible for maintaining data specifically designed for querying needs, called **read models**.
+In Event Sourcing, it is common to use a special type of message bus listener called **projections**, responsible for maintaining data specifically designed for querying needs, called **read models**.
 
-Read models allow for faster read operations and re-indexing. Keep in mind that they are [eventually consistent](https://en.wikipedia.org/wiki/Eventual_consistency) by design, which can be annoying in some use cases (like opening a resource page directly after its creation).
+Read models allow for faster read operations, as well as re-indexing. Keep in mind that they are [eventually consistent](https://en.wikipedia.org/wiki/Eventual_consistency) by design, which can be annoying in some use cases (like opening a resource page directly after its creation).
 
 Read models are not implemented in Castore yet, but we have big plans for them, so stay tuned 🙂
 
