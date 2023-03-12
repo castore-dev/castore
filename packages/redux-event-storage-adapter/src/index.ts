@@ -1,4 +1,4 @@
-export { ReduxEventStorageAdapter } from './reduxAdapter';
+export { ReduxEventStorageAdapter } from './adapter';
 export * from './hooks';
 export { configureCastore } from './configureCastore';
 export { getCastoreReducers } from './getCastoreReducers';

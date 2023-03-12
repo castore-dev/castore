@@ -1,1 +1,1 @@
-export { InMemoryMessageQueueAdapter } from './queue';
+export { InMemoryMessageQueueAdapter } from './adapter';

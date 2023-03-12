@@ -9,7 +9,7 @@ import {
   tuple,
 } from '@castore/core';
 
-import { JSONSchemaCommand } from './jsonSchema';
+import { JSONSchemaCommand } from './command';
 
 export const pushEventMock = vi.fn();
 export const getEventsMock = vi.fn();

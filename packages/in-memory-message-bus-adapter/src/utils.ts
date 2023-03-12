@@ -1,6 +1,6 @@
-import { Message } from '@castore/core';
+import type { Message } from '@castore/core';
 
-import { FilterPattern } from './types';
+import type { FilterPattern } from './types';
 
 export const doesMessageMatchFilterPattern = (
   message: Message,

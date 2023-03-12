@@ -4,7 +4,7 @@ import { mockClient } from 'aws-sdk-client-mock';
 import type { EventStoreEventsDetails } from '@castore/core';
 import { counterEventStore } from '@castore/demo-blueprint';
 
-import { DynamoDbEventStorageAdapter } from '../dynamoDb';
+import { DynamoDbEventStorageAdapter } from '../adapter';
 import { formatEventForTransaction } from './formatEventForTransaction';
 
 const eventMock: EventStoreEventsDetails<typeof counterEventStore> = {

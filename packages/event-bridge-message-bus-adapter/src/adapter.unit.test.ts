@@ -7,7 +7,7 @@ import type { A } from 'ts-toolbelt';
 
 import type { Message } from '@castore/core';
 
-import { EventBridgeMessageBusAdapter } from './eventBridge';
+import { EventBridgeMessageBusAdapter } from './adapter';
 
 const eventBridgeClientMock = mockClient(EventBridgeClient);
 

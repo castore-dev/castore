@@ -6,9 +6,9 @@ import {
   ListAggregateIdsOutput,
 } from '@castore/core';
 
+import { ReduxEventStorageAdapter } from '~/adapter';
 import { EventStoreReduxStateNotFoundError } from '~/errors/eventStoreReduxStateNotFound';
 import { EventStoreReduxStorageAdapterNotFoundError } from '~/errors/reduxEventStorageAdapterNotFound';
-import { ReduxEventStorageAdapter } from '~/reduxAdapter';
 import { EventStoreReduxState } from '~/types';
 import {
   parseAppliedListAggregateIdsOptions,

@@ -1,4 +1,4 @@
-export { SQSMessageQueueAdapter } from './sqs';
+export { SQSMessageQueueAdapter } from './adapter';
 export type {
   SQSMessageQueueMessage,
   SQSMessageQueueMessageBody,

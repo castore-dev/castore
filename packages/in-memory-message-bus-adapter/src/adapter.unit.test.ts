@@ -9,7 +9,7 @@ import {
 } from '@castore/core';
 import { userEventStore, counterEventStore } from '@castore/demo-blueprint';
 
-import { InMemoryMessageBusAdapter } from './inMemory';
+import { InMemoryMessageBusAdapter } from './adapter';
 
 const messageBus = new NotificationMessageBus({
   messageBusId: 'messageBusId',

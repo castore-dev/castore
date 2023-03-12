@@ -3,7 +3,7 @@ import { A } from 'ts-toolbelt';
 
 import { Command } from '@castore/core';
 
-import { JSONSchemaCommand } from './jsonSchema';
+import { JSONSchemaCommand } from './command';
 import {
   counterEventStore,
   createCounter,
@@ -13,7 +13,7 @@ import {
   incrementCounterNoOutput,
   inputSchema,
   outputSchema,
-} from './jsonSchema.util.test';
+} from './command.util.test';
 
 type Input = FromSchema<typeof inputSchema>;
 type Output = FromSchema<typeof outputSchema>;

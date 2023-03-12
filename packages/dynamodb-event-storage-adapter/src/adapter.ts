@@ -8,7 +8,7 @@ import {
 import type { AttributeValue, DynamoDBClient } from '@aws-sdk/client-dynamodb';
 import { Marshaller } from '@aws/dynamodb-auto-marshaller';
 
-import type { EventDetail, StorageAdapter, Aggregate } from '@castore/core';
+import type { EventDetail, StorageAdapter } from '@castore/core';
 
 import { DynamoDBEventAlreadyExistsError } from './error';
 import {
@@ -33,9 +33,6 @@ export const EVENT_TABLE_PAYLOAD_KEY = 'payload';
 export const EVENT_TABLE_METADATA_KEY = 'metadata';
 export const EVENT_TABLE_IS_INITIAL_EVENT_KEY = 'isInitialEvent';
 export const EVENT_TABLE_INITIAL_EVENT_INDEX_NAME = 'initialEvents';
-
-const getSnapshotPKFromAggregateId = (aggregateId: string): string =>
-  `${aggregateId}#snapshot`;
 
 const isConditionalCheckFailedException = (error: Error): boolean =>
   typeof error === 'object' &&
@@ -242,82 +239,12 @@ export class DynamoDbEventStorageAdapter implements StorageAdapter {
       };
     };
 
-    this.putSnapshot = async aggregate => {
-      await this.dynamoDbClient.send(
-        new PutItemCommand({
-          TableName: this.getTableName(),
-          Item: marshaller.marshallItem({
-            aggregateId: getSnapshotPKFromAggregateId(aggregate.aggregateId),
-            version: aggregate.version,
-            aggregate,
-          }),
-        }),
-      );
-    };
+    this.putSnapshot = async () => new Promise(resolve => resolve());
 
-    this.getLastSnapshot = async (aggregateId, { maxVersion } = {}) => {
-      const { snapshots } = await this.listSnapshots(aggregateId, {
-        maxVersion,
-        limit: 1,
-        reverse: true,
-      });
+    this.getLastSnapshot = async () =>
+      new Promise(resolve => resolve({ snapshot: undefined }));
 
-      return { snapshot: snapshots[0] };
-    };
-
-    // eslint-disable-next-line complexity
-    this.listSnapshots = async (
-      aggregateId,
-      { minVersion, maxVersion, limit, reverse } = {},
-    ) => {
-      const marshalledSnapshots: Record<string, AttributeValue>[] = [];
-
-      const snapshotsQueryCommand = new QueryCommand({
-        TableName: this.getTableName(),
-        KeyConditionExpression:
-          maxVersion !== undefined
-            ? minVersion !== undefined
-              ? '#aggregateId = :aggregateId and #version between :minVersion and :maxVersion'
-              : '#aggregateId = :aggregateId and #version <= :maxVersion'
-            : minVersion !== undefined
-            ? '#aggregateId = :aggregateId and #version >= :minVersion'
-            : '#aggregateId = :aggregateId',
-        ExpressionAttributeNames: {
-          '#aggregateId': EVENT_TABLE_PK,
-          ...(maxVersion !== undefined || minVersion !== undefined
-            ? { '#version': EVENT_TABLE_SK }
-            : {}),
-        },
-        ExpressionAttributeValues: marshaller.marshallItem({
-          ':aggregateId': getSnapshotPKFromAggregateId(aggregateId),
-          ...(maxVersion !== undefined ? { ':maxVersion': maxVersion } : {}),
-          ...(minVersion !== undefined ? { ':minVersion': minVersion } : {}),
-        }),
-        ScanIndexForward: reverse !== true,
-        ConsistentRead: true,
-        ...(limit !== undefined ? { Limit: limit } : {}),
-      });
-
-      let snapshotsQueryResult = await this.dynamoDbClient.send(
-        snapshotsQueryCommand,
-      );
-      marshalledSnapshots.push(...(snapshotsQueryResult.Items ?? []));
-
-      while (snapshotsQueryResult.LastEvaluatedKey !== undefined) {
-        snapshotsQueryCommand.input.ExclusiveStartKey =
-          snapshotsQueryResult.LastEvaluatedKey;
-        snapshotsQueryResult = await this.dynamoDbClient.send(
-          snapshotsQueryCommand,
-        );
-
-        marshalledSnapshots.push(...(snapshotsQueryResult.Items ?? []));
-      }
-
-      return {
-        snapshots: marshalledSnapshots
-          .map(item => marshaller.unmarshallItem(item))
-          .map(item => item.aggregate) as Aggregate[],
-      };
-    };
+    this.listSnapshots = async () =>
+      new Promise(resolve => resolve({ snapshots: [] }));
   }
 }

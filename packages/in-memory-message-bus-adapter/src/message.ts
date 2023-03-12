@@ -3,7 +3,7 @@ import type { Message } from '@castore/core';
 type Prettify<OBJECTS extends Record<string, unknown>> =
   OBJECTS extends infer OBJECT
     ? {
-        [K in keyof OBJECT]: OBJECT[K];
+        [KEY in keyof OBJECT]: OBJECT[KEY];
       }
     : never;
 

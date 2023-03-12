@@ -1,4 +1,4 @@
-import { FromSchema, JSONSchema } from 'json-schema-to-ts';
+import type { FromSchema, JSONSchema } from 'json-schema-to-ts';
 
 import {
   Command,

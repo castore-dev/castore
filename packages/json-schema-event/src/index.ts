@@ -1,1 +1,1 @@
-export { JSONSchemaEventType } from './jsonSchema';
+export { JSONSchemaEventType } from './eventType';

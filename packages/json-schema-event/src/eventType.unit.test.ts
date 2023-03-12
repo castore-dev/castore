@@ -1,25 +1,42 @@
+import { FromSchema } from 'json-schema-to-ts';
 import { A } from 'ts-toolbelt';
-import { z } from 'zod';
 
 import { EventTypeDetail } from '@castore/core';
 
-import { ZodEventType } from './zodEvent';
+import { JSONSchemaEventType } from './eventType';
 
-describe('zodEvent implementation', () => {
+describe('jsonSchemaEvent implementation', () => {
   const type = 'SOMETHING_HAPPENED';
 
-  const payloadSchema = z.object({ message: z.string() });
+  const payloadSchema = {
+    type: 'object',
+    properties: {
+      message: { type: 'string' },
+    },
+    required: ['message'],
+    additionalProperties: false,
+  } as const;
 
-  type Payload = z.infer<typeof payloadSchema>;
+  type Payload = FromSchema<typeof payloadSchema>;
 
-  const metadataSchema = z.object({ userEmail: z.string().email() });
+  const metadataSchema = {
+    type: 'object',
+    properties: {
+      userEmail: { type: 'string', format: 'email' },
+    },
+    required: ['userEmail'],
+    additionalProperties: false,
+  } as const;
 
-  type Metadata = z.infer<typeof metadataSchema>;
+  type Metadata = FromSchema<typeof metadataSchema>;
 
   it('has correct properties (no payload, no metadata)', () => {
-    const simpleEventType = new ZodEventType({ type });
+    const simpleEventType = new JSONSchemaEventType({ type });
 
-    const assertExtends: A.Extends<typeof simpleEventType, ZodEventType> = 1;
+    const assertExtends: A.Extends<
+      typeof simpleEventType,
+      JSONSchemaEventType
+    > = 1;
     assertExtends;
 
     type SimpleEventTypeDetail = EventTypeDetail<typeof simpleEventType>;
@@ -41,9 +58,15 @@ describe('zodEvent implementation', () => {
   });
 
   it('has correct properties (with payload, no metadata)', () => {
-    const payloadEventType = new ZodEventType({ type, payloadSchema });
+    const payloadEventType = new JSONSchemaEventType({
+      type,
+      payloadSchema,
+    });
 
-    const assertExtends: A.Extends<typeof payloadEventType, ZodEventType> = 1;
+    const assertExtends: A.Extends<
+      typeof payloadEventType,
+      JSONSchemaEventType
+    > = 1;
     assertExtends;
 
     type PayloadEventTypeDetail = EventTypeDetail<typeof payloadEventType>;
@@ -66,9 +89,15 @@ describe('zodEvent implementation', () => {
   });
 
   it('has correct properties (no payload, with metadata)', () => {
-    const metadataEventType = new ZodEventType({ type, metadataSchema });
+    const metadataEventType = new JSONSchemaEventType({
+      type,
+      metadataSchema,
+    });
 
-    const assertExtends: A.Extends<typeof metadataEventType, ZodEventType> = 1;
+    const assertExtends: A.Extends<
+      typeof metadataEventType,
+      JSONSchemaEventType
+    > = 1;
     assertExtends;
 
     type MetadataEventTypeDetail = EventTypeDetail<typeof metadataEventType>;
@@ -91,13 +120,16 @@ describe('zodEvent implementation', () => {
   });
 
   it('has correct properties (with payload, with metadata)', () => {
-    const fullEventType = new ZodEventType({
+    const fullEventType = new JSONSchemaEventType({
       type,
       payloadSchema,
       metadataSchema,
     });
 
-    const assertExtends: A.Extends<typeof fullEventType, ZodEventType> = 1;
+    const assertExtends: A.Extends<
+      typeof fullEventType,
+      JSONSchemaEventType
+    > = 1;
     assertExtends;
 
     type FullEventTypeDetail = EventTypeDetail<typeof fullEventType>;
