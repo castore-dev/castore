@@ -29,8 +29,9 @@ const marshaller = new Marshaller() as {
   ) => Record<string, unknown>;
 };
 
-const timestamp = '2022-01-01T00:00:00.000Z';
-MockDate.set(timestamp);
+const timestampA = '2022-01-01T00:00:00.000Z';
+const timestampB = '2023-01-01T00:00:00.000Z';
+MockDate.set(timestampA);
 
 const dynamoDbTableNameMock = 'my-table-name';
 const eventStoreIdMock = 'my-event-store';
@@ -40,14 +41,14 @@ const initialEventMock = {
   aggregateId: aggregateIdMock,
   version: 1,
   type: 'event-type-1',
-  timestamp: '2022-01-01T00:00:00.000Z',
+  timestamp: timestampA,
 };
 
 const secondEventMock = {
   aggregateId: aggregateIdMock,
   version: 2,
   type: 'event-type-2',
-  timestamp: '2023-01-01T00:00:00.000Z',
+  timestamp: timestampB,
 };
 
 describe('DynamoDbEventStorageAdapter', () => {
@@ -74,7 +75,10 @@ describe('DynamoDbEventStorageAdapter', () => {
       expect(dynamoDbClientMock.call(0).args[0].input).toStrictEqual({
         ConditionExpression: 'attribute_not_exists(#version)',
         ExpressionAttributeNames: { '#version': EVENT_TABLE_SK },
-        Item: marshaller.marshallItem({ ...secondEventMock, timestamp }),
+        Item: marshaller.marshallItem({
+          ...secondEventMock,
+          timestamp: timestampA,
+        }),
         TableName: dynamoDbTableNameMock,
       });
     });
@@ -88,7 +92,10 @@ describe('DynamoDbEventStorageAdapter', () => {
       // https://github.com/m-radzikowski/aws-sdk-client-mock/issues/139
       expect(dynamoDbClientMock.calls()).toHaveLength(1);
       expect(dynamoDbClientMock.call(0).args[0].input).toMatchObject({
-        Item: marshaller.marshallItem({ ...initialEventMock, timestamp }),
+        Item: marshaller.marshallItem({
+          ...initialEventMock,
+          timestamp: timestampA,
+        }),
       });
     });
   });
@@ -188,6 +195,44 @@ describe('DynamoDbEventStorageAdapter', () => {
       });
     });
 
+    it('adds min version', async () => {
+      await adapter.getEvents(aggregateIdMock, { minVersion: 3 });
+
+      // regularly check if vitest matchers are available (toHaveReceivedCommandWith)
+      // https://github.com/m-radzikowski/aws-sdk-client-mock/issues/139
+      expect(dynamoDbClientMock.call(0).args[0].input).toMatchObject({
+        ExpressionAttributeNames: {
+          '#aggregateId': EVENT_TABLE_PK,
+          '#version': EVENT_TABLE_SK,
+        },
+        ExpressionAttributeValues: marshaller.marshallItem({
+          ':aggregateId': aggregateIdMock,
+          ':minVersion': 3,
+        }),
+        KeyConditionExpression:
+          '#aggregateId = :aggregateId and #version >= :minVersion',
+      });
+    });
+
+    it('adds max version', async () => {
+      await adapter.getEvents(aggregateIdMock, { maxVersion: 5 });
+
+      // regularly check if vitest matchers are available (toHaveReceivedCommandWith)
+      // https://github.com/m-radzikowski/aws-sdk-client-mock/issues/139
+      expect(dynamoDbClientMock.call(0).args[0].input).toMatchObject({
+        ExpressionAttributeNames: {
+          '#aggregateId': EVENT_TABLE_PK,
+          '#version': EVENT_TABLE_SK,
+        },
+        ExpressionAttributeValues: marshaller.marshallItem({
+          ':aggregateId': aggregateIdMock,
+          ':maxVersion': 5,
+        }),
+        KeyConditionExpression:
+          '#aggregateId = :aggregateId and #version <= :maxVersion',
+      });
+    });
+
     it('adds min & max versions', async () => {
       await adapter.getEvents(aggregateIdMock, {
         minVersion: 3,
@@ -227,7 +272,7 @@ describe('DynamoDbEventStorageAdapter', () => {
       aggregateId: aggregateIdMock,
       version: 1,
       isInitialEvent: 1,
-      timestamp,
+      timestamp: timestampA,
     });
 
     it('sends a correct QueryCommand to dynamoDbClient to list aggregate ids', async () => {
