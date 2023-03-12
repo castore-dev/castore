@@ -1,1 +1,1 @@
-export { ZodEventType } from './zodEvent';
+export { ZodEventType } from './eventType';

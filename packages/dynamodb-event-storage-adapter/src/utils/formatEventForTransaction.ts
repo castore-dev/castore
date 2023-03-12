@@ -5,7 +5,7 @@ import type {
 
 import type { EventStore, EventStoreEventsDetails } from '@castore/core';
 
-import { DynamoDbEventStorageAdapter } from '../dynamoDb';
+import { DynamoDbEventStorageAdapter } from '../adapter';
 
 export interface EventTransaction {
   transactItem: TransactWriteItem;

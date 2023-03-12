@@ -4,7 +4,7 @@ import type { A } from 'ts-toolbelt';
 
 import type { Message } from '@castore/core';
 
-import { SQSMessageQueueAdapter } from './sqs';
+import { SQSMessageQueueAdapter } from './adapter';
 
 const sqsClientMock = mockClient(SQSClient);
 

@@ -8,7 +8,7 @@ import {
   inputSchema,
   outputSchema,
   requiredEventStores,
-} from './jsonSchema.util.test';
+} from './command.util.test';
 
 getEventsMock.mockResolvedValue({ events: counterEventsMocks });
 

@@ -9,7 +9,7 @@ import {
 } from '@castore/core';
 import { userEventStore, counterEventStore } from '@castore/demo-blueprint';
 
-import { Task, InMemoryMessageQueueAdapter } from './queue';
+import { Task, InMemoryMessageQueueAdapter } from './adapter';
 
 const messageQueue = new NotificationMessageQueue({
   messageQueueId: 'messageQueueId',

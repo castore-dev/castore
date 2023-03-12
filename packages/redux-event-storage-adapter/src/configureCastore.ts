@@ -2,8 +2,8 @@ import { configureStore, EnhancedStore } from '@reduxjs/toolkit';
 
 import { EventStore } from '@castore/core';
 
+import { ReduxEventStorageAdapter } from '~/adapter';
 import { getCastoreReducers } from '~/getCastoreReducers';
-import { ReduxEventStorageAdapter } from '~/reduxAdapter';
 import { EventStoresReduxState } from '~/types';
 import { DEFAULT_PREFIX } from '~/utils/getEventStoreSliceName';
 

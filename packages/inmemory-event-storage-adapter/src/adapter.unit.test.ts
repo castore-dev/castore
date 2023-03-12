@@ -1,8 +1,8 @@
 import { randomUUID } from 'crypto';
 import MockDate from 'mockdate';
 
+import { InMemoryStorageAdapter } from './adapter';
 import { InMemoryEventAlreadyExistsError } from './error';
-import { InMemoryStorageAdapter } from './inMemory';
 
 const eventStoreIdMock = 'eventStoreIdMock';
 

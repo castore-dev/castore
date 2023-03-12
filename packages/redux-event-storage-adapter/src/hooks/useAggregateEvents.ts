@@ -6,9 +6,9 @@ import {
   EventStoreEventsDetails,
 } from '@castore/core';
 
+import { ReduxEventStorageAdapter } from '~/adapter';
 import { EventStoreReduxStateNotFoundError } from '~/errors/eventStoreReduxStateNotFound';
 import { EventStoreReduxStorageAdapterNotFoundError } from '~/errors/reduxEventStorageAdapterNotFound';
-import { ReduxEventStorageAdapter } from '~/reduxAdapter';
 import { EventStoresReduxState } from '~/types';
 
 export const useAggregateEvents = <EVENT_STORE extends EventStore>(

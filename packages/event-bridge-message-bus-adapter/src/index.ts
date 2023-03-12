@@ -1,2 +1,2 @@
-export { EventBridgeMessageBusAdapter } from './eventBridge';
+export { EventBridgeMessageBusAdapter } from './adapter';
 export type { EventBridgeMessageBusMessage } from './message';
