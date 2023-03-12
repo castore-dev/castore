@@ -108,7 +108,7 @@ export class EventStore<
       return this.storageAdapter;
     };
 
-    this.getEvents = async (aggregateId, queryOptions) =>
+    this.getEvents = (aggregateId, queryOptions) =>
       this.getStorageAdapter().getEvents(
         aggregateId,
         queryOptions,
@@ -125,7 +125,7 @@ export class EventStore<
       });
     };
 
-    this.listAggregateIds = async options =>
+    this.listAggregateIds = options =>
       this.getStorageAdapter().listAggregateIds(options);
 
     this.buildAggregate = (eventDetails, aggregate) =>
