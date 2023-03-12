@@ -8,27 +8,29 @@ import type {
 import type { $Contravariant } from '~/utils';
 
 export type Reducer<
-  A extends Aggregate = Aggregate,
-  D extends EventDetail = EventDetail,
-  $D extends EventDetail = $Contravariant<D, EventDetail>,
-  $A extends Aggregate = $Contravariant<A, Aggregate>,
-> = (aggregate: $A, event: $D) => A;
+  AGGREGATE extends Aggregate = Aggregate,
+  EVENT_DETAIL extends EventDetail = EventDetail,
+  $EVENT_DETAIL extends EventDetail = $Contravariant<EVENT_DETAIL, EventDetail>,
+  $AGGREGATE extends Aggregate = $Contravariant<AGGREGATE, Aggregate>,
+> = (aggregate: $AGGREGATE, event: $EVENT_DETAIL) => AGGREGATE;
 
 export type SideEffectsSimulator<
-  D extends EventDetail,
-  $D extends EventDetail = $Contravariant<D, EventDetail>,
+  EVENT_DETAIL extends EventDetail,
+  $EVENT_DETAIL extends EventDetail = $Contravariant<EVENT_DETAIL, EventDetail>,
 > = (
-  indexedEvents: Record<string, Omit<$D, 'version'>>,
-  event: $D,
-) => Record<string, Omit<D, 'version'>>;
+  indexedEvents: Record<string, Omit<$EVENT_DETAIL, 'version'>>,
+  event: $EVENT_DETAIL,
+) => Record<string, Omit<EVENT_DETAIL, 'version'>>;
 
-export type EventsGetter<D extends EventDetail> = (
+export type EventsGetter<EVENT_DETAIL extends EventDetail> = (
   aggregateId: string,
   options?: EventsQueryOptions,
-) => Promise<{ events: D[] }>;
+) => Promise<{ events: EVENT_DETAIL[] }>;
 
-export type EventPusher<$D extends EventDetail> = (
-  eventDetail: $D extends infer U ? Omit<U, 'timestamp'> : never,
+export type EventPusher<$EVENT_DETAILS extends EventDetail> = (
+  eventDetail: $EVENT_DETAILS extends infer $EVENT_DETAIL
+    ? Omit<$EVENT_DETAIL, 'timestamp'>
+    : never,
 ) => Promise<void>;
 
 export type AggregateIdsLister = (
@@ -40,21 +42,26 @@ export type GetAggregateOptions = {
 };
 
 export type AggregateGetter<
-  D extends EventDetail,
-  A extends Aggregate,
-  R extends boolean = false,
+  EVENT_DETAIL extends EventDetail,
+  AGGREGATE extends Aggregate,
+  SHOULD_EXIST extends boolean = false,
 > = (
   aggregateId: string,
   options?: GetAggregateOptions,
 ) => Promise<{
-  aggregate: R extends true ? A : A | undefined;
-  events: D[];
-  lastEvent: R extends true ? D : D | undefined;
+  aggregate: SHOULD_EXIST extends true ? AGGREGATE : AGGREGATE | undefined;
+  events: EVENT_DETAIL[];
+  lastEvent: SHOULD_EXIST extends true
+    ? EVENT_DETAIL
+    : EVENT_DETAIL | undefined;
 }>;
 
 export type SimulationOptions = { simulationDate?: string };
 
-export type AggregateSimulator<$D extends EventDetail, A extends Aggregate> = (
-  events: $D[],
+export type AggregateSimulator<
+  $EVENT_DETAIL extends EventDetail,
+  AGGREGATE extends Aggregate,
+> = (
+  events: $EVENT_DETAIL[],
   options?: SimulationOptions,
-) => A | undefined;
+) => AGGREGATE | undefined;

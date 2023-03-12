@@ -12,9 +12,9 @@ export interface EventTransaction {
   dynamoDbClient: DynamoDBClient;
 }
 
-export const formatEventForTransaction = <E extends EventStore>(
-  eventStore: E,
-  eventDetail: EventStoreEventsDetails<E>,
+export const formatEventForTransaction = <EVENT_STORE extends EventStore>(
+  eventStore: EVENT_STORE,
+  eventDetail: EventStoreEventsDetails<EVENT_STORE>,
 ): EventTransaction => {
   const { eventStoreId, storageAdapter } = eventStore;
 

@@ -7,14 +7,14 @@ import {
 
 import { useAggregateEvents } from './useAggregateEvents';
 
-export const useAggregate = <E extends EventStore>(
-  eventStore: E,
+export const useAggregate = <EVENT_STORE extends EventStore>(
+  eventStore: EVENT_STORE,
   aggregateId: string,
   { maxVersion }: GetAggregateOptions = {},
 ): {
-  aggregate?: EventStoreAggregate<E>;
-  events: EventStoreEventsDetails<E>[];
-  lastEvent?: EventStoreEventsDetails<E>;
+  aggregate?: EventStoreAggregate<EVENT_STORE>;
+  events: EventStoreEventsDetails<EVENT_STORE>[];
+  lastEvent?: EventStoreEventsDetails<EVENT_STORE>;
 } => {
   const { events } = useAggregateEvents(eventStore, aggregateId, {
     maxVersion,

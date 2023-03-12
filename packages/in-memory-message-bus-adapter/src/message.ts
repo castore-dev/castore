@@ -1,32 +1,39 @@
 import type { Message } from '@castore/core';
 
-type Prettify<T extends Record<string, unknown>> = T extends infer U
-  ? {
-      [K in keyof U]: U[K];
-    }
-  : never;
+type Prettify<OBJECTS extends Record<string, unknown>> =
+  OBJECTS extends infer OBJECT
+    ? {
+        [K in keyof OBJECT]: OBJECT[K];
+      }
+    : never;
 
 export type InMemoryMessageBusMessage<
-  M extends Message = Message,
-  S extends M['eventStoreId'] = M['eventStoreId'],
-  T extends Extract<M, { eventStoreId: S }>['event']['type'] = Extract<
-    M,
-    { eventStoreId: S }
+  MESSAGE extends Message = Message,
+  EVENT_STORE_IDS extends MESSAGE['eventStoreId'] = MESSAGE['eventStoreId'],
+  EVENT_TYPES extends Extract<
+    MESSAGE,
+    { eventStoreId: EVENT_STORE_IDS }
+  >['event']['type'] = Extract<
+    MESSAGE,
+    { eventStoreId: EVENT_STORE_IDS }
   >['event']['type'],
 > = Prettify<
-  S extends infer I
-    ? I extends string
-      ? T extends infer U
-        ? Extract<M, { eventStoreId: S; event: { type: U } }>
+  EVENT_STORE_IDS extends infer EVENT_STORE_ID
+    ? EVENT_STORE_ID extends string
+      ? EVENT_TYPES extends infer EVENT_TYPE
+        ? Extract<
+            MESSAGE,
+            { eventStoreId: EVENT_STORE_IDS; event: { type: EVENT_TYPE } }
+          >
         : never
       : never
     : never
 >;
 
 export type Task<
-  M extends InMemoryMessageBusMessage = InMemoryMessageBusMessage,
+  MESSAGE extends InMemoryMessageBusMessage = InMemoryMessageBusMessage,
 > = {
-  message: M;
+  message: MESSAGE;
   retryHandlerIndex?: number;
   attempt: number;
   retryAttemptsLeft: number;

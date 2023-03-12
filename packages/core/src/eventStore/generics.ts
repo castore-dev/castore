@@ -1,21 +1,23 @@
 import { EventStore } from './eventStore';
 
-export type EventStoreId<E extends EventStore> = E['eventStoreId'];
+export type EventStoreId<EVENT_STORE extends EventStore> =
+  EVENT_STORE['eventStoreId'];
 
 /**
  * @debt v2 "rename as EventStoreEventTypes"
  */
-export type EventStoreEventsTypes<E extends EventStore> = E['eventStoreEvents'];
+export type EventStoreEventsTypes<EVENT_STORE extends EventStore> =
+  EVENT_STORE['eventStoreEvents'];
 
 /**
  * @debt v2 "rename as EventStoreEventDetails"
  */
-export type EventStoreEventsDetails<E extends EventStore> = NonNullable<
-  E['_types']
->['details'];
+export type EventStoreEventsDetails<EVENT_STORE extends EventStore> =
+  NonNullable<EVENT_STORE['_types']>['details'];
 
-export type EventStoreReducer<E extends EventStore> = E['reduce'];
+export type EventStoreReducer<EVENT_STORE extends EventStore> =
+  EVENT_STORE['reduce'];
 
-export type EventStoreAggregate<E extends EventStore> = NonNullable<
-  E['_types']
+export type EventStoreAggregate<EVENT_STORE extends EventStore> = NonNullable<
+  EVENT_STORE['_types']
 >['aggregate'];

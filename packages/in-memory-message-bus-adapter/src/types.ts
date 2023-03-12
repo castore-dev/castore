@@ -17,18 +17,18 @@ export type ConstructorArgs = {
 };
 
 export type InMemoryBusMessage<
-  Q extends NotificationMessageBus | StateCarryingMessageBus,
-> = NotificationMessageBus | StateCarryingMessageBus extends Q
+  MESSAGE_BUS extends NotificationMessageBus | StateCarryingMessageBus,
+> = NotificationMessageBus | StateCarryingMessageBus extends MESSAGE_BUS
   ? Message
-  : Q extends NotificationMessageBus
-  ? EventStoreNotificationMessage<MessageBusSourceEventStores<Q>>
-  : Q extends StateCarryingMessageBus
-  ? EventStoreStateCarryingMessage<MessageBusSourceEventStores<Q>>
+  : MESSAGE_BUS extends NotificationMessageBus
+  ? EventStoreNotificationMessage<MessageBusSourceEventStores<MESSAGE_BUS>>
+  : MESSAGE_BUS extends StateCarryingMessageBus
+  ? EventStoreStateCarryingMessage<MessageBusSourceEventStores<MESSAGE_BUS>>
   : never;
 
 export type FilterPattern<
-  E extends string = string,
-  T extends string = string,
+  EVENT_STORE_ID extends string = string,
+  EVENT_TYPE extends string = string,
 > =
-  | { eventStoreId?: E; eventType?: never }
-  | { eventStoreId: E; eventType?: T };
+  | { eventStoreId?: EVENT_STORE_ID; eventType?: never }
+  | { eventStoreId: EVENT_STORE_ID; eventType?: EVENT_TYPE };

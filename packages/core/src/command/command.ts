@@ -10,29 +10,38 @@ export type OnEventAlreadyExistsCallback = (
   context: { attemptNumber: number; retriesLeft: number },
 ) => Promise<void>;
 
-export const tuple = <A extends unknown[]>(...args: A): A => args;
+export const tuple = <ARGUMENTS extends unknown[]>(
+  ...args: ARGUMENTS
+): ARGUMENTS => args;
 
 export class Command<
-  C extends string = string,
-  E extends EventStore[] = EventStore[],
-  $E extends EventStore[] = $Contravariant<E, EventStore[]>,
+  COMMAND_ID extends string = string,
+  EVENT_STORES extends EventStore[] = EventStore[],
+  $EVENT_STORES extends EventStore[] = $Contravariant<
+    EVENT_STORES,
+    EventStore[]
+  >,
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  I = any,
+  INPUT = any,
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  O = any,
+  OUTPUT = any,
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  T extends any[] = any[],
+  CONTEXT extends any[] = any[],
 > {
   _types?: {
-    input: I;
-    output: O;
-    context: T;
+    input: INPUT;
+    output: OUTPUT;
+    context: CONTEXT;
   };
-  commandId: C;
-  requiredEventStores: E;
+  commandId: COMMAND_ID;
+  requiredEventStores: EVENT_STORES;
   eventAlreadyExistsRetries: number;
   onEventAlreadyExists: OnEventAlreadyExistsCallback;
-  handler: (input: I, eventStores: $E, ...context: T) => Promise<O>;
+  handler: (
+    input: INPUT,
+    eventStores: $EVENT_STORES,
+    ...context: CONTEXT
+  ) => Promise<OUTPUT>;
 
   constructor({
     commandId,
@@ -41,11 +50,15 @@ export class Command<
     onEventAlreadyExists = async () => new Promise(resolve => resolve()),
     handler,
   }: {
-    commandId: C;
-    requiredEventStores: E;
+    commandId: COMMAND_ID;
+    requiredEventStores: EVENT_STORES;
     eventAlreadyExistsRetries?: number;
     onEventAlreadyExists?: OnEventAlreadyExistsCallback;
-    handler: (input: I, eventStores: $E, ...context: T) => Promise<O>;
+    handler: (
+      input: INPUT,
+      eventStores: $EVENT_STORES,
+      ...context: CONTEXT
+    ) => Promise<OUTPUT>;
   }) {
     this.commandId = commandId;
     this.requiredEventStores = requiredEventStores;
@@ -88,14 +101,16 @@ export class Command<
   }
 }
 
-export type CommandId<C extends Command> = C['commandId'];
+export type CommandId<COMMAND extends Command> = COMMAND['commandId'];
 
-export type CommandInput<C extends Command> = NonNullable<C['_types']>['input'];
+export type CommandInput<COMMAND extends Command> = NonNullable<
+  COMMAND['_types']
+>['input'];
 
-export type CommandOutput<C extends Command> = NonNullable<
-  C['_types']
+export type CommandOutput<COMMAND extends Command> = NonNullable<
+  COMMAND['_types']
 >['output'];
 
-export type CommandContext<C extends Command> = NonNullable<
-  C['_types']
+export type CommandContext<COMMAND extends Command> = NonNullable<
+  COMMAND['_types']
 >['context'];

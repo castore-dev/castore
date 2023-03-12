@@ -8,14 +8,14 @@ import {
 
 import { useAggregate } from './useAggregate';
 
-export const useExistingAggregate = <E extends EventStore>(
-  eventStore: E,
+export const useExistingAggregate = <EVENT_STORE extends EventStore>(
+  eventStore: EVENT_STORE,
   aggregateId: string,
   options: GetAggregateOptions = {},
 ): {
-  aggregate: EventStoreAggregate<E>;
-  events: EventStoreEventsDetails<E>[];
-  lastEvent: EventStoreEventsDetails<E>;
+  aggregate: EventStoreAggregate<EVENT_STORE>;
+  events: EventStoreEventsDetails<EVENT_STORE>[];
+  lastEvent: EventStoreEventsDetails<EVENT_STORE>;
 } => {
   const { aggregate, events, lastEvent } = useAggregate(
     eventStore,

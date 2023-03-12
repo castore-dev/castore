@@ -7,24 +7,28 @@ import type { JSONSchemaCommand } from '@castore/json-schema-command';
 import { UnthemedVisualizer } from './UnthemedVisualizer';
 import { defaultTheme } from './defaultTheme';
 
-type ContextsByCommandId<C extends Command[]> = C extends [infer H, ...infer T]
-  ? H extends Command
-    ? T extends Command[]
-      ? CommandContext<H>['length'] extends 0
-        ? ContextsByCommandId<T>
-        : Record<CommandId<H>, CommandContext<H>> & ContextsByCommandId<T>
+type ContextsByCommandId<COMMANDS extends Command[]> = COMMANDS extends [
+  infer HEAD_COMMAND,
+  ...infer TAIL_COMMANDS,
+]
+  ? HEAD_COMMAND extends Command
+    ? TAIL_COMMANDS extends Command[]
+      ? CommandContext<HEAD_COMMAND>['length'] extends 0
+        ? ContextsByCommandId<TAIL_COMMANDS>
+        : Record<CommandId<HEAD_COMMAND>, CommandContext<HEAD_COMMAND>> &
+            ContextsByCommandId<TAIL_COMMANDS>
       : never
     : never
   : Record<never, unknown[]>;
 
-export const Visualizer = <C extends JSONSchemaCommand[]>({
+export const Visualizer = <COMMANDS extends JSONSchemaCommand[]>({
   commands,
   eventStores,
   contextsByCommandId,
 }: {
-  commands: C;
+  commands: COMMANDS;
   eventStores: EventStore[];
-  contextsByCommandId: ContextsByCommandId<C>;
+  contextsByCommandId: ContextsByCommandId<COMMANDS>;
 }): JSX.Element => (
   <ThemeProvider theme={defaultTheme}>
     <CssBaseline />

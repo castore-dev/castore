@@ -3,40 +3,40 @@ import { FromSchema, JSONSchema } from 'json-schema-to-ts';
 import { EventDetail, EventType } from '@castore/core';
 
 export class JSONSchemaEventType<
-  T extends string = string,
-  PS extends JSONSchema | undefined = JSONSchema | undefined,
-  P = JSONSchema extends PS
-    ? string extends T
+  TYPE extends string = string,
+  PAYLOAD_SCHEMA extends JSONSchema | undefined = JSONSchema | undefined,
+  PAYLOAD = JSONSchema extends PAYLOAD_SCHEMA
+    ? string extends TYPE
       ? unknown
       : never
-    : PS extends JSONSchema
-    ? FromSchema<PS>
+    : PAYLOAD_SCHEMA extends JSONSchema
+    ? FromSchema<PAYLOAD_SCHEMA>
     : never,
-  MS extends JSONSchema | undefined = JSONSchema | undefined,
-  M = JSONSchema extends MS
-    ? string extends T
+  METADATA_SCHEMA extends JSONSchema | undefined = JSONSchema | undefined,
+  METADATA = JSONSchema extends METADATA_SCHEMA
+    ? string extends TYPE
       ? unknown
       : never
-    : MS extends JSONSchema
-    ? FromSchema<MS>
+    : METADATA_SCHEMA extends JSONSchema
+    ? FromSchema<METADATA_SCHEMA>
     : never,
-> implements EventType<T, P, M>
+> implements EventType<TYPE, PAYLOAD, METADATA>
 {
   _types?: {
-    detail: EventDetail<T, P, M>;
+    detail: EventDetail<TYPE, PAYLOAD, METADATA>;
   };
-  type: T;
-  payloadSchema?: PS;
-  metadataSchema?: MS;
+  type: TYPE;
+  payloadSchema?: PAYLOAD_SCHEMA;
+  metadataSchema?: METADATA_SCHEMA;
 
   constructor({
     type,
     payloadSchema,
     metadataSchema,
   }: {
-    type: T;
-    payloadSchema?: PS;
-    metadataSchema?: MS;
+    type: TYPE;
+    payloadSchema?: PAYLOAD_SCHEMA;
+    metadataSchema?: METADATA_SCHEMA;
   }) {
     this.type = type;
     this.payloadSchema = payloadSchema;

@@ -10,20 +10,22 @@ import {
 } from './errors';
 import type { MessageBusAdapter } from './messageBusAdapter';
 
-export class StateCarryingMessageBus<E extends EventStore = EventStore> {
+export class StateCarryingMessageBus<
+  EVENT_STORE extends EventStore = EventStore,
+> {
   messageBusId: string;
-  sourceEventStores: E[];
-  sourceEventStoresById: Record<string, E>;
+  sourceEventStores: EVENT_STORE[];
+  sourceEventStoresById: Record<string, EVENT_STORE>;
 
   messageBusAdapter?: MessageBusAdapter;
   getMessageBusAdapter: () => MessageBusAdapter;
-  getEventStore: (eventStoreId: string) => E;
+  getEventStore: (eventStoreId: string) => EVENT_STORE;
 
   publishMessage: (
-    stateCarryingMessage: EventStoreStateCarryingMessage<E>,
+    stateCarryingMessage: EventStoreStateCarryingMessage<EVENT_STORE>,
   ) => Promise<void>;
   getAggregateAndPublishMessage: (
-    notificationMessage: EventStoreNotificationMessage<E>,
+    notificationMessage: EventStoreNotificationMessage<EVENT_STORE>,
   ) => Promise<void>;
 
   constructor({
@@ -31,7 +33,7 @@ export class StateCarryingMessageBus<E extends EventStore = EventStore> {
     sourceEventStores,
     messageBusAdapter: $messageBusAdapter,
   }: {
-    sourceEventStores: E[];
+    sourceEventStores: EVENT_STORE[];
     messageBusId: string;
     messageBusAdapter?: MessageBusAdapter;
   }) {
@@ -40,7 +42,7 @@ export class StateCarryingMessageBus<E extends EventStore = EventStore> {
 
     this.sourceEventStoresById = this.sourceEventStores.reduce(
       (acc, eventStore) => ({ [eventStore.eventStoreId]: eventStore, ...acc }),
-      {} as Record<string, E>,
+      {} as Record<string, EVENT_STORE>,
     );
 
     if ($messageBusAdapter) {

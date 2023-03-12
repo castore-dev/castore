@@ -1,22 +1,22 @@
 import { O } from 'ts-toolbelt';
 
 export type EventDetail<
-  T extends string = string,
-  P = unknown,
-  M = unknown,
+  TYPE extends string = string,
+  PAYLOAD = unknown,
+  METADATA = unknown,
 > = O.Optional<
   O.Omit<
     {
       aggregateId: string;
       version: number;
-      type: T;
+      type: TYPE;
       timestamp: string;
-      payload: P;
-      metadata: M;
+      payload: PAYLOAD;
+      metadata: METADATA;
     },
-    | ([P] extends [never] ? 'payload' : never)
-    | ([M] extends [never] ? 'metadata' : never)
+    | ([PAYLOAD] extends [never] ? 'payload' : never)
+    | ([METADATA] extends [never] ? 'metadata' : never)
   >,
-  | (undefined extends P ? 'payload' : never)
-  | (undefined extends M ? 'metadata' : never)
+  | (undefined extends PAYLOAD ? 'payload' : never)
+  | (undefined extends METADATA ? 'metadata' : never)
 >;
