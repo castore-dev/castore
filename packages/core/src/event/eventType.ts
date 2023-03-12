@@ -1,26 +1,30 @@
 import { EventDetail } from './eventDetail';
 
 export class EventType<
-  T extends string = string,
-  P = string extends T ? unknown : never,
-  M = string extends T ? unknown : never,
+  TYPE extends string = string,
+  PAYLOAD = string extends TYPE ? unknown : never,
+  METADATA = string extends TYPE ? unknown : never,
 > {
   _types?: {
-    detail: EventDetail<T, P, M>;
+    detail: EventDetail<TYPE, PAYLOAD, METADATA>;
   };
-  type: T;
+  type: TYPE;
 
-  constructor({ type }: { type: T }) {
+  constructor({ type }: { type: TYPE }) {
     this.type = type;
   }
 }
 
-export type EventTypeDetail<E extends EventType> = NonNullable<
-  E['_types']
+export type EventTypeDetail<EVENT_TYPE extends EventType> = NonNullable<
+  EVENT_TYPE['_types']
 >['detail'];
 
-export type EventTypesDetails<E extends EventType[]> = E[number] extends infer U
-  ? U extends EventType
-    ? EventTypeDetail<U>
-    : never
-  : never;
+/**
+ * @debt v2 "rename as EventTypeDetails"
+ */
+export type EventTypesDetails<EVENT_TYPES extends EventType[]> =
+  EVENT_TYPES[number] extends infer EVENT_TYPE
+    ? EVENT_TYPE extends EventType
+      ? EventTypeDetail<EVENT_TYPE>
+      : never
+    : never;

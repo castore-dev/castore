@@ -20,15 +20,17 @@ import {
   parseRetryDelayInMs,
 } from './utils';
 
-export class InMemoryMessageBusAdapter<M extends Message = Message>
+export class InMemoryMessageBusAdapter<MESSAGE extends Message = Message>
   implements MessageBusAdapter
 {
-  static attachTo<Q extends NotificationMessageBus | StateCarryingMessageBus>(
-    messageBus: Q,
+  static attachTo<
+    MESSAGE_BUS extends NotificationMessageBus | StateCarryingMessageBus,
+  >(
+    messageBus: MESSAGE_BUS,
     constructorArgs: ConstructorArgs,
-  ): InMemoryMessageBusAdapter<InMemoryBusMessage<Q>> {
+  ): InMemoryMessageBusAdapter<InMemoryBusMessage<MESSAGE_BUS>> {
     const messageBusAdapter = new InMemoryMessageBusAdapter<
-      InMemoryBusMessage<Q>
+      InMemoryBusMessage<MESSAGE_BUS>
     >(constructorArgs);
 
     messageBus.messageBusAdapter = messageBusAdapter;
@@ -41,18 +43,23 @@ export class InMemoryMessageBusAdapter<M extends Message = Message>
   retryDelayInMs: number;
   retryBackoffRate: number;
 
-  handlers: ((message: M) => Promise<void>)[];
+  handlers: ((message: MESSAGE) => Promise<void>)[];
   filterPatterns: FilterPattern[][];
 
   on: <
-    E extends M['eventStoreId'] = M['eventStoreId'],
-    T extends Extract<M, { eventStoreId: E }>['event']['type'] = Extract<
-      M,
-      { eventStoreId: E }
+    EVENT_STORE_ID extends MESSAGE['eventStoreId'] = MESSAGE['eventStoreId'],
+    EVENT_TYPE extends Extract<
+      MESSAGE,
+      { eventStoreId: EVENT_STORE_ID }
+    >['event']['type'] = Extract<
+      MESSAGE,
+      { eventStoreId: EVENT_STORE_ID }
     >['event']['type'],
   >(
-    filterPattern: FilterPattern<E, T>,
-    handler: (message: InMemoryMessageBusMessage<M, E, T>) => Promise<void>,
+    filterPattern: FilterPattern<EVENT_STORE_ID, EVENT_TYPE>,
+    handler: (
+      message: InMemoryMessageBusMessage<MESSAGE, EVENT_STORE_ID, EVENT_TYPE>,
+    ) => Promise<void>,
   ) => void;
 
   eventEmitter: EventEmitter;
@@ -111,27 +118,36 @@ export class InMemoryMessageBusAdapter<M extends Message = Message>
     this.filterPatterns = [];
 
     this.on = <
-      E extends M['eventStoreId'] = M['eventStoreId'],
-      T extends Extract<M, { eventStoreId: E }>['event']['type'] = Extract<
-        M,
-        { eventStoreId: E }
+      EVENT_STORE_ID extends MESSAGE['eventStoreId'] = MESSAGE['eventStoreId'],
+      EVENT_TYPE extends Extract<
+        MESSAGE,
+        { eventStoreId: EVENT_STORE_ID }
+      >['event']['type'] = Extract<
+        MESSAGE,
+        { eventStoreId: EVENT_STORE_ID }
       >['event']['type'],
     >(
-      filterPattern: FilterPattern<E, T>,
-      handler: (message: InMemoryMessageBusMessage<M, E, T>) => Promise<void>,
+      filterPattern: FilterPattern<EVENT_STORE_ID, EVENT_TYPE>,
+      handler: (
+        message: InMemoryMessageBusMessage<MESSAGE, EVENT_STORE_ID, EVENT_TYPE>,
+      ) => Promise<void>,
     ) => {
       let handlerIndex = this.handlers.findIndex(
         savedHandler => savedHandler === handler,
       );
 
       if (handlerIndex === -1) {
-        this.handlers.push(handler as (message: M) => Promise<void>);
+        this.handlers.push(handler as (message: MESSAGE) => Promise<void>);
         this.filterPatterns.push([filterPattern]);
         handlerIndex = this.handlers.length - 1;
 
         this.eventEmitter.on(
           'message',
-          (task: Task<InMemoryMessageBusMessage<M, E, T>>) => {
+          (
+            task: Task<
+              InMemoryMessageBusMessage<MESSAGE, EVENT_STORE_ID, EVENT_TYPE>
+            >,
+          ) => {
             const { message, retryHandlerIndex } = task;
 
             if (

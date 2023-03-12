@@ -8,47 +8,50 @@ import type {
 } from '~/eventStore';
 
 export type NotificationMessage<
-  I extends string = string,
-  E extends EventDetail = EventDetail,
-> = E extends infer U
-  ? U extends EventDetail
+  EVENT_STORE_ID extends string = string,
+  EVENT_DETAILS extends EventDetail = EventDetail,
+> = EVENT_DETAILS extends infer EVENT_DETAIL
+  ? EVENT_DETAIL extends EventDetail
     ? {
-        eventStoreId: I;
-        event: U;
+        eventStoreId: EVENT_STORE_ID;
+        event: EVENT_DETAIL;
       }
     : never
   : never;
 
 export type StateCarryingMessage<
-  I extends string = string,
-  E extends EventDetail = EventDetail,
-  A extends Aggregate = Aggregate,
-> = E extends infer U
-  ? U extends EventDetail
+  EVENT_STORE_ID extends string = string,
+  EVENT_DETAILS extends EventDetail = EventDetail,
+  AGGREGATE extends Aggregate = Aggregate,
+> = EVENT_DETAILS extends infer EVENT_DETAIL
+  ? EVENT_DETAIL extends EventDetail
     ? {
-        eventStoreId: I;
-        event: U;
-        aggregate: A;
+        eventStoreId: EVENT_STORE_ID;
+        event: EVENT_DETAIL;
+        aggregate: AGGREGATE;
       }
     : never
   : never;
 
 export type Message = NotificationMessage | StateCarryingMessage;
 
-export type EventStoreNotificationMessage<E extends EventStore> =
-  E extends infer M
-    ? M extends EventStore
-      ? NotificationMessage<EventStoreId<E>, EventStoreEventsDetails<E>>
+export type EventStoreNotificationMessage<EVENT_STORES extends EventStore> =
+  EVENT_STORES extends infer EVENT_STORE
+    ? EVENT_STORE extends EventStore
+      ? NotificationMessage<
+          EventStoreId<EVENT_STORE>,
+          EventStoreEventsDetails<EVENT_STORE>
+        >
       : never
     : never;
 
-export type EventStoreStateCarryingMessage<E extends EventStore> =
-  E extends infer M
-    ? M extends EventStore
+export type EventStoreStateCarryingMessage<EVENT_STORES extends EventStore> =
+  EVENT_STORES extends infer EVENT_STORE
+    ? EVENT_STORE extends EventStore
       ? StateCarryingMessage<
-          EventStoreId<E>,
-          EventStoreEventsDetails<E>,
-          EventStoreAggregate<E>
+          EventStoreId<EVENT_STORE>,
+          EventStoreEventsDetails<EVENT_STORE>,
+          EventStoreAggregate<EVENT_STORE>
         >
       : never
     : never;

@@ -10,22 +10,39 @@ import {
 import { InMemoryStorageAdapter } from '@castore/inmemory-event-storage-adapter';
 
 export class MockedEventStore<
-  I extends string = string,
-  E extends EventType[] = EventType[],
-  D extends EventDetail = EventTypesDetails<E>,
-  $D extends EventDetail = $Contravariant<D, EventDetail>,
-  R extends Reducer<Aggregate, $D> = Reducer<Aggregate, $D>,
-  A extends Aggregate = ReturnType<R>,
-> extends EventStore<I, E, D, $D, R, A> {
-  initialEvents: D[];
+  EVENT_STORE_ID extends string = string,
+  EVENT_TYPES extends EventType[] = EventType[],
+  EVENT_DETAIL extends EventDetail = EventTypesDetails<EVENT_TYPES>,
+  $EVENT_DETAIL extends EventDetail = $Contravariant<EVENT_DETAIL, EventDetail>,
+  REDUCER extends Reducer<Aggregate, $EVENT_DETAIL> = Reducer<
+    Aggregate,
+    $EVENT_DETAIL
+  >,
+  AGGREGATE extends Aggregate = ReturnType<REDUCER>,
+> extends EventStore<
+  EVENT_STORE_ID,
+  EVENT_TYPES,
+  EVENT_DETAIL,
+  $EVENT_DETAIL,
+  REDUCER,
+  AGGREGATE
+> {
+  initialEvents: EVENT_DETAIL[];
   reset: () => void;
 
   constructor({
     eventStore,
     initialEvents = [],
   }: {
-    eventStore: EventStore<I, E, D, $D, R, A>;
-    initialEvents?: D[];
+    eventStore: EventStore<
+      EVENT_STORE_ID,
+      EVENT_TYPES,
+      EVENT_DETAIL,
+      $EVENT_DETAIL,
+      REDUCER,
+      AGGREGATE
+    >;
+    initialEvents?: EVENT_DETAIL[];
   }) {
     super({
       eventStoreId: eventStore.eventStoreId,

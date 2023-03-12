@@ -18,40 +18,49 @@ import {
 } from './types';
 
 export class EventStore<
-  I extends string = string,
-  E extends EventType[] = EventType[],
-  D extends EventDetail = EventTypesDetails<E>,
+  EVENT_STORE_ID extends string = string,
+  EVENT_TYPES extends EventType[] = EventType[],
+  EVENT_DETAILS extends EventDetail = EventTypesDetails<EVENT_TYPES>,
   // cf https://devblogs.microsoft.com/typescript/announcing-typescript-4-7-rc/#optional-variance-annotations-for-type-parameters
   // EventStore is contravariant on its fns args: We have to type them as "any" so that EventStore implementations still extends the EventStore type
-  $D extends EventDetail = $Contravariant<D, EventDetail>,
-  R extends Reducer<Aggregate, $D> = Reducer<Aggregate, $D>,
-  A extends Aggregate = ReturnType<R>,
-  $A extends Aggregate = $Contravariant<A, Aggregate>,
+  $EVENT_DETAILS extends EventDetail = $Contravariant<
+    EVENT_DETAILS,
+    EventDetail
+  >,
+  REDUCER extends Reducer<Aggregate, $EVENT_DETAILS> = Reducer<
+    Aggregate,
+    $EVENT_DETAILS
+  >,
+  AGGREGATE extends Aggregate = ReturnType<REDUCER>,
+  $AGGREGATE extends Aggregate = $Contravariant<AGGREGATE, Aggregate>,
 > {
   _types?: {
-    details: D;
-    aggregate: A;
+    details: EVENT_DETAILS;
+    aggregate: AGGREGATE;
   };
-  eventStoreId: I;
+  eventStoreId: EVENT_STORE_ID;
   /**
    * @debt v2 "rename as eventTypes"
    */
-  eventStoreEvents: E;
+  eventStoreEvents: EVENT_TYPES;
   /**
    * @debt v2 "rename as reducer"
    */
-  reduce: R;
-  simulateSideEffect: SideEffectsSimulator<D, $D>;
+  reduce: REDUCER;
+  simulateSideEffect: SideEffectsSimulator<EVENT_DETAILS, $EVENT_DETAILS>;
 
-  getEvents: EventsGetter<D>;
-  pushEvent: EventPusher<$D>;
+  getEvents: EventsGetter<EVENT_DETAILS>;
+  pushEvent: EventPusher<$EVENT_DETAILS>;
   listAggregateIds: AggregateIdsLister;
 
-  buildAggregate: (events: $D[], aggregate?: $A) => A | undefined;
+  buildAggregate: (
+    events: $EVENT_DETAILS[],
+    aggregate?: $AGGREGATE,
+  ) => AGGREGATE | undefined;
 
-  getAggregate: AggregateGetter<D, A>;
-  getExistingAggregate: AggregateGetter<D, A, true>;
-  simulateAggregate: AggregateSimulator<$D, A>;
+  getAggregate: AggregateGetter<EVENT_DETAILS, AGGREGATE>;
+  getExistingAggregate: AggregateGetter<EVENT_DETAILS, AGGREGATE, true>;
+  simulateAggregate: AggregateSimulator<$EVENT_DETAILS, AGGREGATE>;
   /**
    * @debt v2 "rename as eventStorageAdapter"
    */
@@ -68,16 +77,16 @@ export class EventStore<
     }),
     storageAdapter: $storageAdapter,
   }: {
-    eventStoreId: I;
+    eventStoreId: EVENT_STORE_ID;
     /**
      * @debt v2 "rename as eventTypes"
      */
-    eventStoreEvents: E;
+    eventStoreEvents: EVENT_TYPES;
     /**
      * @debt v2 "rename as reducer"
      */
-    reduce: R;
-    simulateSideEffect?: SideEffectsSimulator<D, $D>;
+    reduce: REDUCER;
+    simulateSideEffect?: SideEffectsSimulator<EVENT_DETAILS, $EVENT_DETAILS>;
     storageAdapter?: StorageAdapter;
   }) {
     this.eventStoreId = eventStoreId;
@@ -106,7 +115,7 @@ export class EventStore<
         /**
          * @debt feature "For the moment we just cast, we could implement validation + type guards at EventType level"
          */
-      ) as Promise<{ events: D[] }>;
+      ) as Promise<{ events: EVENT_DETAILS[] }>;
 
     this.pushEvent = async eventDetail => {
       const storageAdapter = this.getStorageAdapter();
@@ -120,13 +129,13 @@ export class EventStore<
       this.getStorageAdapter().listAggregateIds(options);
 
     this.buildAggregate = (eventDetails, aggregate) =>
-      eventDetails.reduce(this.reduce, aggregate) as A | undefined;
+      eventDetails.reduce(this.reduce, aggregate) as AGGREGATE | undefined;
 
     this.getAggregate = async (aggregateId, { maxVersion } = {}) => {
       const { events } = await this.getEvents(aggregateId, { maxVersion });
 
       const aggregate = this.buildAggregate(
-        events as unknown as $D[],
+        events as unknown as $EVENT_DETAILS[],
         undefined,
       );
 
@@ -153,10 +162,10 @@ export class EventStore<
       let eventsWithSideEffects = Object.values(
         events.reduce(
           this.simulateSideEffect as unknown as (
-            indexedEvents: Record<string, Omit<$D, 'version'>>,
-            event: $D,
-          ) => Record<string, Omit<$D, 'version'>>,
-          {} as Record<string, $D>,
+            indexedEvents: Record<string, Omit<$EVENT_DETAILS, 'version'>>,
+            event: $EVENT_DETAILS,
+          ) => Record<string, Omit<$EVENT_DETAILS, 'version'>>,
+          {} as Record<string, $EVENT_DETAILS>,
         ),
       );
 
@@ -170,7 +179,10 @@ export class EventStore<
         .sort(({ timestamp: timestampA }, { timestamp: timestampB }) =>
           timestampA < timestampB ? -1 : 1,
         )
-        .map((event, index) => ({ ...event, version: index + 1 })) as $D[];
+        .map((event, index) => ({
+          ...event,
+          version: index + 1,
+        })) as $EVENT_DETAILS[];
 
       return this.buildAggregate(sortedEventsWithSideEffects);
     };

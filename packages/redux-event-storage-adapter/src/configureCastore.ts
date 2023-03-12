@@ -7,13 +7,13 @@ import { ReduxEventStorageAdapter } from '~/reduxAdapter';
 import { EventStoresReduxState } from '~/types';
 import { DEFAULT_PREFIX } from '~/utils/getEventStoreSliceName';
 
-export const configureCastore = <E extends EventStore[]>({
+export const configureCastore = <EVENT_STORES extends EventStore[]>({
   eventStores,
   prefix = DEFAULT_PREFIX,
 }: {
-  eventStores: E;
+  eventStores: EVENT_STORES;
   prefix?: string;
-}): EnhancedStore<EventStoresReduxState<E>> => {
+}): EnhancedStore<EventStoresReduxState<EVENT_STORES>> => {
   const castoreReducers = getCastoreReducers({ eventStores, prefix });
 
   const store = configureStore({ reducer: castoreReducers });
@@ -26,5 +26,5 @@ export const configureCastore = <E extends EventStore[]>({
     });
   });
 
-  return store as EnhancedStore<EventStoresReduxState<E>>;
+  return store as EnhancedStore<EventStoresReduxState<EVENT_STORES>>;
 };

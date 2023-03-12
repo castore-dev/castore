@@ -15,15 +15,15 @@ import {
   ParsedPageToken,
 } from '~/utils/parseAppliedListAggregateIdsOptions';
 
-export const useAggregateIds = <E extends EventStore>(
-  eventStore: E,
+export const useAggregateIds = <EVENT_STORE extends EventStore>(
+  eventStore: EVENT_STORE,
   {
     limit: inputLimit,
     pageToken: inputPageToken,
   }: ListAggregateIdsOptions = {},
 ): ListAggregateIdsOutput => {
   const aggregateIdsWithInitialEventTimestamps = (useSelector<
-    Record<string, EventStoreReduxState<E>>
+    Record<string, EventStoreReduxState<EVENT_STORE>>
   >(state => {
     const storageAdapter = eventStore.getStorageAdapter();
 

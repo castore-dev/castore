@@ -17,39 +17,39 @@ import {
 } from './utils';
 
 type InMemoryQueueMessage<
-  Q extends NotificationMessageQueue | StateCarryingMessageQueue,
-> = NotificationMessageQueue | StateCarryingMessageQueue extends Q
+  MESSAGE extends NotificationMessageQueue | StateCarryingMessageQueue,
+> = NotificationMessageQueue | StateCarryingMessageQueue extends MESSAGE
   ? Message
-  : Q extends NotificationMessageQueue
-  ? EventStoreNotificationMessage<MessageQueueSourceEventStores<Q>>
-  : Q extends StateCarryingMessageQueue
-  ? EventStoreStateCarryingMessage<MessageQueueSourceEventStores<Q>>
+  : MESSAGE extends NotificationMessageQueue
+  ? EventStoreNotificationMessage<MessageQueueSourceEventStores<MESSAGE>>
+  : MESSAGE extends StateCarryingMessageQueue
+  ? EventStoreStateCarryingMessage<MessageQueueSourceEventStores<MESSAGE>>
   : never;
 
-export type Task<M extends Message = Message> = {
-  message: M;
+export type Task<MESSAGE extends Message = Message> = {
+  message: MESSAGE;
   attempt: number;
   retryAttemptsLeft: number;
 };
 
-type ConstructorArgs<M extends Message = Message> = {
-  worker?: (message: M) => Promise<void>;
+type ConstructorArgs<MESSAGE extends Message = Message> = {
+  worker?: (message: MESSAGE) => Promise<void>;
   retryAttempts?: number;
   retryDelayInMs?: number;
   retryBackoffRate?: number;
 };
 
-export class InMemoryMessageQueueAdapter<M extends Message = Message>
+export class InMemoryMessageQueueAdapter<MESSAGE extends Message = Message>
   implements MessageQueueAdapter
 {
   static attachTo<
-    Q extends NotificationMessageQueue | StateCarryingMessageQueue,
+    MESSAGE_QUEUE extends NotificationMessageQueue | StateCarryingMessageQueue,
   >(
-    messageQueue: Q,
-    constructorArgs: ConstructorArgs<InMemoryQueueMessage<Q>> = {},
-  ): InMemoryMessageQueueAdapter<InMemoryQueueMessage<Q>> {
+    messageQueue: MESSAGE_QUEUE,
+    constructorArgs: ConstructorArgs<InMemoryQueueMessage<MESSAGE_QUEUE>> = {},
+  ): InMemoryMessageQueueAdapter<InMemoryQueueMessage<MESSAGE_QUEUE>> {
     const messageQueueAdapter = new InMemoryMessageQueueAdapter<
-      InMemoryQueueMessage<Q>
+      InMemoryQueueMessage<MESSAGE_QUEUE>
     >(constructorArgs);
 
     messageQueue.messageQueueAdapter = messageQueueAdapter;
@@ -58,24 +58,26 @@ export class InMemoryMessageQueueAdapter<M extends Message = Message>
   }
 
   publishMessage: MessageQueueAdapter['publishMessage'];
-  private subscribe: (nextHandler: (message: M) => Promise<void>) => void;
+  private subscribe: (nextHandler: (message: MESSAGE) => Promise<void>) => void;
   retryAttempts: number;
   retryDelayInMs: number;
   retryBackoffRate: number;
 
-  queue?: queueAsPromised<Task<M>, void>;
+  queue?: queueAsPromised<Task<MESSAGE>, void>;
 
   constructor({
     worker,
     retryAttempts = 2,
     retryDelayInMs = 30000,
     retryBackoffRate = 2,
-  }: ConstructorArgs<M>) {
+  }: ConstructorArgs<MESSAGE>) {
     this.retryDelayInMs = parseRetryDelayInMs(retryDelayInMs);
     this.retryAttempts = parseRetryAttempts(retryAttempts);
     this.retryBackoffRate = parseBackoffRate(retryBackoffRate);
 
-    this.subscribe = (nextHandler: (message: M) => Promise<void>): void => {
+    this.subscribe = (
+      nextHandler: (message: MESSAGE) => Promise<void>,
+    ): void => {
       this.queue = fastQ(({ message }) => nextHandler(message), 1);
       this.queue.error((error, task) => {
         // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
@@ -121,7 +123,7 @@ export class InMemoryMessageQueueAdapter<M extends Message = Message>
         }
 
         void queue.push({
-          message: message as M,
+          message: message as MESSAGE,
           attempt: 1,
           retryAttemptsLeft: this.retryAttempts,
         });
@@ -130,7 +132,7 @@ export class InMemoryMessageQueueAdapter<M extends Message = Message>
       });
   }
 
-  set worker(worker: (message: M) => Promise<void>) {
+  set worker(worker: (message: MESSAGE) => Promise<void>) {
     this.subscribe(worker);
   }
 }

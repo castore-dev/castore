@@ -12,60 +12,64 @@ import type {
   MessageBusSourceEventStores,
 } from '@castore/core';
 
-type Prettify<T extends Record<string, unknown>> = T extends infer U
-  ? {
-      [K in keyof U]: U[K];
-    }
-  : never;
+type Prettify<OBJECTS extends Record<string, unknown>> =
+  OBJECTS extends infer OBJECT
+    ? {
+        [KEY in keyof OBJECT]: OBJECT[KEY];
+      }
+    : never;
 
 export type EventBridgeMessageBusMessage<
-  M extends NotificationMessageBus | StateCarryingMessageBus,
-  S extends MessageBusSourceEventStoresIds<M> = MessageBusSourceEventStoresIds<M>,
-  T extends MessageBusSourceEventStoreIdTypes<
-    M,
-    S
-  > = MessageBusSourceEventStoreIdTypes<M, S>,
+  MESSAGE_BUS extends NotificationMessageBus | StateCarryingMessageBus,
+  EVENT_STORE_IDS extends MessageBusSourceEventStoresIds<MESSAGE_BUS> = MessageBusSourceEventStoresIds<MESSAGE_BUS>,
+  EVENT_TYPES extends MessageBusSourceEventStoreIdTypes<
+    MESSAGE_BUS,
+    EVENT_STORE_IDS
+  > = MessageBusSourceEventStoreIdTypes<MESSAGE_BUS, EVENT_STORE_IDS>,
 > = Prettify<
-  S extends infer I
-    ? I extends string
-      ? T extends infer U
-        ? U extends MessageBusSourceEventStoreIdTypes<M, I>
+  EVENT_STORE_IDS extends infer EVENT_STORE_ID
+    ? EVENT_STORE_ID extends string
+      ? EVENT_TYPES extends infer EVENT_TYPE
+        ? EVENT_TYPE extends MessageBusSourceEventStoreIdTypes<
+            MESSAGE_BUS,
+            EVENT_STORE_ID
+          >
           ? EventBridgeEvent<
-              U,
-              M extends NotificationMessageBus
+              EVENT_TYPE,
+              MESSAGE_BUS extends NotificationMessageBus
                 ? NotificationMessage<
-                    I,
+                    EVENT_STORE_ID,
                     Extract<
                       EventStoreEventsDetails<
                         Extract<
-                          MessageBusSourceEventStores<M>,
-                          { eventStoreId: S }
+                          MessageBusSourceEventStores<MESSAGE_BUS>,
+                          { eventStoreId: EVENT_STORE_IDS }
                         >
                       >,
-                      { type: U }
+                      { type: EVENT_TYPE }
                     >
                   >
-                : M extends StateCarryingMessageBus
+                : MESSAGE_BUS extends StateCarryingMessageBus
                 ? StateCarryingMessage<
-                    I,
+                    EVENT_STORE_ID,
                     Extract<
                       EventStoreEventsDetails<
                         Extract<
-                          MessageBusSourceEventStores<M>,
-                          { eventStoreId: S }
+                          MessageBusSourceEventStores<MESSAGE_BUS>,
+                          { eventStoreId: EVENT_STORE_IDS }
                         >
                       >,
-                      { type: U }
+                      { type: EVENT_TYPE }
                     >,
                     EventStoreAggregate<
                       Extract<
-                        MessageBusSourceEventStores<M>,
-                        { eventStoreId: S }
+                        MessageBusSourceEventStores<MESSAGE_BUS>,
+                        { eventStoreId: EVENT_STORE_IDS }
                       >
                     >
                   >
                 : never
-            > & { source: I }
+            > & { source: EVENT_STORE_ID }
           : never
         : never
       : never

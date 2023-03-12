@@ -11,24 +11,27 @@ import type { NotificationMessageBus } from './notificationMessageBus';
 import type { StateCarryingMessageBus } from './stateCarryingMessageBus';
 
 export type MessageBusSourceEventStores<
-  M extends NotificationMessageBus | StateCarryingMessageBus,
-> = M['sourceEventStores'][number];
+  MESSAGE_BUS extends NotificationMessageBus | StateCarryingMessageBus,
+> = MESSAGE_BUS['sourceEventStores'][number];
 
 export type MessageBusMessage<
-  Q extends NotificationMessageBus | StateCarryingMessageBus,
-> = Q extends NotificationMessageBus
-  ? EventStoreNotificationMessage<MessageBusSourceEventStores<Q>>
-  : Q extends StateCarryingMessageBus
-  ? EventStoreStateCarryingMessage<MessageBusSourceEventStores<Q>>
+  MESSAGE_BUS extends NotificationMessageBus | StateCarryingMessageBus,
+> = MESSAGE_BUS extends NotificationMessageBus
+  ? EventStoreNotificationMessage<MessageBusSourceEventStores<MESSAGE_BUS>>
+  : MESSAGE_BUS extends StateCarryingMessageBus
+  ? EventStoreStateCarryingMessage<MessageBusSourceEventStores<MESSAGE_BUS>>
   : never;
 
 export type MessageBusSourceEventStoresIds<
-  M extends NotificationMessageBus | StateCarryingMessageBus,
-> = EventStoreId<MessageBusSourceEventStores<M>>;
+  MESSAGE_BUS extends NotificationMessageBus | StateCarryingMessageBus,
+> = EventStoreId<MessageBusSourceEventStores<MESSAGE_BUS>>;
 
 export type MessageBusSourceEventStoreIdTypes<
-  M extends NotificationMessageBus | StateCarryingMessageBus,
-  S extends MessageBusSourceEventStoresIds<M> = MessageBusSourceEventStoresIds<M>,
+  MESSAGE_BUS extends NotificationMessageBus | StateCarryingMessageBus,
+  EVENT_STORE_ID extends MessageBusSourceEventStoresIds<MESSAGE_BUS> = MessageBusSourceEventStoresIds<MESSAGE_BUS>,
 > = EventStoreEventsTypes<
-  Extract<MessageBusSourceEventStores<M>, { eventStoreId: S }>
+  Extract<
+    MessageBusSourceEventStores<MESSAGE_BUS>,
+    { eventStoreId: EVENT_STORE_ID }
+  >
 >[number]['type'];

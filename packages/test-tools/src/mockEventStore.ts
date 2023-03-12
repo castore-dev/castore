@@ -9,22 +9,22 @@ import {
 
 import { MockedEventStore } from './mockedEventStore';
 
-export const mockEventStore = <E extends EventStore = EventStore>(
-  eventStore: E,
-  initialEvents: EventStoreEventsDetails<E>[] = [],
+export const mockEventStore = <EVENT_STORE extends EventStore = EventStore>(
+  eventStore: EVENT_STORE,
+  initialEvents: EventStoreEventsDetails<EVENT_STORE>[] = [],
 ): MockedEventStore<
-  EventStoreId<E>,
-  EventStoreEventsTypes<E>,
-  EventStoreEventsDetails<E>,
-  EventStoreEventsDetails<E>,
-  EventStoreReducer<E>,
-  EventStoreAggregate<E>
+  EventStoreId<EVENT_STORE>,
+  EventStoreEventsTypes<EVENT_STORE>,
+  EventStoreEventsDetails<EVENT_STORE>,
+  EventStoreEventsDetails<EVENT_STORE>,
+  EventStoreReducer<EVENT_STORE>,
+  EventStoreAggregate<EVENT_STORE>
 > =>
   new MockedEventStore<
-    EventStoreId<E>,
-    EventStoreEventsTypes<E>,
-    EventStoreEventsDetails<E>,
-    EventStoreEventsDetails<E>,
-    EventStoreReducer<E>,
-    EventStoreAggregate<E>
+    EventStoreId<EVENT_STORE>,
+    EventStoreEventsTypes<EVENT_STORE>,
+    EventStoreEventsDetails<EVENT_STORE>,
+    EventStoreEventsDetails<EVENT_STORE>,
+    EventStoreReducer<EVENT_STORE>,
+    EventStoreAggregate<EVENT_STORE>
   >({ eventStore, initialEvents });

@@ -11,11 +11,11 @@ import { EventStoreReduxStorageAdapterNotFoundError } from '~/errors/reduxEventS
 import { ReduxEventStorageAdapter } from '~/reduxAdapter';
 import { EventStoresReduxState } from '~/types';
 
-export const useAggregateEvents = <E extends EventStore>(
-  eventStore: E,
+export const useAggregateEvents = <EVENT_STORE extends EventStore>(
+  eventStore: EVENT_STORE,
   aggregateId: string,
   { minVersion, maxVersion, reverse, limit }: EventsQueryOptions = {},
-): { events: EventStoreEventsDetails<E>[] } => {
+): { events: EventStoreEventsDetails<EVENT_STORE>[] } => {
   let events = (useSelector<EventStoresReduxState>(state => {
     const storageAdapter = eventStore.getStorageAdapter();
 
@@ -33,7 +33,7 @@ export const useAggregateEvents = <E extends EventStore>(
     }
 
     return eventStoreState.eventsByAggregateId[aggregateId];
-  }) ?? []) as EventStoreEventsDetails<E>[];
+  }) ?? []) as EventStoreEventsDetails<EVENT_STORE>[];
 
   if (minVersion !== undefined) {
     events = events.filter(({ version }) => version >= minVersion);

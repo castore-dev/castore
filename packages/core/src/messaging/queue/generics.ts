@@ -11,24 +11,27 @@ import type { NotificationMessageQueue } from './notificationMessageQueue';
 import type { StateCarryingMessageQueue } from './stateCarryingMessageQueue';
 
 export type MessageQueueSourceEventStores<
-  M extends NotificationMessageQueue | StateCarryingMessageQueue,
-> = M['sourceEventStores'][number];
+  MESSAGE_QUEUE extends NotificationMessageQueue | StateCarryingMessageQueue,
+> = MESSAGE_QUEUE['sourceEventStores'][number];
 
 export type MessageQueueMessage<
-  Q extends NotificationMessageQueue | StateCarryingMessageQueue,
-> = Q extends NotificationMessageQueue
-  ? EventStoreNotificationMessage<MessageQueueSourceEventStores<Q>>
-  : Q extends StateCarryingMessageQueue
-  ? EventStoreStateCarryingMessage<MessageQueueSourceEventStores<Q>>
+  MESSAGE_QUEUE extends NotificationMessageQueue | StateCarryingMessageQueue,
+> = MESSAGE_QUEUE extends NotificationMessageQueue
+  ? EventStoreNotificationMessage<MessageQueueSourceEventStores<MESSAGE_QUEUE>>
+  : MESSAGE_QUEUE extends StateCarryingMessageQueue
+  ? EventStoreStateCarryingMessage<MessageQueueSourceEventStores<MESSAGE_QUEUE>>
   : never;
 
 export type MessageQueueSourceEventStoreIds<
-  M extends NotificationMessageQueue | StateCarryingMessageQueue,
-> = EventStoreId<MessageQueueSourceEventStores<M>>;
+  MESSAGE_QUEUE extends NotificationMessageQueue | StateCarryingMessageQueue,
+> = EventStoreId<MessageQueueSourceEventStores<MESSAGE_QUEUE>>;
 
 export type MessageQueueSourceEventStoreIdTypes<
-  M extends NotificationMessageQueue | StateCarryingMessageQueue,
-  S extends MessageQueueSourceEventStoreIds<M> = MessageQueueSourceEventStoreIds<M>,
+  MESSAGE_QUEUE extends NotificationMessageQueue | StateCarryingMessageQueue,
+  EVENT_STORE_ID extends MessageQueueSourceEventStoreIds<MESSAGE_QUEUE> = MessageQueueSourceEventStoreIds<MESSAGE_QUEUE>,
 > = EventStoreEventsTypes<
-  Extract<MessageQueueSourceEventStores<M>, { eventStoreId: S }>
+  Extract<
+    MessageQueueSourceEventStores<MESSAGE_QUEUE>,
+    { eventStoreId: EVENT_STORE_ID }
+  >
 >[number]['type'];

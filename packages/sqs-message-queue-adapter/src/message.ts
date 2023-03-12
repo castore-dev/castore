@@ -10,20 +10,25 @@ import type {
 
 export type SQSMessageQueueMessage = SQSEvent;
 
-type Prettify<T extends Record<string, unknown>> = T extends infer U
-  ? {
-      [K in keyof U]: U[K];
-    }
-  : never;
+type Prettify<OBJECTS extends Record<string, unknown>> =
+  OBJECTS extends infer OBJECT
+    ? {
+        [KEY in keyof OBJECT]: OBJECT[KEY];
+      }
+    : never;
 
 export type SQSMessageQueueMessageBody<
-  M extends NotificationMessageQueue | StateCarryingMessageQueue,
+  MESSAGE_QUEUE extends NotificationMessageQueue | StateCarryingMessageQueue,
 > = Prettify<
-  M extends NotificationMessageQueue
-    ? EventStoreNotificationMessage<MessageQueueSourceEventStores<M>>
-    : M extends StateCarryingMessageQueue
+  MESSAGE_QUEUE extends NotificationMessageQueue
+    ? EventStoreNotificationMessage<
+        MessageQueueSourceEventStores<MESSAGE_QUEUE>
+      >
+    : MESSAGE_QUEUE extends StateCarryingMessageQueue
     ? EventStoreStateCarryingMessage<
-        EventStoreNotificationMessage<MessageQueueSourceEventStores<M>>
+        EventStoreNotificationMessage<
+          MessageQueueSourceEventStores<MESSAGE_QUEUE>
+        >
       >
     : never
 >;

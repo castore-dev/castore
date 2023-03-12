@@ -3,40 +3,40 @@ import { z, ZodType } from 'zod';
 import { EventDetail, EventType } from '@castore/core';
 
 export class ZodEventType<
-  T extends string = string,
-  PS extends ZodType | undefined = ZodType | undefined,
-  P = ZodType extends PS
-    ? string extends T
+  TYPE extends string = string,
+  PAYLOAD_SCHEMA extends ZodType | undefined = ZodType | undefined,
+  PAYLOAD = ZodType extends PAYLOAD_SCHEMA
+    ? string extends TYPE
       ? unknown
       : never
-    : PS extends ZodType
-    ? z.infer<PS>
+    : PAYLOAD_SCHEMA extends ZodType
+    ? z.infer<PAYLOAD_SCHEMA>
     : never,
-  MS extends ZodType | undefined = ZodType | undefined,
-  M = ZodType extends MS
-    ? string extends T
+  METADATA_SCHEMA extends ZodType | undefined = ZodType | undefined,
+  METADATA = ZodType extends METADATA_SCHEMA
+    ? string extends TYPE
       ? unknown
       : never
-    : MS extends ZodType
-    ? z.infer<MS>
+    : METADATA_SCHEMA extends ZodType
+    ? z.infer<METADATA_SCHEMA>
     : never,
-> implements EventType<T, P, M>
+> implements EventType<TYPE, PAYLOAD, METADATA>
 {
   _types?: {
-    detail: EventDetail<T, P, M>;
+    detail: EventDetail<TYPE, PAYLOAD, METADATA>;
   };
-  type: T;
-  payloadSchema?: PS;
-  metadataSchema?: MS;
+  type: TYPE;
+  payloadSchema?: PAYLOAD_SCHEMA;
+  metadataSchema?: METADATA_SCHEMA;
 
   constructor({
     type,
     payloadSchema,
     metadataSchema,
   }: {
-    type: T;
-    payloadSchema?: PS;
-    metadataSchema?: MS;
+    type: TYPE;
+    payloadSchema?: PAYLOAD_SCHEMA;
+    metadataSchema?: METADATA_SCHEMA;
   }) {
     this.type = type;
     this.payloadSchema = payloadSchema;

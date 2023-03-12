@@ -7,17 +7,19 @@ import {
 } from './errors';
 import type { MessageQueueAdapter } from './messageQueueAdapter';
 
-export class NotificationMessageQueue<E extends EventStore = EventStore> {
+export class NotificationMessageQueue<
+  EVENT_STORE extends EventStore = EventStore,
+> {
   messageQueueId: string;
-  sourceEventStores: E[];
-  sourceEventStoresById: Record<string, E>;
+  sourceEventStores: EVENT_STORE[];
+  sourceEventStoresById: Record<string, EVENT_STORE>;
 
   messageQueueAdapter?: MessageQueueAdapter;
   getMessageQueueAdapter: () => MessageQueueAdapter;
-  getEventStore: (eventStoreId: string) => E;
+  getEventStore: (eventStoreId: string) => EVENT_STORE;
 
   publishMessage: (
-    notificationMessage: EventStoreNotificationMessage<E>,
+    notificationMessage: EventStoreNotificationMessage<EVENT_STORE>,
   ) => Promise<void>;
 
   constructor({
@@ -25,7 +27,7 @@ export class NotificationMessageQueue<E extends EventStore = EventStore> {
     sourceEventStores,
     messageQueueAdapter: $messageQueueAdapter,
   }: {
-    sourceEventStores: E[];
+    sourceEventStores: EVENT_STORE[];
     messageQueueId: string;
     messageQueueAdapter?: MessageQueueAdapter;
   }) {
@@ -34,7 +36,7 @@ export class NotificationMessageQueue<E extends EventStore = EventStore> {
 
     this.sourceEventStoresById = this.sourceEventStores.reduce(
       (acc, eventStore) => ({ [eventStore.eventStoreId]: eventStore, ...acc }),
-      {} as Record<string, E>,
+      {} as Record<string, EVENT_STORE>,
     );
 
     if ($messageQueueAdapter) {
