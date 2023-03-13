@@ -143,9 +143,10 @@ describe('in-memory storage adapter', () => {
         await storageAdapter.listAggregateIds({ limit: 2 });
 
       expect(aggregateIds).toStrictEqual([aggregateIdMock1, aggregateIdMock2]);
-      expect(nextPageToken).toBe(
-        JSON.stringify({ limit: 2, exclusiveEndIndex: 2 }),
-      );
+      expect(JSON.parse(nextPageToken as string)).toStrictEqual({
+        limit: 2,
+        lastEvaluatedKey: aggregateIdMock2,
+      });
 
       const lastAggregateIds = await storageAdapter.listAggregateIds({
         pageToken: nextPageToken,
@@ -154,6 +155,33 @@ describe('in-memory storage adapter', () => {
       expect(lastAggregateIds).toStrictEqual({
         aggregateIds: [aggregateIdMock3, aggregateIdMock4],
       });
+    });
+
+    it('applies lisAggregateIds options', async () => {
+      const { aggregateIds, nextPageToken } =
+        await storageAdapter.listAggregateIds({
+          limit: 1,
+          initialEventAfter: '2021-02-01T00:00:00.000Z',
+          initialEventBefore: '2023-02-01T00:00:00.000Z',
+          reverse: true,
+        });
+
+      expect(aggregateIds).toStrictEqual([aggregateIdMock3]);
+      expect(JSON.parse(nextPageToken as string)).toStrictEqual({
+        limit: 1,
+        initialEventAfter: '2021-02-01T00:00:00.000Z',
+        initialEventBefore: '2023-02-01T00:00:00.000Z',
+        reverse: true,
+        lastEvaluatedKey: aggregateIdMock3,
+      });
+
+      const { aggregateIds: lastAggregateIds, nextPageToken: noPageToken } =
+        await storageAdapter.listAggregateIds({
+          pageToken: nextPageToken,
+        });
+
+      expect(noPageToken).toBeUndefined();
+      expect(lastAggregateIds).toStrictEqual([aggregateIdMock2]);
     });
   });
 });
