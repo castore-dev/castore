@@ -16,6 +16,7 @@ import {
   EVENT_TABLE_SK,
   EVENT_TABLE_IS_INITIAL_EVENT_KEY,
   EVENT_TABLE_INITIAL_EVENT_INDEX_NAME,
+  EVENT_TABLE_TIMESTAMP_KEY,
 } from './adapter';
 
 const dynamoDbClientMock = mockClient(DynamoDBClient);
@@ -31,6 +32,7 @@ const marshaller = new Marshaller() as {
 
 const timestampA = '2022-01-01T00:00:00.000Z';
 const timestampB = '2023-01-01T00:00:00.000Z';
+const timestampC = '2024-01-01T00:00:00.000Z';
 MockDate.set(timestampA);
 
 const dynamoDbTableNameMock = 'my-table-name';
@@ -311,6 +313,84 @@ describe('DynamoDbEventStorageAdapter', () => {
       ]);
     });
 
+    it('adds limit option', async () => {
+      await adapter.listAggregateIds({ limit: 1 });
+
+      // regularly check if vitest matchers are available (toHaveReceivedCommandWith)
+      // https://github.com/m-radzikowski/aws-sdk-client-mock/issues/139
+      expect(dynamoDbClientMock.call(0).args[0].input).toMatchObject({
+        Limit: 1,
+      });
+    });
+
+    it('filters aggregate ids with initial event date after timestamp', async () => {
+      await adapter.listAggregateIds({ initialEventAfter: timestampA });
+
+      // regularly check if vitest matchers are available (toHaveReceivedCommandWith)
+      // https://github.com/m-radzikowski/aws-sdk-client-mock/issues/139
+      expect(dynamoDbClientMock.call(0).args[0].input).toMatchObject({
+        ExpressionAttributeNames: {
+          '#timestamp': EVENT_TABLE_TIMESTAMP_KEY,
+        },
+        ExpressionAttributeValues: marshaller.marshallItem({
+          ':initialEventAfter': timestampA,
+        }),
+        IndexName: EVENT_TABLE_INITIAL_EVENT_INDEX_NAME,
+        KeyConditionExpression:
+          '#isInitialEvent = :true and #timestamp >= :initialEventAfter',
+      });
+    });
+
+    it('filters aggregate ids with initial event date before timestamp', async () => {
+      await adapter.listAggregateIds({ initialEventBefore: timestampA });
+
+      // regularly check if vitest matchers are available (toHaveReceivedCommandWith)
+      // https://github.com/m-radzikowski/aws-sdk-client-mock/issues/139
+      expect(dynamoDbClientMock.call(0).args[0].input).toMatchObject({
+        ExpressionAttributeNames: {
+          '#timestamp': EVENT_TABLE_TIMESTAMP_KEY,
+        },
+        ExpressionAttributeValues: marshaller.marshallItem({
+          ':initialEventBefore': timestampA,
+        }),
+        IndexName: EVENT_TABLE_INITIAL_EVENT_INDEX_NAME,
+        KeyConditionExpression:
+          '#isInitialEvent = :true and #timestamp <= :initialEventBefore',
+      });
+    });
+
+    it('filters aggregate ids with initial event date between timestamp', async () => {
+      await adapter.listAggregateIds({
+        initialEventAfter: timestampA,
+        initialEventBefore: timestampB,
+      });
+
+      // regularly check if vitest matchers are available (toHaveReceivedCommandWith)
+      // https://github.com/m-radzikowski/aws-sdk-client-mock/issues/139
+      expect(dynamoDbClientMock.call(0).args[0].input).toMatchObject({
+        ExpressionAttributeNames: {
+          '#timestamp': EVENT_TABLE_TIMESTAMP_KEY,
+        },
+        ExpressionAttributeValues: marshaller.marshallItem({
+          ':initialEventAfter': timestampA,
+          ':initialEventBefore': timestampB,
+        }),
+        IndexName: EVENT_TABLE_INITIAL_EVENT_INDEX_NAME,
+        KeyConditionExpression:
+          '#isInitialEvent = :true and #timestamp between :initialEventAfter and :initialEventBefore',
+      });
+    });
+
+    it('adds reverse option', async () => {
+      await adapter.listAggregateIds({ reverse: true });
+
+      // regularly check if vitest matchers are available (toHaveReceivedCommandWith)
+      // https://github.com/m-radzikowski/aws-sdk-client-mock/issues/139
+      expect(dynamoDbClientMock.call(0).args[0].input).toMatchObject({
+        ScanIndexForward: false,
+      });
+    });
+
     it('returns a nextPageToken if query has LastEvaluatedKey', async () => {
       const queryCommandOutputMock: QueryCommandOutput = {
         Items: [marshaller.marshallItem({ aggregateId: aggregateIdMock })],
@@ -320,52 +400,29 @@ describe('DynamoDbEventStorageAdapter', () => {
 
       dynamoDbClientMock.on(QueryCommand).resolves(queryCommandOutputMock);
 
-      const { nextPageToken } = await adapter.listAggregateIds();
-
-      expect(JSON.parse(nextPageToken as string)).toStrictEqual({
-        lastEvaluatedKey,
-      });
-    });
-
-    it('applies next page tokens in the query', async () => {
-      await adapter.listAggregateIds({
-        pageToken: JSON.stringify({ lastEvaluatedKey }),
-      });
-
-      // regularly check if vitest matchers are available (toHaveReceivedCommandWith)
-      // https://github.com/m-radzikowski/aws-sdk-client-mock/issues/139
-      expect(dynamoDbClientMock.call(0).args[0].input).toMatchObject({
-        ExclusiveStartKey: lastEvaluatedKey,
-      });
-    });
-
-    it('applies the limit and embeds it in the page token', async () => {
-      const queryCommandOutputMock: QueryCommandOutput = {
-        Items: [marshaller.marshallItem({ aggregateId: aggregateIdMock })],
-        LastEvaluatedKey: lastEvaluatedKey,
-        $metadata: {},
-      };
-
-      dynamoDbClientMock.on(QueryCommand).resolves(queryCommandOutputMock);
-
-      const { nextPageToken } = await adapter.listAggregateIds({ limit: 1 });
-
-      // regularly check if vitest matchers are available (toHaveReceivedCommandWith)
-      // https://github.com/m-radzikowski/aws-sdk-client-mock/issues/139
-      expect(dynamoDbClientMock.call(0).args[0].input).toMatchObject({
-        Limit: 1,
+      const { nextPageToken } = await adapter.listAggregateIds({
+        limit: 1,
+        initialEventAfter: timestampA,
+        initialEventBefore: timestampB,
+        reverse: true,
       });
 
       expect(JSON.parse(nextPageToken as string)).toStrictEqual({
         limit: 1,
+        initialEventAfter: timestampA,
+        initialEventBefore: timestampB,
+        reverse: true,
         lastEvaluatedKey,
       });
     });
 
-    it('applies next page token limit in the query', async () => {
+    it('applies next page token in the query', async () => {
       await adapter.listAggregateIds({
         pageToken: JSON.stringify({
           limit: 1,
+          initialEventAfter: timestampA,
+          initialEventBefore: timestampB,
+          reverse: true,
           lastEvaluatedKey,
         }),
       });
@@ -374,14 +431,31 @@ describe('DynamoDbEventStorageAdapter', () => {
       // https://github.com/m-radzikowski/aws-sdk-client-mock/issues/139
       expect(dynamoDbClientMock.call(0).args[0].input).toMatchObject({
         Limit: 1,
+        ScanIndexForward: false,
+        ExclusiveStartKey: lastEvaluatedKey,
+        ExpressionAttributeNames: {
+          '#timestamp': EVENT_TABLE_TIMESTAMP_KEY,
+        },
+        ExpressionAttributeValues: marshaller.marshallItem({
+          ':initialEventAfter': timestampA,
+          ':initialEventBefore': timestampB,
+        }),
+        KeyConditionExpression:
+          '#isInitialEvent = :true and #timestamp between :initialEventAfter and :initialEventBefore',
       });
     });
 
     it('uses the input limit even if the page token has an embedded limit', async () => {
       await adapter.listAggregateIds({
         limit: 2,
+        initialEventAfter: timestampB,
+        initialEventBefore: timestampC,
+        reverse: false,
         pageToken: JSON.stringify({
           limit: 1,
+          initialEventAfter: timestampA,
+          initialEventBefore: timestampB,
+          reverse: true,
           lastEvaluatedKey,
         }),
       });
@@ -390,6 +464,17 @@ describe('DynamoDbEventStorageAdapter', () => {
       // https://github.com/m-radzikowski/aws-sdk-client-mock/issues/139
       expect(dynamoDbClientMock.call(0).args[0].input).toMatchObject({
         Limit: 2,
+        ScanIndexForward: true,
+        ExclusiveStartKey: lastEvaluatedKey,
+        ExpressionAttributeNames: {
+          '#timestamp': EVENT_TABLE_TIMESTAMP_KEY,
+        },
+        ExpressionAttributeValues: marshaller.marshallItem({
+          ':initialEventAfter': timestampB,
+          ':initialEventBefore': timestampC,
+        }),
+        KeyConditionExpression:
+          '#isInitialEvent = :true and #timestamp between :initialEventAfter and :initialEventBefore',
       });
     });
   });
