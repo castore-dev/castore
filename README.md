@@ -507,17 +507,20 @@ const userEventStore = new EventStore({
 > });
 > ```
 >
-> - <code>listAggregateIds <i>((opt?: OptionsObj = {}) => Promise\<ResponseObj\>)</i></code>: Retrieves the list of `aggregateId` of an event store, ordered by `timestamp` of their first event. Returns an empty array if no aggregate is found.
+> - <code>listAggregateIds <i>((opt?: OptionsObj = {}) => Promise\<ResponseObj\>)</i></code>: Retrieves the list of `aggregateId` of an event store, ordered by the `timestamp` of their initial event. Returns an empty array if no aggregate is found.
 >
 >   `OptionsObj` contains the following properties:
 >
 >   - <code>limit <i>(?number)</i></code>: Maximum number of aggregate ids to retrieve
+>   - <code>initialEventAfter <i>(?string)</i></code>: To retrieve aggregate ids that appeared after a certain timestamp
+>   - <code>initialEventBefore <i>(?string)</i></code>: To retrieve aggregate ids that appeared before a certain timestamp
+>   - <code>reverse <i>(?boolean)</i></code>: To retrieve the aggregate ids in reverse order
 >   - <code>pageToken <i>(?string)</i></code>: To retrieve a paginated result of aggregate ids
 >
 >   `ResponseObj` contains the following properties:
 >
 >   - <code>aggregateIds <i>(string[])</i></code>: The list of aggregate ids
->   - <code>nextPageToken <i>(?string)</i></code>: A token for the next page of aggregate ids if one exists
+>   - <code>nextPageToken <i>(?string)</i></code>: A token for the next page of aggregate ids if one exists. The nextPageToken carries the previously used options, so you do not have to provide them again (though you can still do it to override them).
 >
 > ```ts
 > const accAggregateIds: string = [];
@@ -617,7 +620,7 @@ If the storage solution that you use is missing, feel free to create/upvote an i
 
 Modifying the state of your application (i.e. pushing new events to your event stores) is done by executing **commands**. They typically consist in:
 
-- Fetching the required aggregates (if not the first event of a new aggregate)
+- Fetching the required aggregates (if not the initial event of a new aggregate)
 - Validating that the modification is acceptable
 - Pushing new events with incremented versions
 
