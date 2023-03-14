@@ -23,7 +23,7 @@ You should rather modify your `ORDER_CREATED` event to optionally contain a `att
 
 ## 4 - Write relations on all sides
 
-In general, creating a relation in one way, say from an "order" to many "products", is easy to do: Simply write the "order" id on the "product" first event. However, in the context of a command (remember that you can't use read models, that can easily re-index), the other way around is tricky: Depending on your implementation (especially in NoSQL), there may not be an easy way to find all the "products" of an "order".
+In general, creating a relation in one way, say from an "order" to many "products", is easy to do: Simply write the "order" id on the "product" initial event. However, in the context of a command (remember that you can't use read models, that can easily re-index), the other way around is tricky: Depending on your implementation (especially in NoSQL), there may not be an easy way to find all the "products" of an "order".
 
 The solution is to write an attachment event on the "order" at the same time that the "product" is created, containing only its order id. This way, you can easily find the order products ids in its aggregate. However, make sure to use transactions: Either all events are written, either none of them is written.
 

@@ -108,17 +108,20 @@ class CustomEventAlreadyExistsError
 
 > This ensures that executed [`Commands`](../README.md#%EF%B8%8F-command) are not subject to [race conditions](https://en.wikipedia.org/wiki/Race_condition) and are accordingly retried.
 
-- <code>listAggregateIds <i>((opt?: OptionsObj = {}) => Promise\<ResponseObj\>)</i></code>: Retrieves the list of `aggregateId` of an event store, ordered by `timestamp` of their first event. Returns an empty array if no aggregate is found.
+- <code>listAggregateIds <i>((opt?: OptionsObj = {}) => Promise\<ResponseObj\>)</i></code>: Retrieves the list of `aggregateId` of an event store, ordered by `timestamp` of their initial event. Returns an empty array if no aggregate is found.
 
   `OptionsObj` contains the following attributes:
 
   - <code>limit <i>(?number)</i></code>: Maximum number of aggregate ids to retrieve
   - <code>pageToken <i>(?string)</i></code>: To retrieve a paginated result of aggregate ids
+  - <code>initialEventAfter <i>(?string)</i></code>: To retrieve aggregate ids that appeared after a certain timestamp
+  - <code>initialEventBefore <i>(?string)</i></code>: To retrieve aggregate ids that appeared before a certain timestamp
+  - <code>reverse <i>(?boolean)</i></code>: To retrieve the aggregate ids in reverse order
 
   `ResponseObj` contains the following attributes:
 
   - <code>aggregateIds <i>(string[])</i></code>: The list of aggregate ids
-  - <code>nextPageToken <i>(?string)</i></code>: A token for the next page of aggregate ids if one exists
+  - <code>nextPageToken <i>(?string)</i></code>: A token for the next page of aggregate ids if one exists. The nextPageToken carries the previously used options, so you do not have to provide them again (though you can still do it to override them).
 
 ```ts
 const accAggregateIds: string = [];
