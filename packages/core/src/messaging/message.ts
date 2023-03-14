@@ -9,29 +9,21 @@ import type {
 
 export type NotificationMessage<
   EVENT_STORE_ID extends string = string,
-  EVENT_DETAILS extends EventDetail = EventDetail,
-> = EVENT_DETAILS extends infer EVENT_DETAIL
-  ? EVENT_DETAIL extends EventDetail
-    ? {
-        eventStoreId: EVENT_STORE_ID;
-        event: EVENT_DETAIL;
-      }
-    : never
-  : never;
+  EVENT_DETAIL extends EventDetail = EventDetail,
+> = {
+  eventStoreId: EVENT_STORE_ID;
+  event: EVENT_DETAIL;
+};
 
 export type StateCarryingMessage<
   EVENT_STORE_ID extends string = string,
-  EVENT_DETAILS extends EventDetail = EventDetail,
+  EVENT_DETAIL extends EventDetail = EventDetail,
   AGGREGATE extends Aggregate = Aggregate,
-> = EVENT_DETAILS extends infer EVENT_DETAIL
-  ? EVENT_DETAIL extends EventDetail
-    ? {
-        eventStoreId: EVENT_STORE_ID;
-        event: EVENT_DETAIL;
-        aggregate: AGGREGATE;
-      }
-    : never
-  : never;
+> = {
+  eventStoreId: EVENT_STORE_ID;
+  event: EVENT_DETAIL;
+  aggregate: AGGREGATE;
+};
 
 export type Message = NotificationMessage | StateCarryingMessage;
 
