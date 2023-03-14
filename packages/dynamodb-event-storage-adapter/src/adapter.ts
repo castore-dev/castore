@@ -185,9 +185,10 @@ export class DynamoDbEventStorageAdapter implements StorageAdapter {
       return { event };
     };
 
+    // eslint-disable-next-line complexity
     this.listAggregateIds = async ({
-      limit: inputLimit,
       pageToken: inputPageToken,
+      ...inputOptions
     } = {}) => {
       const aggregateIdsQueryCommandInput: QueryCommandInput = {
         TableName: this.getTableName(),
@@ -201,16 +202,52 @@ export class DynamoDbEventStorageAdapter implements StorageAdapter {
         IndexName: EVENT_TABLE_INITIAL_EVENT_INDEX_NAME,
       };
 
-      const { appliedLimit, appliedLastEvaluatedKey } =
-        parseAppliedListAggregateIdsOptions({ inputLimit, inputPageToken });
+      const {
+        limit,
+        initialEventAfter,
+        initialEventBefore,
+        reverse,
+        exclusiveStartKey,
+      } = parseAppliedListAggregateIdsOptions({ inputPageToken, inputOptions });
 
-      if (appliedLimit !== undefined) {
-        aggregateIdsQueryCommandInput.Limit = appliedLimit;
+      if (limit !== undefined) {
+        aggregateIdsQueryCommandInput.Limit = limit;
       }
 
-      if (appliedLastEvaluatedKey !== undefined) {
-        aggregateIdsQueryCommandInput.ExclusiveStartKey =
-          appliedLastEvaluatedKey;
+      if (initialEventBefore !== undefined || initialEventAfter !== undefined) {
+        aggregateIdsQueryCommandInput.KeyConditionExpression =
+          initialEventBefore !== undefined
+            ? initialEventAfter !== undefined
+              ? '#isInitialEvent = :true and #timestamp between :initialEventAfter and :initialEventBefore'
+              : '#isInitialEvent = :true and #timestamp <= :initialEventBefore'
+            : initialEventAfter !== undefined
+            ? '#isInitialEvent = :true and #timestamp >= :initialEventAfter'
+            : '#isInitialEvent = :true';
+
+        aggregateIdsQueryCommandInput.ExpressionAttributeNames = {
+          ...aggregateIdsQueryCommandInput.ExpressionAttributeNames,
+          ['#timestamp']: EVENT_TABLE_TIMESTAMP_KEY,
+        };
+
+        aggregateIdsQueryCommandInput.ExpressionAttributeValues = {
+          ...aggregateIdsQueryCommandInput.ExpressionAttributeValues,
+          ...marshaller.marshallItem({
+            ...(initialEventBefore !== undefined
+              ? { ':initialEventBefore': initialEventBefore }
+              : {}),
+            ...(initialEventAfter !== undefined
+              ? { ':initialEventAfter': initialEventAfter }
+              : {}),
+          }),
+        };
+      }
+
+      if (reverse !== undefined) {
+        aggregateIdsQueryCommandInput.ScanIndexForward = !reverse;
+      }
+
+      if (exclusiveStartKey !== undefined) {
+        aggregateIdsQueryCommandInput.ExclusiveStartKey = exclusiveStartKey;
       }
 
       const {
@@ -221,7 +258,10 @@ export class DynamoDbEventStorageAdapter implements StorageAdapter {
       );
 
       const parsedNextPageToken: ParsedPageToken = {
-        limit: appliedLimit,
+        limit,
+        initialEventAfter,
+        initialEventBefore,
+        reverse,
         lastEvaluatedKey,
       };
 

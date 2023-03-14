@@ -103,42 +103,78 @@ export class InMemoryStorageAdapter implements StorageAdapter {
       });
 
     this.listAggregateIds = ({
-      limit: inputLimit,
       pageToken: inputPageToken,
+      ...inputOptions
     } = {}) =>
       new Promise(resolve => {
-        const aggregateIds = Object.entries(this.eventStore)
-          .sort((entryA, entryB) => {
+        const {
+          limit,
+          initialEventAfter,
+          initialEventBefore,
+          reverse,
+          exclusiveStartKey,
+        } = parseAppliedListAggregateIdsOptions({
+          inputPageToken,
+          inputOptions,
+        });
+
+        let aggregateEntries = Object.entries(this.eventStore).sort(
+          (entryA, entryB) => {
             const initialEventATimestamp = getInitialEventTimestamp(...entryA);
             const initialEventBTimestamp = getInitialEventTimestamp(...entryB);
 
             return initialEventATimestamp > initialEventBTimestamp ? 1 : -1;
-          })
-          .map(([aggregateId]) => aggregateId);
+          },
+        );
 
-        const { appliedLimit, appliedStartIndex = 0 } =
-          parseAppliedListAggregateIdsOptions({ inputLimit, inputPageToken });
+        if (initialEventAfter !== undefined) {
+          aggregateEntries = aggregateEntries.filter(entry => {
+            const initialEventTimestamp = getInitialEventTimestamp(...entry);
 
-        const appliedExclusiveEndIndex =
-          appliedLimit === undefined
-            ? undefined
-            : appliedStartIndex + appliedLimit;
+            return initialEventTimestamp >= initialEventAfter;
+          });
+        }
+
+        if (initialEventBefore !== undefined) {
+          aggregateEntries = aggregateEntries.filter(entry => {
+            const initialEventTimestamp = getInitialEventTimestamp(...entry);
+
+            return initialEventTimestamp <= initialEventBefore;
+          });
+        }
+
+        let aggregateIds = aggregateEntries.map(([aggregateId]) => aggregateId);
+
+        if (reverse === true) {
+          aggregateIds = aggregateIds.reverse();
+        }
+
+        if (exclusiveStartKey !== undefined) {
+          const exclusiveStartKeyIndex = aggregateIds.findIndex(
+            aggregateId => aggregateId === exclusiveStartKey,
+          );
+
+          aggregateIds = aggregateIds.slice(exclusiveStartKeyIndex + 1);
+        }
+
+        const numberOfAggregateIdsBeforeLimit = aggregateIds.length;
+        if (limit !== undefined) {
+          aggregateIds = aggregateIds.slice(0, limit);
+        }
 
         const hasNextPage =
-          appliedExclusiveEndIndex === undefined
-            ? false
-            : aggregateIds[appliedExclusiveEndIndex] !== undefined;
+          limit === undefined ? false : numberOfAggregateIdsBeforeLimit > limit;
 
         const parsedNextPageToken: ParsedPageToken = {
-          limit: appliedLimit,
-          exclusiveEndIndex: appliedExclusiveEndIndex,
+          limit,
+          initialEventAfter,
+          initialEventBefore,
+          reverse,
+          lastEvaluatedKey: aggregateIds[aggregateIds.length - 1],
         };
 
         resolve({
-          aggregateIds: aggregateIds.slice(
-            appliedStartIndex,
-            appliedExclusiveEndIndex,
-          ),
+          aggregateIds,
           ...(hasNextPage
             ? { nextPageToken: JSON.stringify(parsedNextPageToken) }
             : {}),

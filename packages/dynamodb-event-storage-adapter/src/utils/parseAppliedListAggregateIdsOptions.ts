@@ -2,50 +2,38 @@ import type { AttributeValue } from '@aws-sdk/client-dynamodb';
 
 export type ParsedPageToken = {
   limit?: number;
+  initialEventAfter?: string | undefined;
+  initialEventBefore?: string | undefined;
+  reverse?: boolean | undefined;
   lastEvaluatedKey?: Record<string, AttributeValue>;
 };
 
 export const parseAppliedListAggregateIdsOptions = ({
-  inputLimit,
+  inputOptions,
   inputPageToken,
 }: {
-  inputLimit?: number;
+  inputOptions: Omit<ParsedPageToken, 'lastEvaluatedKey'>;
   inputPageToken?: string;
-}): {
-  appliedLimit?: ParsedPageToken['limit'];
-  appliedLastEvaluatedKey?: ParsedPageToken['lastEvaluatedKey'];
+}): Omit<ParsedPageToken, 'lastEvaluatedKey'> & {
+  exclusiveStartKey?: ParsedPageToken['lastEvaluatedKey'];
 } => {
-  let appliedLimit: ParsedPageToken['limit'];
-  let appliedLastEvaluatedKey: ParsedPageToken['lastEvaluatedKey'];
+  let prevOptions: ParsedPageToken = {};
 
   if (typeof inputPageToken === 'string') {
-    let parsedInputPageToken: ParsedPageToken;
-
     try {
-      parsedInputPageToken = JSON.parse(inputPageToken) as ParsedPageToken;
+      prevOptions = JSON.parse(inputPageToken) as ParsedPageToken;
     } catch (error) {
       throw new Error('Invalid page token');
     }
-
-    const { limit: prevLimit, lastEvaluatedKey: prevLastEvaluatedKey } =
-      parsedInputPageToken;
-
-    if (prevLimit !== undefined) {
-      appliedLimit = prevLimit;
-    }
-
-    if (prevLastEvaluatedKey !== undefined) {
-      appliedLastEvaluatedKey = prevLastEvaluatedKey;
-    }
-  }
-
-  // Use options limit if one is provided
-  if (inputLimit !== undefined) {
-    appliedLimit = inputLimit;
   }
 
   return {
-    appliedLimit,
-    appliedLastEvaluatedKey,
+    limit: inputOptions.limit ?? prevOptions.limit,
+    initialEventAfter:
+      inputOptions.initialEventAfter ?? prevOptions.initialEventAfter,
+    initialEventBefore:
+      inputOptions.initialEventBefore ?? prevOptions.initialEventBefore,
+    reverse: inputOptions.reverse ?? prevOptions.reverse,
+    exclusiveStartKey: prevOptions.lastEvaluatedKey,
   };
 };

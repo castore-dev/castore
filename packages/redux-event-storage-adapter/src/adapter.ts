@@ -106,44 +106,78 @@ export class ReduxEventStorageAdapter implements StorageAdapter {
       });
 
     this.listAggregateIds = ({
-      limit: inputLimit,
       pageToken: inputPageToken,
+      ...inputOptions
     } = {}) =>
       new Promise(resolve => {
         const eventStoreState = this.getEventStoreState();
 
-        const aggregateIds = [...eventStoreState.aggregateIds]
-          .sort(
-            (
-              { initialEventTimestamp: initialEventTimestampA },
-              { initialEventTimestamp: initialEventTimestampB },
-            ) => (initialEventTimestampA > initialEventTimestampB ? 1 : -1),
-          )
-          .map(({ aggregateId }) => aggregateId);
+        const {
+          limit,
+          initialEventAfter,
+          initialEventBefore,
+          reverse,
+          exclusiveStartKey,
+        } = parseAppliedListAggregateIdsOptions({
+          inputPageToken,
+          inputOptions,
+        });
 
-        const { appliedLimit, appliedStartIndex = 0 } =
-          parseAppliedListAggregateIdsOptions({ inputLimit, inputPageToken });
+        let aggregateEntries = [...eventStoreState.aggregateIds].sort(
+          (
+            { initialEventTimestamp: initialEventTimestampA },
+            { initialEventTimestamp: initialEventTimestampB },
+          ) => (initialEventTimestampA > initialEventTimestampB ? 1 : -1),
+        );
 
-        const appliedExclusiveEndIndex =
-          appliedLimit === undefined
-            ? undefined
-            : appliedStartIndex + appliedLimit;
+        if (initialEventAfter !== undefined) {
+          aggregateEntries = aggregateEntries.filter(
+            ({ initialEventTimestamp }) =>
+              initialEventAfter <= initialEventTimestamp,
+          );
+        }
+
+        if (initialEventBefore !== undefined) {
+          aggregateEntries = aggregateEntries.filter(
+            ({ initialEventTimestamp }) =>
+              initialEventTimestamp <= initialEventBefore,
+          );
+        }
+
+        let aggregateIds = aggregateEntries.map(
+          ({ aggregateId }) => aggregateId,
+        );
+
+        if (reverse === true) {
+          aggregateIds = aggregateIds.reverse();
+        }
+
+        if (exclusiveStartKey !== undefined) {
+          const exclusiveStartKeyIndex = aggregateIds.findIndex(
+            aggregateId => aggregateId === exclusiveStartKey,
+          );
+
+          aggregateIds = aggregateIds.slice(exclusiveStartKeyIndex + 1);
+        }
+
+        const numberOfAggregateIdsBeforeLimit = aggregateIds.length;
+        if (limit !== undefined) {
+          aggregateIds = aggregateIds.slice(0, limit);
+        }
 
         const hasNextPage =
-          appliedExclusiveEndIndex === undefined
-            ? false
-            : aggregateIds[appliedExclusiveEndIndex] !== undefined;
+          limit === undefined ? false : numberOfAggregateIdsBeforeLimit > limit;
 
         const parsedNextPageToken: ParsedPageToken = {
-          limit: appliedLimit,
-          exclusiveEndIndex: appliedExclusiveEndIndex,
+          limit,
+          initialEventAfter,
+          initialEventBefore,
+          reverse,
+          lastEvaluatedKey: aggregateIds[aggregateIds.length - 1],
         };
 
         resolve({
-          aggregateIds: aggregateIds.slice(
-            appliedStartIndex,
-            appliedExclusiveEndIndex,
-          ),
+          aggregateIds,
           ...(hasNextPage
             ? { nextPageToken: JSON.stringify(parsedNextPageToken) }
             : {}),

@@ -14,6 +14,9 @@ export type PushEventContext = { eventStoreId?: string };
 export type ListAggregateIdsOptions = {
   limit?: number;
   pageToken?: string;
+  initialEventAfter?: string;
+  initialEventBefore?: string;
+  reverse?: boolean;
 };
 
 export type ListAggregateIdsOutput = {

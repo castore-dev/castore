@@ -131,16 +131,25 @@ describe('event store', () => {
     it('lists aggregateIds correctly', async () => {
       const limitMock = 10;
       const pageTokenMock = 'pageTokenMock';
+      const initialEventAfterMock = '2021-01-01T00:00:00.000Z';
+      const initialEventBeforeMock = '2022-01-01T00:00:00.000Z';
+      const reverseMock = true;
 
       const response = await counterEventStore.listAggregateIds({
         limit: limitMock,
         pageToken: pageTokenMock,
+        initialEventAfter: initialEventAfterMock,
+        initialEventBefore: initialEventBeforeMock,
+        reverse: reverseMock,
       });
 
       expect(listAggregateIdsMock).toHaveBeenCalledTimes(1);
       expect(listAggregateIdsMock).toHaveBeenCalledWith({
         limit: limitMock,
         pageToken: pageTokenMock,
+        initialEventAfter: initialEventAfterMock,
+        initialEventBefore: initialEventBeforeMock,
+        reverse: reverseMock,
       });
 
       expect(response).toStrictEqual({ aggregateIds: [counterIdMock] });
