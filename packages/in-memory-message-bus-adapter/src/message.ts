@@ -20,12 +20,9 @@ export type InMemoryMessageBusMessage<
 > = Prettify<
   EVENT_STORE_IDS extends infer EVENT_STORE_ID
     ? EVENT_STORE_ID extends string
-      ? EVENT_TYPES extends infer EVENT_TYPE
-        ? Extract<
-            MESSAGE,
-            { eventStoreId: EVENT_STORE_IDS; event: { type: EVENT_TYPE } }
-          >
-        : never
+      ? Extract<MESSAGE, { eventStoreId: EVENT_STORE_ID }> & {
+          event: { type: EVENT_TYPES };
+        }
       : never
     : never
 >;
