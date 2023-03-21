@@ -14,6 +14,7 @@ import {
   getLastSnapshotMock,
   putSnapshotMock,
   counterCreatedEventMock,
+  counterIncrementedEventMock,
 } from './eventStore.util.test';
 
 describe('event store', () => {
@@ -118,11 +119,52 @@ describe('event store', () => {
 
   describe('pushEvent', () => {
     it('pushes new event correctly', async () => {
-      await counterEventStore.pushEvent(counterCreatedEventMock);
+      pushEventMock.mockResolvedValue({ event: counterIncrementedEventMock });
+
+      const response = await counterEventStore.pushEvent(
+        counterIncrementedEventMock,
+      );
 
       expect(pushEventMock).toHaveBeenCalledTimes(1);
-      expect(pushEventMock).toHaveBeenCalledWith(counterCreatedEventMock, {
+      expect(pushEventMock).toHaveBeenCalledWith(counterIncrementedEventMock, {
         eventStoreId: counterEventStore.eventStoreId,
+      });
+      expect(response).toStrictEqual({ event: counterIncrementedEventMock });
+    });
+
+    it('returns the next aggregate if event is initial event', async () => {
+      pushEventMock.mockResolvedValue({ event: counterCreatedEventMock });
+
+      const response = await counterEventStore.pushEvent(
+        counterCreatedEventMock,
+      );
+
+      expect(response).toStrictEqual({
+        event: counterCreatedEventMock,
+        nextAggregate: counterEventStore.buildAggregate([
+          counterCreatedEventMock,
+        ]),
+      });
+    });
+
+    it('returns the next aggregate if prev aggregate has been provided', async () => {
+      pushEventMock.mockResolvedValue({ event: counterIncrementedEventMock });
+
+      const response = await counterEventStore.pushEvent(
+        counterIncrementedEventMock,
+        {
+          prevAggregate: counterEventStore.buildAggregate([
+            counterCreatedEventMock,
+          ]),
+        },
+      );
+
+      expect(response).toStrictEqual({
+        event: counterIncrementedEventMock,
+        nextAggregate: counterEventStore.buildAggregate([
+          counterCreatedEventMock,
+          counterIncrementedEventMock,
+        ]),
       });
     });
   });

@@ -90,6 +90,7 @@ Castore is opiniated. It comes with a collection of best practices and documente
   - [Message queue adapters](#--messagequeueadapter)
   - [Message buses](#--messagebus)
   - [Message bus adapters](#--messagebusadapter)
+  - [Connected Event Store](#--connectedeventstore)
   - [Snapshotting](#--snapshotting)
   - [Read Models](#--read-models)
 - [📖 Resources](#-resources)
@@ -490,21 +491,31 @@ const userEventStore = new EventStore({
 > // => 'aggregate' and 'lastEvent' are always defined 🙌
 > ```
 >
-> - <code>pushEvent <i>((eventDetail: EventDetail) => Promise\<ResponseObj\>)</i></code>: Pushes a new event to the event store, with the timestamp automatically set as `new Date().toISOString()`. Throws an `EventAlreadyExistsError` if an event already exists for the corresponding `aggregateId` and `version`.
+> - <code>pushEvent <i>((eventDetail: EventDetail, opt?: OptionsObj = {}) => Promise\<ResponseObj\>)</i></code>: Pushes a new event to the event store, with the timestamp automatically set as `new Date().toISOString()`. Throws an `EventAlreadyExistsError` if an event already exists for the corresponding `aggregateId` and `version`.
+>
+>   `OptionsObj` contains the following properties:
+>
+>   - <code>prevAggregate <i>(?Aggregate)</i></code>: The aggregate at the current version, i.e. before having pushed the event. Can be useful in some cases like when using the [`ConnectedEventStore` class](#--connectedeventstore)
 >
 >   `ResponseObj` contains the following properties:
 >
 >   - <code>event <i>(EventDetail)</i></code>: The complete event (including the `timestamp`)
+>   - <code>nextAggregate <i>(?Aggregate)</i></code>: The aggregate at the new version, i.e. after having pushed the event. Returned only if the event is an initial event, if the `prevAggregate` option was provided, or when using a [`ConnectedEventStore` class](#--connectedeventstore) connected to a [state-carrying message bus or queue](#--event-driven-architecture)
 >
 > ```ts
-> await userEventStore.pushEvent({
->   aggregateId,
->   version: lastVersion + 1,
->   type: 'USER_CREATED', // <= event type is correctly typed 🙌
->   payload, // <= payload is typed according to the provided event type 🙌
->   metadata, // <= same goes for metadata 🙌
->   // timestamp is automatically set
-> });
+> const { event: completeEvent, nextAggregate } =
+>   await userEventStore.pushEvent(
+>     {
+>       aggregateId,
+>       version: lastVersion + 1,
+>       type: 'USER_CREATED', // <= event type is correctly typed 🙌
+>       payload, // <= payload is typed according to the provided event type 🙌
+>       metadata, // <= same goes for metadata 🙌
+>       // timestamp is automatically set
+>     },
+>     // Not required - Can be useful in some cases
+>     { prevAggregate },
+>   );
 > ```
 >
 > - <code>listAggregateIds <i>((opt?: OptionsObj = {}) => Promise\<ResponseObj\>)</i></code>: Retrieves the list of `aggregateId` of an event store, ordered by the `timestamp` of their initial event. Returns an empty array if no aggregate is found.
@@ -1059,6 +1070,90 @@ const userMessagesListener = async (
   const message = eventBridgeMessage.detail;
 };
 ```
+
+### - `ConnectedEventStore`
+
+If your storage solution exposes data streaming capabilities (such as [DynamoDB streams](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/Streams.html)), you can leverage them to push your freshly written events to a message bus or queue.
+
+You can also use the `ConnectedEventStore` class. Its interface matches the `EventStore` one, but successfully pushing a new event will automatically forward it to a message queue or bus:
+
+```ts
+import { ConnectedEventStore } from '@castore/core';
+
+const connectedUserEventStore = new ConnectedEventStore(
+  // 👇 Original event store
+  userEventStore,
+  // 👇 Type-safe (appMessageBus MUST be able to carry user events)
+  appMessageBus,
+);
+
+// Will push the event in the event store
+// ...AND publish it to the message bus if it succeeds 🙌
+await connectedUserEventStore.pushEvent({
+  aggregateId: userId,
+  version: 2,
+  type: 'USER_REMOVED',
+  ...
+});
+```
+
+If the message bus or queue is a state-carrying one, the `pushEvent` method will re-fetch the aggregate to append it to the message before publishing it. You can reduce this overhead by providing the previous aggregate as an option:
+
+```ts
+await connectedUserEventStore.pushEvent(
+  {
+    aggregateId: userId,
+    version: 2,
+    ...
+  },
+  // 👇 Aggregate at version 1
+  { prevAggregate: userAggregate },
+  // Removes the need to re-fetch 🙌
+);
+```
+
+<!-- TODO, add schema -->
+
+Compared to data streams, connected event stores have the advantage of simplicity, performances and costs. However, they **strongly decouple your storage and messaging solutions**: Make sure to anticipate any issue that might arise (consistency, non-catched errors etc.).
+
+> <details>
+> <summary><b>🔧 Technical description</b></summary>
+> <p></p>
+>
+> **Constructor:**
+>
+> - <code>eventStore <i>(EventStore)</i></code>: The event store to connect
+> - <code>messageChannel <i>(MessageBus | MessageQueue)</i></code>: A message bus or queue to forward events to
+>
+> **Properties:**
+>
+> A `ConnectedEventStore` will implement the interface of its original `EventStore`, and extend it with two additional properties:
+>
+> - <code>eventStore <i>(EventStore)</i></code>: The original event store
+>
+> ```ts
+> const eventStore = connectedUserEventStore.eventStore;
+> // => userEventStore
+> ```
+>
+> - <code>messageChannel <i>(MessageBus | MessageQueue)</i></code>: The provided message bus or queue
+>
+> ```ts
+> const messageChannel = connectedUserEventStore.messageChannel;
+> // => appMessageBus
+> ```
+>
+> Note that the `storageAdapter` property will act as a pointer toward the original event store `storageAdapter`:
+>
+> ```ts
+> originalEventStore.storageAdapter = myStorageAdapter;
+> connectedEventStore.storageAdapter; // => myStorageAdapter
+>
+> connectedEventStore.storageAdapter = anotherStorageAdapter;
+> originalEventStore.storageAdapter; // => anotherStorageAdapter
+> ```
+>
+> </details>
 
 ### - Snapshotting
 

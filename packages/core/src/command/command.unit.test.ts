@@ -67,7 +67,7 @@ describe('command implementation', () => {
       pushEventMock
         .mockImplementationOnce(throwEventAlreadyExistsError)
         .mockImplementationOnce(throwEventAlreadyExistsError)
-        .mockResolvedValue(undefined);
+        .mockResolvedValue({ event: { counterId: '123' } });
 
       await incrementCounter.handler(
         { counterId: '123' },

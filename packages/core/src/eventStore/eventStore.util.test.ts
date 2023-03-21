@@ -12,7 +12,7 @@ export const putSnapshotMock = vi.fn();
 export const getLastSnapshotMock = vi.fn();
 export const listSnapshotsMock = vi.fn();
 
-export const mockStorageAdapter: StorageAdapter = {
+export const storageAdapterMock: StorageAdapter = {
   pushEvent: pushEventMock,
   getEvents: getEventsMock,
   listAggregateIds: listAggregateIdsMock,
@@ -110,7 +110,7 @@ export const counterEventStore = new EventStore({
     counterDeletedEvent,
   ],
   reduce: countersReducer,
-  storageAdapter: mockStorageAdapter,
+  storageAdapter: storageAdapterMock,
 });
 
 // Users
@@ -184,5 +184,5 @@ export const userEventStore = new EventStore({
   eventStoreId: 'Users',
   eventStoreEvents: [userCreatedEvent, userRemovedEvent],
   reduce: usersReducer,
-  storageAdapter: mockStorageAdapter,
+  storageAdapter: storageAdapterMock,
 });

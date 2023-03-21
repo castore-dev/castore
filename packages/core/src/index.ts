@@ -27,6 +27,7 @@ export type {
   EventStoreAggregate,
   Reducer,
 } from './eventStore';
+export { ConnectedEventStore } from './connectedEventStore';
 export { Command, tuple } from './command/command';
 export type {
   CommandId,

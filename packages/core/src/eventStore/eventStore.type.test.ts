@@ -22,10 +22,7 @@ import { GetAggregateOptions } from './types';
 
 // --- EXTENDS ---
 
-const assertExtends: A.Equals<
-  typeof counterEventStore extends EventStore ? true : false,
-  true
-> = 1;
+const assertExtends: A.Extends<typeof counterEventStore, EventStore> = 1;
 assertExtends;
 
 // --- EVENT STORE ID ---
@@ -98,18 +95,25 @@ assertGetAggregateOutput;
 
 // --- PUSH EVENTS ---
 
-const assertPushEventInput: A.Equals<
-  Parameters<typeof counterEventStore.pushEvent>,
-  [
-    | Omit<EventTypeDetail<typeof counterCreatedEvent>, 'timestamp'>
-    | Omit<EventTypeDetail<typeof counterIncrementedEvent>, 'timestamp'>
-    | Omit<EventTypeDetail<typeof counterDeletedEvent>, 'timestamp'>,
-  ]
+const assertPushEventInput1: A.Equals<
+  Parameters<typeof counterEventStore.pushEvent>[0],
+  | Omit<EventTypeDetail<typeof counterCreatedEvent>, 'timestamp'>
+  | Omit<EventTypeDetail<typeof counterIncrementedEvent>, 'timestamp'>
+  | Omit<EventTypeDetail<typeof counterDeletedEvent>, 'timestamp'>
 > = 1;
-assertPushEventInput;
+assertPushEventInput1;
+
+const assertPushEventInput2: A.Equals<
+  Parameters<typeof counterEventStore.pushEvent>[1],
+  { prevAggregate?: CounterAggregate | undefined } | undefined
+> = 1;
+assertPushEventInput2;
 
 const assertPushEventOutput: A.Equals<
   ReturnType<typeof counterEventStore.pushEvent>,
-  Promise<void>
+  Promise<{
+    event: CounterEventsDetails;
+    nextAggregate?: CounterAggregate | undefined;
+  }>
 > = 1;
 assertPushEventOutput;
