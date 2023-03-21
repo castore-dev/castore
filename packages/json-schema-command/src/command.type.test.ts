@@ -20,69 +20,69 @@ type Output = FromSchema<typeof outputSchema>;
 
 // --- CLASS ---
 
-const assertJsonSchemaCommandExtendsCommand: A.Equals<
-  JSONSchemaCommand extends Command ? true : false,
-  true
+const assertJsonSchemaCommandExtendsCommand: A.Extends<
+  JSONSchemaCommand,
+  Command
 > = 1;
 assertJsonSchemaCommandExtendsCommand;
 
-const assertCreateCounterExtendsJsonSchemaCommand: A.Equals<
-  typeof createCounter extends JSONSchemaCommand ? true : false,
-  true
+const assertCreateCounterExtendsJsonSchemaCommand: A.Extends<
+  typeof createCounter,
+  JSONSchemaCommand
 > = 1;
 assertCreateCounterExtendsJsonSchemaCommand;
 
-const assertCreateCounterExtendsCommand: A.Equals<
-  typeof createCounter extends Command ? true : false,
-  true
+const assertCreateCounterExtendsCommand: A.Extends<
+  typeof createCounter,
+  Command
 > = 1;
 assertCreateCounterExtendsCommand;
 
-const assertIncrementCounterExtendsJsonSchemaCommand: A.Equals<
-  typeof incrementCounter extends JSONSchemaCommand ? true : false,
-  true
+const assertIncrementCounterExtendsJsonSchemaCommand: A.Extends<
+  typeof incrementCounter,
+  JSONSchemaCommand
 > = 1;
 assertIncrementCounterExtendsJsonSchemaCommand;
 
-const assertIncrementCounterExtendsCommand: A.Equals<
-  typeof incrementCounter extends Command ? true : false,
-  true
+const assertIncrementCounterExtendsCommand: A.Extends<
+  typeof incrementCounter,
+  Command
 > = 1;
 assertIncrementCounterExtendsCommand;
 
-const assertIncrementCounterNoOutputExtendsJsonSchemaCommand: A.Equals<
-  typeof incrementCounterNoOutput extends JSONSchemaCommand ? true : false,
-  true
+const assertIncrementCounterNoOutputExtendsJsonSchemaCommand: A.Extends<
+  typeof incrementCounterNoOutput,
+  JSONSchemaCommand
 > = 1;
 assertIncrementCounterNoOutputExtendsJsonSchemaCommand;
 
-const assertIncrementCounterNoOutputExtendsCommand: A.Equals<
-  typeof incrementCounterNoOutput extends Command ? true : false,
-  true
+const assertIncrementCounterNoOutputExtendsCommand: A.Extends<
+  typeof incrementCounterNoOutput,
+  Command
 > = 1;
 assertIncrementCounterNoOutputExtendsCommand;
 
-const assertIncrementCounterAExtendsJsonSchemaCommand: A.Equals<
-  typeof incrementCounterA extends JSONSchemaCommand ? true : false,
-  true
+const assertIncrementCounterAExtendsJsonSchemaCommand: A.Extends<
+  typeof incrementCounterA,
+  JSONSchemaCommand
 > = 1;
 assertIncrementCounterAExtendsJsonSchemaCommand;
 
-const assertIncrementCounterAExtendsCommand: A.Equals<
-  typeof incrementCounterA extends Command ? true : false,
-  true
+const assertIncrementCounterAExtendsCommand: A.Extends<
+  typeof incrementCounterA,
+  Command
 > = 1;
 assertIncrementCounterAExtendsCommand;
 
-const assertIncrementCounterANoOutputExtendsJsonSchemaCommand: A.Equals<
-  typeof incrementCounterANoOutput extends JSONSchemaCommand ? true : false,
-  true
+const assertIncrementCounterANoOutputExtendsJsonSchemaCommand: A.Extends<
+  typeof incrementCounterANoOutput,
+  JSONSchemaCommand
 > = 1;
 assertIncrementCounterANoOutputExtendsJsonSchemaCommand;
 
-const assertIncrementCounterANoOutputExtendsCommand: A.Equals<
-  typeof incrementCounterANoOutput extends Command ? true : false,
-  true
+const assertIncrementCounterANoOutputExtendsCommand: A.Extends<
+  typeof incrementCounterANoOutput,
+  Command
 > = 1;
 assertIncrementCounterANoOutputExtendsCommand;
 

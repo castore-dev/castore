@@ -27,11 +27,17 @@ export type EventsGetter<EVENT_DETAIL extends EventDetail> = (
   options?: EventsQueryOptions,
 ) => Promise<{ events: EVENT_DETAIL[] }>;
 
-export type EventPusher<$EVENT_DETAILS extends EventDetail> = (
-  eventDetail: $EVENT_DETAILS extends infer $EVENT_DETAIL
+export type EventPusher<
+  EVENT_DETAILS extends EventDetail,
+  $EVENT_DETAILS extends EventDetail,
+  AGGREGATE extends Aggregate,
+  $AGGREGATE extends Aggregate,
+> = (
+  event: $EVENT_DETAILS extends infer $EVENT_DETAIL
     ? Omit<$EVENT_DETAIL, 'timestamp'>
     : never,
-) => Promise<void>;
+  options?: { prevAggregate?: $AGGREGATE },
+) => Promise<{ event: EVENT_DETAILS; nextAggregate?: AGGREGATE }>;
 
 export type AggregateIdsLister = (
   listAggregateOptions?: ListAggregateIdsOptions,

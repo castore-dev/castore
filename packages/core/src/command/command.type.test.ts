@@ -17,9 +17,9 @@ import {
 
 // --- CLASS ---
 
-const assertIncrementCounterExtendsCommand: A.Equals<
-  typeof incrementCounter extends Command ? true : false,
-  true
+const assertIncrementCounterExtendsCommand: A.Extends<
+  typeof incrementCounter,
+  Command
 > = 1;
 assertIncrementCounterExtendsCommand;
 

@@ -1,4 +1,5 @@
 import type { EventStore } from '~/eventStore/eventStore';
+import type { $Contravariant } from '~/utils';
 
 import type {
   EventStoreStateCarryingMessage,
@@ -22,10 +23,18 @@ export class StateCarryingMessageQueue<
   getEventStore: (eventStoreId: string) => EVENT_STORE;
 
   publishMessage: (
-    stateCarryingMessage: EventStoreStateCarryingMessage<EVENT_STORE>,
+    stateCarryingMessage: $Contravariant<
+      EVENT_STORE,
+      EventStore,
+      EventStoreStateCarryingMessage<EVENT_STORE>
+    >,
   ) => Promise<void>;
   getAggregateAndPublishMessage: (
-    notificationMessage: EventStoreNotificationMessage<EVENT_STORE>,
+    notificationMessage: $Contravariant<
+      EVENT_STORE,
+      EventStore,
+      EventStoreNotificationMessage<EVENT_STORE>
+    >,
   ) => Promise<void>;
 
   constructor({

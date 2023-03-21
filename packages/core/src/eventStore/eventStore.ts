@@ -7,7 +7,7 @@ import type { $Contravariant } from '~/utils';
 
 import { AggregateNotFoundError } from './errors/aggregateNotFound';
 import { UndefinedStorageAdapterError } from './errors/undefinedStorageAdapter';
-import {
+import type {
   AggregateIdsLister,
   EventPusher,
   EventsGetter,
@@ -50,7 +50,7 @@ export class EventStore<
   simulateSideEffect: SideEffectsSimulator<EVENT_DETAILS, $EVENT_DETAILS>;
 
   getEvents: EventsGetter<EVENT_DETAILS>;
-  pushEvent: EventPusher<$EVENT_DETAILS>;
+  pushEvent: EventPusher<EVENT_DETAILS, $EVENT_DETAILS, AGGREGATE, $AGGREGATE>;
   listAggregateIds: AggregateIdsLister;
 
   buildAggregate: (
@@ -117,12 +117,22 @@ export class EventStore<
          */
       ) as Promise<{ events: EVENT_DETAILS[] }>;
 
-    this.pushEvent = async eventDetail => {
+    this.pushEvent = async (eventDetail, { prevAggregate } = {}) => {
       const storageAdapter = this.getStorageAdapter();
 
-      await storageAdapter.pushEvent(eventDetail, {
+      const { event } = (await storageAdapter.pushEvent(eventDetail, {
         eventStoreId: this.eventStoreId,
-      });
+      })) as { event: $EVENT_DETAILS };
+
+      let nextAggregate: AGGREGATE | undefined = undefined;
+      if (prevAggregate || event.version === 1) {
+        nextAggregate = this.reduce(prevAggregate, event) as AGGREGATE;
+      }
+
+      return {
+        event: event as unknown as EVENT_DETAILS,
+        ...(nextAggregate ? { nextAggregate } : {}),
+      };
     };
 
     this.listAggregateIds = options =>

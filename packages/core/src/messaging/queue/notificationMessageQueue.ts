@@ -1,4 +1,5 @@
 import type { EventStore } from '~/eventStore/eventStore';
+import type { $Contravariant } from '~/utils';
 
 import type { EventStoreNotificationMessage } from '../message';
 import {
@@ -19,7 +20,11 @@ export class NotificationMessageQueue<
   getEventStore: (eventStoreId: string) => EVENT_STORE;
 
   publishMessage: (
-    notificationMessage: EventStoreNotificationMessage<EVENT_STORE>,
+    notificationMessage: $Contravariant<
+      EVENT_STORE,
+      EventStore,
+      EventStoreNotificationMessage<EVENT_STORE>
+    >,
   ) => Promise<void>;
 
   constructor({
