@@ -141,6 +141,9 @@ export class ConnectedEventStore<
       const { event, nextAggregate } = response;
 
       if (
+        /**
+         * @debt refactor "Create NotificationMessageChannel class w. only publish prop, extended by MessageQueues & Bus"
+         */
         this.messageChannel instanceof NotificationMessageQueue ||
         this.messageChannel instanceof NotificationMessageBus
       ) {
@@ -151,6 +154,9 @@ export class ConnectedEventStore<
       }
 
       if (
+        /**
+         * @debt refactor "Create StateCarryingMessageChannel class w. only publish prop, extended by MessageQueues & Bus"
+         */
         this.messageChannel instanceof StateCarryingMessageQueue ||
         this.messageChannel instanceof StateCarryingMessageBus
       ) {
