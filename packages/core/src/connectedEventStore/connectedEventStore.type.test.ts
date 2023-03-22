@@ -1,10 +1,10 @@
 import type { A } from 'ts-toolbelt';
 
 import type { EventStore } from '~/eventStore';
-import type { userEventStore } from '~/eventStore/eventStore.util.test';
+import type { userEventStore } from '~/eventStore/eventStore.fixtures.test';
 
 import type { ConnectedEventStore } from './connectedEventStore';
-import type { userEventStoreWithStateCarryingMessageBus } from './connectedEventStore.util.test';
+import type { userEventStoreWithStateCarryingMessageBus } from './connectedEventStore.fixtures.test';
 
 // --- EXTENDS ---
 

@@ -1,7 +1,7 @@
 import {
   userEventStore,
   counterEventStore,
-} from '~/eventStore/eventStore.util.test';
+} from '~/eventStore/eventStore.fixtures.test';
 
 import { NotificationMessageQueue } from './notificationMessageQueue';
 

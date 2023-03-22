@@ -13,7 +13,7 @@ import {
   incrementCounterNoOutput,
   inputSchema,
   outputSchema,
-} from './command.util.test';
+} from './command.fixtures.test';
 
 type Input = FromSchema<typeof inputSchema>;
 type Output = FromSchema<typeof outputSchema>;

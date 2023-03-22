@@ -1,7 +1,7 @@
 import {
   counterEventStore,
   userEventStore,
-} from '~/eventStore/eventStore.util.test';
+} from '~/eventStore/eventStore.fixtures.test';
 import { NotificationMessageQueue, StateCarryingMessageBus } from '~/messaging';
 
 import { ConnectedEventStore } from './connectedEventStore';

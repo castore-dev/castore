@@ -17,7 +17,7 @@ import {
   counterCreatedEvent,
   counterIncrementedEvent,
   counterDeletedEvent,
-} from './eventStore.util.test';
+} from './eventStore.fixtures.test';
 import { GetAggregateOptions } from './types';
 
 // --- EXTENDS ---

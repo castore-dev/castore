@@ -13,7 +13,7 @@ import {
   Input,
   Output,
   Context,
-} from './command.util.test';
+} from './command.fixtures.test';
 
 // --- CLASS ---
 

@@ -3,7 +3,7 @@ import { vi } from 'vitest';
 import {
   userEventStore,
   storageAdapterMock,
-} from '~/eventStore/eventStore.util.test';
+} from '~/eventStore/eventStore.fixtures.test';
 import { StorageAdapter } from '~/storageAdapter';
 
 import {
@@ -11,7 +11,7 @@ import {
   stateCarryingMessageBus,
   userEventStoreWithNotificationMessageQueue,
   userEventStoreWithStateCarryingMessageBus,
-} from './connectedEventStore.util.test';
+} from './connectedEventStore.fixtures.test';
 
 export const anotherStorageAdapterMock: StorageAdapter = {
   pushEvent: vi.fn(),

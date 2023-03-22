@@ -15,7 +15,7 @@ import {
   putSnapshotMock,
   counterCreatedEventMock,
   counterIncrementedEventMock,
-} from './eventStore.util.test';
+} from './eventStore.fixtures.test';
 
 describe('event store', () => {
   beforeEach(() => {
