@@ -34,7 +34,7 @@ import { Provider } from 'react-redux';
 import { configureCastore } from '@castore/redux-event-storage-adapter';
 
 const store = configureCastore({
-  eventStores: [userEventStore, anotherEventStore],
+  eventStores: [pokemonsEventStore, trainersEventStore],
 });
 
 const MyReactApp = () => (
@@ -49,13 +49,13 @@ And that's it 🙌 `configureCastore` not only configures the Redux store but al
 You can use the `pushEvent` method as usual:
 
 ```tsx
-const RemoveUserButton = ({ userId }) => (
+const CatchPokemonButton = ({ pokemonId }) => (
   <Button
     onClick={async () => {
-      await userEventStore.pushEvent({
-        aggregateId: userId,
-        type: 'USER_REMOVED',
-        version: currentUserVersion + 1,
+      await pokemonsEventStore.pushEvent({
+        aggregateId: pokemonId,
+        type: 'POKEMON_CATCHED',
+        version: currentPokemonVersion + 1,
       });
     }}
   />
@@ -73,7 +73,7 @@ import { useAggregateIds } from '@castore/redux-event-storage-adapter';
 
 const AggregateIdsList = () => {
   // 🙌 Will synchronously return the store data, as well as hook the component to it
-  const { aggregateIds } = useAggregateIds(userEventStore, { limit: 20 });
+  const { aggregateIds } = useAggregateIds(pokemonsEventStore, { limit: 20 });
 
   return aggregateIds.map(aggregateId => (
     <Aggregate key={aggregateId} aggregateId={aggregateId} />
@@ -81,10 +81,10 @@ const AggregateIdsList = () => {
 };
 
 const Aggregate = ({ aggregateId }) => {
-  const { aggregate } = useExistingAggregate(userEventStore, aggregateId);
+  const { aggregate } = useExistingAggregate(pokemonsEventStore, aggregateId);
 
   // 🙌 aggregate is correctly typed
-  return <p>{aggregate.firstName}</p>;
+  return <p>{aggregate.name}</p>;
 };
 ```
 
@@ -107,7 +107,7 @@ import {
 } from '@castore/redux-event-storage-adapter';
 
 const castoreReducers = getCastoreReducers({
-  eventStores: [userEventStore, anotherEventStore],
+  eventStores: [pokemonsEventStore, trainersEventStore],
   // 👇 Optional
   prefix: 'customPrefix',
 });

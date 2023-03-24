@@ -70,15 +70,15 @@ messageBusAdapter.on({}, async message => {
   const { eventStoreId, event } = message;
 });
 
-// 👇 Listen to users messages
-messageBusAdapter.on({ eventStoreId: 'USERS' }, async message => {
+// 👇 Listen to pokemons messages
+messageBusAdapter.on({ eventStoreId: 'POKEMONS' }, async message => {
   // 🙌 Correctly typed!
   const { eventStoreId, event } = message;
 });
 
-// 👇 Listen only to user created messages
+// 👇 Listen only to POKEMON_APPEARED created messages
 messageBusAdapter.on(
-  { eventStoreId: 'USERS', eventType: 'USER_CREATED' },
+  { eventStoreId: 'POKEMONS', eventType: 'POKEMON_APPEARED' },
   async message => {
     // 🙌 Correctly typed!
     const { eventStoreId, event } = message;
@@ -93,13 +93,13 @@ const logSomething = async () => {
   console.log('Received message!');
 };
 
-messageBusAdapter.on({ eventStoreId: 'USERS' }, logSomething);
+messageBusAdapter.on({ eventStoreId: 'POKEMONS' }, logSomething);
 messageBusAdapter.on(
-  { eventStoreId: 'USERS', eventType: 'USER_CREATED' },
+  { eventStoreId: 'POKEMONS', eventType: 'POKEMON_APPEARED' },
   logSomething,
 );
 
-await appMessageBus.publishMessage(userCreatedEvent);
+await appMessageBus.publishMessage(pokemonAppearedEvent);
 
 // 👇 Console output (only once):
 // "Received message!"

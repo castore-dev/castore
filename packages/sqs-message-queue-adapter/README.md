@@ -58,11 +58,11 @@ When publishing a message, it is JSON stringified and passed as the record body.
 // 👇 Record example
 {
   "body": "{
-    \"eventStoreId\": \"USERS\",
+    \"eventStoreId\": \"POKEMONS\",
     \"event\": {
       \"aggregateId\": \"123\",
       \"version\": 1,
-      \"type\": \"USER_CREATED\",
+      \"type\": \"POKEMON_APPEARED\",
       \"timestamp\": ...
       ...
     },

@@ -29,7 +29,7 @@ yarn add @castore/core
 ```ts
 import { InMemoryStorageAdapter } from '@castore/inmemory-event-storage-adapter';
 
-const userEventsStorageAdapter = new InMemoryStorageAdapter({
+const pokemonsEventsStorageAdapter = new InMemoryStorageAdapter({
   // 👇 You can specify an initial state for your event store
   initialEvents: [
     {
@@ -39,9 +39,9 @@ const userEventsStorageAdapter = new InMemoryStorageAdapter({
   ],
 });
 
-const userEventStore = new EventStore({
+const pokemonsEventStore = new EventStore({
   // ...
-  storageAdapter: userEventsStorageAdapter,
+  storageAdapter: pokemonsEventsStorageAdapter,
 });
 ```
 
@@ -50,6 +50,6 @@ const userEventStore = new EventStore({
 This adapter simply persists events in a local dictionary. You can retrieve it at all time through the `eventStore` property:
 
 ```ts
-const eventStore = userEventStore.eventStore;
+const eventStore = pokemonsEventStore.eventStore;
 // => { [aggregateId: string]: EventDetail[] }
 ```

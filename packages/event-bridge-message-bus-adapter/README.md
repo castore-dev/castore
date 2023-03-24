@@ -57,14 +57,14 @@ When publishing a message, its `eventStoreId` is used as the message `source` an
 ```ts
 // 👇 Entry example
 {
-  "source": "USERS", // <= eventStoreId
-  "detail-type": "USER_CREATED", // <= event type
+  "source": "POKEMONS", // <= eventStoreId
+  "detail-type": "POKEMON_APPEARED", // <= event type
   "detail": {
-    "eventStoreId": "USERS",
+    "eventStoreId": "POKEMONS",
     "event": {
       "aggregateId": "123",
       "version": 1,
-      "type": "USER_CREATED",
+      "type": "POKEMON_APPEARED",
       "timestamp": ...
       ...
     },
@@ -95,8 +95,8 @@ import type { EventBridgeMessageBusMessage } from '@castore/event-bridge-message
 const listener = async (
   message: EventBridgeMessageBusMessage<
     typeof appMessageBus,
-    'USERS', // <= Only listen to the 'USER' event store events (optional)
-    'USER_CREATED' // <= Only listen to 'USER_CREATED' events (optional)
+    'POKEMONS', // <= Only listen to the 'POKEMONS' event store events (optional)
+    'POKEMON_APPEARED' // <= Only listen to 'POKEMON_APPEARED' events (optional)
   >,
 ) => {
   // 🙌 Correctly typed!

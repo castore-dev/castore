@@ -32,37 +32,37 @@ The `mockEventStore` util returns a copy of the provided `EventStore` connected 
 import { EventStore } from '@castore/core';
 import { mockEventStore } from '@castore/test-tools';
 
-const userEventStore = new EventStore({
+const pokemonsEventStore = new EventStore({
   // ...
 });
 
-const createUserCommand = new Command({
+const pokemonAppearCommand = new Command({
   // ...
 });
 
 describe('My awesome test', () => {
-  const mockedUserEventStore = mockEventStore(userEventStore, [
+  const mockedPokemonsEventStore = mockEventStore(pokemonsEventStore, [
     // 👇 Provide initial state (list of event details) in a type-safe way
     {
       aggregateId: '123',
       version: 1,
-      type: 'USER_CREATED',
+      type: 'POKEMON_APPEARED',
       // ...
     },
   ]);
 
   beforeEach(() => {
     // 👇 Reset to initial state
-    mockedUserEventStore.reset();
+    mockedPokemonsEventStore.reset();
   });
 
-  it('pushes a USER_CREATED event', async () => {
-    const { userId } = await createUserCommand.handler({
-      requiredEventsStores: [mockedUserEventStore],
+  it('pushes a POKEMON_APPEARED event', async () => {
+    const { pokemonId } = await pokemonAppearCommand.handler({
+      requiredEventsStores: [mockedPokemonsEventStore],
       // ...
     });
 
-    const { events } = await mockedUserEventStore.getEvents(userId);
+    const { events } = await mockedPokemonsEventStore.getEvents(pokemonId);
 
     expect(events).toHaveLength(1);
   });
@@ -77,7 +77,7 @@ Unlike `mockEventStore`, the `muteEventStore` util mutes the original event stor
 import { EventStore } from '@castore/core';
 import { muteEventStore } from '@castore/test-tools';
 
-const userEventStore = new EventStore({
+const pokemonsEventStore = new EventStore({
   // ...
 });
 
@@ -86,12 +86,12 @@ const functionUsingTheEventStore = async () => {
 };
 
 describe('My awesome test', () => {
-  muteEventStore(userEventStore, [
+  muteEventStore(pokemonsEventStore, [
     // 👇 Provide initial state (list of event details) in a type-safe way
     {
       aggregateId: '123',
       version: 1,
-      type: 'USER_CREATED',
+      type: 'POKEMON_APPEARED',
       // ...
     },
   ]);
@@ -100,7 +100,7 @@ describe('My awesome test', () => {
     await functionUsingTheEventStore();
 
     // 👇 Use the original event store
-    const { events } = await userEventStore.getEvents('123');
+    const { events } = await pokemonsEventStore.getEvents('123');
 
     expect(events).toHaveLength(1);
   });
