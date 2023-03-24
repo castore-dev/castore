@@ -1,7 +1,7 @@
 import { vi } from 'vitest';
 
 import {
-  userEventStore,
+  pokemonsEventStore,
   storageAdapterMock,
 } from '~/eventStore/eventStore.fixtures.test';
 import { StorageAdapter } from '~/storageAdapter';
@@ -9,8 +9,8 @@ import { StorageAdapter } from '~/storageAdapter';
 import {
   notificationMessageQueue,
   stateCarryingMessageBus,
-  userEventStoreWithNotificationMessageQueue,
-  userEventStoreWithStateCarryingMessageBus,
+  pokemonsEventStoreWithNotificationMessageQueue,
+  pokemonsEventStoreWithStateCarryingMessageBus,
 } from './connectedEventStore.fixtures.test';
 
 export const anotherStorageAdapterMock: StorageAdapter = {
@@ -23,8 +23,8 @@ export const anotherStorageAdapterMock: StorageAdapter = {
 };
 
 describe('ConnectedEventStore', () => {
-  const aggregateId = 'user-1';
-  const type = 'USER_REMOVED';
+  const aggregateId = 'pokemon-1';
+  const type = 'POKEMON_CATCHED';
   const version = 2;
   const timestamp = '2022-01-01T00:00:00.000Z';
 
@@ -32,7 +32,7 @@ describe('ConnectedEventStore', () => {
   const eventInput = { aggregateId, type, version } as const;
 
   const pushEvent = vi
-    .spyOn(userEventStore, 'pushEvent')
+    .spyOn(pokemonsEventStore, 'pushEvent')
     .mockResolvedValue({ event });
 
   beforeEach(() => {
@@ -45,14 +45,16 @@ describe('ConnectedEventStore', () => {
       .mockResolvedValue();
 
     it('pushes the event and publishes the message in the message queue', async () => {
-      await userEventStoreWithNotificationMessageQueue.pushEvent(eventInput);
+      await pokemonsEventStoreWithNotificationMessageQueue.pushEvent(
+        eventInput,
+      );
 
       expect(pushEvent).toHaveBeenCalledOnce();
       expect(pushEvent).toHaveBeenCalledWith(eventInput, {});
 
       expect(publishNotificationMessage).toHaveBeenCalledOnce();
       expect(publishNotificationMessage).toHaveBeenCalledWith({
-        eventStoreId: userEventStore.eventStoreId,
+        eventStoreId: pokemonsEventStore.eventStoreId,
         event,
       });
     });
@@ -61,18 +63,21 @@ describe('ConnectedEventStore', () => {
   describe('stateCarryingMessage', () => {
     const previousEvent = {
       aggregateId,
-      type: 'USER_CREATED',
+      type: 'POKEMON_APPEARED',
       version: 1,
       timestamp: '2021-01-01T00:00:00.000Z',
-      payload: { name: 'John', age: 30 },
+      payload: { name: 'Pikachu', level: 30 },
     } as const;
 
     const events = [previousEvent, event];
-    const v1Aggregate = userEventStore.buildAggregate([previousEvent]);
-    const v2Aggregate = userEventStore.buildAggregate([previousEvent, event]);
+    const v1Aggregate = pokemonsEventStore.buildAggregate([previousEvent]);
+    const v2Aggregate = pokemonsEventStore.buildAggregate([
+      previousEvent,
+      event,
+    ]);
 
     const getAggregate = vi
-      .spyOn(userEventStoreWithStateCarryingMessageBus, 'getAggregate')
+      .spyOn(pokemonsEventStoreWithStateCarryingMessageBus, 'getAggregate')
       .mockResolvedValue({ aggregate: v2Aggregate, events, lastEvent: event });
 
     const publishStateCarryingMessageMock = vi
@@ -85,7 +90,7 @@ describe('ConnectedEventStore', () => {
     });
 
     it('pushes the event, fetches aggregate & publishes the message in the message queue', async () => {
-      await userEventStoreWithStateCarryingMessageBus.pushEvent(eventInput);
+      await pokemonsEventStoreWithStateCarryingMessageBus.pushEvent(eventInput);
 
       expect(pushEvent).toHaveBeenCalledOnce();
       expect(pushEvent).toHaveBeenCalledWith(eventInput, {});
@@ -97,7 +102,7 @@ describe('ConnectedEventStore', () => {
 
       expect(publishStateCarryingMessageMock).toHaveBeenCalledOnce();
       expect(publishStateCarryingMessageMock).toHaveBeenCalledWith({
-        eventStoreId: userEventStore.eventStoreId,
+        eventStoreId: pokemonsEventStore.eventStoreId,
         event,
         aggregate: v2Aggregate,
       });
@@ -106,9 +111,10 @@ describe('ConnectedEventStore', () => {
     it('does not fetch the aggregate if it is provided', async () => {
       pushEvent.mockResolvedValue({ event, nextAggregate: v2Aggregate });
 
-      await userEventStoreWithStateCarryingMessageBus.pushEvent(eventInput, {
-        prevAggregate: v1Aggregate,
-      });
+      await pokemonsEventStoreWithStateCarryingMessageBus.pushEvent(
+        eventInput,
+        { prevAggregate: v1Aggregate },
+      );
 
       expect(pushEvent).toHaveBeenCalledOnce();
       expect(pushEvent).toHaveBeenCalledWith(eventInput, {
@@ -119,7 +125,7 @@ describe('ConnectedEventStore', () => {
 
       expect(publishStateCarryingMessageMock).toHaveBeenCalledOnce();
       expect(publishStateCarryingMessageMock).toHaveBeenCalledWith({
-        eventStoreId: userEventStore.eventStoreId,
+        eventStoreId: pokemonsEventStore.eventStoreId,
         event,
         aggregate: v2Aggregate,
       });
@@ -128,7 +134,7 @@ describe('ConnectedEventStore', () => {
     it('does not fetch the aggregate if event version is 1', async () => {
       pushEvent.mockResolvedValue({ event, nextAggregate: v1Aggregate });
 
-      await userEventStoreWithStateCarryingMessageBus.pushEvent(eventInput);
+      await pokemonsEventStoreWithStateCarryingMessageBus.pushEvent(eventInput);
 
       expect(pushEvent).toHaveBeenCalledOnce();
       expect(pushEvent).toHaveBeenCalledWith(eventInput, {});
@@ -137,7 +143,7 @@ describe('ConnectedEventStore', () => {
 
       expect(publishStateCarryingMessageMock).toHaveBeenCalledOnce();
       expect(publishStateCarryingMessageMock).toHaveBeenCalledWith({
-        eventStoreId: userEventStore.eventStoreId,
+        eventStoreId: pokemonsEventStore.eventStoreId,
         event,
         aggregate: v1Aggregate,
       });
@@ -146,18 +152,18 @@ describe('ConnectedEventStore', () => {
 
   describe('storageAdapter', () => {
     it('sets & gets the original event storage adapter', () => {
-      userEventStoreWithNotificationMessageQueue.storageAdapter =
+      pokemonsEventStoreWithNotificationMessageQueue.storageAdapter =
         anotherStorageAdapterMock;
-      expect(userEventStoreWithNotificationMessageQueue.storageAdapter).toBe(
-        anotherStorageAdapterMock,
-      );
-      expect(userEventStore.storageAdapter).toBe(anotherStorageAdapterMock);
+      expect(
+        pokemonsEventStoreWithNotificationMessageQueue.storageAdapter,
+      ).toBe(anotherStorageAdapterMock);
+      expect(pokemonsEventStore.storageAdapter).toBe(anotherStorageAdapterMock);
 
-      userEventStore.storageAdapter = storageAdapterMock;
-      expect(userEventStoreWithNotificationMessageQueue.storageAdapter).toBe(
-        storageAdapterMock,
-      );
-      expect(userEventStore.storageAdapter).toBe(storageAdapterMock);
+      pokemonsEventStore.storageAdapter = storageAdapterMock;
+      expect(
+        pokemonsEventStoreWithNotificationMessageQueue.storageAdapter,
+      ).toBe(storageAdapterMock);
+      expect(pokemonsEventStore.storageAdapter).toBe(storageAdapterMock);
     });
   });
 });

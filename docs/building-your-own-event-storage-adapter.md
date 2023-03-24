@@ -62,7 +62,7 @@ await customStorageAdapter.pushEvent({
   aggregateId,
   version: lastVersion + 1,
   timestamp: new Date().toISOString(),
-  type: 'USER_CREATED',
+  type: 'POKEMON_APPEARED',
   payload,
   metadata,
 });

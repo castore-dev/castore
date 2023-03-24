@@ -1,23 +1,20 @@
-import {
-  counterEventStore,
-  userEventStore,
-} from '~/eventStore/eventStore.fixtures.test';
+import { pokemonsEventStore } from '~/eventStore/eventStore.fixtures.test';
 import { NotificationMessageQueue, StateCarryingMessageBus } from '~/messaging';
 
 import { ConnectedEventStore } from './connectedEventStore';
 
 export const notificationMessageQueue = new NotificationMessageQueue({
   messageQueueId: 'notificationMessageQueue',
-  sourceEventStores: [counterEventStore, userEventStore],
+  sourceEventStores: [pokemonsEventStore],
 });
 
-export const userEventStoreWithNotificationMessageQueue =
-  new ConnectedEventStore(userEventStore, notificationMessageQueue);
+export const pokemonsEventStoreWithNotificationMessageQueue =
+  new ConnectedEventStore(pokemonsEventStore, notificationMessageQueue);
 
 export const stateCarryingMessageBus = new StateCarryingMessageBus({
   messageBusId: 'stateCarryingMessageBus',
-  sourceEventStores: [counterEventStore, userEventStore],
+  sourceEventStores: [pokemonsEventStore],
 });
 
-export const userEventStoreWithStateCarryingMessageBus =
-  new ConnectedEventStore(userEventStore, stateCarryingMessageBus);
+export const pokemonsEventStoreWithStateCarryingMessageBus =
+  new ConnectedEventStore(pokemonsEventStore, stateCarryingMessageBus);

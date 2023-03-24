@@ -21,168 +21,100 @@ export const storageAdapterMock: StorageAdapter = {
   listSnapshots: listSnapshotsMock,
 };
 
-// Counters
+// Pokemons
 
-export const counterCreatedEvent = new EventType<
-  'COUNTER_CREATED',
-  { initialCount?: number }
->({
-  type: 'COUNTER_CREATED',
+export const pokemonAppearedEvent = new EventType<
+  'POKEMON_APPEARED',
+  { name: string; level: number }
+>({ type: 'POKEMON_APPEARED' });
+
+export const pokemonCatchedEvent = new EventType({
+  type: 'POKEMON_CATCHED',
 });
 
-export const counterIncrementedEvent = new EventType<'COUNTER_INCREMENTED'>({
-  type: 'COUNTER_INCREMENTED',
+export const pokemonLeveledUpEvent = new EventType({
+  type: 'POKEMON_LEVELED_UP',
 });
 
-export const counterDeletedEvent = new EventType<'COUNTER_DELETED'>({
-  type: 'COUNTER_DELETED',
-});
+export type PokemonEventDetails =
+  | EventTypeDetail<typeof pokemonAppearedEvent>
+  | EventTypeDetail<typeof pokemonCatchedEvent>
+  | EventTypeDetail<typeof pokemonLeveledUpEvent>;
 
-export type CounterEventsDetails =
-  | EventTypeDetail<typeof counterCreatedEvent>
-  | EventTypeDetail<typeof counterIncrementedEvent>
-  | EventTypeDetail<typeof counterDeletedEvent>;
-
-export type CounterAggregate = {
-  aggregateId: string;
-  version: number;
-  count: number;
-  status: string;
-};
-
-export const counterIdMock = 'counterId';
-export const counterCreatedEventMock: CounterEventsDetails = {
-  aggregateId: counterIdMock,
-  version: 1,
-  type: 'COUNTER_CREATED',
-  timestamp: '2022',
-  payload: {},
-};
-export const counterIncrementedEventMock: CounterEventsDetails = {
-  aggregateId: counterIdMock,
-  version: 2,
-  type: 'COUNTER_INCREMENTED',
-  timestamp: '2023',
-};
-export const counterEventsMocks: [CounterEventsDetails, CounterEventsDetails] =
-  [counterCreatedEventMock, counterIncrementedEventMock];
-
-export const countersReducer = (
-  counterAggregate: CounterAggregate,
-  event: CounterEventsDetails,
-): CounterAggregate => {
-  const { version, aggregateId } = event;
-
-  switch (event.type) {
-    case 'COUNTER_CREATED':
-      return {
-        aggregateId,
-        version: event.version,
-        count: 0,
-        status: 'LIVE',
-      };
-    case 'COUNTER_INCREMENTED':
-      return {
-        ...counterAggregate,
-        version,
-        count: counterAggregate.count + 1,
-      };
-    case 'COUNTER_DELETED':
-      return {
-        ...counterAggregate,
-        version,
-        status: 'DELETED',
-      };
-    default: {
-      return {
-        ...counterAggregate,
-        version,
-      };
-    }
-  }
-};
-
-export const counterEventStore = new EventStore({
-  eventStoreId: 'Counters',
-  eventStoreEvents: [
-    counterCreatedEvent,
-    counterIncrementedEvent,
-    counterDeletedEvent,
-  ],
-  reduce: countersReducer,
-  storageAdapter: storageAdapterMock,
-});
-
-// Users
-
-export const userCreatedEvent = new EventType<
-  'USER_CREATED',
-  { name: string; age: number }
->({ type: 'USER_CREATED' });
-
-export const userRemovedEvent = new EventType<'USER_REMOVED'>({
-  type: 'USER_REMOVED',
-});
-
-export type UserEventsDetails =
-  | EventTypeDetail<typeof userCreatedEvent>
-  | EventTypeDetail<typeof userRemovedEvent>;
-
-export type UserAggregate = {
+export type PokemonAggregate = {
   aggregateId: string;
   version: number;
   name: string;
-  age: number;
-  status: string;
+  level: number;
+  status: 'wild' | 'catched';
 };
 
-export const userIdMock = 'userId';
-export const userEventsMocks: UserEventsDetails[] = [
-  {
-    aggregateId: counterIdMock,
-    version: 1,
-    type: 'USER_CREATED',
-    timestamp: '2022',
-    payload: { name: 'Toto', age: 42 },
-  },
-  {
-    aggregateId: counterIdMock,
-    version: 2,
-    type: 'USER_REMOVED',
-    timestamp: '2023',
-  },
+export const pikachuId = 'pikachuId';
+export const pikachuAppearedEvent: PokemonEventDetails = {
+  aggregateId: pikachuId,
+  version: 1,
+  type: 'POKEMON_APPEARED',
+  timestamp: '2022',
+  payload: { name: 'Pikachu', level: 42 },
+};
+export const pikachuCatchedEvent: PokemonEventDetails = {
+  aggregateId: pikachuId,
+  version: 2,
+  type: 'POKEMON_CATCHED',
+  timestamp: '2023',
+};
+export const pikachuLeveledUpEvent: PokemonEventDetails = {
+  aggregateId: pikachuId,
+  version: 3,
+  type: 'POKEMON_LEVELED_UP',
+  timestamp: '2024',
+};
+export const pikachuEventsMocks = [
+  pikachuAppearedEvent,
+  pikachuCatchedEvent,
+  pikachuLeveledUpEvent,
 ];
 
-export const usersReducer = (
-  userAggregate: UserAggregate,
-  event: UserEventsDetails,
-): UserAggregate => {
+export const pokemonsReducer = (
+  pokemonAggregate: PokemonAggregate,
+  event: PokemonEventDetails,
+): PokemonAggregate => {
   const { version, aggregateId } = event;
 
   switch (event.type) {
-    case 'USER_CREATED': {
-      const { name, age } = event.payload;
+    case 'POKEMON_APPEARED': {
+      const { name, level } = event.payload;
 
       return {
         aggregateId,
         version: event.version,
         name,
-        age,
-        status: 'CREATED',
+        level,
+        status: 'wild',
       };
     }
-    case 'USER_REMOVED':
+    case 'POKEMON_CATCHED':
       return {
-        ...userAggregate,
+        ...pokemonAggregate,
         version,
-        status: 'DELETED',
+        status: 'catched',
+      };
+    case 'POKEMON_LEVELED_UP':
+      return {
+        ...pokemonAggregate,
+        version,
+        level: pokemonAggregate.level + 1,
       };
   }
 };
 
-export const userEventStore = new EventStore({
-  eventStoreId: 'Users',
-  eventStoreEvents: [userCreatedEvent, userRemovedEvent],
-  reduce: usersReducer,
+export const pokemonsEventStore = new EventStore({
+  eventStoreId: 'POKEMONS',
+  eventStoreEvents: [
+    pokemonAppearedEvent,
+    pokemonCatchedEvent,
+    pokemonLeveledUpEvent,
+  ],
+  reduce: pokemonsReducer,
   storageAdapter: storageAdapterMock,
 });
