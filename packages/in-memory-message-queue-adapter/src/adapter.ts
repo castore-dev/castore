@@ -58,6 +58,7 @@ export class InMemoryMessageQueueAdapter<MESSAGE extends Message = Message>
   }
 
   publishMessage: MessageQueueAdapter['publishMessage'];
+  publishMessages: MessageQueueAdapter['publishMessages'];
   private subscribe: (nextHandler: (message: MESSAGE) => Promise<void>) => void;
   retryAttempts: number;
   retryDelayInMs: number;
@@ -130,6 +131,12 @@ export class InMemoryMessageQueueAdapter<MESSAGE extends Message = Message>
 
         resolve();
       });
+
+    this.publishMessages = async messages => {
+      for (const message of messages) {
+        await this.publishMessage(message);
+      }
+    };
   }
 
   set worker(worker: (message: MESSAGE) => Promise<void>) {
