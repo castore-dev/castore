@@ -38,10 +38,10 @@
     "watch": "rm -rf dist && concurrently 'yarn:package-* --watch'"
   },
   "dependencies": {
-    "@aws-sdk/client-dynamodb": "^3.2.0",
     "@aws/dynamodb-auto-marshaller": "^0.7.1"
   },
   "devDependencies": {
+    "@aws-sdk/client-dynamodb": "^3.2.0",
     "@babel/cli": "^7.17.6",
     "@babel/core": "^7.17.9",
     "@babel/plugin-transform-runtime": "^7.17.0",
