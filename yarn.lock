@@ -4379,6 +4379,7 @@ __metadata:
     "@babel/preset-typescript": ^7.16.7
     "@castore/core": "workspace:"
     "@types/aws-lambda": ^8.10.111
+    "@types/lodash.chunk": ^4.2.7
     "@types/node": ^17.0.29
     "@zerollup/ts-transform-paths": ^1.7.18
     aws-sdk-client-mock: ^2.1.0
@@ -4386,6 +4387,7 @@ __metadata:
     concurrently: ^7.1.0
     dependency-cruiser: ^11.7.0
     eslint: ^8.14.0
+    lodash.chunk: ^4.2.0
     prettier: ^2.6.2
     ts-node: ^10.7.0
     ts-toolbelt: ^9.6.0
@@ -6743,6 +6745,22 @@ __metadata:
   dependencies:
     "@types/node": "*"
   checksum: e009a2bfb50e90ca9b7c6e8f648f8464067271fd99116f881073fa6fa76dc8d0133181dd65e6614d5fb1220d671d67b0124aef7d97dc02d7e342ab143a47779d
+  languageName: node
+  linkType: hard
+
+"@types/lodash.chunk@npm:^4.2.7":
+  version: 4.2.7
+  resolution: "@types/lodash.chunk@npm:4.2.7"
+  dependencies:
+    "@types/lodash": "*"
+  checksum: 09df5ca00d8866776038bf94658d30b4ea84bffe5f81c14c01568bcb6be692bf59f6ea093de2bb0afbb3f8e54ae96ebd97595f2838ab59b77865427ca77d391e
+  languageName: node
+  linkType: hard
+
+"@types/lodash@npm:*":
+  version: 4.14.191
+  resolution: "@types/lodash@npm:4.14.191"
+  checksum: ba0d5434e10690869f32d5ea49095250157cae502f10d57de0a723fd72229ce6c6a4979576f0f13e0aa9fbe3ce2457bfb9fa7d4ec3d6daba56730a51906d1491
   languageName: node
   linkType: hard
 
@@ -12971,6 +12989,13 @@ __metadata:
   version: 4.17.21
   resolution: "lodash-es@npm:4.17.21"
   checksum: 05cbffad6e2adbb331a4e16fbd826e7faee403a1a04873b82b42c0f22090f280839f85b95393f487c1303c8a3d2a010048bf06151a6cbe03eee4d388fb0a12d2
+  languageName: node
+  linkType: hard
+
+"lodash.chunk@npm:^4.2.0":
+  version: 4.2.0
+  resolution: "lodash.chunk@npm:4.2.0"
+  checksum: 6286c6d06814fbeda502164015c42ef53a9194e6ebaac52ec2b41e83344aefe7bc3d94fdfec525adcd2c66cefdf05dc333b6a1128e4de739797342315c17cbc7
   languageName: node
   linkType: hard
 

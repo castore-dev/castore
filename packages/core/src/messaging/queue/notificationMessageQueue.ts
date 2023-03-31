@@ -26,6 +26,13 @@ export class NotificationMessageQueue<
       EventStoreNotificationMessage<EVENT_STORE>
     >,
   ) => Promise<void>;
+  publishMessages: (
+    notificationMessages: $Contravariant<
+      EVENT_STORE,
+      EventStore,
+      EventStoreNotificationMessage<EVENT_STORE>
+    >[],
+  ) => Promise<void>;
 
   constructor({
     messageQueueId,
@@ -78,6 +85,16 @@ export class NotificationMessageQueue<
       const messageQueueAdapter = this.getMessageQueueAdapter();
 
       await messageQueueAdapter.publishMessage(notificationMessage);
+    };
+
+    this.publishMessages = async notificationMessages => {
+      for (const notificationMessage of notificationMessages) {
+        const { eventStoreId } = notificationMessage;
+        this.getEventStore(eventStoreId);
+      }
+      const messageQueueAdapter = this.getMessageQueueAdapter();
+
+      await messageQueueAdapter.publishMessages(notificationMessages);
     };
   }
 }

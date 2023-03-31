@@ -37,6 +37,14 @@ export class StateCarryingMessageQueue<
     >,
   ) => Promise<void>;
 
+  publishMessages: (
+    stateCarryingMessages: $Contravariant<
+      EVENT_STORE,
+      EventStore,
+      EventStoreStateCarryingMessage<EVENT_STORE>
+    >[],
+  ) => Promise<void>;
+
   constructor({
     messageQueueId,
     sourceEventStores,
@@ -101,6 +109,17 @@ export class StateCarryingMessageQueue<
       });
 
       await this.publishMessage({ ...notificationMessage, aggregate });
+    };
+
+    this.publishMessages = async stateCarryingMessages => {
+      for (const stateCarryingMessage of stateCarryingMessages) {
+        const { eventStoreId } = stateCarryingMessage;
+        this.getEventStore(eventStoreId);
+      }
+
+      const messageQueueAdapter = this.getMessageQueueAdapter();
+
+      await messageQueueAdapter.publishMessages(stateCarryingMessages);
     };
   }
 }

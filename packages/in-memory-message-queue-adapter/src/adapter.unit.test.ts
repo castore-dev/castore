@@ -119,6 +119,19 @@ describe('in-memory message queue adapter', () => {
       > = 1;
       assertQueueType;
     });
+
+    it('calls the worker as many times as the number of messages to publish', async () => {
+      messageQueue.messageQueueAdapter = inMemoryMessageQueueAdapter;
+      const mockNumberOfEventToPublish = 3;
+      await messageQueue.publishMessages(
+        Array.from(
+          { length: mockNumberOfEventToPublish },
+          () => userCreatedEvent,
+        ),
+      );
+
+      expect(worker2).toHaveBeenCalledTimes(mockNumberOfEventToPublish);
+    });
   });
 
   describe('through static method', () => {
