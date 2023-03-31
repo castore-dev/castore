@@ -31,20 +31,20 @@ import { DynamoDbEventStorageAdapter } from '@castore/dynamodb-event-storage-ada
 
 const dynamoDbClient = new DynamoDBClient({});
 
-const userEventsStorageAdapter = new DynamoDbEventStorageAdapter({
+const pokemonsEventsStorageAdapter = new DynamoDbEventStorageAdapter({
   tableName: 'my-table-name',
   dynamoDbClient,
 });
 
 // 👇 Alternatively, provide a getter
-const userEventsStorageAdapter = new DynamoDbEventStorageAdapter({
+const pokemonsEventsStorageAdapter = new DynamoDbEventStorageAdapter({
   tableName: () => process.env.MY_TABLE_NAME,
   dynamoDbClient,
 });
 
-const userEventStore = new EventStore({
+const pokemonsEventStore = new EventStore({
   ...
-  storageAdapter: userEventsStorageAdapter
+  storageAdapter: pokemonsEventsStorageAdapter
 })
 ```
 
@@ -63,9 +63,9 @@ A [Global Secondary Index](https://docs.aws.amazon.com/amazondynamodb/latest/dev
   "version": 1, // <= Sort key
   "isInitialEvent": 1, // <= initialEvents index partition key
   "timestamp": "2022-01-01T00:00:00.000Z", // <= initialEvents index sort key
-  "type": "USER_CREATED",
-  "payload": { "name": "John", "age": 42 },
-  "metadata": { "invitedBy": "Jane" }
+  "type": "POKEMON_APPEARED",
+  "payload": { "name": "Pikachu", "level": 42 },
+  "metadata": { "trigger": "random" }
 }
 
 // 👇 Non-initial event
@@ -74,7 +74,7 @@ A [Global Secondary Index](https://docs.aws.amazon.com/amazondynamodb/latest/dev
   "version": 2,
   // Event is not projected on initialEvents index (to limit costs)
   "timestamp": "2023-01-01T00:00:00.000Z",
-  "type": "USER_REMOVED"
+  "type": "POKEMON_LEVELED_UP"
 }
 ```
 
@@ -136,7 +136,7 @@ import { Table, AttributeType, ProjectionType } from 'aws-cdk-lib/aws-dynamodb';
 const { STRING, NUMBER } = AttributeType;
 const { KEYS_ONLY } = ProjectionType;
 
-const userEventsTable = new Table(scope, 'UserEvents', {
+const pokemonsEventsTable = new Table(scope, 'PokemonEvents', {
   partitionKey: {
     name: 'aggregateId',
     type: STRING,
@@ -147,7 +147,7 @@ const userEventsTable = new Table(scope, 'UserEvents', {
   },
 });
 
-userEventsTable.addGlobalSecondaryIndex({
+pokemonsEventsTable.addGlobalSecondaryIndex({
   indexName: 'initialEvents',
   partitionKey: {
     name: 'isInitialEvent',
@@ -164,7 +164,7 @@ userEventsTable.addGlobalSecondaryIndex({
 ### Terraform
 
 ```h
-resource "aws_dynamodb_table" "user-events-table" {
+resource "aws_dynamodb_table" "pokemons-events-table" {
   hash_key       = "aggregateId"
   range_key      = "version"
 

@@ -82,29 +82,19 @@ export class ConnectedEventStore<
     aggregate: AGGREGATE;
   };
   eventStoreId: EVENT_STORE_ID;
-  /**
-   * @debt v2 "rename as eventTypes"
-   */
   eventStoreEvents: EVENT_TYPES;
-  /**
-   * @debt v2 "rename as reducer"
-   */
   reduce: REDUCER;
   simulateSideEffect: SideEffectsSimulator<EVENT_DETAIL, $EVENT_DETAIL>;
-
   getEvents: EventsGetter<EVENT_DETAIL>;
   pushEvent: EventPusher<EVENT_DETAIL, $EVENT_DETAIL, AGGREGATE, $AGGREGATE>;
   listAggregateIds: AggregateIdsLister;
-
   buildAggregate: (
     events: $EVENT_DETAIL[],
     aggregate?: $AGGREGATE,
   ) => AGGREGATE | undefined;
-
   getAggregate: AggregateGetter<EVENT_DETAIL, AGGREGATE>;
   getExistingAggregate: AggregateGetter<EVENT_DETAIL, AGGREGATE, true>;
   simulateAggregate: AggregateSimulator<$EVENT_DETAIL, AGGREGATE>;
-
   getStorageAdapter: () => StorageAdapter;
 
   eventStore: EventStore<
@@ -134,13 +124,22 @@ export class ConnectedEventStore<
     this.eventStoreEvents = eventStore.eventStoreEvents;
     this.reduce = eventStore.reduce;
     this.simulateSideEffect = eventStore.simulateSideEffect;
-
     this.getEvents = eventStore.getEvents;
+    this.listAggregateIds = eventStore.listAggregateIds;
+    this.buildAggregate = eventStore.buildAggregate;
+    this.getAggregate = eventStore.getAggregate;
+    this.getExistingAggregate = eventStore.getExistingAggregate;
+    this.simulateAggregate = eventStore.simulateAggregate;
+    this.getStorageAdapter = eventStore.getStorageAdapter;
+
     this.pushEvent = async (eventInput, options = {}) => {
       const response = await this.eventStore.pushEvent(eventInput, options);
       const { event, nextAggregate } = response;
 
       if (
+        /**
+         * @debt refactor "Create NotificationMessageChannel class w. only publish prop, extended by MessageQueues & Bus"
+         */
         this.messageChannel instanceof NotificationMessageQueue ||
         this.messageChannel instanceof NotificationMessageBus
       ) {
@@ -151,6 +150,9 @@ export class ConnectedEventStore<
       }
 
       if (
+        /**
+         * @debt refactor "Create StateCarryingMessageChannel class w. only publish prop, extended by MessageQueues & Bus"
+         */
         this.messageChannel instanceof StateCarryingMessageQueue ||
         this.messageChannel instanceof StateCarryingMessageBus
       ) {
@@ -172,15 +174,6 @@ export class ConnectedEventStore<
 
       return response;
     };
-    this.listAggregateIds = eventStore.listAggregateIds;
-
-    this.buildAggregate = eventStore.buildAggregate;
-
-    this.getAggregate = eventStore.getAggregate;
-    this.getExistingAggregate = eventStore.getExistingAggregate;
-    this.simulateAggregate = eventStore.simulateAggregate;
-
-    this.getStorageAdapter = eventStore.getStorageAdapter;
 
     this.eventStore = eventStore;
     this.messageChannel = messageChannel;

@@ -11,7 +11,7 @@ import {
   onEventAlreadyExistsMock,
   pushEventMock,
   requiredEventStores,
-} from './command.util.test';
+} from './command.fixtures.test';
 
 getEventsMock.mockResolvedValue({ events: counterEventsMocks });
 

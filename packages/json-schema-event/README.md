@@ -27,30 +27,30 @@ yarn add @castore/core json-schema-to-ts
 ```ts
 import { JSONSchemaEventType } from '@castore/json-schema-event';
 
-const userCreatedPayloadSchema = {
+const pokemonAppearedPayloadSchema = {
   type: 'object',
   properties: {
     name: { type: 'string' },
-    age: { type: 'string' },
+    level: { type: 'integer' },
   },
-  required: ['name', 'age'],
+  required: ['name', 'level'],
   additionalProperties: false,
 } as const; // 👈 Don't forget the "as const" statement
 // (Cf json-schema-to-ts documentation)
 
-const userCreatedMetadataSchema = {
+const pokemonAppearedMetadataSchema = {
   type: 'object',
   properties: {
-    invitedBy: { type: 'string' },
+    trigger: { enum: ['random', 'scripted'] },
   },
   additionalProperties: false,
 } as const;
 
 // 👇 generics are correctly inferred
-const userCreatedEventType = new JSONSchemaEventType({
-  type: 'USER_CREATED',
-  payloadSchema: userCreatedPayloadSchema,
-  metadataSchema: userCreatedMetadataSchema,
+const pokemonAppearedEventType = new JSONSchemaEventType({
+  type: 'POKEMON_APPEARED',
+  payloadSchema: pokemonAppearedPayloadSchema,
+  metadataSchema: pokemonAppearedMetadataSchema,
 });
 ```
 
@@ -59,11 +59,11 @@ const userCreatedEventType = new JSONSchemaEventType({
 ```ts
 import { EventType } from '@castore/core';
 
-const userCreatedEventType = new EventType<
-  'USER_CREATED',
-  { name: string; age: number },
-  { invitedBy?: string }
->({ type: 'USER_CREATED' });
+const pokemonAppearedEventType = new EventType<
+  'POKEMON_APPEARED',
+  { name: string; level: number },
+  { trigger?: 'random' | 'scripted' }
+>({ type: 'POKEMON_APPEARED' });
 ```
 
 ## ⚙️ Properties & Methods
@@ -73,13 +73,13 @@ const userCreatedEventType = new EventType<
 - <code>payloadSchema <i>(?object)</i></code>: The event type payload JSON schema
 
 ```ts
-const payloadSchema = userCreatedEventType.payloadSchema;
-// => userCreatedPayloadSchema
+const payloadSchema = pokemonAppearedEventType.payloadSchema;
+// => pokemonAppearedPayloadSchema
 ```
 
 - <code>metadataSchema <i>(?object)</i></code>: The event type metadata JSON schema
 
 ```ts
-const metadataSchema = userCreatedEventType.metadataSchema;
-// => userCreatedMetadataSchema
+const metadataSchema = pokemonAppearedEventType.metadataSchema;
+// => pokemonAppearedMetadataSchema
 ```

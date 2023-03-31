@@ -28,46 +28,46 @@ yarn add @castore/core json-schema-to-ts
 import { tuple } from '@castore/core';
 import { JSONSchemaCommand } from '@castore/json-schema-command';
 
-const createUserInputSchema = {
+const pokemonAppearedInputSchema = {
   type: 'object',
   properties: {
     name: { type: 'string' },
-    age: { type: 'string' },
+    level: { type: 'integer' },
   },
-  required: ['name', 'age'],
+  required: ['name', 'level'],
   additionalProperties: false,
 } as const; // 👈 Don't forget the "as const" statement
 // (Cf json-schema-to-ts documentation)
 
-const createUserOutputSchema = {
+const pokemonAppearedOutputSchema = {
   type: 'object',
   properties: {
-    userId: { type: 'string', format: 'uuid' },
+    pokemonId: { type: 'string', format: 'uuid' },
   },
-  required: ['userId'],
+  required: ['pokemonId'],
   additionalProperties: false,
 } as const;
 
 // 👇 generics are correctly inferred
-const createUserCommand = new JSONSchemaCommand({
-  commandId: 'CREATE_USER',
-  requiredEventStores: tuple(userEventStore),
-  inputSchema: createUserInputSchema,
-  outputSchema: createUserOutputSchema,
+const pokemonAppearCommand = new JSONSchemaCommand({
+  commandId: 'POKEMON_APPEAR',
+  requiredEventStores: tuple(pokemonsEventStore),
+  inputSchema: pokemonAppearedInputSchema,
+  outputSchema: pokemonAppearedOutputSchema,
   // 👇 handler input/output types are correctly inferred
-  handler: async (commandInput, [userEventStore]) => {
-    const { name, age } = commandInput;
-    const userId = generateUuid();
+  handler: async (commandInput, [pokemonsEventStore]) => {
+    const { name, level } = commandInput;
+    const pokemonId = generateUuid();
 
-    await userEventStore.pushEvent({
-      aggregateId: userId,
+    await pokemonsEventStore.pushEvent({
+      aggregateId: pokemonId,
       version: 1,
-      type: 'USER_CREATED',
+      type: 'POKEMON_APPEARED',
       timestamp: new Date().toISOString(),
-      payload: { name, age },
+      payload: { name, level },
     });
 
-    return { userId };
+    return { pokemonId };
   },
 });
 ```
@@ -77,19 +77,19 @@ const createUserCommand = new JSONSchemaCommand({
 ```ts
 import { Command } from '@castore/core';
 
-type RequiredEventStores = [typeof userEventStore];
-type CommandInput = { name: string; age: number };
-type CommandOutput = { userId: string };
+type RequiredEventStores = [typeof pokemonsEventStore];
+type CommandInput = { name: string; level: number };
+type CommandOutput = { pokemonId: string };
 
-const createUserCommand = new Command<
+const pokemonAppearCommand = new Command<
   RequiredEventStores,
   RequiredEventStores,
   CommandInput,
   CommandOutput
 >({
-  commandId: 'CREATE_USER',
-  requiredEventStores: [userEventStore],
-  handler: async (commandInput, [userEventStore]) => {
+  commandId: 'POKEMON_APPEAR',
+  requiredEventStores: [pokemonsEventStore],
+  handler: async (commandInput, [pokemonsEventStore]) => {
     // ...same code
   },
 });
@@ -102,13 +102,13 @@ const createUserCommand = new Command<
 - <code>inputSchema <i>(?object)</i></code>: The command input JSON schema
 
 ```ts
-const inputSchema = createUserCommand.inputSchema;
-// => createUserInputSchema
+const inputSchema = pokemonAppearCommand.inputSchema;
+// => pokemonAppearedInputSchema
 ```
 
 - <code>outputSchema <i>(?object)</i></code>: The command output JSON schema
 
 ```ts
-const outputSchema = createUserCommand.outputSchema;
-// => createUserOutputSchema
+const outputSchema = pokemonAppearCommand.outputSchema;
+// => pokemonAppearedOutputSchema
 ```

@@ -1,7 +1,7 @@
 import type { A } from 'ts-toolbelt';
 
 import type { NotificationMessageQueue } from './notificationMessageQueue';
-import type { notificationMessageQueue } from './notificationMessageQueue.util.test';
+import type { notificationMessageQueue } from './notificationMessageQueue.fixtures.test';
 
 // --- EXTENDS ---
 

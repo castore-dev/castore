@@ -11,35 +11,35 @@ import {
 import { EventsQueryOptions } from '~/storageAdapter';
 
 import {
-  CounterAggregate,
-  CounterEventsDetails,
-  counterEventStore,
-  counterCreatedEvent,
-  counterIncrementedEvent,
-  counterDeletedEvent,
-} from './eventStore.util.test';
+  pokemonsEventStore,
+  PokemonAggregate,
+  pokemonAppearedEvent,
+  pokemonCatchedEvent,
+  pokemonLeveledUpEvent,
+  PokemonEventDetails,
+} from './eventStore.fixtures.test';
 import { GetAggregateOptions } from './types';
 
 // --- EXTENDS ---
 
-const assertExtends: A.Extends<typeof counterEventStore, EventStore> = 1;
+const assertExtends: A.Extends<typeof pokemonsEventStore, EventStore> = 1;
 assertExtends;
 
 // --- EVENT STORE ID ---
 
-const assertCounterEventStoreId: A.Equals<
-  typeof counterEventStore['eventStoreId'],
-  'Counters'
+const assertEventStoreId: A.Equals<
+  typeof pokemonsEventStore['eventStoreId'],
+  'POKEMONS'
 > = 1;
-assertCounterEventStoreId;
+assertEventStoreId;
 
 // --- EVENTS DETAILS ---
 
-const assertCounterEventsDetails: A.Equals<
-  EventStoreEventsDetails<typeof counterEventStore>,
-  CounterEventsDetails
+const assertPokemonEventDetails: A.Equals<
+  EventStoreEventsDetails<typeof pokemonsEventStore>,
+  PokemonEventDetails
 > = 1;
-assertCounterEventsDetails;
+assertPokemonEventDetails;
 
 const assertAnyEventsDetails: A.Equals<
   EventStoreEventsDetails<EventStore>,
@@ -50,8 +50,8 @@ assertAnyEventsDetails;
 // --- AGGREGATE ---
 
 const assertCounterAggregate: A.Equals<
-  EventStoreAggregate<typeof counterEventStore>,
-  CounterAggregate
+  EventStoreAggregate<typeof pokemonsEventStore>,
+  PokemonAggregate
 > = 1;
 assertCounterAggregate;
 
@@ -64,31 +64,31 @@ assertAnyAggregate;
 // --- GET EVENTS ---
 
 const assertGetEventsInput: A.Equals<
-  Parameters<typeof counterEventStore.getEvents>,
+  Parameters<typeof pokemonsEventStore.getEvents>,
   [aggregateId: string, options?: EventsQueryOptions]
 > = 1;
 assertGetEventsInput;
 
 const assertGetEventsOutput: A.Equals<
-  ReturnType<typeof counterEventStore.getEvents>,
-  Promise<{ events: CounterEventsDetails[] }>
+  ReturnType<typeof pokemonsEventStore.getEvents>,
+  Promise<{ events: PokemonEventDetails[] }>
 > = 1;
 assertGetEventsOutput;
 
 // --- GET AGGREGATE ---
 
 const assertGetAggregateInput: A.Equals<
-  Parameters<typeof counterEventStore.getAggregate>,
+  Parameters<typeof pokemonsEventStore.getAggregate>,
   [aggregateId: string, options?: GetAggregateOptions]
 > = 1;
 assertGetAggregateInput;
 
 const assertGetAggregateOutput: A.Equals<
-  ReturnType<typeof counterEventStore.getAggregate>,
+  ReturnType<typeof pokemonsEventStore.getAggregate>,
   Promise<{
-    aggregate: CounterAggregate | undefined;
-    events: CounterEventsDetails[];
-    lastEvent: CounterEventsDetails | undefined;
+    aggregate: PokemonAggregate | undefined;
+    events: PokemonEventDetails[];
+    lastEvent: PokemonEventDetails | undefined;
   }>
 > = 1;
 assertGetAggregateOutput;
@@ -96,24 +96,24 @@ assertGetAggregateOutput;
 // --- PUSH EVENTS ---
 
 const assertPushEventInput1: A.Equals<
-  Parameters<typeof counterEventStore.pushEvent>[0],
-  | Omit<EventTypeDetail<typeof counterCreatedEvent>, 'timestamp'>
-  | Omit<EventTypeDetail<typeof counterIncrementedEvent>, 'timestamp'>
-  | Omit<EventTypeDetail<typeof counterDeletedEvent>, 'timestamp'>
+  Parameters<typeof pokemonsEventStore.pushEvent>[0],
+  | Omit<EventTypeDetail<typeof pokemonAppearedEvent>, 'timestamp'>
+  | Omit<EventTypeDetail<typeof pokemonCatchedEvent>, 'timestamp'>
+  | Omit<EventTypeDetail<typeof pokemonLeveledUpEvent>, 'timestamp'>
 > = 1;
 assertPushEventInput1;
 
 const assertPushEventInput2: A.Equals<
-  Parameters<typeof counterEventStore.pushEvent>[1],
-  { prevAggregate?: CounterAggregate | undefined } | undefined
+  Parameters<typeof pokemonsEventStore.pushEvent>[1],
+  { prevAggregate?: PokemonAggregate | undefined } | undefined
 > = 1;
 assertPushEventInput2;
 
 const assertPushEventOutput: A.Equals<
-  ReturnType<typeof counterEventStore.pushEvent>,
+  ReturnType<typeof pokemonsEventStore.pushEvent>,
   Promise<{
-    event: CounterEventsDetails;
-    nextAggregate?: CounterAggregate | undefined;
+    event: PokemonEventDetails;
+    nextAggregate?: PokemonAggregate | undefined;
   }>
 > = 1;
 assertPushEventOutput;

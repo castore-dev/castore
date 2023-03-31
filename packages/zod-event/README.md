@@ -29,20 +29,20 @@ import z from 'zod';
 
 import { ZodEventType } from '@castore/zod-event';
 
-const userCreatedPayloadSchema = z.object({
+const pokemonAppearedPayloadSchema = z.object({
   name: z.string(),
-  age: z.number(),
+  level: z.number(),
 });
 
-const userCreatedMetadataSchema = z.object({
-  invitedBy: z.string().optional(),
+const pokemonAppearedMetadataSchema = z.object({
+  trigger: z.enum(['random', 'scripted']).optional(),
 });
 
 // 👇 generics are correctly inferred
-const userCreatedEventType = new ZodEventType({
-  type: 'USER_CREATED',
-  payloadSchema: userCreatedPayloadSchema,
-  metadataSchema: userCreatedMetadataSchema,
+const pokemonAppearedEventType = new ZodEventType({
+  type: 'POKEMON_APPEARED',
+  payloadSchema: pokemonAppearedPayloadSchema,
+  metadataSchema: pokemonAppearedMetadataSchema,
 });
 ```
 
@@ -51,11 +51,11 @@ const userCreatedEventType = new ZodEventType({
 ```ts
 import { EventType } from '@castore/core';
 
-const userCreatedEventType = new EventType<
-  'USER_CREATED',
-  { name: string; age: number },
-  { invitedBy?: string }
->({ type: 'USER_CREATED' });
+const pokemonAppearedEventType = new EventType<
+  'POKEMON_APPEARED',
+  { name: string; level: number },
+  { trigger?: 'random' | 'scripted' }
+>({ type: 'POKEMON_APPEARED' });
 ```
 
 ## ⚙️ Properties & Methods
@@ -65,13 +65,13 @@ const userCreatedEventType = new EventType<
 - <code>payloadSchema <i>(?object)</i></code>: The event type payload zod schema
 
 ```ts
-const payloadSchema = userCreatedEventType.payloadSchema;
-// => userCreatedPayloadSchema
+const payloadSchema = pokemonAppearedEventType.payloadSchema;
+// => pokemonAppearedPayloadSchema
 ```
 
 - <code>metadataSchema <i>(?object)</i></code>: The event type metadata zod schema
 
 ```ts
-const metadataSchema = userCreatedEventType.metadataSchema;
-// => userCreatedMetadataSchema
+const metadataSchema = pokemonAppearedEventType.metadataSchema;
+// => pokemonAppearedMetadataSchema
 ```

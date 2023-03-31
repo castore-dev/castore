@@ -22,8 +22,6 @@ It is powerful as it enables **rewinding to a previous state** and **exploring a
 
 However, it is **tricky to implement** 😅
 
-<!-- TODO: SCHEMA OF EVENT SOURCING -->
-
 After years of using it at [Kumo](https://dev.to/kumo), we have grown to love it, but also experienced first-hand the lack of consensus and tooling around it. That's where Castore comes from!
 
 ---
@@ -140,7 +138,9 @@ Here is an example of working `package.json`:
 
 Event Sourcing is all about **saving changes in your application state**. Such changes are represented by **events**, and needless to say, they are quite important 🙃
 
-Events that concern the same business entity (like a `User`) are aggregated through a common id called `aggregateId` (and vice versa, events that have the same `aggregateId` represent changes of the same business entity). The index of an event in such a serie of events is called its `version`.
+Events that concern the same entity (like a `Pokemon`) are aggregated through a common id called `aggregateId` (and vice versa, events that have the same `aggregateId` represent changes of the same business entity). The index of an event in such a serie of events is called its `version`.
+
+<!-- TODO: SCHEMA OF EVENT STORE -->
 
 In Castore, stored events (also called **event details**) always have exactly the following properties:
 
@@ -154,20 +154,20 @@ In Castore, stored events (also called **event details**) always have exactly th
 ```ts
 import type { EventDetail } from '@castore/core';
 
-type UserCreatedEventDetail = EventDetail<
-  'USER_CREATED',
-  { name: string; age: number },
-  { invitedBy?: string }
+type PokemonAppearedEventDetail = EventDetail<
+  'POKEMON_APPEARED',
+  { name: string; level: number },
+  { trigger?: 'random' | 'scripted' }
 >;
 
 // 👇 Equivalent to:
-type UserCreatedEventDetail = {
+type PokemonAppearedEventDetail = {
   aggregateId: string;
   version: number;
   timestamp: string;
-  type: 'USER_CREATED';
-  payload: { name: string; age: number };
-  metadata: { invitedBy?: string };
+  type: 'POKEMON_APPEARED';
+  payload: { name: string; level: number };
+  metadata: { trigger?: 'random' | 'scripted' };
 };
 ```
 
@@ -178,11 +178,11 @@ Events are generally classified in **events types** (not to confuse with TS type
 ```ts
 import { EventType } from '@castore/core';
 
-const userCreatedEventType = new EventType<
-  'USER_CREATED',
-  { name: string; age: number },
-  { invitedBy?: string }
->({ type: 'USER_CREATED' });
+const pokemonAppearedEventType = new EventType<
+  'POKEMON_APPEARED',
+  { name: string; level: number },
+  { trigger?: 'random' | 'scripted' }
+>({ type: 'POKEMON_APPEARED' });
 ```
 
 Note that we only provided TS types for `payload` and `metadata` properties. That is because, as stated in the [core design](#-core-design), **Castore is meant to be as flexible as possible**, and that includes the validation library you want to use: The `EventType` class is not meant to be used directly, but rather implemented by other classes which will add run-time validation methods to it 👍
@@ -203,7 +203,7 @@ See the following packages for examples:
 > ```ts
 > import { EventType } from '@castore/core';
 >
-> const userCreatedEventType = new EventType({ type: 'USER_CREATED' });
+> const pokemonAppearedEventType = new EventType({ type: 'POKEMON_APPEARED' });
 > ```
 >
 > **Properties:**
@@ -211,8 +211,8 @@ See the following packages for examples:
 > - <code>type <i>(string)</i></code>: The event type
 >
 > ```ts
-> const eventType = userCreatedEventType.type;
-> // => 'USER_CREATED'
+> const eventType = pokemonAppearedEventType.type;
+> // => 'POKEMON_APPEARED'
 > ```
 >
 > **Type Helpers:**
@@ -222,16 +222,18 @@ See the following packages for examples:
 > ```ts
 > import type { EventTypeDetail } from '@castore/core';
 >
-> type UserCreatedEventTypeDetail = EventTypeDetail<typeof userCreatedEventType>;
+> type PokemonAppearedEventTypeDetail = EventTypeDetail<
+>   typeof pokemonAppearedEventType
+> >;
 >
 > // 👇 Equivalent to:
-> type UserCreatedEventTypeDetail = {
+> type PokemonCatchedEventTypeDetail = {
 >   aggregateId: string;
 >   version: number;
 >   timestamp: string;
->   type: 'USER_CREATED';
->   payload: { name: string; age: number };
->   metadata: { invitedBy?: string };
+>   type: 'POKEMON_APPEARED';
+>   payload: { name: string; level: number };
+>   metadata: { trigger?: 'random' | 'scripted' };
 > };
 > ```
 >
@@ -240,11 +242,11 @@ See the following packages for examples:
 > ```ts
 > import type { EventTypesDetails } from '@castore/core';
 >
-> type UserEventTypesDetails = EventTypesDetails<
->   [typeof userCreatedEventType, typeof userRemovedEventType]
+> type PokemonEventTypeDetails = EventTypesDetails<
+>   [typeof pokemonAppearedEventType, typeof pokemonCatchedEventType]
 > >;
-> // => EventTypeDetail<typeof userCreatedEventType>
-> // | EventTypeDetail<typeof userRemovedEventType>
+> // => EventTypeDetail<typeof pokemonAppearedEventType>
+> // | EventTypeDetail<typeof pokemonCatchedEventType>
 > ```
 >
 > </details>
@@ -257,25 +259,25 @@ Eventhough entities are stored as series of events, we still want to use a **sta
 
 In Castore, aggregates necessarily contain an `aggregateId` and `version` properties (the `version` of the latest `event`). But for the rest, it's up to you 🤷‍♂️
 
-For instance, we can include a `name`, `age` and `status` properties to our `UserAggregate`:
+For instance, we can include a `name`, `level` and `status` properties to our `PokemonAggregate`:
 
 ```ts
 import type { Aggregate } from '@castore/core';
 
-// Represents a User at a point in time
-interface UserAggregate extends Aggregate {
+// Represents a Pokemon at a point in time
+interface PokemonAggregate extends Aggregate {
   name: string;
-  age: number;
-  status: 'CREATED' | 'REMOVED';
+  level: number;
+  status: 'wild' | 'catched';
 }
 
 // 👇 Equivalent to:
-interface UserAggregate {
+interface PokemonAggregate {
   aggregateId: string;
   version: number;
   name: string;
-  age: number;
-  status: 'CREATED' | 'REMOVED';
+  level: number;
+  status: 'wild' | 'catched';
 }
 ```
 
@@ -288,31 +290,38 @@ Aggregates are derived from their events by [reducing them](https://developer.mo
 ```ts
 import type { Reducer } from '@castore/core';
 
-const usersReducer: Reducer<UserAggregate, UserEventDetails> = (
-  userAggregate,
+const pokemonsReducer: Reducer<PokemonAggregate, PokemonEventDetails> = (
+  pokemonAggregate,
   newEvent,
 ) => {
   const { version, aggregateId } = newEvent;
 
   switch (newEvent.type) {
-    case 'USER_CREATED': {
-      const { name, age } = newEvent.payload;
+    case 'POKEMON_APPEARED': {
+      const { name, level } = newEvent.payload;
 
       // 👇 Return the next version of the aggregate
       return {
         aggregateId,
         version,
         name,
-        age,
-        status: 'CREATED',
+        level,
+        status: 'wild',
       };
     }
-    case 'USER_REMOVED':
-      return { ...userAggregate, version, status: 'REMOVED' };
+    case 'POKEMON_CATCHED':
+      return { ...pokemonAggregate, version, status: 'catched' };
+    case 'POKEMON_LEVELED_UP':
+      return {
+        ...pokemonAggregate,
+        version,
+        level: pokemonAggregate.level + 1,
+      };
   }
 };
 
-const johnDowAggregate: UserAggregate = johnDowEvents.reduce(usersReducer);
+const myPikachuAggregate: PokemonAggregate =
+  myPikachuEvents.reduce(pokemonsReducer);
 ```
 
 > ☝️ Aggregates are always **computed on the fly**, and NOT stored. Changing them does not require any data migration whatsoever.
@@ -333,14 +342,15 @@ In Castore, `EventStore` classes are NOT responsible for actually storing data (
 ```ts
 import { EventStore } from '@castore/core';
 
-const userEventStore = new EventStore({
-  eventStoreId: 'USERS',
+const pokemonsEventStore = new EventStore({
+  eventStoreId: 'POKEMONS',
   eventStoreEvents: [
-    userCreatedEventType,
-    userRemovedEventType,
+    pokemonAppearedEventType,
+    pokemonCatchedEventType,
+    pokemonLeveledUpEventType,
     ...
   ],
-  reduce: usersReducer,
+  reduce: pokemonsReducer,
 });
 // ...and that's it 🥳
 ```
@@ -365,28 +375,28 @@ const userEventStore = new EventStore({
 > - <code>eventStoreId <i>(string)</i></code>
 >
 > ```ts
-> const userEventStoreId = userEventStore.eventStoreId;
-> // => 'USERS'
+> const pokemonsEventStoreId = pokemonsEventStore.eventStoreId;
+> // => 'POKEMONS'
 > ```
 >
 > - <code>eventStoreEvents <i>(EventType[])</i></code>
 >
 > ```ts
-> const userEventStoreEvents = userEventStore.eventStoreEvents;
-> // => [userCreatedEventType, userRemovedEventType...]
+> const pokemonsEventStoreEvents = pokemonsEventStore.eventStoreEvents;
+> // => [pokemonAppearedEventType, pokemonCatchedEventType...]
 > ```
 >
 > - <code>reduce <i>((Aggregate, EventType) => Aggregate)</i></code>
 >
 > ```ts
-> const reducer = userEventStore.reduce;
-> // => usersReducer
+> const reducer = pokemonsEventStore.reduce;
+> // => pokemonsReducer
 > ```
 >
 > - <code>storageAdapter <i>?EventStorageAdapter</i></code>: See [`EventStorageAdapter`](#--eventstorageadapter)
 >
 > ```ts
-> const storageAdapter = userEventStore.storageAdapter;
+> const storageAdapter = pokemonsEventStore.storageAdapter;
 > // => undefined (we did not provide one in this example)
 > ```
 >
@@ -399,8 +409,8 @@ const userEventStore = new EventStore({
 > ```ts
 > import { UndefinedStorageAdapterError } from '@castore/core';
 >
-> expect(() => userEventStore.getStorageAdapter()).toThrow(
->   new UndefinedStorageAdapterError({ eventStoreId: 'USERS' }),
+> expect(() => pokemonsEventStore.getStorageAdapter()).toThrow(
+>   new UndefinedStorageAdapterError({ eventStoreId: 'POKEMONS' }),
 > );
 > // => true
 > ```
@@ -408,7 +418,7 @@ const userEventStore = new EventStore({
 > - <code>buildAggregate <i>((eventDetails: EventDetail[], initialAggregate?: Aggregate) => Aggregate | undefined)</i></code>: Applies the event store reducer to a serie of events.
 >
 > ```ts
-> const johnDowAggregate = userEventStore.buildAggregate(johnDowEvents);
+> const myPikachuAggregate = pokemonsEventStore.buildAggregate(myPikachuEvents);
 > ```
 >
 > **Async Methods:**
@@ -429,18 +439,21 @@ const userEventStore = new EventStore({
 >   - <code>events <i>(EventDetail[])</i></code>: The aggregate events (possibly empty)
 >
 > ```ts
-> const { events: allEvents } = await userEventStore.getEvents(aggregateId);
-> // => typed as UserEventDetail[] 🙌
+> const { events: allEvents } = await pokemonsEventStore.getEvents(myPikachuId);
+> // => typed as PokemonEventDetail[] 🙌
 >
 > // 👇 Retrieve a range of events
-> const { events: rangedEvents } = await userEventStore.getEvents(aggregateId, {
->   minVersion: 2,
->   maxVersion: 5,
-> });
+> const { events: rangedEvents } = await pokemonsEventStore.getEvents(
+>   myPikachuId,
+>   {
+>     minVersion: 2,
+>     maxVersion: 5,
+>   },
+> );
 >
 > // 👇 Retrieve the last event of the aggregate
-> const { events: onlyLastEvent } = await userEventStore.getEvents(
->   aggregateId,
+> const { events: onlyLastEvent } = await pokemonsEventStore.getEvents(
+>   myPikachuId,
 >   {
 >     reverse: true,
 >     limit: 1,
@@ -461,15 +474,19 @@ const userEventStore = new EventStore({
 >   - <code>lastEvent <i>(?EventDetail)</i></code>: The last event (possibly `undefined`)
 >
 > ```ts
-> const { aggregate: johnDow } = await userEventStore.getAggregate(aggregateId);
-> // => typed as UserAggregate | undefined 🙌
+> const { aggregate: myPikachu } = await pokemonsEventStore.getAggregate(
+>   myPikachuId,
+> );
+> // => typed as PokemonAggregate | undefined 🙌
 >
 > // 👇 Retrieve an aggregate below a certain version
-> const { aggregate: aggregateBelowVersion } =
->   await userEventStore.getAggregate(aggregateId, { maxVersion: 5 });
+> const { aggregate: pikachuBelowVersion5 } =
+>   await pokemonsEventStore.getAggregate(myPikachuId, { maxVersion: 5 });
 >
 > // 👇 Returns the events if you need them
-> const { aggregate, events } = await userEventStore.getAggregate(aggregateId);
+> const { aggregate, events } = await pokemonsEventStore.getAggregate(
+>   myPikachuId,
+> );
 > ```
 >
 > - <code>getExistingAggregate <i>((aggregateId: string, opt?: OptionsObj = {}) => Promise\<ResponseObj\>)</i></code>: Same as `getAggregate` method, but ensures that the aggregate exists. Throws an `AggregateNotFoundError` if no event is found for this `aggregateId`.
@@ -478,16 +495,16 @@ const userEventStore = new EventStore({
 > import { AggregateNotFoundError } from '@castore/core';
 >
 > expect(async () =>
->   userEventStore.getExistingAggregate(unexistingId),
+>   pokemonsEventStore.getExistingAggregate(unexistingId),
 > ).resolves.toThrow(
 >   new AggregateNotFoundError({
->     eventStoreId: 'USERS',
+>     eventStoreId: 'POKEMONS',
 >     aggregateId: unexistingId,
 >   }),
 > );
 > // true
 >
-> const { aggregate } = await userEventStore.getAggregate(aggregateId);
+> const { aggregate } = await pokemonsEventStore.getAggregate(aggregateId);
 > // => 'aggregate' and 'lastEvent' are always defined 🙌
 > ```
 >
@@ -499,16 +516,16 @@ const userEventStore = new EventStore({
 >
 >   `ResponseObj` contains the following properties:
 >
->   - <code>event <i>(EventDetail)</i></code>: The complete event (including the `timestamp`)
+>   - <code>event <i>(EventDetail)</i></code>: The complete event (includes the `timestamp`)
 >   - <code>nextAggregate <i>(?Aggregate)</i></code>: The aggregate at the new version, i.e. after having pushed the event. Returned only if the event is an initial event, if the `prevAggregate` option was provided, or when using a [`ConnectedEventStore` class](#--connectedeventstore) connected to a [state-carrying message bus or queue](#--event-driven-architecture)
 >
 > ```ts
 > const { event: completeEvent, nextAggregate } =
->   await userEventStore.pushEvent(
+>   await pokemonsEventStore.pushEvent(
 >     {
->       aggregateId,
+>       aggregateId: myPikachuId,
 >       version: lastVersion + 1,
->       type: 'USER_CREATED', // <= event type is correctly typed 🙌
+>       type: 'POKEMON_LEVELED_UP', // <= event type is correctly typed 🙌
 >       payload, // <= payload is typed according to the provided event type 🙌
 >       metadata, // <= same goes for metadata 🙌
 >       // timestamp is automatically set
@@ -536,15 +553,16 @@ const userEventStore = new EventStore({
 > ```ts
 > const accAggregateIds: string = [];
 > const { aggregateIds: firstPage, nextPageToken } =
->   await userEventStore.listAggregateIds({ limit: 20 });
+>   await pokemonsEventStore.listAggregateIds({ limit: 20 });
 >
 > accAggregateIds.push(...firstPage);
 >
 > if (nextPageToken) {
->   const { aggregateIds: secondPage } = await userEventStore.listAggregateIds({
->     // 👇 Previous limit of 20 is passed through the page token
->     pageToken: nextPageToken,
->   });
+>   const { aggregateIds: secondPage } =
+>     await pokemonsEventStore.listAggregateIds({
+>       // 👇 Previous limit of 20 is passed through the page token
+>       pageToken: nextPageToken,
+>     });
 >   accAggregateIds.push(...secondPage);
 > }
 > ```
@@ -556,8 +574,8 @@ const userEventStore = new EventStore({
 > ```ts
 > import type { EventStoreId } from '@castore/core';
 >
-> type UserEventStoreId = EventStoreId<typeof userEventStore>;
-> // => 'USERS'
+> type PokemonsEventStoreId = EventStoreId<typeof pokemonsEventStore>;
+> // => 'POKEMONS'
 > ```
 >
 > - <code>EventStoreEventsTypes</code>: Returns the `EventStore` list of events types
@@ -565,8 +583,8 @@ const userEventStore = new EventStore({
 > ```ts
 > import type { EventStoreEventsTypes } from '@castore/core';
 >
-> type UserEventsTypes = EventStoreEventsTypes<typeof userEventStore>;
-> // => [typeof userCreatedEventType, typeof userRemovedEventType...]
+> type PokemonEventTypes = EventStoreEventsTypes<typeof pokemonsEventStore>;
+> // => [typeof pokemonAppearedEventType, typeof pokemonCatchedEventType...]
 > ```
 >
 > - <code>EventStoreEventsDetails</code>: Returns the union of all the `EventStore` possible events details
@@ -574,9 +592,9 @@ const userEventStore = new EventStore({
 > ```ts
 > import type { EventStoreEventsDetails } from '@castore/core';
 >
-> type UserEventDetails = EventStoreEventsDetails<typeof userEventStore>;
-> // => EventTypeDetail<typeof userCreatedEventType>
-> // | EventTypeDetail<typeof userRemovedEventType>
+> type PokemonEventDetails = EventStoreEventsDetails<typeof pokemonsEventStore>;
+> // => EventTypeDetail<typeof pokemonAppearedEventType>
+> // | EventTypeDetail<typeof pokemonCatchedEventType>
 > // | ...
 > ```
 >
@@ -585,8 +603,8 @@ const userEventStore = new EventStore({
 > ```ts
 > import type { EventStoreReducer } from '@castore/core';
 >
-> type UserReducer = EventStoreReducer<typeof userEventStore>;
-> // => Reducer<UserAggregate, UserEventDetails>
+> type PokemonsReducer = EventStoreReducer<typeof pokemonsEventStore>;
+> // => Reducer<PokemonAggregate, PokemonEventDetails>
 > ```
 >
 > - <code>EventStoreAggregate</code>: Returns the `EventStore` aggregate
@@ -594,8 +612,8 @@ const userEventStore = new EventStore({
 > ```ts
 > import type { EventStoreAggregate } from '@castore/core';
 >
-> type UserReducer = EventStoreAggregate<typeof userEventStore>;
-> // => UserAggregate
+> type SomeAggregate = EventStoreAggregate<typeof pokemonsEventStore>;
+> // => PokemonAggregate
 > ```
 >
 > </details>
@@ -607,16 +625,16 @@ For the moment, we didn't provide any actual way to store our events data. This 
 ```ts
 import { EventStore } from '@castore/core';
 
-const userEventStore = new EventStore({
-  eventStoreId: 'USERS',
-  eventTypes: userEventTypes,
-  reducer: usersReducer,
+const pokemonsEventStore = new EventStore({
+  eventStoreId: 'POKEMONS',
+  eventTypes: pokemonEventTypes,
+  reduce: pokemonsReducer,
   // 👇 Provide it in the constructor
   storageAdapter: mySuperStorageAdapter,
 });
 
 // 👇 ...or set/switch it in context later
-userEventStore.storageAdapter = mySuperStorageAdapter;
+pokemonsEventStore.storageAdapter = mySuperStorageAdapter;
 ```
 
 You can choose to [build an event storage adapter](./docs/building-your-own-event-storage-adapter.md) that suits your usage. However, we highly recommend using an off-the-shelf adapter:
@@ -640,32 +658,32 @@ Modifying the state of your application (i.e. pushing new events to your event s
 ```ts
 import { Command, tuple } from '@castore/core';
 
-type Input = { name: string; age: number };
-type Output = { userId: string };
+type Input = { name: string; level: number };
+type Output = { pokemonId: string };
 type Context = { generateUuid: () => string };
 
-const createUserCommand = new Command({
-  commandId: 'CREATE_USER',
+const catchPokemonCommand = new Command({
+  commandId: 'CATCH_POKEMON',
   // 👇 "tuple" is needed to keep ordering in inferred type
-  requiredEventStores: tuple(userEventStore, otherEventStore),
+  requiredEventStores: tuple(pokemonsEventStore, otherEventStore),
   // 👇 Code to execute
   handler: async (
     commandInput: Input,
-    [userEventStore, otherEventStore],
+    [pokemonsEventStore, otherEventStore],
     // 👇 Additional context arguments can be provided
     { generateUuid }: Context,
   ): Promise<Output> => {
-    const { name, age } = commandInput;
-    const userId = generateUuid();
+    const { name, level } = commandInput;
+    const pokemonId = generateUuid();
 
-    await userEventStore.pushEvent({
-      aggregateId: userId,
+    await pokemonsEventStore.pushEvent({
+      aggregateId: pokemonId,
       version: 1,
-      type: 'USER_CREATED',
-      payload: { name, age },
+      type: 'POKEMON_CATCHED',
+      payload: { name, level },
     });
 
-    return { userId };
+    return { pokemonId };
   },
 });
 ```
@@ -770,20 +788,20 @@ import type {
   EventStoreNotificationMessage,
 } from '@castore/core';
 
-type UserEventNotificationMessage = NotificationMessage<
-  'USER',
-  UserEventDetails
+type PokemonEventNotificationMessage = NotificationMessage<
+  'POKEMONS',
+  PokemonEventDetails
 >;
 
 // 👇 Equivalent to:
-type UserEventNotificationMessage = {
-  eventStoreId: 'USER';
-  event: UserEventDetails;
+type PokemonEventNotificationMessage = {
+  eventStoreId: 'POKEMONS';
+  event: PokemonEventDetails;
 };
 
 // 👇 Also equivalent to:
-type UserEventNotificationMessage = EventStoreNotificationMessage<
-  typeof userEventStore
+type PokemonEventNotificationMessage = EventStoreNotificationMessage<
+  typeof pokemonsEventStore
 >;
 
 // StateCarryingMessage
@@ -792,22 +810,22 @@ import type {
   EventStoreStateCarryingMessage,
 } from '@castore/core';
 
-type UserEventStateCarryingMessage = StateCarryingMessage<
-  'USER',
-  UserEventDetails,
-  UserAggregate
+type PokemonEventStateCarryingMessage = StateCarryingMessage<
+  'POKEMONS',
+  PokemonEventDetails,
+  PokemonAggregate
 >;
 
 // 👇 Equivalent to:
-type UserEventStateCarryingMessage = {
-  eventStoreId: 'USER';
-  event: UserEventDetails;
-  aggregate: UserAggregate
+type PokemonEventStateCarryingMessage = {
+  eventStoreId: 'POKEMONS';
+  event: PokemonEventDetails;
+  aggregate: PokemonAggregate
 };
 
 // 👇 Also equivalent to:
-type UserEventStateCarryingMessage = EventStoreStateCarryingMessage<
-  typeof userEventStore
+type PokemonEventStateCarryingMessage = EventStoreStateCarryingMessage<
+  typeof pokemonsEventStore
 >;
 ```
 
@@ -826,17 +844,17 @@ import { NotificationMessageQueue } from '@castore/core';
 
 const appMessageQueue = new NotificationMessageQueue({
   messageQueueId: 'APP_MESSAGE_QUEUE',
-  sourceEventStores: [userEventStore, counterEventStore...],
+  sourceEventStores: [pokemonsEventStore, trainersEventStore],
 });
 
 await appMessageQueue.publishMessage({
   // 👇 Typed as NotificationMessage of one of the source event stores
-  eventStoreId: 'USERS',
+  eventStoreId: 'POKEMONS',
   event: {
-    type: 'USER_CREATED',
-    ...
-  }
-})
+    type: 'POKEMON_LEVELED_UP',
+    // ...
+  },
+});
 
 // Same usage for StateCarryingMessageQueues
 ```
@@ -864,7 +882,7 @@ await appMessageQueue.publishMessage({
 >
 > ```ts
 > const appMessageQueueSourceEventStores = appMessageQueue.sourceEventStores;
-> // => [userEventStore, counterEventStore...]
+> // => [pokemonsEventStore, trainersEventStore...]
 > ```
 >
 > - <code>messageQueueAdapter <i>?MessageQueueAdapter</i></code>: See section on [`MessageQueueAdapters`](#--messagequeueadapter)
@@ -895,7 +913,7 @@ await appMessageQueue.publishMessage({
 >
 > // 👇 Equivalent to:
 > type AppMessage = EventStoreNotificationMessage<
->   typeof userEventStore | typeof counterEventStore...
+>   typeof pokemonsEventStore | typeof trainersEventStore...
 > >;
 > ```
 >
@@ -955,14 +973,14 @@ import { NotificationMessageBus } from '@castore/core';
 
 const appMessageBus = new NotificationMessageBus({
   messageBusId: 'APP_MESSAGE_BUSES',
-  sourceEventStores: [userEventStore, counterEventStore...],
+  sourceEventStores: [pokemonsEventStore, trainersEventStore...],
 });
 
 await appMessageBus.publishMessage({
   // 👇 Typed as NotificationMessage of one of the source event stores
-  eventStoreId: 'USERS',
+  eventStoreId: 'POKEMONS',
   event: {
-    type: 'USER_CREATED',
+    type: 'POKEMON_LEVELED_UP',
     ...
   }
 })
@@ -993,7 +1011,7 @@ await appMessageBus.publishMessage({
 >
 > ```ts
 > const appMessageBusSourceEventStores = appMessageBus.sourceEventStores;
-> // => [userEventStore, counterEventStore...]
+> // => [pokemonsEventStore, trainersEventStore...]
 > ```
 >
 > - <code>messageBusAdapter <i>?MessageBusAdapter</i></code>: See section on [`MessageBusAdapters`](#--messagebusadapter)
@@ -1024,7 +1042,7 @@ await appMessageBus.publishMessage({
 >
 > // 👇 Equivalent to:
 > type AppMessage = EventStoreNotificationMessage<
->   typeof userEventStore | typeof counterEventStore...
+>   typeof pokemonsEventStore | typeof trainersEventStore...
 > >;
 > ```
 >
@@ -1059,11 +1077,11 @@ The adapter packages will also expose useful generics to type the arguments of y
 ```ts
 import type { EventBridgeMessageBusMessage } from '@castore/event-bridge-message-bus-adapter';
 
-const userMessagesListener = async (
-  // 👇 Specify that you only listen to the userEventStore messages
+const pokemonMessagesListener = async (
+  // 👇 Specify that you only listen to the pokemonsEventStore messages
   eventBridgeMessage: EventBridgeMessageBusMessage<
     typeof appMessageQueue,
-    'USERS'
+    'POKEMONS'
   >,
 ) => {
   // 👇 Correctly typed!
@@ -1080,19 +1098,19 @@ You can also use the `ConnectedEventStore` class. Its interface matches the `Eve
 ```ts
 import { ConnectedEventStore } from '@castore/core';
 
-const connectedUserEventStore = new ConnectedEventStore(
+const connectedPokemonsEventStore = new ConnectedEventStore(
   // 👇 Original event store
-  userEventStore,
-  // 👇 Type-safe (appMessageBus MUST be able to carry user events)
+  pokemonsEventStore,
+  // 👇 Type-safe (appMessageBus MUST be able to carry pokemon events)
   appMessageBus,
 );
 
 // Will push the event in the event store
 // ...AND publish it to the message bus if it succeeds 🙌
-await connectedUserEventStore.pushEvent({
-  aggregateId: userId,
+await connectedPokemonsEventStore.pushEvent({
+  aggregateId: pokemonId,
   version: 2,
-  type: 'USER_REMOVED',
+  type: 'POKEMON_LEVELED_UP',
   ...
 });
 ```
@@ -1100,14 +1118,14 @@ await connectedUserEventStore.pushEvent({
 If the message bus or queue is a state-carrying one, the `pushEvent` method will re-fetch the aggregate to append it to the message before publishing it. You can reduce this overhead by providing the previous aggregate as an option:
 
 ```ts
-await connectedUserEventStore.pushEvent(
+await connectedPokemonsEventStore.pushEvent(
   {
-    aggregateId: userId,
+    aggregateId: pokemonId,
     version: 2,
     ...
   },
   // 👇 Aggregate at version 1
-  { prevAggregate: userAggregate },
+  { prevAggregate: pokemonAggregate },
   // Removes the need to re-fetch 🙌
 );
 ```
@@ -1132,14 +1150,14 @@ Compared to data streams, connected event stores have the advantage of simplicit
 > - <code>eventStore <i>(EventStore)</i></code>: The original event store
 >
 > ```ts
-> const eventStore = connectedUserEventStore.eventStore;
-> // => userEventStore
+> const eventStore = connectedPokemonsEventStore.eventStore;
+> // => pokemonsEventStore
 > ```
 >
 > - <code>messageChannel <i>(MessageBus | MessageQueue)</i></code>: The provided message bus or queue
 >
 > ```ts
-> const messageChannel = connectedUserEventStore.messageChannel;
+> const messageChannel = connectedPokemonsEventStore.messageChannel;
 > // => appMessageBus
 > ```
 >
