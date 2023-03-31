@@ -1,15 +1,15 @@
-import { createCounter } from './createCounter';
-import { createUser } from './createUser';
-import { deleteUser } from './deleteUser';
-import { incrementCounter } from './incrementCounter';
-import { logAggregateIds } from './logAggregateIds';
-import { logUserEvents } from './logUserEvents';
+import { catchPokemon } from './catchPokemon';
+import { levelUpPokemon } from './levelUpPokemon';
+import { logPokemonEvents } from './logPokemonEvents';
+import { logPokemonIds } from './logPokemonIds';
+import { startPokemonHunt } from './startPokemonHunt';
+import { wildPokemonAppear } from './wildPokemonAppear';
 
 export const functions = {
-  logUserEvents,
-  logAggregateIds,
-  createUser,
-  deleteUser,
-  createCounter,
-  incrementCounter,
+  catchPokemon,
+  levelUpPokemon,
+  logPokemonEvents,
+  logPokemonIds,
+  startPokemonHunt,
+  wildPokemonAppear,
 };

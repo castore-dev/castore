@@ -4,50 +4,33 @@ import {
 } from '@aws-sdk/client-dynamodb';
 import { mockClient } from 'aws-sdk-client-mock';
 
-import type { EventStoreEventsDetails } from '@castore/core';
-import { counterEventStore, userEventStore } from '@castore/demo-blueprint';
+import {
+  ashPokemonCatchedEvent,
+  pikachuCatchedEvent,
+  pokemonsEventStore,
+  trainersEventStore,
+} from '@castore/demo-blueprint';
 
 import { DynamoDbEventStorageAdapter } from '../adapter';
 import { formatEventForTransaction } from './formatEventForTransaction';
 import { pushEventsTransaction } from './pushEventsTransaction';
 
-const counterEventMock: EventStoreEventsDetails<typeof counterEventStore> = {
-  aggregateId: '123',
-  version: 1,
-  timestamp: '2022',
-  type: 'COUNTER_CREATED',
-  payload: {
-    userId: 'someUserId',
-  },
-};
-
-const userEventMock: EventStoreEventsDetails<typeof userEventStore> = {
-  aggregateId: '123',
-  version: 1,
-  timestamp: '2022',
-  type: 'USER_CREATED',
-  payload: {
-    firstName: 'John',
-    lastName: 'Dow',
-  },
-};
-
 describe('pushEventsTransaction', () => {
   const dynamoDbClientMockSeemless = mockClient(DynamoDBClient);
   const dynamoDbClientMockOption = mockClient(DynamoDBClient);
 
-  const counterStorageAdapter = new DynamoDbEventStorageAdapter({
-    tableName: 'counterTableNameMock',
+  const pokemonsStorageAdapter = new DynamoDbEventStorageAdapter({
+    tableName: 'pokemonsTableNameMock',
     dynamoDbClient: dynamoDbClientMockSeemless as unknown as DynamoDBClient,
   });
 
-  const userStorageAdapter = new DynamoDbEventStorageAdapter({
-    tableName: 'userTableNameMock',
+  const trainersStorageAdapter = new DynamoDbEventStorageAdapter({
+    tableName: 'trainersTableNameMock',
     dynamoDbClient: dynamoDbClientMockSeemless as unknown as DynamoDBClient,
   });
 
-  counterEventStore.storageAdapter = counterStorageAdapter;
-  userEventStore.storageAdapter = userStorageAdapter;
+  pokemonsEventStore.storageAdapter = pokemonsStorageAdapter;
+  trainersEventStore.storageAdapter = trainersStorageAdapter;
 
   beforeEach(() => {
     dynamoDbClientMockSeemless.reset();
@@ -61,8 +44,8 @@ describe('pushEventsTransaction', () => {
 
   it('sends correct command', async () => {
     await pushEventsTransaction([
-      formatEventForTransaction(counterEventStore, counterEventMock),
-      formatEventForTransaction(userEventStore, userEventMock),
+      formatEventForTransaction(pokemonsEventStore, pikachuCatchedEvent),
+      formatEventForTransaction(trainersEventStore, ashPokemonCatchedEvent),
     ]);
 
     expect(dynamoDbClientMockSeemless.calls()).toHaveLength(1);
@@ -71,9 +54,10 @@ describe('pushEventsTransaction', () => {
     );
     expect(dynamoDbClientMockSeemless.calls()[0].args[0].input).toStrictEqual({
       TransactItems: [
-        formatEventForTransaction(counterEventStore, counterEventMock)
+        formatEventForTransaction(pokemonsEventStore, pikachuCatchedEvent)
           .transactItem,
-        formatEventForTransaction(userEventStore, userEventMock).transactItem,
+        formatEventForTransaction(trainersEventStore, ashPokemonCatchedEvent)
+          .transactItem,
       ],
     });
 
@@ -83,8 +67,8 @@ describe('pushEventsTransaction', () => {
   it('uses options dynamoDbClient if one has been provided', async () => {
     await pushEventsTransaction(
       [
-        formatEventForTransaction(counterEventStore, counterEventMock),
-        formatEventForTransaction(userEventStore, userEventMock),
+        formatEventForTransaction(pokemonsEventStore, pikachuCatchedEvent),
+        formatEventForTransaction(trainersEventStore, ashPokemonCatchedEvent),
       ],
       { dynamoDbClient: dynamoDbClientMockOption as unknown as DynamoDBClient },
     );
@@ -97,9 +81,10 @@ describe('pushEventsTransaction', () => {
     );
     expect(dynamoDbClientMockOption.calls()[0].args[0].input).toStrictEqual({
       TransactItems: [
-        formatEventForTransaction(counterEventStore, counterEventMock)
+        formatEventForTransaction(pokemonsEventStore, pikachuCatchedEvent)
           .transactItem,
-        formatEventForTransaction(userEventStore, userEventMock).transactItem,
+        formatEventForTransaction(trainersEventStore, ashPokemonCatchedEvent)
+          .transactItem,
       ],
     });
   });

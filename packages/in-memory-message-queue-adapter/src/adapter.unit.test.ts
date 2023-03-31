@@ -7,29 +7,26 @@ import {
   EventStoreNotificationMessage,
   NotificationMessageQueue,
 } from '@castore/core';
-import { userEventStore, counterEventStore } from '@castore/demo-blueprint';
+import {
+  pokemonsEventStore,
+  trainersEventStore,
+  pikachuAppearedEvent,
+} from '@castore/demo-blueprint';
 
 import { Task, InMemoryMessageQueueAdapter } from './adapter';
 
 const messageQueue = new NotificationMessageQueue({
   messageQueueId: 'messageQueueId',
-  sourceEventStores: [userEventStore, counterEventStore],
+  sourceEventStores: [pokemonsEventStore, trainersEventStore],
 });
 
 type ExpectedMessage = MessageQueueMessage<typeof messageQueue>;
 
-const userCreatedEvent: EventStoreNotificationMessage<typeof userEventStore> = {
-  eventStoreId: 'USER',
-  event: {
-    aggregateId: '1',
-    version: 1,
-    type: 'USER_CREATED',
-    timestamp: '2021-01-01T00:00:00.000Z',
-    payload: {
-      firstName: 'gandalf',
-      lastName: 'the grey',
-    },
-  },
+const pikachuAppearedMessage: EventStoreNotificationMessage<
+  typeof pokemonsEventStore
+> = {
+  eventStoreId: 'POKEMONS',
+  event: pikachuAppearedEvent,
 };
 
 const sleep = (ms: number): Promise<void> =>
@@ -38,7 +35,7 @@ const sleep = (ms: number): Promise<void> =>
 describe('in-memory message queue adapter', () => {
   describe('with constructor (typed)', () => {
     const worker1 = vi.fn(
-      (event: EventStoreNotificationMessage<typeof userEventStore>) =>
+      (event: EventStoreNotificationMessage<typeof pokemonsEventStore>) =>
         new Promise<void>(resolve => {
           event;
           resolve();
@@ -46,7 +43,7 @@ describe('in-memory message queue adapter', () => {
     );
 
     const worker2 = vi.fn(
-      (event: EventStoreNotificationMessage<typeof userEventStore>) =>
+      (event: EventStoreNotificationMessage<typeof pokemonsEventStore>) =>
         new Promise<void>(resolve => {
           event;
           resolve();
@@ -54,7 +51,7 @@ describe('in-memory message queue adapter', () => {
     );
 
     let inMemoryMessageQueueAdapter: InMemoryMessageQueueAdapter<
-      EventStoreNotificationMessage<typeof userEventStore>
+      EventStoreNotificationMessage<typeof pokemonsEventStore>
     >;
 
     beforeEach(() => {
@@ -67,7 +64,7 @@ describe('in-memory message queue adapter', () => {
 
       expect(inMemoryMessageQueueAdapter.queue).toBeUndefined();
 
-      await inMemoryMessageQueueAdapter.publishMessage(userCreatedEvent);
+      await inMemoryMessageQueueAdapter.publishMessage(pikachuAppearedMessage);
 
       expect(worker1).not.toHaveBeenCalled();
       expect(worker2).not.toHaveBeenCalled();
@@ -78,27 +75,27 @@ describe('in-memory message queue adapter', () => {
 
       expect(inMemoryMessageQueueAdapter.queue).toBeDefined();
 
-      await inMemoryMessageQueueAdapter.publishMessage(userCreatedEvent);
+      await inMemoryMessageQueueAdapter.publishMessage(pikachuAppearedMessage);
 
-      expect(worker1).toHaveBeenCalledWith(userCreatedEvent);
+      expect(worker1).toHaveBeenCalledWith(pikachuAppearedMessage);
       expect(worker2).not.toHaveBeenCalled();
     });
 
     it('recreates queue if new worker is set', async () => {
       inMemoryMessageQueueAdapter.worker = worker2;
 
-      await inMemoryMessageQueueAdapter.publishMessage(userCreatedEvent);
+      await inMemoryMessageQueueAdapter.publishMessage(pikachuAppearedMessage);
 
       expect(worker1).not.toHaveBeenCalled();
-      expect(worker2).toHaveBeenCalledWith(userCreatedEvent);
+      expect(worker2).toHaveBeenCalledWith(pikachuAppearedMessage);
     });
 
     it('actually connects to a messageQueue', async () => {
       messageQueue.messageQueueAdapter = inMemoryMessageQueueAdapter;
 
-      await messageQueue.publishMessage(userCreatedEvent);
+      await messageQueue.publishMessage(pikachuAppearedMessage);
 
-      expect(worker2).toHaveBeenCalledWith(userCreatedEvent);
+      expect(worker2).toHaveBeenCalledWith(pikachuAppearedMessage);
     });
 
     it('accepts worker in constructor', async () => {
@@ -106,14 +103,14 @@ describe('in-memory message queue adapter', () => {
         worker: worker1,
       });
 
-      await inMemoryMessageQueueAdapter2.publishMessage(userCreatedEvent);
+      await inMemoryMessageQueueAdapter2.publishMessage(pikachuAppearedMessage);
 
       expect(worker1).toHaveBeenCalled();
 
       const assertQueueType: A.Equals<
         NonNullable<typeof inMemoryMessageQueueAdapter2.queue>,
         queueAsPromised<
-          Task<EventStoreNotificationMessage<typeof userEventStore>>,
+          Task<EventStoreNotificationMessage<typeof pokemonsEventStore>>,
           void
         >
       > = 1;
@@ -146,8 +143,8 @@ describe('in-memory message queue adapter', () => {
 
       inMemoryMessageQueueAdapter.worker = worker;
 
-      await messageQueue.publishMessage(userCreatedEvent);
-      expect(worker).toHaveBeenCalledWith(userCreatedEvent);
+      await messageQueue.publishMessage(pikachuAppearedMessage);
+      expect(worker).toHaveBeenCalledWith(pikachuAppearedMessage);
     });
 
     it('correctly instanciates a class and attach it (with worker)', async () => {
@@ -172,8 +169,8 @@ describe('in-memory message queue adapter', () => {
       > = 1;
       assertQueueType;
 
-      await messageQueue.publishMessage(userCreatedEvent);
-      expect(worker).toHaveBeenCalledWith(userCreatedEvent);
+      await messageQueue.publishMessage(pikachuAppearedMessage);
+      expect(worker).toHaveBeenCalledWith(pikachuAppearedMessage);
     });
   });
 
@@ -218,7 +215,7 @@ describe('in-memory message queue adapter', () => {
           worker,
         });
 
-        await messageQueue.publishMessage(userCreatedEvent);
+        await messageQueue.publishMessage(pikachuAppearedMessage);
 
         await sleep(testWaitTime);
 

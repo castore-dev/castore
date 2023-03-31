@@ -1,7 +1,7 @@
-import { CounterEventsTable } from './counterEventsTable';
-import { UserEventsTable } from './userEventsTable';
+import { PokemonEventsTable } from './pokemonEventsTable';
+import { TrainerEventsTable } from './trainerEventsTable';
 
 export const dynamoDBResources = {
-  UserEventsTable,
-  CounterEventsTable,
+  TrainerEventsTable,
+  PokemonEventsTable,
 };
