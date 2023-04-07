@@ -837,7 +837,7 @@ Both kinds of messages can be published to [Message Queues](#--messagequeue) or 
 
 [Message Queues](https://en.wikipedia.org/wiki/Message_queue) store the published messages until they are handled by a **worker**. The worker is unique and predictible. It consumes all messages indifferently of their content.
 
-<!-- TODO: SCHEMA OF MESSAGE QUEUES -->
+![Message Queue](./assets/docsImg/messageQueue.png)
 
 You can use the `NotificationMessageQueue` or the `StateCarryingMessageQueue` classes to implement message queues:
 
@@ -966,7 +966,7 @@ const appMessagesWorker = async ({ Records }: SQSMessageQueueMessage) => {
 
 [Message Buses](https://en.wikipedia.org/wiki/Publish%E2%80%93subscribe_pattern) are used to spread messages to multiple **listeners**. Contrary to message queues, they do not store the message or wait for the listeners to respond. Often, **filter patterns** can also be used to trigger listeners or not based on the message content.
 
-<!-- TODO: SCHEMA OF MESSAGE BUSES -->
+![Message Bus](./assets/docsImg/messageBus.png)
 
 You can use the `NotificationMessageBus` or the `StateCarryingMessageBus` classes to implement message buses:
 
