@@ -21,8 +21,10 @@ jobs:
     name: 🏗 Build Project
     runs-on: ubuntu-latest
     timeout-minutes: 30
+    outputs:
+      affected-packages: ${{ steps.get-affected-packages-paths.outputs.affected-packages }}
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
         with:
           ref: ${{ github.event.pull_request.head.sha }}
           # We need to fetch all branches and commits so that Nx affected has a base to compare against.
@@ -34,34 +36,36 @@ jobs:
       - name: Package
         uses: ./.github/actions/package
 
-  lint-and-tests:
+      - name: Get affected packages paths
+        id: get-affected-packages-paths
+        uses: ./.github/actions/get-affected-packages-paths
+        with:
+          base-branch: ${{ github.base_ref }}
+
+  library-lint-and-tests:
     name: 🎯 Run Tests
     needs: build
     runs-on: ubuntu-latest
+    if: join(fromJson(needs.build.outputs.affected-packages)) != ''
     timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        AFFECTED_LIB: ${{ fromJson(needs.build.outputs.affected-packages) }}
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
         with:
           ref: ${{ github.event.pull_request.head.sha }}
-      - name: Use Node.js
-        uses: actions/setup-node@v2
-        with:
-          node-version: ${{ env.NODE_VERSION }}
-
-      - name: Install node_modules
-        uses: ./.github/actions/install-node-modules
-
-      - name: Package
-        uses: ./.github/actions/package
-
       - name: Run tests
-        run: yarn nx run-many --all --target=test --parallel=1
+        uses: ./.github/actions/lint-and-tests
+        with:
+          path: ${{ matrix.AFFECTED_LIB }}
 
   validate-pr:
     name: ✅ Validate the PR
     runs-on: ubuntu-latest
     if: ${{ always() }}
-    needs: [build, lint-and-tests]
+    needs: [build, library-lint-and-tests]
     steps:
       - name: Validate build
         run: |
@@ -71,7 +75,7 @@ jobs:
           fi
       - name: Validate tests
         run: |
-          if [[ ${{ needs.lint-and-tests.result }} = "failure" ]]; then
-            echo "Tests failed"
+          if [[ ${{ needs.library-lint-and-tests.result }} = "failure" ]]; then
+            echo "tests failed"
             exit 1
           fi
