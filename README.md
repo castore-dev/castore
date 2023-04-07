@@ -140,7 +140,7 @@ Event Sourcing is all about **saving changes in your application state**. Such c
 
 Events that concern the same entity (like a `Pokemon`) are aggregated through a common id called `aggregateId` (and vice versa, events that have the same `aggregateId` represent changes of the same business entity). The index of an event in such a serie of events is called its `version`.
 
-<!-- TODO: SCHEMA OF EVENT STORE -->
+![Events](./assets/docsImg/events.png)
 
 In Castore, stored events (also called **event details**) always have exactly the following properties:
 
@@ -253,7 +253,7 @@ See the following packages for examples:
 
 ### - `Aggregate`
 
-Eventhough entities are stored as series of events, we still want to use a **stable interface to represent their states at a point in time** rather than directly using events. In Castore, it is implemented by a TS type called `Aggregate`.
+Eventhough entities are stored as series of events, we still want to use a **simpler and stable interface to represent their states at a point in time** rather than directly using events. In Castore, it is implemented by a TS type called `Aggregate`.
 
 > ☝️ Think of aggregates as _"what the data would look like in CRUD"_
 
@@ -285,7 +285,7 @@ interface PokemonAggregate {
 
 Aggregates are derived from their events by [reducing them](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/Reduce) through a `reducer` function. It defines **how to update the aggregate when a new event is pushed**:
 
-<!-- TODO: SCHEMA OF EVENTS AGGREGATE -->
+![Aggregate](./assets/docsImg/aggregate.png)
 
 ```ts
 import type { Reducer } from '@castore/core';
@@ -331,6 +331,8 @@ const myPikachuAggregate: PokemonAggregate =
 Once you've defined your [event types](#--eventtype) and how to [aggregate](#--reducer) them, you can bundle them together in an `EventStore` class.
 
 Each event store in your application represents a business entity. Think of event stores as _"what tables would be in CRUD"_, except that instead of directly updating data, you just append new events to it!
+
+![Event Store](./assets/docsImg/eventStore.png)
 
 In Castore, `EventStore` classes are NOT responsible for actually storing data (this will come with [event storage adapters](#--eventstorageadapter)). But rather to provide a boilerplate-free and type-safe interface to perform many actions such as:
 
@@ -653,7 +655,7 @@ Modifying the state of your application (i.e. pushing new events to your event s
 - Validating that the modification is acceptable
 - Pushing new events with incremented versions
 
-<!-- TODO, add schema -->
+![Command](./assets/docsImg/command.png)
 
 ```ts
 import { Command, tuple } from '@castore/core';
@@ -762,7 +764,7 @@ A few notes on commands handlers:
 
 - Fetching and pushing events non-simultaneously exposes your application to [race conditions](https://en.wikipedia.org/wiki/Race_condition). To counter that, commands are designed to be retried when an `EventAlreadyExistsError` is triggered (which is part of the `EventStorageAdapter` interface).
 
-<!-- TODO, add schema -->
+![Command Retry](./assets/docsImg/commandRetry.png)
 
 - Command handlers should be, as much as possible, [pure functions](https://en.wikipedia.org/wiki/Pure_function). If it depends on impure functions like functions with unpredictable outputs (like id generation), mutating effects, side effects or state dependency (like external data fetching), you should pass them through the additional context arguments rather than directly importing and using them. This will make them easier to test and to re-use in different contexts, such as in the [React Visualizer](./packages/react-visualizer/README.md).
 
@@ -835,7 +837,7 @@ Both kinds of messages can be published to [Message Queues](#--messagequeue) or 
 
 [Message Queues](https://en.wikipedia.org/wiki/Message_queue) store the published messages until they are handled by a **worker**. The worker is unique and predictible. It consumes all messages indifferently of their content.
 
-<!-- TODO: SCHEMA OF MESSAGE QUEUES -->
+![Message Queue](./assets/docsImg/messageQueue.png)
 
 You can use the `NotificationMessageQueue` or the `StateCarryingMessageQueue` classes to implement message queues:
 
@@ -966,7 +968,7 @@ const appMessagesWorker = async ({ Records }: SQSMessageQueueMessage) => {
 
 [Message Buses](https://en.wikipedia.org/wiki/Publish%E2%80%93subscribe_pattern) are used to spread messages to multiple **listeners**. Contrary to message queues, they do not store the message or wait for the listeners to respond. Often, **filter patterns** can also be used to trigger listeners or not based on the message content.
 
-<!-- TODO: SCHEMA OF MESSAGE BUSES -->
+![Message Bus](./assets/docsImg/messageBus.png)
 
 You can use the `NotificationMessageBus` or the `StateCarryingMessageBus` classes to implement message buses:
 
@@ -1134,7 +1136,7 @@ await connectedPokemonsEventStore.pushEvent(
 );
 ```
 
-<!-- TODO, add schema -->
+![Connected Event Store](./assets/docsImg/connectedEventStore.png)
 
 Compared to data streams, connected event stores have the advantage of simplicity, performances and costs. However, they **strongly decouple your storage and messaging solutions**: Make sure to anticipate any issue that might arise (consistency, non-catched errors etc.).
 
