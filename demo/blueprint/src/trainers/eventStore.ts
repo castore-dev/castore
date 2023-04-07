@@ -1,16 +1,16 @@
 import { EventStore } from '@castore/core';
 
 import type { TrainerAggregate } from './aggregate';
-import { huntStartedEvent, pokemonCatchedEvent } from './events';
+import { gameStartedEvent, pokemonCatchedEvent } from './events';
 
 export const trainersEventStore = new EventStore({
   eventStoreId: 'TRAINERS',
-  eventStoreEvents: [huntStartedEvent, pokemonCatchedEvent],
+  eventStoreEvents: [gameStartedEvent, pokemonCatchedEvent],
   reduce: (trainerAggregate: TrainerAggregate, event): TrainerAggregate => {
     const { version, aggregateId } = event;
 
     switch (event.type) {
-      case 'HUNT_STARTED': {
+      case 'GAME_STARTED': {
         const { trainerName } = event.payload;
 
         return {

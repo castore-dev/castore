@@ -3,8 +3,8 @@ import { JSONSchemaCommand } from '@castore/json-schema-command';
 
 import { trainersEventStore } from '~/trainers';
 
-export const startPokemonHuntCommand = new JSONSchemaCommand({
-  commandId: 'START_POKEMON_HUNT',
+export const startPokemonGameCommand = new JSONSchemaCommand({
+  commandId: 'START_POKEMON_GAME',
   requiredEventStores: tuple(trainersEventStore),
   inputSchema: {
     type: 'object',
@@ -35,7 +35,7 @@ export const startPokemonHuntCommand = new JSONSchemaCommand({
     await eventStore.pushEvent({
       aggregateId: trainerId,
       version: 1,
-      type: 'HUNT_STARTED',
+      type: 'GAME_STARTED',
       payload: {
         trainerName,
       },

@@ -2,7 +2,7 @@ import { catchPokemon } from './catchPokemon';
 import { levelUpPokemon } from './levelUpPokemon';
 import { logPokemonEvents } from './logPokemonEvents';
 import { logPokemonIds } from './logPokemonIds';
-import { startPokemonHunt } from './startPokemonHunt';
+import { startPokemonGame } from './startPokemonGame';
 import { wildPokemonAppear } from './wildPokemonAppear';
 
 export const functions = {
@@ -10,6 +10,6 @@ export const functions = {
   levelUpPokemon,
   logPokemonEvents,
   logPokemonIds,
-  startPokemonHunt,
+  startPokemonGame,
   wildPokemonAppear,
 };

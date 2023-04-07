@@ -4,12 +4,12 @@ import { trainersEventStore } from './eventStore';
 
 export const ashId = 'ash-ketchum-id';
 
-export const ashPokemonHuntStartedEvent: EventStoreEventsDetails<
+export const ashPokemonGameStartedEvent: EventStoreEventsDetails<
   typeof trainersEventStore
 > = {
   aggregateId: ashId,
   version: 1,
-  type: 'HUNT_STARTED',
+  type: 'GAME_STARTED',
   timestamp: '2022-01-01T00:00:00.000Z',
   payload: {
     trainerName: 'Ash Ketchum',
@@ -28,4 +28,4 @@ export const ashPokemonCatchedEvent: EventStoreEventsDetails<
   },
 };
 
-export const ashEvents = [ashPokemonHuntStartedEvent, ashPokemonCatchedEvent];
+export const ashEvents = [ashPokemonGameStartedEvent, ashPokemonCatchedEvent];

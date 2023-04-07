@@ -1,7 +1,7 @@
 import { JSONSchemaEventType } from '@castore/json-schema-event';
 
-export const huntStartedEvent = new JSONSchemaEventType({
-  type: 'HUNT_STARTED',
+export const gameStartedEvent = new JSONSchemaEventType({
+  type: 'GAME_STARTED',
   payloadSchema: {
     type: 'object',
     properties: {

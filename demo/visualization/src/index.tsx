@@ -6,7 +6,7 @@ import { tuple } from '@castore/core';
 import {
   pokemonsEventStore,
   trainersEventStore,
-  startPokemonHuntCommand,
+  startPokemonGameCommand,
   wildPokemonAppearCommand,
   catchPokemonCommand,
   levelUpPokemonCommand,
@@ -20,13 +20,13 @@ ReactDOM.render(
     <Visualizer
       eventStores={[pokemonsEventStore, trainersEventStore]}
       commands={tuple(
-        startPokemonHuntCommand,
+        startPokemonGameCommand,
         wildPokemonAppearCommand,
         catchPokemonCommand,
         levelUpPokemonCommand,
       )}
       contextsByCommandId={{
-        START_POKEMON_HUNT: [{ generateUuid: uuid }],
+        START_POKEMON_GAME: [{ generateUuid: uuid }],
         WILD_POKEMON_APPEAR: [{ generateUuid: uuid }],
       }}
     />

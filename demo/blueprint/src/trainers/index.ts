@@ -1,9 +1,9 @@
 export type { TrainerAggregate } from './aggregate';
-export { huntStartedEvent, pokemonCatchedEvent } from './events';
+export { gameStartedEvent, pokemonCatchedEvent } from './events';
 export { trainersEventStore } from './eventStore';
 export {
   ashId,
-  ashPokemonHuntStartedEvent,
+  ashPokemonGameStartedEvent,
   ashPokemonCatchedEvent,
   ashEvents,
 } from './mock';
