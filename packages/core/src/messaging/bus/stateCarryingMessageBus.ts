@@ -29,6 +29,13 @@ export class StateCarryingMessageBus<
       EventStoreStateCarryingMessage<EVENT_STORE>
     >,
   ) => Promise<void>;
+  publishMessages: (
+    stateCarryingMessage: $Contravariant<
+      EVENT_STORE,
+      EventStore,
+      EventStoreStateCarryingMessage<EVENT_STORE>
+    >[],
+  ) => Promise<void>;
   getAggregateAndPublishMessage: (
     notificationMessage: $Contravariant<
       EVENT_STORE,
@@ -88,6 +95,17 @@ export class StateCarryingMessageBus<
       const messageBusAdapter = this.getMessageBusAdapter();
 
       await messageBusAdapter.publishMessage(stateCarryingMessage);
+    };
+
+    this.publishMessages = async stateCarryingMessages => {
+      for (const stateCarryingMessage of stateCarryingMessages) {
+        const { eventStoreId } = stateCarryingMessage;
+        this.getEventStore(eventStoreId);
+      }
+
+      const messageBusAdapter = this.getMessageBusAdapter();
+
+      await messageBusAdapter.publishMessages(stateCarryingMessages);
     };
 
     this.getAggregateAndPublishMessage = async notificationMessage => {

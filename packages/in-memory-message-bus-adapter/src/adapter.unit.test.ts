@@ -66,7 +66,7 @@ describe('in-memory message queue adapter', () => {
         }),
     );
 
-    const inMemoryMessageQueueAdapter = new InMemoryMessageBusAdapter<
+    const inMemoryMessageBusAdapter = new InMemoryMessageBusAdapter<
       EventStoreNotificationMessage<typeof pokemonsEventStore>
     >({ eventEmitter: new EventEmitter() });
 
@@ -76,65 +76,78 @@ describe('in-memory message queue adapter', () => {
     });
 
     it('does nothing if no handler is set', async () => {
-      await inMemoryMessageQueueAdapter.publishMessage(pikachuAppearedMessage);
+      await inMemoryMessageBusAdapter.publishMessage(pikachuAppearedMessage);
 
       expect(handler1).not.toHaveBeenCalled();
       expect(handler2).not.toHaveBeenCalled();
     });
 
     it('calls handler if it has been set', async () => {
-      inMemoryMessageQueueAdapter.on(
+      inMemoryMessageBusAdapter.on(
         { eventStoreId: 'POKEMONS', eventType: 'APPEARED' },
         handler1,
       );
 
-      await inMemoryMessageQueueAdapter.publishMessage(pikachuAppearedMessage);
-      await inMemoryMessageQueueAdapter.publishMessage(pikachuCatchedMessage);
+      await inMemoryMessageBusAdapter.publishMessage(pikachuAppearedMessage);
+      await inMemoryMessageBusAdapter.publishMessage(pikachuCatchedMessage);
 
       expect(handler1).toHaveBeenCalledOnce();
       expect(handler1).toHaveBeenCalledWith(pikachuAppearedMessage);
 
-      inMemoryMessageQueueAdapter.on(
+      inMemoryMessageBusAdapter.on(
         { eventStoreId: 'POKEMONS', eventType: 'CATCHED_BY_TRAINER' },
         handler1,
       );
 
-      await inMemoryMessageQueueAdapter.publishMessage(pikachuCatchedMessage);
+      await inMemoryMessageBusAdapter.publishMessage(pikachuCatchedMessage);
       expect(handler1).toHaveBeenCalledTimes(2);
       expect(handler1).toHaveBeenCalledWith(pikachuCatchedMessage);
     });
 
     it('calls handler only once, event if matches several filter patterns', async () => {
-      inMemoryMessageQueueAdapter.on({ eventStoreId: 'POKEMONS' }, handler1);
-      await inMemoryMessageQueueAdapter.publishMessage(pikachuAppearedMessage);
+      inMemoryMessageBusAdapter.on({ eventStoreId: 'POKEMONS' }, handler1);
+      await inMemoryMessageBusAdapter.publishMessage(pikachuAppearedMessage);
 
       expect(handler1).toHaveBeenCalledOnce();
       expect(handler1).toHaveBeenCalledWith(pikachuAppearedMessage);
     });
 
     it('calls all handlers if needed', async () => {
-      inMemoryMessageQueueAdapter.on({}, handler2);
+      inMemoryMessageBusAdapter.on({}, handler2);
 
-      await inMemoryMessageQueueAdapter.publishMessage(pikachuAppearedMessage);
+      await inMemoryMessageBusAdapter.publishMessage(pikachuAppearedMessage);
 
       expect(handler1).toHaveBeenCalledWith(pikachuAppearedMessage);
       expect(handler2).toHaveBeenCalledWith(pikachuAppearedMessage);
     });
 
     it('statically rejects invalid handlers', async () => {
-      inMemoryMessageQueueAdapter.on(
+      inMemoryMessageBusAdapter.on(
         { eventStoreId: 'POKEMONS', eventType: 'CATCHED_BY_TRAINER' },
         // @ts-expect-error handler doesn't handle POKEMONS event store
         handler3,
       );
-      inMemoryMessageQueueAdapter.on(
+      inMemoryMessageBusAdapter.on(
         // @ts-expect-error BATTLES is not a possible event store id
         { eventStoreId: 'BATTLES' },
         handler3,
       );
 
-      await inMemoryMessageQueueAdapter.publishMessage(pikachuAppearedMessage);
+      await inMemoryMessageBusAdapter.publishMessage(pikachuAppearedMessage);
       expect(handler3).not.toHaveBeenCalled();
+    });
+
+    it('calls the handlers as many times as the number of messages to publish', async () => {
+      const mockNumberOfEventToPublish = 3;
+      await inMemoryMessageBusAdapter.publishMessages(
+        Array.from(
+          { length: mockNumberOfEventToPublish },
+          () => pikachuAppearedMessage,
+        ),
+      );
+
+      expect(handler1).toHaveBeenCalledTimes(mockNumberOfEventToPublish);
+      expect(handler2).toHaveBeenCalledTimes(mockNumberOfEventToPublish);
     });
   });
 
@@ -152,20 +165,20 @@ describe('in-memory message queue adapter', () => {
     });
 
     it('correctly instanciates a class and attach it', async () => {
-      const inMemoryMessageQueueAdapter = InMemoryMessageBusAdapter.attachTo(
+      const inMemoryMessageBusAdapter = InMemoryMessageBusAdapter.attachTo(
         messageBus,
         { eventEmitter: new EventEmitter() },
       );
 
-      expect(messageBus.messageBusAdapter).toBe(inMemoryMessageQueueAdapter);
+      expect(messageBus.messageBusAdapter).toBe(inMemoryMessageBusAdapter);
 
       const assertQueueType: A.Equals<
-        typeof inMemoryMessageQueueAdapter,
+        typeof inMemoryMessageBusAdapter,
         InMemoryMessageBusAdapter<ExpectedMessage>
       > = 1;
       assertQueueType;
 
-      inMemoryMessageQueueAdapter.on({}, handler);
+      inMemoryMessageBusAdapter.on({}, handler);
 
       await messageBus.publishMessage(pikachuAppearedMessage);
       expect(handler).toHaveBeenCalledWith(pikachuAppearedMessage);
@@ -213,7 +226,7 @@ describe('in-memory message queue adapter', () => {
     it(
       'successfully retries',
       async () => {
-        const inMemoryMessageQueueAdapter = InMemoryMessageBusAdapter.attachTo(
+        const inMemoryMessageBusAdapter = InMemoryMessageBusAdapter.attachTo(
           messageBus,
           {
             eventEmitter: new EventEmitter(),
@@ -223,8 +236,8 @@ describe('in-memory message queue adapter', () => {
           },
         );
 
-        inMemoryMessageQueueAdapter.on({}, failingHandler);
-        inMemoryMessageQueueAdapter.on({}, succeedingHandler);
+        inMemoryMessageBusAdapter.on({}, failingHandler);
+        inMemoryMessageBusAdapter.on({}, succeedingHandler);
 
         await messageBus.publishMessage(pikachuAppearedMessage);
 
