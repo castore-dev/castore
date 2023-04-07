@@ -332,6 +332,8 @@ Once you've defined your [event types](#--eventtype) and how to [aggregate](#--r
 
 Each event store in your application represents a business entity. Think of event stores as _"what tables would be in CRUD"_, except that instead of directly updating data, you just append new events to it!
 
+![Event Store](./assets/docsImg/eventStore.png)
+
 In Castore, `EventStore` classes are NOT responsible for actually storing data (this will come with [event storage adapters](#--eventstorageadapter)). But rather to provide a boilerplate-free and type-safe interface to perform many actions such as:
 
 - Listing aggregate ids
@@ -653,7 +655,7 @@ Modifying the state of your application (i.e. pushing new events to your event s
 - Validating that the modification is acceptable
 - Pushing new events with incremented versions
 
-<!-- TODO, add schema -->
+![Command](./assets/docsImg/command.png)
 
 ```ts
 import { Command, tuple } from '@castore/core';
