@@ -1,0 +1,28 @@
+name: Get affected packages paths
+description: Returns the paths of packages that have been modified
+inputs:
+  base-branch:
+    description: reference branch to compare current HEAD with
+    required: true
+  last-successful-event:
+    description: filtering event of last successful workflow search
+    required: false
+    default: push
+outputs:
+  affected-packages:
+    description: Paths of the affected packages
+    value: ${{ steps.affected-packages.outputs.changes }}
+runs:
+  using: composite
+  steps:
+    - name: Derive appropriate SHAs for base and head for `nx affected` commands
+      uses: nrwl/nx-set-shas@v3.0.1
+      with:
+        main-branch-name: ${{ inputs.base-branch }}
+        last-successful-event: ${{ inputs.last-successful-event }}
+    - name: Get affected packages
+      id: affected-packages
+      run: |
+        changes="$(./.github/actions/get-affected-packages-paths/get-affected-paths.sh)"
+        echo "changes=$changes" >> $GITHUB_OUTPUT
+      shell: bash

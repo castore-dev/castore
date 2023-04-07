@@ -4,7 +4,7 @@ runs:
   using: composite
   steps:
     - name: Use Node.js
-      uses: actions/setup-node@v2
+      uses: actions/setup-node@v3
       with:
         node-version: ${{ env.NODE_VERSION }}
 
@@ -14,7 +14,7 @@ runs:
       shell: bash
 
     - name: Sync yarn cache
-      uses: actions/cache@v2
+      uses: actions/cache@v3
       with:
         path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
         key: ${{ runner.os }}-yarn-${{ hashFiles('./yarn.lock') }}
@@ -23,7 +23,7 @@ runs:
 
     - name: Sync node_modules cache
       id: sync-node-modules-cache
-      uses: actions/cache@v2
+      uses: actions/cache@v3
       with:
         path: '**/node_modules'
         key: ${{ runner.os }}-modules-${{ env.NODE_VERSION }}-${{ hashFiles('./yarn.lock') }}

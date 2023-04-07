@@ -5,7 +5,7 @@ runs:
   steps:
     - name: Sync packages cache
       id: sync-packages-cache
-      uses: actions/cache@v2
+      uses: actions/cache@v3
       with:
         path: |
           node_modules/@castore/**/dist
