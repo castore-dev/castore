@@ -2,11 +2,15 @@ import {
   EventBridgeClient,
   PutEventsCommand,
 } from '@aws-sdk/client-eventbridge';
+import chunk from 'lodash.chunk';
 
 import type { MessageBusAdapter } from '@castore/core';
 
+export const EVENTBRIDGE_MAX_ENTRIES_BATCH_SIZE = 10;
+
 export class EventBridgeMessageBusAdapter implements MessageBusAdapter {
   publishMessage: MessageBusAdapter['publishMessage'];
+  publishMessages: MessageBusAdapter['publishMessages'];
   getEventBusName: () => string;
   eventBusName: string | (() => string);
   eventBridgeClient: EventBridgeClient;
@@ -42,6 +46,24 @@ export class EventBridgeMessageBusAdapter implements MessageBusAdapter {
           ],
         }),
       );
+    };
+
+    this.publishMessages = async messages => {
+      for (const chunkMessages of chunk(
+        messages,
+        EVENTBRIDGE_MAX_ENTRIES_BATCH_SIZE,
+      )) {
+        await this.eventBridgeClient.send(
+          new PutEventsCommand({
+            Entries: chunkMessages.map(message => ({
+              EventBusName: this.getEventBusName(),
+              Source: message.eventStoreId,
+              DetailType: message.event.type,
+              Detail: JSON.stringify(message),
+            })),
+          }),
+        );
+      }
     };
   }
 }

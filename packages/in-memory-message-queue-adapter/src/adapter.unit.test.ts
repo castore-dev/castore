@@ -123,7 +123,7 @@ describe('in-memory message queue adapter', () => {
       await messageQueue.publishMessages(
         Array.from(
           { length: mockNumberOfEventToPublish },
-          () => userCreatedEvent,
+          () => pikachuAppearedMessage,
         ),
       );
 

@@ -26,6 +26,13 @@ export class NotificationMessageBus<
       EventStoreNotificationMessage<EVENT_STORE>
     >,
   ) => Promise<void>;
+  publishMessages: (
+    notificationMessages: $Contravariant<
+      EVENT_STORE,
+      EventStore,
+      EventStoreNotificationMessage<EVENT_STORE>
+    >[],
+  ) => Promise<void>;
 
   constructor({
     messageBusId,
@@ -78,6 +85,17 @@ export class NotificationMessageBus<
       const messageBusAdapter = this.getMessageBusAdapter();
 
       await messageBusAdapter.publishMessage(notificationMessage);
+    };
+
+    this.publishMessages = async notificationMessages => {
+      for (const notificationMessage of notificationMessages) {
+        const { eventStoreId } = notificationMessage;
+        this.getEventStore(eventStoreId);
+      }
+
+      const messageBusAdapter = this.getMessageBusAdapter();
+
+      await messageBusAdapter.publishMessages(notificationMessages);
     };
   }
 }

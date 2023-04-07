@@ -900,6 +900,8 @@ await appMessageQueue.publishMessage({
 >
 > - <code>publishMessage <i>((message: NotificationMessage | StateCarryingMessage) => Promise\<void\>)</i></code>: Publish a `NotificationMessage` (for `NotificationMessageQueues`) or a `StateCarryingMessage` (for `StateCarryingMessageQueues`) to the message queue.
 >
+> - <code>publishMessages <i>((messages: NotificationMessage[] | StateCarryingMessage[]) => Promise\<void\>)</i></code>: Publish several `NotificationMessage` (for `NotificationMessageQueues`) or several `StateCarryingMessage` (for `StateCarryingMessageQueues`) to the message queue.
+>
 > - <code>getAggregateAndPublishMessage <i>((message: NotificationMessage) => Promise\<void\>)</i></code>: _(StateCarryingMessageQueues only)_ Append the matching aggregate (with correct version) to a `NotificationMessage` and turn it into a `StateCarryingMessage` before publishing it to the message queue. Uses the message queue event stores: Make sure that they have correct adapters set up.
 >
 > **Type Helpers:**
@@ -1028,6 +1030,8 @@ await appMessageBus.publishMessage({
 > The following methods interact with the messaging solution of your application through a `MessageBusAdapter`. They will throw an `UndefinedMessageBusAdapterError` if you did not provide one.
 >
 > - <code>publishMessage <i>((message: NotificationMessage | StateCarryingMessage) => Promise\<void\>)</i></code>: Publish a `NotificationMessage` (for `NotificationMessageBuses`) or a `StateCarryingMessage` (for `StateCarryingMessageBuses`) to the message bus.
+>
+> - <code>publishMessages <i>((messages: NotificationMessage[] | StateCarryingMessage[]) => Promise\<void\>)</i></code>: Publish several `NotificationMessage` (for `NotificationMessageBuses`) or several `StateCarryingMessage` (for `StateCarryingMessageBuses`) to the message bus.
 >
 > - <code>getAggregateAndPublishMessage <i>((message: NotificationMessage) => Promise\<void\>)</i></code>: _(StateCarryingMessageBuses only)_ Append the matching aggregate (with correct version) to a `NotificationMessage` and turn it into a `StateCarryingMessage` before publishing it to the message bus. Uses the message bus event stores: Make sure that they have correct adapters set up.
 >

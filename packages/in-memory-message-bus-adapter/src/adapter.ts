@@ -39,6 +39,7 @@ export class InMemoryMessageBusAdapter<MESSAGE extends Message = Message>
   }
 
   publishMessage: MessageBusAdapter['publishMessage'];
+  publishMessages: MessageBusAdapter['publishMessages'];
   retryAttempts: number;
   retryDelayInMs: number;
   retryBackoffRate: number;
@@ -113,6 +114,12 @@ export class InMemoryMessageBusAdapter<MESSAGE extends Message = Message>
 
         resolve();
       });
+
+    this.publishMessages = async messages => {
+      for (const message of messages) {
+        await this.publishMessage(message);
+      }
+    };
 
     this.handlers = [];
     this.filterPatterns = [];
