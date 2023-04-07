@@ -764,7 +764,7 @@ A few notes on commands handlers:
 
 - Fetching and pushing events non-simultaneously exposes your application to [race conditions](https://en.wikipedia.org/wiki/Race_condition). To counter that, commands are designed to be retried when an `EventAlreadyExistsError` is triggered (which is part of the `EventStorageAdapter` interface).
 
-<!-- TODO, add schema -->
+![Command Retry](./assets/docsImg/commandRetry.png)
 
 - Command handlers should be, as much as possible, [pure functions](https://en.wikipedia.org/wiki/Pure_function). If it depends on impure functions like functions with unpredictable outputs (like id generation), mutating effects, side effects or state dependency (like external data fetching), you should pass them through the additional context arguments rather than directly importing and using them. This will make them easier to test and to re-use in different contexts, such as in the [React Visualizer](./packages/react-visualizer/README.md).
 
@@ -1132,7 +1132,7 @@ await connectedPokemonsEventStore.pushEvent(
 );
 ```
 
-<!-- TODO, add schema -->
+![Connected Event Store](./assets/docsImg/connectedEventStore.png)
 
 Compared to data streams, connected event stores have the advantage of simplicity, performances and costs. However, they **strongly decouple your storage and messaging solutions**: Make sure to anticipate any issue that might arise (consistency, non-catched errors etc.).
 
