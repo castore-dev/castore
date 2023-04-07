@@ -4,10 +4,12 @@ import { v4 as uuid } from 'uuid';
 
 import { tuple } from '@castore/core';
 import {
-  counterEventStore,
-  createUserCommand,
-  deleteUserCommand,
-  userEventStore,
+  pokemonsEventStore,
+  trainersEventStore,
+  startPokemonGameCommand,
+  wildPokemonAppearCommand,
+  catchPokemonCommand,
+  levelUpPokemonCommand,
 } from '@castore/demo-blueprint';
 import { Visualizer } from '@castore/react-visualizer';
 
@@ -16,10 +18,16 @@ import './index.css';
 ReactDOM.render(
   <React.StrictMode>
     <Visualizer
-      eventStores={[userEventStore, counterEventStore]}
-      commands={tuple(createUserCommand, deleteUserCommand)}
+      eventStores={[pokemonsEventStore, trainersEventStore]}
+      commands={tuple(
+        startPokemonGameCommand,
+        wildPokemonAppearCommand,
+        catchPokemonCommand,
+        levelUpPokemonCommand,
+      )}
       contextsByCommandId={{
-        CREATE_USER: [{ generateUuid: uuid }],
+        START_POKEMON_GAME: [{ generateUuid: uuid }],
+        WILD_POKEMON_APPEAR: [{ generateUuid: uuid }],
       }}
     />
   </React.StrictMode>,

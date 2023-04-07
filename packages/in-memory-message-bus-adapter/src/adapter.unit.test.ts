@@ -7,39 +7,34 @@ import {
   EventStoreNotificationMessage,
   NotificationMessageBus,
 } from '@castore/core';
-import { userEventStore, counterEventStore } from '@castore/demo-blueprint';
+import {
+  pokemonsEventStore,
+  trainersEventStore,
+  pikachuAppearedEvent,
+  pikachuCatchedEvent,
+} from '@castore/demo-blueprint';
 
 import { InMemoryMessageBusAdapter } from './adapter';
 
 const messageBus = new NotificationMessageBus({
   messageBusId: 'messageBusId',
-  sourceEventStores: [userEventStore, counterEventStore],
+  sourceEventStores: [pokemonsEventStore, trainersEventStore],
 });
 
 type ExpectedMessage = MessageBusMessage<typeof messageBus>;
 
-const userCreatedEvent: EventStoreNotificationMessage<typeof userEventStore> = {
-  eventStoreId: 'USER',
-  event: {
-    aggregateId: '1',
-    version: 1,
-    type: 'USER_CREATED',
-    timestamp: '2021-01-01T00:00:00.000Z',
-    payload: {
-      firstName: 'gandalf',
-      lastName: 'the grey',
-    },
-  },
+const pikachuAppearedMessage: EventStoreNotificationMessage<
+  typeof pokemonsEventStore
+> = {
+  eventStoreId: 'POKEMONS',
+  event: pikachuAppearedEvent,
 };
 
-const userRemovedEvent: EventStoreNotificationMessage<typeof userEventStore> = {
-  eventStoreId: 'USER',
-  event: {
-    aggregateId: '1',
-    version: 1,
-    type: 'USER_REMOVED',
-    timestamp: '2021-01-01T00:00:00.000Z',
-  },
+const pikachuCatchedMessage: EventStoreNotificationMessage<
+  typeof pokemonsEventStore
+> = {
+  eventStoreId: 'POKEMONS',
+  event: pikachuCatchedEvent,
 };
 
 const sleep = (ms: number): Promise<void> =>
@@ -48,7 +43,7 @@ const sleep = (ms: number): Promise<void> =>
 describe('in-memory message queue adapter', () => {
   describe('with constructor (typed)', () => {
     const handler1 = vi.fn(
-      (event: EventStoreNotificationMessage<typeof userEventStore>) =>
+      (event: EventStoreNotificationMessage<typeof pokemonsEventStore>) =>
         new Promise<void>(resolve => {
           event;
           resolve();
@@ -56,7 +51,7 @@ describe('in-memory message queue adapter', () => {
     );
 
     const handler2 = vi.fn(
-      (event: EventStoreNotificationMessage<typeof userEventStore>) =>
+      (event: EventStoreNotificationMessage<typeof pokemonsEventStore>) =>
         new Promise<void>(resolve => {
           event;
           resolve();
@@ -64,7 +59,7 @@ describe('in-memory message queue adapter', () => {
     );
 
     const handler3 = vi.fn(
-      (event: EventStoreNotificationMessage<typeof counterEventStore>) =>
+      (event: EventStoreNotificationMessage<typeof trainersEventStore>) =>
         new Promise<void>(resolve => {
           event;
           resolve();
@@ -72,7 +67,7 @@ describe('in-memory message queue adapter', () => {
     );
 
     const inMemoryMessageQueueAdapter = new InMemoryMessageBusAdapter<
-      EventStoreNotificationMessage<typeof userEventStore>
+      EventStoreNotificationMessage<typeof pokemonsEventStore>
     >({ eventEmitter: new EventEmitter() });
 
     beforeEach(() => {
@@ -81,7 +76,7 @@ describe('in-memory message queue adapter', () => {
     });
 
     it('does nothing if no handler is set', async () => {
-      await inMemoryMessageQueueAdapter.publishMessage(userCreatedEvent);
+      await inMemoryMessageQueueAdapter.publishMessage(pikachuAppearedMessage);
 
       expect(handler1).not.toHaveBeenCalled();
       expect(handler2).not.toHaveBeenCalled();
@@ -89,56 +84,56 @@ describe('in-memory message queue adapter', () => {
 
     it('calls handler if it has been set', async () => {
       inMemoryMessageQueueAdapter.on(
-        { eventStoreId: 'USER', eventType: 'USER_CREATED' },
+        { eventStoreId: 'POKEMONS', eventType: 'APPEARED' },
         handler1,
       );
 
-      await inMemoryMessageQueueAdapter.publishMessage(userCreatedEvent);
-      await inMemoryMessageQueueAdapter.publishMessage(userRemovedEvent);
+      await inMemoryMessageQueueAdapter.publishMessage(pikachuAppearedMessage);
+      await inMemoryMessageQueueAdapter.publishMessage(pikachuCatchedMessage);
 
       expect(handler1).toHaveBeenCalledOnce();
-      expect(handler1).toHaveBeenCalledWith(userCreatedEvent);
+      expect(handler1).toHaveBeenCalledWith(pikachuAppearedMessage);
 
       inMemoryMessageQueueAdapter.on(
-        { eventStoreId: 'USER', eventType: 'USER_REMOVED' },
+        { eventStoreId: 'POKEMONS', eventType: 'CATCHED_BY_TRAINER' },
         handler1,
       );
 
-      await inMemoryMessageQueueAdapter.publishMessage(userRemovedEvent);
+      await inMemoryMessageQueueAdapter.publishMessage(pikachuCatchedMessage);
       expect(handler1).toHaveBeenCalledTimes(2);
-      expect(handler1).toHaveBeenCalledWith(userRemovedEvent);
+      expect(handler1).toHaveBeenCalledWith(pikachuCatchedMessage);
     });
 
     it('calls handler only once, event if matches several filter patterns', async () => {
-      inMemoryMessageQueueAdapter.on({ eventStoreId: 'USER' }, handler1);
-      await inMemoryMessageQueueAdapter.publishMessage(userCreatedEvent);
+      inMemoryMessageQueueAdapter.on({ eventStoreId: 'POKEMONS' }, handler1);
+      await inMemoryMessageQueueAdapter.publishMessage(pikachuAppearedMessage);
 
       expect(handler1).toHaveBeenCalledOnce();
-      expect(handler1).toHaveBeenCalledWith(userCreatedEvent);
+      expect(handler1).toHaveBeenCalledWith(pikachuAppearedMessage);
     });
 
     it('calls all handlers if needed', async () => {
       inMemoryMessageQueueAdapter.on({}, handler2);
 
-      await inMemoryMessageQueueAdapter.publishMessage(userCreatedEvent);
+      await inMemoryMessageQueueAdapter.publishMessage(pikachuAppearedMessage);
 
-      expect(handler1).toHaveBeenCalledWith(userCreatedEvent);
-      expect(handler2).toHaveBeenCalledWith(userCreatedEvent);
+      expect(handler1).toHaveBeenCalledWith(pikachuAppearedMessage);
+      expect(handler2).toHaveBeenCalledWith(pikachuAppearedMessage);
     });
 
     it('statically rejects invalid handlers', async () => {
       inMemoryMessageQueueAdapter.on(
-        { eventStoreId: 'USER', eventType: 'USER_REMOVED' },
-        // @ts-expect-error handler doesn't handle USER event store
+        { eventStoreId: 'POKEMONS', eventType: 'CATCHED_BY_TRAINER' },
+        // @ts-expect-error handler doesn't handle POKEMONS event store
         handler3,
       );
       inMemoryMessageQueueAdapter.on(
-        // @ts-expect-error COUNTERS is not a possible event store id
-        { eventStoreId: 'COUNTERS' },
+        // @ts-expect-error BATTLES is not a possible event store id
+        { eventStoreId: 'BATTLES' },
         handler3,
       );
 
-      await inMemoryMessageQueueAdapter.publishMessage(userCreatedEvent);
+      await inMemoryMessageQueueAdapter.publishMessage(pikachuAppearedMessage);
       expect(handler3).not.toHaveBeenCalled();
     });
   });
@@ -172,8 +167,8 @@ describe('in-memory message queue adapter', () => {
 
       inMemoryMessageQueueAdapter.on({}, handler);
 
-      await messageBus.publishMessage(userCreatedEvent);
-      expect(handler).toHaveBeenCalledWith(userCreatedEvent);
+      await messageBus.publishMessage(pikachuAppearedMessage);
+      expect(handler).toHaveBeenCalledWith(pikachuAppearedMessage);
     });
   });
 
@@ -231,7 +226,7 @@ describe('in-memory message queue adapter', () => {
         inMemoryMessageQueueAdapter.on({}, failingHandler);
         inMemoryMessageQueueAdapter.on({}, succeedingHandler);
 
-        await messageBus.publishMessage(userCreatedEvent);
+        await messageBus.publishMessage(pikachuAppearedMessage);
 
         await sleep(testWaitTime);
 

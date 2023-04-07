@@ -23,8 +23,8 @@ const serverlessConfiguration: AWS = {
       NODE_OPTIONS: '--enable-source-maps --stack-trace-limit=1000',
       SERVICE: '${self:service}',
       STAGE: '${self:provider.stage}',
-      USER_EVENTS_TABLE_NAME: { Ref: 'UserEventsTable' },
-      COUNTER_EVENTS_TABLE_NAME: { Ref: 'CounterEventsTable' },
+      TRAINER_EVENTS_TABLE_NAME: { Ref: 'TrainerEventsTable' },
+      POKEMON_EVENTS_TABLE_NAME: { Ref: 'PokemonEventsTable' },
     },
     iam: {
       role: {
@@ -32,18 +32,18 @@ const serverlessConfiguration: AWS = {
           {
             Effect: 'Allow',
             Resource: [
-              { 'Fn::GetAtt': ['UserEventsTable', 'Arn'] },
-              { 'Fn::GetAtt': ['CounterEventsTable', 'Arn'] },
+              { 'Fn::GetAtt': ['TrainerEventsTable', 'Arn'] },
+              { 'Fn::GetAtt': ['PokemonEventsTable', 'Arn'] },
               {
                 'Fn::Join': [
                   '/',
-                  [{ 'Fn::GetAtt': ['UserEventsTable', 'Arn'] }, 'index/*'],
+                  [{ 'Fn::GetAtt': ['TrainerEventsTable', 'Arn'] }, 'index/*'],
                 ],
               },
               {
                 'Fn::Join': [
                   '/',
-                  [{ 'Fn::GetAtt': ['CounterEventsTable', 'Arn'] }, 'index/*'],
+                  [{ 'Fn::GetAtt': ['PokemonEventsTable', 'Arn'] }, 'index/*'],
                 ],
               },
             ],

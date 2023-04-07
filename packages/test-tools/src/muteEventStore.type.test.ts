@@ -1,26 +1,31 @@
-import { counterEventStore } from '@castore/demo-blueprint';
+import { pokemonsEventStore } from '@castore/demo-blueprint';
 
 import { muteEventStore } from './muteEventStore';
 
-muteEventStore(counterEventStore, [
+muteEventStore(pokemonsEventStore, [
   {
     // valid event
     aggregateId: 'aggregateId',
     version: 1,
-    type: 'COUNTER_CREATED',
+    type: 'APPEARED',
     timestamp: '2022',
     payload: {
-      userId: 'userId',
+      name: 'Pikachu',
+      level: 1,
+    },
+    metadata: {
+      trigger: 'random',
     },
   },
   {
     aggregateId: 'aggregateId',
     version: 1,
-    type: 'COUNTER_CREATED',
+    type: 'APPEARED',
     timestamp: '2022',
     payload: {
       // @ts-expect-error test that payload should follow event type payload schema
-      userIdd: 'userId',
+      nam: 'userId',
+      level: 12,
     },
   },
   {

@@ -1,21 +1,13 @@
 import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
 import { mockClient } from 'aws-sdk-client-mock';
 
-import type { EventStoreEventsDetails } from '@castore/core';
-import { counterEventStore } from '@castore/demo-blueprint';
+import {
+  pokemonsEventStore,
+  pikachuAppearedEvent,
+} from '@castore/demo-blueprint';
 
 import { DynamoDbEventStorageAdapter } from '../adapter';
 import { formatEventForTransaction } from './formatEventForTransaction';
-
-const eventMock: EventStoreEventsDetails<typeof counterEventStore> = {
-  aggregateId: '123',
-  version: 1,
-  timestamp: '2022',
-  type: 'COUNTER_CREATED',
-  payload: {
-    userId: 'someUserId',
-  },
-};
 
 describe('formatEventForTransaction', () => {
   const dynamoDbClientMock = mockClient(DynamoDBClient);
@@ -25,26 +17,26 @@ describe('formatEventForTransaction', () => {
     dynamoDbClient: dynamoDbClientMock as unknown as DynamoDBClient,
   });
 
-  counterEventStore.storageAdapter = storageAdapter;
+  pokemonsEventStore.storageAdapter = storageAdapter;
 
   it('returns expected grouped event', () => {
     expect(
-      formatEventForTransaction(counterEventStore, eventMock),
+      formatEventForTransaction(pokemonsEventStore, pikachuAppearedEvent),
     ).toStrictEqual({
       dynamoDbClient: dynamoDbClientMock,
       transactItem: {
-        Put: storageAdapter.getPushEventInput(eventMock),
+        Put: storageAdapter.getPushEventInput(pikachuAppearedEvent),
       },
     });
   });
 
   it('throws if storage adapter is not an instance of DynamoDBEventStorageAdapter', () => {
-    counterEventStore.storageAdapter = undefined;
+    pokemonsEventStore.storageAdapter = undefined;
 
     expect(() =>
-      formatEventForTransaction(counterEventStore, eventMock),
+      formatEventForTransaction(pokemonsEventStore, pikachuAppearedEvent),
     ).toThrow(
-      `The event storage adapter of event store ${counterEventStore.eventStoreId} is not an instance of DynamoDbEventStorageAdapter and cannot use pushEventTransaction`,
+      `The event storage adapter of event store ${pokemonsEventStore.eventStoreId} is not an instance of DynamoDbEventStorageAdapter and cannot use pushEventTransaction`,
     );
   });
 });
