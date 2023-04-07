@@ -140,7 +140,7 @@ Event Sourcing is all about **saving changes in your application state**. Such c
 
 Events that concern the same entity (like a `Pokemon`) are aggregated through a common id called `aggregateId` (and vice versa, events that have the same `aggregateId` represent changes of the same business entity). The index of an event in such a serie of events is called its `version`.
 
-<!-- TODO: SCHEMA OF EVENT STORE -->
+![Events](./assets/docsImg/events.png)
 
 In Castore, stored events (also called **event details**) always have exactly the following properties:
 
@@ -253,7 +253,7 @@ See the following packages for examples:
 
 ### - `Aggregate`
 
-Eventhough entities are stored as series of events, we still want to use a **stable interface to represent their states at a point in time** rather than directly using events. In Castore, it is implemented by a TS type called `Aggregate`.
+Eventhough entities are stored as series of events, we still want to use a **simpler and stable interface to represent their states at a point in time** rather than directly using events. In Castore, it is implemented by a TS type called `Aggregate`.
 
 > ☝️ Think of aggregates as _"what the data would look like in CRUD"_
 
@@ -285,7 +285,7 @@ interface PokemonAggregate {
 
 Aggregates are derived from their events by [reducing them](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/Reduce) through a `reducer` function. It defines **how to update the aggregate when a new event is pushed**:
 
-<!-- TODO: SCHEMA OF EVENTS AGGREGATE -->
+![Aggregate](./assets/docsImg/aggregate.png)
 
 ```ts
 import type { Reducer } from '@castore/core';
