@@ -19,6 +19,9 @@ ReactDOM.render(
   <React.StrictMode>
     <Visualizer
       eventStores={[pokemonsEventStore, trainersEventStore]}
+      /**
+       * @debt improvement "we probably don't have to use tuple here"
+       */
       commands={tuple(
         startPokemonGameCommand,
         wildPokemonAppearCommand,
