@@ -18,17 +18,17 @@ type Prettify<OBJECTS extends Record<string, unknown>> =
     : never;
 
 export type SQSMessageQueueMessageBody<
-  MESSAGE_QUEUE extends NotificationMessageQueue | StateCarryingMessageQueue,
+  MESSAGE_QUEUE extends StateCarryingMessageQueue | NotificationMessageQueue,
 > = Prettify<
-  MESSAGE_QUEUE extends NotificationMessageQueue
-    ? EventStoreNotificationMessage<
-        MessageQueueSourceEventStores<MESSAGE_QUEUE>
-      >
-    : MESSAGE_QUEUE extends StateCarryingMessageQueue
+  MESSAGE_QUEUE extends StateCarryingMessageQueue
     ? EventStoreStateCarryingMessage<
         EventStoreNotificationMessage<
           MessageQueueSourceEventStores<MESSAGE_QUEUE>
         >
+      >
+    : MESSAGE_QUEUE extends NotificationMessageQueue
+    ? EventStoreNotificationMessage<
+        MessageQueueSourceEventStores<MESSAGE_QUEUE>
       >
     : never
 >;

@@ -24,7 +24,7 @@ export class InMemoryMessageBusAdapter<MESSAGE extends Message = Message>
   implements MessageBusAdapter
 {
   static attachTo<
-    MESSAGE_BUS extends NotificationMessageBus | StateCarryingMessageBus,
+    MESSAGE_BUS extends StateCarryingMessageBus | NotificationMessageBus,
   >(
     messageBus: MESSAGE_BUS,
     constructorArgs: ConstructorArgs,

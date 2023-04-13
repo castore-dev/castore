@@ -20,7 +20,7 @@ type Prettify<OBJECTS extends Record<string, unknown>> =
     : never;
 
 export type EventBridgeMessageBusMessage<
-  MESSAGE_BUS extends NotificationMessageBus | StateCarryingMessageBus,
+  MESSAGE_BUS extends StateCarryingMessageBus | NotificationMessageBus,
   EVENT_STORE_IDS extends MessageBusSourceEventStoresIds<MESSAGE_BUS> = MessageBusSourceEventStoresIds<MESSAGE_BUS>,
   EVENT_TYPES extends MessageBusSourceEventStoreIdTypes<
     MESSAGE_BUS,
@@ -36,20 +36,7 @@ export type EventBridgeMessageBusMessage<
           >
           ? EventBridgeEvent<
               EVENT_TYPE,
-              MESSAGE_BUS extends NotificationMessageBus
-                ? NotificationMessage<
-                    EVENT_STORE_ID,
-                    Extract<
-                      EventStoreEventsDetails<
-                        Extract<
-                          MessageBusSourceEventStores<MESSAGE_BUS>,
-                          { eventStoreId: EVENT_STORE_IDS }
-                        >
-                      >,
-                      { type: EVENT_TYPE }
-                    >
-                  >
-                : MESSAGE_BUS extends StateCarryingMessageBus
+              MESSAGE_BUS extends StateCarryingMessageBus
                 ? StateCarryingMessage<
                     EVENT_STORE_ID,
                     Extract<
@@ -66,6 +53,19 @@ export type EventBridgeMessageBusMessage<
                         MessageBusSourceEventStores<MESSAGE_BUS>,
                         { eventStoreId: EVENT_STORE_IDS }
                       >
+                    >
+                  >
+                : MESSAGE_BUS extends NotificationMessageBus
+                ? NotificationMessage<
+                    EVENT_STORE_ID,
+                    Extract<
+                      EventStoreEventsDetails<
+                        Extract<
+                          MessageBusSourceEventStores<MESSAGE_BUS>,
+                          { eventStoreId: EVENT_STORE_IDS }
+                        >
+                      >,
+                      { type: EVENT_TYPE }
                     >
                   >
                 : never
