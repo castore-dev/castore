@@ -17,13 +17,13 @@ import {
 } from './utils';
 
 type InMemoryQueueMessage<
-  MESSAGE extends NotificationMessageQueue | StateCarryingMessageQueue,
-> = NotificationMessageQueue | StateCarryingMessageQueue extends MESSAGE
+  MESSAGE extends StateCarryingMessageQueue | NotificationMessageQueue,
+> = StateCarryingMessageQueue | NotificationMessageQueue extends MESSAGE
   ? Message
-  : MESSAGE extends NotificationMessageQueue
-  ? EventStoreNotificationMessage<MessageQueueSourceEventStores<MESSAGE>>
   : MESSAGE extends StateCarryingMessageQueue
   ? EventStoreStateCarryingMessage<MessageQueueSourceEventStores<MESSAGE>>
+  : MESSAGE extends NotificationMessageQueue
+  ? EventStoreNotificationMessage<MessageQueueSourceEventStores<MESSAGE>>
   : never;
 
 export type Task<MESSAGE extends Message = Message> = {
@@ -43,7 +43,7 @@ export class InMemoryMessageQueueAdapter<MESSAGE extends Message = Message>
   implements MessageQueueAdapter
 {
   static attachTo<
-    MESSAGE_QUEUE extends NotificationMessageQueue | StateCarryingMessageQueue,
+    MESSAGE_QUEUE extends StateCarryingMessageQueue | NotificationMessageQueue,
   >(
     messageQueue: MESSAGE_QUEUE,
     constructorArgs: ConstructorArgs<InMemoryQueueMessage<MESSAGE_QUEUE>> = {},
