@@ -2,6 +2,7 @@
 import type { Aggregate } from '~/aggregate';
 import type { EventDetail } from '~/event/eventDetail';
 import type { EventType, EventTypesDetails } from '~/event/eventType';
+import type { GroupedEvent } from '~/event/groupedEvent';
 import type { StorageAdapter } from '~/storageAdapter';
 import type { $Contravariant } from '~/utils';
 
@@ -11,6 +12,7 @@ import type {
   AggregateIdsLister,
   EventPusher,
   EventsGetter,
+  EventGrouper,
   SideEffectsSimulator,
   AggregateGetter,
   AggregateSimulator,
@@ -51,6 +53,12 @@ export class EventStore<
 
   getEvents: EventsGetter<EVENT_DETAILS>;
   pushEvent: EventPusher<EVENT_DETAILS, $EVENT_DETAILS, AGGREGATE, $AGGREGATE>;
+  groupEvent: EventGrouper<
+    EVENT_DETAILS,
+    $EVENT_DETAILS,
+    AGGREGATE,
+    $AGGREGATE
+  >;
   listAggregateIds: AggregateIdsLister;
 
   buildAggregate: (
@@ -133,6 +141,20 @@ export class EventStore<
         event: event as unknown as EVENT_DETAILS,
         ...(nextAggregate ? { nextAggregate } : {}),
       };
+    };
+
+    this.groupEvent = (eventDetail, { prevAggregate } = {}) => {
+      const storageAdapter = this.getStorageAdapter();
+
+      const groupedEvent = storageAdapter.groupEvent(
+        eventDetail,
+      ) as GroupedEvent<EVENT_DETAILS, AGGREGATE>;
+
+      if (prevAggregate !== undefined) {
+        groupedEvent.prevAggregate = prevAggregate as unknown as AGGREGATE;
+      }
+
+      return groupedEvent;
     };
 
     this.listAggregateIds = options =>

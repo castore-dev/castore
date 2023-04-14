@@ -1,5 +1,6 @@
 import type { Aggregate } from '~/aggregate';
 import type { EventDetail } from '~/event/eventDetail';
+import type { GroupedEvent } from '~/event/groupedEvent';
 import type {
   EventsQueryOptions,
   ListAggregateIdsOptions,
@@ -46,6 +47,18 @@ export type AggregateIdsLister = (
 export type GetAggregateOptions = {
   maxVersion?: number;
 };
+
+export type EventGrouper<
+  EVENT_DETAILS extends EventDetail,
+  $EVENT_DETAILS extends EventDetail,
+  AGGREGATE extends Aggregate,
+  $AGGREGATE extends Aggregate,
+> = (
+  event: $EVENT_DETAILS extends infer $EVENT_DETAIL
+    ? Omit<$EVENT_DETAIL, 'timestamp'>
+    : never,
+  options?: { prevAggregate?: $AGGREGATE },
+) => GroupedEvent<EVENT_DETAILS, AGGREGATE>;
 
 export type AggregateGetter<
   EVENT_DETAIL extends EventDetail,

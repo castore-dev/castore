@@ -15,6 +15,7 @@ import {
 
 export const anotherStorageAdapterMock: StorageAdapter = {
   pushEvent: vi.fn(),
+  groupEvent: vi.fn(),
   getEvents: vi.fn(),
   listAggregateIds: vi.fn(),
   putSnapshot: vi.fn(),

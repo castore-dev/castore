@@ -1,3 +1,6 @@
+/* eslint-disable max-lines */
+import { GroupedEvent } from '~/event/groupedEvent';
+
 import { AggregateNotFoundError } from './errors/aggregateNotFound';
 import {
   PokemonAggregate,
@@ -16,6 +19,7 @@ import {
   listAggregateIdsMock,
   getLastSnapshotMock,
   putSnapshotMock,
+  groupEventMock,
 } from './eventStore.fixtures.test';
 
 describe('event store', () => {
@@ -40,6 +44,7 @@ describe('event store', () => {
         'storageAdapter',
         'getStorageAdapter',
         'pushEvent',
+        'groupEvent',
         'buildAggregate',
         'getEvents',
         'listAggregateIds',
@@ -165,6 +170,35 @@ describe('event store', () => {
           pikachuLeveledUpEvent,
         ]),
       });
+    });
+  });
+
+  describe('groupEvent', () => {
+    groupEventMock.mockReturnValue(
+      new GroupedEvent({ event: pikachuLeveledUpEvent }),
+    );
+
+    it('calls the storage adapter groupEvent method', () => {
+      const groupedEvent = pokemonsEventStore.groupEvent(pikachuLeveledUpEvent);
+
+      expect(groupEventMock).toHaveBeenCalledTimes(1);
+      expect(groupEventMock).toHaveBeenCalledWith(pikachuLeveledUpEvent);
+
+      expect(groupedEvent).toBeInstanceOf(GroupedEvent);
+      expect(groupedEvent.prevAggregate).toBeUndefined();
+    });
+
+    it('appends the prevAggregate if one has been provided', () => {
+      const prevAggregate = pokemonsEventStore.buildAggregate([
+        pikachuAppearedEvent,
+        pikachuCatchedEvent,
+      ]);
+
+      const groupedEvent = pokemonsEventStore.groupEvent(
+        pikachuLeveledUpEvent,
+        { prevAggregate },
+      );
+      expect(groupedEvent.prevAggregate).toStrictEqual(prevAggregate);
     });
   });
 

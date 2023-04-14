@@ -5,6 +5,7 @@ import type {
   Reducer,
   AggregateIdsLister,
   EventPusher,
+  EventGrouper,
   EventsGetter,
   SideEffectsSimulator,
   AggregateGetter,
@@ -87,6 +88,7 @@ export class ConnectedEventStore<
   simulateSideEffect: SideEffectsSimulator<EVENT_DETAIL, $EVENT_DETAIL>;
   getEvents: EventsGetter<EVENT_DETAIL>;
   pushEvent: EventPusher<EVENT_DETAIL, $EVENT_DETAIL, AGGREGATE, $AGGREGATE>;
+  groupEvent: EventGrouper<EVENT_DETAIL, $EVENT_DETAIL, AGGREGATE, $AGGREGATE>;
   listAggregateIds: AggregateIdsLister;
   buildAggregate: (
     events: $EVENT_DETAIL[],
@@ -125,6 +127,7 @@ export class ConnectedEventStore<
     this.reduce = eventStore.reduce;
     this.simulateSideEffect = eventStore.simulateSideEffect;
     this.getEvents = eventStore.getEvents;
+    this.groupEvent = eventStore.groupEvent;
     this.listAggregateIds = eventStore.listAggregateIds;
     this.buildAggregate = eventStore.buildAggregate;
     this.getAggregate = eventStore.getAggregate;

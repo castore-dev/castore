@@ -11,6 +11,7 @@ import { StorageAdapter } from '~/storageAdapter';
 import { tuple, Command } from './command';
 
 export const pushEventMock = vi.fn();
+export const groupEventMock = vi.fn();
 export const getEventsMock = vi.fn();
 export const listAggregateIdsMock = vi.fn();
 export const putSnapshotMock = vi.fn();
@@ -19,6 +20,7 @@ export const listSnapshotsMock = vi.fn();
 
 export const mockStorageAdapter: StorageAdapter = {
   pushEvent: pushEventMock,
+  groupEvent: groupEventMock,
   getEvents: getEventsMock,
   listAggregateIds: listAggregateIdsMock,
   putSnapshot: putSnapshotMock,

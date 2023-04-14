@@ -1,6 +1,6 @@
 import type { EnhancedStore } from '@reduxjs/toolkit';
 
-import type { StorageAdapter } from '@castore/core';
+import { GroupedEvent, StorageAdapter } from '@castore/core';
 
 import {
   ReduxStoreEventAlreadyExistsError,
@@ -17,6 +17,7 @@ import {
 export class ReduxEventStorageAdapter implements StorageAdapter {
   getEvents: StorageAdapter['getEvents'];
   pushEvent: StorageAdapter['pushEvent'];
+  groupEvent: StorageAdapter['groupEvent'];
   listAggregateIds: StorageAdapter['listAggregateIds'];
   putSnapshot: StorageAdapter['putSnapshot'];
   getLastSnapshot: StorageAdapter['getLastSnapshot'];
@@ -76,6 +77,8 @@ export class ReduxEventStorageAdapter implements StorageAdapter {
 
         resolve({ event });
       });
+
+    this.groupEvent = event => new GroupedEvent({ event });
 
     this.getEvents = (
       aggregateId,

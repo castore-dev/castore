@@ -8,7 +8,7 @@ import {
 import type { AttributeValue, DynamoDBClient } from '@aws-sdk/client-dynamodb';
 import { Marshaller } from '@aws/dynamodb-auto-marshaller';
 
-import type { EventDetail, StorageAdapter } from '@castore/core';
+import { EventDetail, GroupedEvent, StorageAdapter } from '@castore/core';
 
 import { DynamoDBEventAlreadyExistsError } from './error';
 import {
@@ -42,6 +42,7 @@ export class DynamoDbEventStorageAdapter implements StorageAdapter {
   getEvents: StorageAdapter['getEvents'];
   getPushEventInput: (eventDetail: EventDetail) => PutItemCommandInput;
   pushEvent: StorageAdapter['pushEvent'];
+  groupEvent: StorageAdapter['groupEvent'];
   listAggregateIds: StorageAdapter['listAggregateIds'];
 
   putSnapshot: StorageAdapter['putSnapshot'];
@@ -184,6 +185,8 @@ export class DynamoDbEventStorageAdapter implements StorageAdapter {
 
       return { event };
     };
+
+    this.groupEvent = event => new GroupedEvent({ event });
 
     // eslint-disable-next-line complexity
     this.listAggregateIds = async ({

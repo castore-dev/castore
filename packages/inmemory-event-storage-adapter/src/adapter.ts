@@ -1,4 +1,4 @@
-import type { EventDetail, StorageAdapter } from '@castore/core';
+import { EventDetail, GroupedEvent, StorageAdapter } from '@castore/core';
 
 import { InMemoryEventAlreadyExistsError } from './error';
 import {
@@ -24,6 +24,7 @@ const getInitialEventTimestamp = (
 export class InMemoryStorageAdapter implements StorageAdapter {
   getEvents: StorageAdapter['getEvents'];
   pushEvent: StorageAdapter['pushEvent'];
+  groupEvent: StorageAdapter['groupEvent'];
   listAggregateIds: StorageAdapter['listAggregateIds'];
   putSnapshot: StorageAdapter['putSnapshot'];
   getLastSnapshot: StorageAdapter['getLastSnapshot'];
@@ -75,6 +76,8 @@ export class InMemoryStorageAdapter implements StorageAdapter {
         events.push(event);
         resolve({ event });
       });
+
+    this.groupEvent = event => new GroupedEvent({ event });
 
     this.getEvents = (
       aggregateId,
