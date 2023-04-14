@@ -154,7 +154,7 @@ assertGenericPushEventGroupInput;
 const assertGenericPushEventGroupOutput: A.Equals<
   ReturnType<typeof EventStore.pushEventGroup>,
   Promise<{
-    events: {
+    eventGroup: {
       event: EventDetail;
       nextAggregate?: Aggregate | undefined;
     }[];
@@ -171,7 +171,7 @@ const pushTwoPokemonsEventGroup = () =>
 const assertPushEventGroupOutput: A.Equals<
   Awaited<ReturnType<typeof pushTwoPokemonsEventGroup>>,
   {
-    events: [
+    eventGroup: [
       { event: PokemonEventDetails; nextAggregate?: PokemonAggregate },
       { event: PokemonEventDetails; nextAggregate?: PokemonAggregate },
     ];

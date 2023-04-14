@@ -192,6 +192,10 @@ describe('event store', () => {
       expect(groupEventMock).toHaveBeenCalledWith(pikachuLeveledUpEvent);
 
       expect(groupedEvent).toBeInstanceOf(GroupedEvent);
+      expect(groupedEvent.eventStore).toBe(pokemonsEventStore);
+      expect(groupedEvent.context).toStrictEqual({
+        eventStoreId: pokemonsEventStore.eventStoreId,
+      });
       expect(groupedEvent.prevAggregate).toBeUndefined();
     });
 
@@ -219,7 +223,10 @@ describe('event store', () => {
 
     it('pushes new event group correctly', async () => {
       pushEventGroupMock.mockResolvedValue({
-        events: [pikachuLeveledUpEvent, charizardLeveledUpEvent],
+        eventGroup: [
+          { event: pikachuLeveledUpEvent },
+          { event: charizardLeveledUpEvent },
+        ],
       });
 
       const eventGroup = [
@@ -239,7 +246,7 @@ describe('event store', () => {
       expect(pushEventGroupMock).toHaveBeenCalledWith(...eventGroup);
 
       expect(response).toStrictEqual({
-        events: [
+        eventGroup: [
           { event: pikachuLeveledUpEvent },
           { event: charizardLeveledUpEvent },
         ],
@@ -248,7 +255,10 @@ describe('event store', () => {
 
     it('returns the next aggregate if event is initial event', async () => {
       pushEventGroupMock.mockResolvedValue({
-        events: [pikachuAppearedEvent, charizardLeveledUpEvent],
+        eventGroup: [
+          { event: pikachuAppearedEvent },
+          { event: charizardLeveledUpEvent },
+        ],
       });
 
       const eventGroup = [
@@ -265,14 +275,17 @@ describe('event store', () => {
 
       const response = await EventStore.pushEventGroup(...eventGroup);
 
-      expect(response.events[0].nextAggregate).toStrictEqual(
+      expect(response.eventGroup[0].nextAggregate).toStrictEqual(
         pokemonsEventStore.buildAggregate([pikachuAppearedEvent]),
       );
     });
 
     it('returns the next aggregate if prev aggregate has been provided', async () => {
       pushEventGroupMock.mockResolvedValue({
-        events: [pikachuCatchedEvent, charizardLeveledUpEvent],
+        eventGroup: [
+          { event: pikachuCatchedEvent },
+          { event: charizardLeveledUpEvent },
+        ],
       });
 
       const eventGroup = [
@@ -292,7 +305,7 @@ describe('event store', () => {
 
       const response = await EventStore.pushEventGroup(...eventGroup);
 
-      expect(response.events[0].nextAggregate).toStrictEqual(
+      expect(response.eventGroup[0].nextAggregate).toStrictEqual(
         pokemonsEventStore.buildAggregate([
           pikachuAppearedEvent,
           pikachuCatchedEvent,

@@ -49,7 +49,7 @@ export interface StorageAdapter {
   ) => Promise<{ event: EventDetail }>;
   pushEventGroup: (
     ...groupedEvents: [GroupedEvent, ...GroupedEvent[]]
-  ) => Promise<{ events: EventDetail[] }>;
+  ) => Promise<{ eventGroup: { event: EventDetail }[] }>;
   groupEvent: (eventDetail: Omit<EventDetail, 'timestamp'>) => GroupedEvent;
   listAggregateIds: (
     options?: ListAggregateIdsOptions,

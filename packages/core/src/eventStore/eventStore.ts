@@ -45,14 +45,14 @@ export class EventStore<
   ) => {
     const [groupedEventsHead, ...groupedEventsTail] = groupedEvents;
 
-    const { events } =
+    const { eventGroup } =
       await groupedEventsHead.eventStorageAdapter.pushEventGroup(
         groupedEventsHead,
         ...groupedEventsTail,
       );
 
     return {
-      events: events.map((event, eventIndex) => {
+      eventGroup: eventGroup.map(({ event }, eventIndex) => {
         const groupedEvent = groupedEvents[eventIndex];
 
         let nextAggregate: Aggregate | undefined = undefined;
@@ -185,6 +185,7 @@ export class EventStore<
       ) as GroupedEvent<EVENT_DETAILS, AGGREGATE>;
 
       groupedEvent.eventStore = this;
+      groupedEvent.context = { eventStoreId: this.eventStoreId };
 
       if (prevAggregate !== undefined) {
         groupedEvent.prevAggregate = prevAggregate as unknown as AGGREGATE;

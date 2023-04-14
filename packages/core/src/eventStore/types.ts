@@ -63,7 +63,7 @@ export type EventGroupPusher = <
   ],
 >(
   ...groupedEvents: GROUPED_EVENTS
-) => Promise<{ events: EventGroupPusherResponse<GROUPED_EVENTS> }>;
+) => Promise<{ eventGroup: EventGroupPusherResponse<GROUPED_EVENTS> }>;
 
 export type EventGroupPusherResponse<GROUPED_EVENTS extends GroupedEvent[]> =
   number extends GROUPED_EVENTS['length']

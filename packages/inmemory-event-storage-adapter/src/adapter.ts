@@ -1,11 +1,28 @@
 /* eslint-disable max-lines */
-import { EventDetail, GroupedEvent, StorageAdapter } from '@castore/core';
+import {
+  EventDetail,
+  GroupedEvent,
+  PushEventContext,
+  StorageAdapter,
+} from '@castore/core';
 
 import { InMemoryEventAlreadyExistsError } from './error';
 import {
   parseAppliedListAggregateIdsOptions,
   ParsedPageToken,
 } from './utils/parseAppliedListAggregateIdsOptions';
+
+class InMemoryGroupedEvent extends GroupedEvent {
+  constructor({
+    event,
+    eventStorageAdapter,
+  }: {
+    event: Omit<EventDetail, 'timestamp'>;
+    eventStorageAdapter: InMemoryStorageAdapter;
+  }) {
+    super({ event, eventStorageAdapter });
+  }
+}
 
 const getInitialEventTimestamp = (
   aggregateId: string,
@@ -79,17 +96,49 @@ export class InMemoryStorageAdapter implements StorageAdapter {
         resolve({ event });
       });
 
-    this.pushEventGroup = () =>
-      new Promise((_resolve, reject) =>
-        reject(
-          new Error(
-            'Event groups are not supported yet in InMemory event storage',
-          ),
-        ),
-      );
+    this.pushEventGroup = async (...groupedEvents) => {
+      groupedEvents.forEach((groupedEvent, groupedEventIndex) => {
+        if (!(groupedEvent instanceof InMemoryGroupedEvent)) {
+          throw new Error(
+            `Event group event #${groupedEventIndex} is not connected to a InMemoryEventStorageAdapter`,
+          );
+        }
+
+        if (groupedEvent.context === undefined) {
+          throw new Error(
+            `Event group event #${groupedEventIndex} misses context`,
+          );
+        }
+      });
+
+      const eventGroup: { event: EventDetail }[] = [];
+
+      for (const groupedEvent of groupedEvents) {
+        const { eventStorageAdapter, event, context } = groupedEvent;
+
+        try {
+          /**
+           * @debt feature "Create and use pushEventSync method just to be sure of the transaction"
+           */
+          const response = await eventStorageAdapter.pushEvent(
+            event,
+            context as PushEventContext,
+          );
+          eventGroup.push(response);
+        } catch (error) {
+          /**
+           * @debt feature "Actually rollback written events"
+           */
+          error;
+          throw error;
+        }
+      }
+
+      return { eventGroup };
+    };
 
     this.groupEvent = event =>
-      new GroupedEvent({ event, eventStorageAdapter: this });
+      new InMemoryGroupedEvent({ event, eventStorageAdapter: this });
 
     this.getEvents = (
       aggregateId,
