@@ -16,10 +16,9 @@ jobs:
     env:
       PUBLIC_PATH: /castore-demo-visualisation/
     steps:
-      - name: Check out repository code
-        uses: actions/checkout@v3
-          with:
-            ref: ${{ github.event.pull_request.head.sha }}
+      - uses: actions/checkout@v3
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
       - uses: actions/setup-node@v3
         with:
           node-version: '16'
