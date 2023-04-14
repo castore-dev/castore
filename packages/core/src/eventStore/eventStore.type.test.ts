@@ -1,14 +1,16 @@
-import { A } from 'ts-toolbelt';
+import type { A } from 'ts-toolbelt';
 
-import { Aggregate } from '~/aggregate';
-import { EventDetail } from '~/event/eventDetail';
-import { EventTypeDetail } from '~/event/eventType';
+import type { Aggregate } from '~/aggregate';
+import type { EventDetail } from '~/event/eventDetail';
+import type { EventTypeDetail } from '~/event/eventType';
+import type { GroupedEvent } from '~/event/groupedEvent';
 import {
   EventStore,
   EventStoreAggregate,
   EventStoreEventsDetails,
+  GetAggregateOptions,
 } from '~/eventStore';
-import { EventsQueryOptions } from '~/storageAdapter';
+import type { EventsQueryOptions } from '~/storageAdapter';
 
 import {
   pokemonsEventStore,
@@ -17,8 +19,9 @@ import {
   pokemonCatchedEvent,
   pokemonLeveledUpEvent,
   PokemonEventDetails,
+  pikachuAppearedEvent,
+  pikachuCatchedEvent,
 } from './eventStore.fixtures.test';
-import { GetAggregateOptions } from './types';
 
 // --- EXTENDS ---
 
@@ -117,3 +120,61 @@ const assertPushEventOutput: A.Equals<
   }>
 > = 1;
 assertPushEventOutput;
+
+// --- GROUP EVENT ---
+
+const assertGroupEventInput1: A.Equals<
+  Parameters<typeof pokemonsEventStore.groupEvent>[0],
+  | Omit<EventTypeDetail<typeof pokemonAppearedEvent>, 'timestamp'>
+  | Omit<EventTypeDetail<typeof pokemonCatchedEvent>, 'timestamp'>
+  | Omit<EventTypeDetail<typeof pokemonLeveledUpEvent>, 'timestamp'>
+> = 1;
+assertGroupEventInput1;
+
+const assertGroupEventInput2: A.Equals<
+  Parameters<typeof pokemonsEventStore.groupEvent>[1],
+  { prevAggregate?: PokemonAggregate | undefined } | undefined
+> = 1;
+assertGroupEventInput2;
+
+const assertGroupEventOutput: A.Equals<
+  ReturnType<typeof pokemonsEventStore.groupEvent>,
+  GroupedEvent<PokemonEventDetails, PokemonAggregate>
+> = 1;
+assertGroupEventOutput;
+
+// --- PUSH EVENT GROUP ---
+
+const assertGenericPushEventGroupInput: A.Equals<
+  Parameters<typeof EventStore.pushEventGroup>,
+  [GroupedEvent, ...GroupedEvent[]]
+> = 1;
+assertGenericPushEventGroupInput;
+
+const assertGenericPushEventGroupOutput: A.Equals<
+  ReturnType<typeof EventStore.pushEventGroup>,
+  Promise<{
+    events: {
+      event: EventDetail;
+      nextAggregate?: Aggregate | undefined;
+    }[];
+  }>
+> = 1;
+assertGenericPushEventGroupOutput;
+
+const pushTwoPokemonsEventGroup = () =>
+  EventStore.pushEventGroup(
+    pokemonsEventStore.groupEvent(pikachuAppearedEvent),
+    pokemonsEventStore.groupEvent(pikachuCatchedEvent),
+  );
+
+const assertPushEventGroupOutput: A.Equals<
+  Awaited<ReturnType<typeof pushTwoPokemonsEventGroup>>,
+  {
+    events: [
+      { event: PokemonEventDetails; nextAggregate?: PokemonAggregate },
+      { event: PokemonEventDetails; nextAggregate?: PokemonAggregate },
+    ];
+  }
+> = 1;
+assertPushEventGroupOutput;

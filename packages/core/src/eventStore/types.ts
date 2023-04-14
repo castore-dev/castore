@@ -44,10 +44,6 @@ export type AggregateIdsLister = (
   listAggregateOptions?: ListAggregateIdsOptions,
 ) => Promise<ListAggregateIdsOutput>;
 
-export type GetAggregateOptions = {
-  maxVersion?: number;
-};
-
 export type EventGrouper<
   EVENT_DETAILS extends EventDetail,
   $EVENT_DETAILS extends EventDetail,
@@ -59,6 +55,41 @@ export type EventGrouper<
     : never,
   options?: { prevAggregate?: $AGGREGATE },
 ) => GroupedEvent<EVENT_DETAILS, AGGREGATE>;
+
+export type EventGroupPusher = <
+  GROUPED_EVENTS extends [GroupedEvent, ...GroupedEvent[]] = [
+    GroupedEvent,
+    ...GroupedEvent[],
+  ],
+>(
+  ...groupedEvents: GROUPED_EVENTS
+) => Promise<{ events: EventGroupPusherResponse<GROUPED_EVENTS> }>;
+
+export type EventGroupPusherResponse<GROUPED_EVENTS extends GroupedEvent[]> =
+  number extends GROUPED_EVENTS['length']
+    ? { event: EventDetail; nextAggregate?: Aggregate }[]
+    : GROUPED_EVENTS extends [
+        infer HEAD_GROUPED_EVENT,
+        ...infer TAIL_GROUPED_EVENTS,
+      ]
+    ? HEAD_GROUPED_EVENT extends GroupedEvent
+      ? TAIL_GROUPED_EVENTS extends GroupedEvent[]
+        ? [
+            {
+              event: NonNullable<HEAD_GROUPED_EVENT['_types']>['details'];
+              nextAggregate?: NonNullable<
+                HEAD_GROUPED_EVENT['_types']
+              >['aggregate'];
+            },
+            ...EventGroupPusherResponse<TAIL_GROUPED_EVENTS>,
+          ]
+        : never
+      : never
+    : [];
+
+export type GetAggregateOptions = {
+  maxVersion?: number;
+};
 
 export type AggregateGetter<
   EVENT_DETAIL extends EventDetail,

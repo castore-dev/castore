@@ -2,6 +2,7 @@
 import { GroupedEvent } from '~/event/groupedEvent';
 
 import { AggregateNotFoundError } from './errors/aggregateNotFound';
+import { EventStore } from './eventStore';
 import {
   PokemonAggregate,
   pokemonsEventStore,
@@ -16,11 +17,13 @@ import {
   pikachuEventsMocks,
   getEventsMock,
   pushEventMock,
+  pushEventGroupMock,
   listAggregateIdsMock,
   getLastSnapshotMock,
   putSnapshotMock,
   groupEventMock,
   storageAdapterMock,
+  PokemonEventDetails,
 } from './eventStore.fixtures.test';
 
 describe('event store', () => {
@@ -203,6 +206,98 @@ describe('event store', () => {
         { prevAggregate },
       );
       expect(groupedEvent.prevAggregate).toStrictEqual(prevAggregate);
+    });
+  });
+
+  describe('pushEventGroup', () => {
+    const charizardLeveledUpEvent: PokemonEventDetails = {
+      aggregateId: 'charizard1',
+      version: 3,
+      type: 'POKEMON_LEVELED_UP',
+      timestamp: pikachuLeveledUpEvent.timestamp,
+    };
+
+    it('pushes new event group correctly', async () => {
+      pushEventGroupMock.mockResolvedValue({
+        events: [pikachuLeveledUpEvent, charizardLeveledUpEvent],
+      });
+
+      const eventGroup = [
+        new GroupedEvent({
+          event: pikachuLeveledUpEvent,
+          eventStorageAdapter: storageAdapterMock,
+        }),
+        new GroupedEvent({
+          event: charizardLeveledUpEvent,
+          eventStorageAdapter: storageAdapterMock,
+        }),
+      ] as const;
+
+      const response = await EventStore.pushEventGroup(...eventGroup);
+
+      expect(pushEventGroupMock).toHaveBeenCalledTimes(1);
+      expect(pushEventGroupMock).toHaveBeenCalledWith(...eventGroup);
+
+      expect(response).toStrictEqual({
+        events: [
+          { event: pikachuLeveledUpEvent },
+          { event: charizardLeveledUpEvent },
+        ],
+      });
+    });
+
+    it('returns the next aggregate if event is initial event', async () => {
+      pushEventGroupMock.mockResolvedValue({
+        events: [pikachuAppearedEvent, charizardLeveledUpEvent],
+      });
+
+      const eventGroup = [
+        new GroupedEvent({
+          event: pikachuLeveledUpEvent,
+          eventStore: pokemonsEventStore,
+          eventStorageAdapter: storageAdapterMock,
+        }),
+        new GroupedEvent({
+          event: charizardLeveledUpEvent,
+          eventStorageAdapter: storageAdapterMock,
+        }),
+      ] as const;
+
+      const response = await EventStore.pushEventGroup(...eventGroup);
+
+      expect(response.events[0].nextAggregate).toStrictEqual(
+        pokemonsEventStore.buildAggregate([pikachuAppearedEvent]),
+      );
+    });
+
+    it('returns the next aggregate if prev aggregate has been provided', async () => {
+      pushEventGroupMock.mockResolvedValue({
+        events: [pikachuCatchedEvent, charizardLeveledUpEvent],
+      });
+
+      const eventGroup = [
+        new GroupedEvent({
+          event: pikachuCatchedEvent,
+          prevAggregate: pokemonsEventStore.buildAggregate([
+            pikachuAppearedEvent,
+          ]),
+          eventStore: pokemonsEventStore,
+          eventStorageAdapter: storageAdapterMock,
+        }),
+        new GroupedEvent({
+          event: charizardLeveledUpEvent,
+          eventStorageAdapter: storageAdapterMock,
+        }),
+      ] as const;
+
+      const response = await EventStore.pushEventGroup(...eventGroup);
+
+      expect(response.events[0].nextAggregate).toStrictEqual(
+        pokemonsEventStore.buildAggregate([
+          pikachuAppearedEvent,
+          pikachuCatchedEvent,
+        ]),
+      );
     });
   });
 
