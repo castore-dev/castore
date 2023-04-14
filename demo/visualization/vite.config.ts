@@ -3,21 +3,16 @@ import { defineConfig, loadEnv } from 'vite';
 import svgrPlugin from 'vite-plugin-svgr';
 import tsconfigPaths from 'vite-tsconfig-paths';
 
-const getEnvWithProcessPrefix = (mode: string): Record<string, string> =>
-  Object.entries(loadEnv(mode, process.cwd())).reduce(
-    (prev, [key, val]) => ({
-      ...prev,
-      ['process.env.' + key]: `"${val}"`,
-    }),
-    {},
-  );
+export default defineConfig(({ mode }) => {
+  const env = loadEnv(mode, process.cwd());
 
-export default defineConfig(({ mode }) => ({
-  define: getEnvWithProcessPrefix(mode),
-  plugins: [react(), tsconfigPaths(), svgrPlugin()],
-  resolve: {
-    alias: {
-      'react/jsx-runtime': 'react/jsx-runtime.js',
+  return {
+    base: env.VITE_PUBLIC_PATH,
+    plugins: [react(), tsconfigPaths(), svgrPlugin()],
+    resolve: {
+      alias: {
+        'react/jsx-runtime': 'react/jsx-runtime.js',
+      },
     },
-  },
-}));
+  };
+});
