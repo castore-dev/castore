@@ -14,6 +14,7 @@ const getEnvWithProcessPrefix = (mode: string): Record<string, string> =>
 
 export default defineConfig(({ mode }) => ({
   define: getEnvWithProcessPrefix(mode),
+  build: { base: process.env.PUBLIC_PATH },
   plugins: [react(), tsconfigPaths(), svgrPlugin()],
   resolve: {
     alias: {
