@@ -20,6 +20,7 @@ import {
   getLastSnapshotMock,
   putSnapshotMock,
   groupEventMock,
+  storageAdapterMock,
 } from './eventStore.fixtures.test';
 
 describe('event store', () => {
@@ -175,7 +176,10 @@ describe('event store', () => {
 
   describe('groupEvent', () => {
     groupEventMock.mockReturnValue(
-      new GroupedEvent({ event: pikachuLeveledUpEvent }),
+      new GroupedEvent({
+        event: pikachuLeveledUpEvent,
+        eventStorageAdapter: storageAdapterMock,
+      }),
     );
 
     it('calls the storage adapter groupEvent method', () => {

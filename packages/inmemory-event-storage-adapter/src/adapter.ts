@@ -77,7 +77,8 @@ export class InMemoryStorageAdapter implements StorageAdapter {
         resolve({ event });
       });
 
-    this.groupEvent = event => new GroupedEvent({ event });
+    this.groupEvent = event =>
+      new GroupedEvent({ event, eventStorageAdapter: this });
 
     this.getEvents = (
       aggregateId,

@@ -186,7 +186,8 @@ export class DynamoDbEventStorageAdapter implements StorageAdapter {
       return { event };
     };
 
-    this.groupEvent = event => new GroupedEvent({ event });
+    this.groupEvent = event =>
+      new GroupedEvent({ event, eventStorageAdapter: this });
 
     // eslint-disable-next-line complexity
     this.listAggregateIds = async ({
