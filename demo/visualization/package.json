@@ -1,6 +1,7 @@
 {
   "name": "@castore/demo-visualization",
   "scripts": {
+    "build": "rm -rf dist && vite build",
     "lint-fix": "yarn linter-base-config --fix",
     "lint-fix-all": "yarn lint-fix .",
     "linter-base-config": "eslint --ext=js,ts",

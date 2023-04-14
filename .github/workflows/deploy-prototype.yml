@@ -1,0 +1,33 @@
+name: Deploy prototype
+permissions:
+  contents: write
+concurrency: deploy_prototype
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+  #workflow_dispatch:
+  #workflow_run:
+  #  workflows: [🚀 Release to NPM]
+  #  types:
+  #    - completed
+jobs:
+  deploy-preprod:
+    runs-on: ubuntu-latest
+    env:
+      PUBLIC_PATH: /castore-demo-visualisation/
+    steps:
+      - name: Check out repository code
+        uses: actions/checkout@v3
+          with: # TO REMOVE
+            ref: ${{ github.event.pull_request.head.sha }} # TO REMOVE
+      - uses: actions/setup-node@v3
+        with:
+          node-version: '16'
+          cache: 'yarn'
+      - run: yarn install
+      - run: yarn nx run demo-visualization:build
+      - name: Deploy 🚀
+        uses: JamesIves/github-pages-deploy-action@v4.2.5
+        with:
+          branch: gh-pages # The branch the action should deploy to.
+          folder: dist # The folder the action should deploy.
