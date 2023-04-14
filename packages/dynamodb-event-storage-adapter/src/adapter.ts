@@ -42,6 +42,7 @@ export class DynamoDbEventStorageAdapter implements StorageAdapter {
   getEvents: StorageAdapter['getEvents'];
   getPushEventInput: (eventDetail: EventDetail) => PutItemCommandInput;
   pushEvent: StorageAdapter['pushEvent'];
+  pushEventGroup: StorageAdapter['pushEventGroup'];
   groupEvent: StorageAdapter['groupEvent'];
   listAggregateIds: StorageAdapter['listAggregateIds'];
 
@@ -185,6 +186,15 @@ export class DynamoDbEventStorageAdapter implements StorageAdapter {
 
       return { event };
     };
+
+    this.pushEventGroup = () =>
+      new Promise((_resolve, reject) =>
+        reject(
+          new Error(
+            'Event groups are not supported yet in DynamoDB event storage',
+          ),
+        ),
+      );
 
     this.groupEvent = event =>
       new GroupedEvent({ event, eventStorageAdapter: this });

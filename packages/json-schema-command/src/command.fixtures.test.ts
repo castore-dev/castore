@@ -12,6 +12,7 @@ import {
 import { JSONSchemaCommand } from './command';
 
 export const pushEventMock = vi.fn();
+export const pushEventGroupMock = vi.fn();
 export const groupEvent = vi.fn();
 export const getEventsMock = vi.fn();
 export const listAggregateIdsMock = vi.fn();
@@ -21,6 +22,7 @@ export const listSnapshotsMock = vi.fn();
 
 export const mockStorageAdapter: StorageAdapter = {
   pushEvent: pushEventMock,
+  pushEventGroup: pushEventGroupMock,
   groupEvent: groupEvent,
   getEvents: getEventsMock,
   listAggregateIds: listAggregateIdsMock,

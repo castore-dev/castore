@@ -1,3 +1,4 @@
+/* eslint-disable max-lines */
 import { EventDetail, GroupedEvent, StorageAdapter } from '@castore/core';
 
 import { InMemoryEventAlreadyExistsError } from './error';
@@ -24,6 +25,7 @@ const getInitialEventTimestamp = (
 export class InMemoryStorageAdapter implements StorageAdapter {
   getEvents: StorageAdapter['getEvents'];
   pushEvent: StorageAdapter['pushEvent'];
+  pushEventGroup: StorageAdapter['pushEventGroup'];
   groupEvent: StorageAdapter['groupEvent'];
   listAggregateIds: StorageAdapter['listAggregateIds'];
   putSnapshot: StorageAdapter['putSnapshot'];
@@ -76,6 +78,15 @@ export class InMemoryStorageAdapter implements StorageAdapter {
         events.push(event);
         resolve({ event });
       });
+
+    this.pushEventGroup = () =>
+      new Promise((_resolve, reject) =>
+        reject(
+          new Error(
+            'Event groups are not supported yet in InMemory event storage',
+          ),
+        ),
+      );
 
     this.groupEvent = event =>
       new GroupedEvent({ event, eventStorageAdapter: this });
