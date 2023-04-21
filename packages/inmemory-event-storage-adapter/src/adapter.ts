@@ -1,10 +1,28 @@
-import type { EventDetail, StorageAdapter } from '@castore/core';
+/* eslint-disable max-lines */
+import {
+  EventDetail,
+  GroupedEvent,
+  PushEventContext,
+  StorageAdapter,
+} from '@castore/core';
 
 import { InMemoryEventAlreadyExistsError } from './error';
 import {
   parseAppliedListAggregateIdsOptions,
   ParsedPageToken,
 } from './utils/parseAppliedListAggregateIdsOptions';
+
+class InMemoryGroupedEvent extends GroupedEvent {
+  constructor({
+    event,
+    eventStorageAdapter,
+  }: {
+    event: Omit<EventDetail, 'timestamp'>;
+    eventStorageAdapter: InMemoryStorageAdapter;
+  }) {
+    super({ event, eventStorageAdapter });
+  }
+}
 
 const getInitialEventTimestamp = (
   aggregateId: string,
@@ -24,6 +42,8 @@ const getInitialEventTimestamp = (
 export class InMemoryStorageAdapter implements StorageAdapter {
   getEvents: StorageAdapter['getEvents'];
   pushEvent: StorageAdapter['pushEvent'];
+  pushEventGroup: StorageAdapter['pushEventGroup'];
+  groupEvent: StorageAdapter['groupEvent'];
   listAggregateIds: StorageAdapter['listAggregateIds'];
   putSnapshot: StorageAdapter['putSnapshot'];
   getLastSnapshot: StorageAdapter['getLastSnapshot'];
@@ -75,6 +95,50 @@ export class InMemoryStorageAdapter implements StorageAdapter {
         events.push(event);
         resolve({ event });
       });
+
+    this.pushEventGroup = async (...groupedEvents) => {
+      groupedEvents.forEach((groupedEvent, groupedEventIndex) => {
+        if (!(groupedEvent instanceof InMemoryGroupedEvent)) {
+          throw new Error(
+            `Event group event #${groupedEventIndex} is not connected to a InMemoryEventStorageAdapter`,
+          );
+        }
+
+        if (groupedEvent.context === undefined) {
+          throw new Error(
+            `Event group event #${groupedEventIndex} misses context`,
+          );
+        }
+      });
+
+      const eventGroup: { event: EventDetail }[] = [];
+
+      for (const groupedEvent of groupedEvents) {
+        const { eventStorageAdapter, event, context } = groupedEvent;
+
+        try {
+          /**
+           * @debt feature "Create and use pushEventSync method just to be sure of the transaction"
+           */
+          const response = await eventStorageAdapter.pushEvent(
+            event,
+            context as PushEventContext,
+          );
+          eventGroup.push(response);
+        } catch (error) {
+          /**
+           * @debt feature "Actually rollback written events"
+           */
+          error;
+          throw error;
+        }
+      }
+
+      return { eventGroup };
+    };
+
+    this.groupEvent = event =>
+      new InMemoryGroupedEvent({ event, eventStorageAdapter: this });
 
     this.getEvents = (
       aggregateId,

@@ -1,4 +1,4 @@
-import { tuple } from '@castore/core';
+import { EventStore, tuple } from '@castore/core';
 import { JSONSchemaCommand } from '@castore/json-schema-command';
 
 import { pokemonsEventStore } from '~/pokemons';
@@ -41,9 +41,8 @@ export const catchPokemonCommand = new JSONSchemaCommand({
 
     const { version: trainerVersion } = trainerAggregate;
 
-    // TODO: Abstract transaction API
-    await Promise.all([
-      pokemonsStore.pushEvent({
+    await EventStore.pushEventGroup(
+      pokemonsStore.groupEvent({
         aggregateId: pokemonId,
         version: pokemonVersion + 1,
         type: 'CATCHED_BY_TRAINER',
@@ -51,7 +50,7 @@ export const catchPokemonCommand = new JSONSchemaCommand({
           trainerId,
         },
       }),
-      trainersStore.pushEvent({
+      trainersStore.groupEvent({
         aggregateId: trainerId,
         version: trainerVersion + 1,
         type: 'POKEMON_CATCHED',
@@ -59,6 +58,6 @@ export const catchPokemonCommand = new JSONSchemaCommand({
           pokemonId,
         },
       }),
-    ]);
+    );
   },
 });

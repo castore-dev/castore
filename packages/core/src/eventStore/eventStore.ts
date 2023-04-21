@@ -2,6 +2,7 @@
 import type { Aggregate } from '~/aggregate';
 import type { EventDetail } from '~/event/eventDetail';
 import type { EventType, EventTypesDetails } from '~/event/eventType';
+import type { GroupedEvent } from '~/event/groupedEvent';
 import type { StorageAdapter } from '~/storageAdapter';
 import type { $Contravariant } from '~/utils';
 
@@ -10,7 +11,10 @@ import { UndefinedStorageAdapterError } from './errors/undefinedStorageAdapter';
 import type {
   AggregateIdsLister,
   EventPusher,
+  EventGroupPusher,
+  EventGroupPusherResponse,
   EventsGetter,
+  EventGrouper,
   SideEffectsSimulator,
   AggregateGetter,
   AggregateSimulator,
@@ -34,6 +38,38 @@ export class EventStore<
   AGGREGATE extends Aggregate = ReturnType<REDUCER>,
   $AGGREGATE extends Aggregate = $Contravariant<AGGREGATE, Aggregate>,
 > {
+  static pushEventGroup: EventGroupPusher = async <
+    GROUPED_EVENTS extends [GroupedEvent, ...GroupedEvent[]],
+  >(
+    ...groupedEvents: GROUPED_EVENTS
+  ) => {
+    const [groupedEventsHead, ...groupedEventsTail] = groupedEvents;
+
+    const { eventGroup } =
+      await groupedEventsHead.eventStorageAdapter.pushEventGroup(
+        groupedEventsHead,
+        ...groupedEventsTail,
+      );
+
+    return {
+      eventGroup: eventGroup.map(({ event }, eventIndex) => {
+        const groupedEvent = groupedEvents[eventIndex];
+
+        let nextAggregate: Aggregate | undefined = undefined;
+        const prevAggregate = groupedEvent?.prevAggregate;
+
+        if (
+          (prevAggregate || event.version === 1) &&
+          groupedEvent?.eventStore !== undefined
+        ) {
+          nextAggregate = groupedEvent.eventStore.reduce(prevAggregate, event);
+        }
+
+        return { event, ...(nextAggregate ? { nextAggregate } : {}) };
+      }) as EventGroupPusherResponse<GROUPED_EVENTS>,
+    };
+  };
+
   _types?: {
     details: EVENT_DETAILS;
     aggregate: AGGREGATE;
@@ -51,6 +87,12 @@ export class EventStore<
 
   getEvents: EventsGetter<EVENT_DETAILS>;
   pushEvent: EventPusher<EVENT_DETAILS, $EVENT_DETAILS, AGGREGATE, $AGGREGATE>;
+  groupEvent: EventGrouper<
+    EVENT_DETAILS,
+    $EVENT_DETAILS,
+    AGGREGATE,
+    $AGGREGATE
+  >;
   listAggregateIds: AggregateIdsLister;
 
   buildAggregate: (
@@ -133,6 +175,23 @@ export class EventStore<
         event: event as unknown as EVENT_DETAILS,
         ...(nextAggregate ? { nextAggregate } : {}),
       };
+    };
+
+    this.groupEvent = (eventDetail, { prevAggregate } = {}) => {
+      const storageAdapter = this.getStorageAdapter();
+
+      const groupedEvent = storageAdapter.groupEvent(
+        eventDetail,
+      ) as GroupedEvent<EVENT_DETAILS, AGGREGATE>;
+
+      groupedEvent.eventStore = this;
+      groupedEvent.context = { eventStoreId: this.eventStoreId };
+
+      if (prevAggregate !== undefined) {
+        groupedEvent.prevAggregate = prevAggregate as unknown as AGGREGATE;
+      }
+
+      return groupedEvent;
     };
 
     this.listAggregateIds = options =>

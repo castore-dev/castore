@@ -1,6 +1,6 @@
-import { EventDetail } from 'event/eventDetail';
-
 import type { Aggregate } from '~/aggregate';
+import type { EventDetail } from '~/event/eventDetail';
+import type { GroupedEvent } from '~/event/groupedEvent';
 
 export type EventsQueryOptions = {
   minVersion?: number;
@@ -47,6 +47,10 @@ export interface StorageAdapter {
     eventDetail: Omit<EventDetail, 'timestamp'>,
     context: PushEventContext,
   ) => Promise<{ event: EventDetail }>;
+  pushEventGroup: (
+    ...groupedEvents: [GroupedEvent, ...GroupedEvent[]]
+  ) => Promise<{ eventGroup: { event: EventDetail }[] }>;
+  groupEvent: (eventDetail: Omit<EventDetail, 'timestamp'>) => GroupedEvent;
   listAggregateIds: (
     options?: ListAggregateIdsOptions,
   ) => Promise<ListAggregateIdsOutput>;

@@ -1,6 +1,7 @@
+/* eslint-disable max-lines */
 import type { EnhancedStore } from '@reduxjs/toolkit';
 
-import type { StorageAdapter } from '@castore/core';
+import { GroupedEvent, StorageAdapter } from '@castore/core';
 
 import {
   ReduxStoreEventAlreadyExistsError,
@@ -17,6 +18,8 @@ import {
 export class ReduxEventStorageAdapter implements StorageAdapter {
   getEvents: StorageAdapter['getEvents'];
   pushEvent: StorageAdapter['pushEvent'];
+  pushEventGroup: StorageAdapter['pushEventGroup'];
+  groupEvent: StorageAdapter['groupEvent'];
   listAggregateIds: StorageAdapter['listAggregateIds'];
   putSnapshot: StorageAdapter['putSnapshot'];
   getLastSnapshot: StorageAdapter['getLastSnapshot'];
@@ -40,13 +43,13 @@ export class ReduxEventStorageAdapter implements StorageAdapter {
     this.eventStoreId = eventStoreId;
     this.eventStoreSliceName = getEventStoreSliceName({ eventStoreId, prefix });
 
-    this.getEventStoreState = () => {
-      const eventStoreState = this.store.getState()[this.eventStoreSliceName];
+    this.getEventStoreState = (
+      eventStoreSliceName: string = this.eventStoreSliceName,
+    ) => {
+      const eventStoreState = this.store.getState()[eventStoreSliceName];
 
       if (eventStoreState === undefined)
-        throw new EventStoreReduxStateNotFoundError({
-          eventStoreSliceName: this.eventStoreSliceName,
-        });
+        throw new EventStoreReduxStateNotFoundError({ eventStoreSliceName });
 
       return eventStoreState;
     };
@@ -76,6 +79,18 @@ export class ReduxEventStorageAdapter implements StorageAdapter {
 
         resolve({ event });
       });
+
+    this.pushEventGroup = () =>
+      new Promise((_resolve, reject) =>
+        reject(
+          new Error(
+            'Event groups are not supported yet in Redux event storage',
+          ),
+        ),
+      );
+
+    this.groupEvent = event =>
+      new GroupedEvent({ event, eventStorageAdapter: this });
 
     this.getEvents = (
       aggregateId,
