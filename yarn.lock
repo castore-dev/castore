@@ -4216,12 +4216,14 @@ __metadata:
     "@babel/preset-env": ^7.16.11
     "@babel/preset-typescript": ^7.16.7
     "@castore/core": "workspace:"
+    "@types/lodash.omit": ^4.5.7
     "@types/node": ^17.0.29
     "@zerollup/ts-transform-paths": ^1.7.18
     babel-plugin-module-resolver: ^4.1.0
     concurrently: ^7.1.0
     dependency-cruiser: ^11.7.0
     eslint: ^8.14.0
+    lodash.omit: ^4.5.0
     mockdate: ^3.0.5
     prettier: ^2.6.2
     ts-node: ^10.7.0
@@ -6776,6 +6778,15 @@ __metadata:
   dependencies:
     "@types/lodash": "*"
   checksum: 09df5ca00d8866776038bf94658d30b4ea84bffe5f81c14c01568bcb6be692bf59f6ea093de2bb0afbb3f8e54ae96ebd97595f2838ab59b77865427ca77d391e
+  languageName: node
+  linkType: hard
+
+"@types/lodash.omit@npm:^4.5.7":
+  version: 4.5.7
+  resolution: "@types/lodash.omit@npm:4.5.7"
+  dependencies:
+    "@types/lodash": "*"
+  checksum: e30600de518e648f4e9590d9238506ceab561726ec2fe56b4ff29b17aa1e47cbf9188be259b7d606dfb2040998c778533ccc0c58f065cca44ab5a6dbc8b6e518
   languageName: node
   linkType: hard
 
@@ -12995,6 +13006,13 @@ __metadata:
   version: 4.6.2
   resolution: "lodash.merge@npm:4.6.2"
   checksum: ad580b4bdbb7ca1f7abf7e1bce63a9a0b98e370cf40194b03380a46b4ed799c9573029599caebc1b14e3f24b111aef72b96674a56cfa105e0f5ac70546cdc005
+  languageName: node
+  linkType: hard
+
+"lodash.omit@npm:^4.5.0":
+  version: 4.5.0
+  resolution: "lodash.omit@npm:4.5.0"
+  checksum: 434645e49fe84ab315719bd5a9a3a585a0f624aa4160bc09157dd041a414bcc287c15840365c1379476a3f3eda41fbe838976c3f7bdecbbf4c5478e86c471a30
   languageName: node
   linkType: hard
 
