@@ -1,7 +1,13 @@
 /* eslint-disable max-lines */
 import type { EnhancedStore } from '@reduxjs/toolkit';
 
-import { GroupedEvent, StorageAdapter } from '@castore/core';
+import {
+  GroupedEvent,
+  StorageAdapter,
+  EventDetail,
+  EventStoreContext,
+  Aggregate,
+} from '@castore/core';
 
 import {
   ReduxStoreEventAlreadyExistsError,
@@ -15,8 +21,56 @@ import {
   ParsedPageToken,
 } from './utils/parseAppliedListAggregateIdsOptions';
 
+type ReduxGroupedEvent<
+  EVENT_DETAILS extends EventDetail = EventDetail,
+  AGGREGATE extends Aggregate = Aggregate,
+> = GroupedEvent<EVENT_DETAILS, AGGREGATE> & {
+  eventStorageAdapter: ReduxEventStorageAdapter;
+};
+
+const hasReduxStorageAdapter = (
+  groupedEvent: GroupedEvent,
+): groupedEvent is ReduxGroupedEvent =>
+  groupedEvent.eventStorageAdapter instanceof ReduxEventStorageAdapter;
+
+const hasContext = (
+  groupedEvent: GroupedEvent,
+): groupedEvent is GroupedEvent & {
+  context: NonNullable<GroupedEvent['context']>;
+} => groupedEvent.context !== undefined;
+
+const parseGroupedEvents = (
+  ...groupedEvents: GroupedEvent[]
+): (ReduxGroupedEvent & {
+  context: NonNullable<GroupedEvent['context']>;
+})[] => {
+  const reduxGroupedEvents: (ReduxGroupedEvent & {
+    context: NonNullable<GroupedEvent['context']>;
+  })[] = [];
+
+  groupedEvents.forEach((groupedEvent, groupedEventIndex) => {
+    if (!hasReduxStorageAdapter(groupedEvent)) {
+      throw new Error(
+        `Event group event #${groupedEventIndex} is not connected to a ReduxEventStorageAdapter`,
+      );
+    }
+
+    if (!hasContext(groupedEvent)) {
+      throw new Error(`Event group event #${groupedEventIndex} misses context`);
+    }
+
+    reduxGroupedEvents.push(groupedEvent);
+  });
+
+  return reduxGroupedEvents;
+};
+
 export class ReduxEventStorageAdapter implements StorageAdapter {
   getEvents: StorageAdapter['getEvents'];
+  pushEventSync: (
+    eventDetail: EventDetail,
+    context: EventStoreContext,
+  ) => Awaited<ReturnType<StorageAdapter['pushEvent']>>;
   pushEvent: StorageAdapter['pushEvent'];
   pushEventGroup: StorageAdapter['pushEventGroup'];
   groupEvent: StorageAdapter['groupEvent'];
@@ -54,40 +108,75 @@ export class ReduxEventStorageAdapter implements StorageAdapter {
       return eventStoreState;
     };
 
-    this.pushEvent = async eventWithoutTimestamp =>
-      new Promise(resolve => {
-        const timestamp = new Date().toISOString();
-        const event = { ...eventWithoutTimestamp, timestamp };
-        const { aggregateId } = event;
+    this.pushEventSync = event => {
+      const { aggregateId } = event;
 
-        const eventStoreState = this.getEventStoreState();
+      const eventStoreState = this.getEventStoreState();
 
-        const events = eventStoreState.eventsByAggregateId[aggregateId] ?? [];
+      const events = eventStoreState.eventsByAggregateId[aggregateId] ?? [];
 
-        if (events.some(({ version }) => version === event.version)) {
-          throw new ReduxStoreEventAlreadyExistsError({
-            eventStoreId: this.eventStoreId,
-            aggregateId: event.aggregateId,
-            version: event.version,
-          });
-        }
-
-        this.store.dispatch({
-          type: `${this.eventStoreSliceName}/eventPushed`,
-          payload: event,
+      if (events.some(({ version }) => version === event.version)) {
+        throw new ReduxStoreEventAlreadyExistsError({
+          eventStoreId: this.eventStoreId,
+          aggregateId: event.aggregateId,
+          version: event.version,
         });
+      }
 
-        resolve({ event });
+      this.store.dispatch({
+        type: `${this.eventStoreSliceName}/eventPushed`,
+        payload: event,
       });
 
-    this.pushEventGroup = () =>
-      new Promise((_resolve, reject) =>
-        reject(
-          new Error(
-            'Event groups are not supported yet in Redux event storage',
-          ),
-        ),
-      );
+      return { event };
+    };
+
+    this.pushEvent = async (event, context) =>
+      new Promise(resolve => {
+        const timestamp = new Date().toISOString();
+        resolve(this.pushEventSync({ timestamp, ...event }, context));
+      });
+
+    this.pushEventGroup = async (...groupedEvents) =>
+      new Promise(resolve => {
+        const reduxGroupedEvents = parseGroupedEvents(...groupedEvents);
+
+        const responses: { event: EventDetail }[] = [];
+
+        const timestamp = new Date().toISOString();
+        for (const groupedEvent of reduxGroupedEvents) {
+          const { eventStorageAdapter, event, context } = groupedEvent;
+
+          try {
+            const response = eventStorageAdapter.pushEventSync(
+              { timestamp, ...event },
+              context,
+            );
+            responses.push(response);
+          } catch (error) {
+            [...reduxGroupedEvents]
+              .slice(0, responses.length)
+              // Revert it in reversed order
+              .reverse()
+              .forEach(groupedEventToRevert => {
+                const {
+                  eventStorageAdapter: eventToRevertStorageAdapter,
+                  event: eventToRevert,
+                } = groupedEventToRevert;
+                const { aggregateId, version } = eventToRevert;
+
+                eventToRevertStorageAdapter.store.dispatch({
+                  type: `${eventToRevertStorageAdapter.eventStoreSliceName}/eventReverted`,
+                  payload: { aggregateId, version },
+                });
+              });
+
+            throw error;
+          }
+        }
+
+        resolve({ eventGroup: responses });
+      });
 
     this.groupEvent = event =>
       new GroupedEvent({ event, eventStorageAdapter: this });

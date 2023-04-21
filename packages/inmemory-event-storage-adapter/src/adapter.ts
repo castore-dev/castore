@@ -28,13 +28,13 @@ const hasInMemoryStorageAdapter = (
 const hasContext = (
   groupedEvent: GroupedEvent,
 ): groupedEvent is GroupedEvent & {
-  context: NonNullable<InMemoryGroupedEvent['context']>;
+  context: NonNullable<GroupedEvent['context']>;
 } => groupedEvent.context !== undefined;
 
 const parseGroupedEvents = (
   ...groupedEvents: GroupedEvent[]
 ): (InMemoryGroupedEvent & {
-  context: NonNullable<InMemoryGroupedEvent['context']>;
+  context: NonNullable<GroupedEvent['context']>;
 })[] => {
   const inMemoryGroupedEvents: (InMemoryGroupedEvent & {
     context: NonNullable<InMemoryGroupedEvent['context']>;
