@@ -20,3 +20,8 @@ export type EventDetail<
   | (undefined extends PAYLOAD ? 'payload' : never)
   | (undefined extends METADATA ? 'metadata' : never)
 >;
+
+export type OmitTimestamp<EVENT_DETAILS extends EventDetail> =
+  EVENT_DETAILS extends infer EVENT_DETAIL
+    ? Omit<EVENT_DETAIL, 'timestamp'>
+    : never;

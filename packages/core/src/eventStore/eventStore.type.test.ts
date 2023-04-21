@@ -1,7 +1,7 @@
 import type { A } from 'ts-toolbelt';
 
 import type { Aggregate } from '~/aggregate';
-import type { EventDetail } from '~/event/eventDetail';
+import type { EventDetail, OmitTimestamp } from '~/event/eventDetail';
 import type { EventTypeDetail } from '~/event/eventType';
 import type { GroupedEvent } from '~/event/groupedEvent';
 import {
@@ -100,9 +100,9 @@ assertGetAggregateOutput;
 
 const assertPushEventInput1: A.Equals<
   Parameters<typeof pokemonsEventStore.pushEvent>[0],
-  | Omit<EventTypeDetail<typeof pokemonAppearedEvent>, 'timestamp'>
-  | Omit<EventTypeDetail<typeof pokemonCatchedEvent>, 'timestamp'>
-  | Omit<EventTypeDetail<typeof pokemonLeveledUpEvent>, 'timestamp'>
+  | OmitTimestamp<EventTypeDetail<typeof pokemonAppearedEvent>>
+  | OmitTimestamp<EventTypeDetail<typeof pokemonCatchedEvent>>
+  | OmitTimestamp<EventTypeDetail<typeof pokemonLeveledUpEvent>>
 > = 1;
 assertPushEventInput1;
 
@@ -125,9 +125,9 @@ assertPushEventOutput;
 
 const assertGroupEventInput1: A.Equals<
   Parameters<typeof pokemonsEventStore.groupEvent>[0],
-  | Omit<EventTypeDetail<typeof pokemonAppearedEvent>, 'timestamp'>
-  | Omit<EventTypeDetail<typeof pokemonCatchedEvent>, 'timestamp'>
-  | Omit<EventTypeDetail<typeof pokemonLeveledUpEvent>, 'timestamp'>
+  | OmitTimestamp<EventTypeDetail<typeof pokemonAppearedEvent>>
+  | OmitTimestamp<EventTypeDetail<typeof pokemonCatchedEvent>>
+  | OmitTimestamp<EventTypeDetail<typeof pokemonLeveledUpEvent>>
 > = 1;
 assertGroupEventInput1;
 

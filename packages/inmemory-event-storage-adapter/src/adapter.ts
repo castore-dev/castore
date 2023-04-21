@@ -1,6 +1,7 @@
 /* eslint-disable max-lines */
 import {
   EventDetail,
+  OmitTimestamp,
   GroupedEvent,
   PushEventContext,
   StorageAdapter,
@@ -17,7 +18,7 @@ class InMemoryGroupedEvent extends GroupedEvent {
     event,
     eventStorageAdapter,
   }: {
-    event: Omit<EventDetail, 'timestamp'>;
+    event: OmitTimestamp<EventDetail>;
     eventStorageAdapter: InMemoryStorageAdapter;
   }) {
     super({ event, eventStorageAdapter });
