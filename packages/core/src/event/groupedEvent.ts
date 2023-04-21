@@ -2,7 +2,7 @@ import type { Aggregate } from '~/aggregate';
 import type { EventStore } from '~/eventStore/eventStore';
 import type { StorageAdapter, PushEventContext } from '~/storageAdapter';
 
-import type { EventDetail } from './eventDetail';
+import type { EventDetail, OmitTimestamp } from './eventDetail';
 
 export class GroupedEvent<
   EVENT_DETAILS extends EventDetail = EventDetail,
@@ -12,9 +12,7 @@ export class GroupedEvent<
     details: EVENT_DETAILS;
     aggregate: AGGREGATE;
   };
-  event: EVENT_DETAILS extends infer EVENT_DETAIL
-    ? Omit<EVENT_DETAIL, 'timestamp'>
-    : never;
+  event: OmitTimestamp<EVENT_DETAILS>;
   context?: PushEventContext;
   prevAggregate?: AGGREGATE;
 
@@ -28,9 +26,7 @@ export class GroupedEvent<
     eventStorageAdapter,
     eventStore,
   }: {
-    event: EVENT_DETAILS extends infer EVENT_DETAIL
-      ? Omit<EVENT_DETAIL, 'timestamp'>
-      : never;
+    event: OmitTimestamp<EVENT_DETAILS>;
     context?: PushEventContext;
     prevAggregate?: AGGREGATE;
     eventStore?: EventStore;
