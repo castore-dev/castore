@@ -94,6 +94,7 @@ export class ReduxEventStorageAdapter implements StorageAdapter {
 
     this.getEvents = (
       aggregateId,
+      _,
       { minVersion, maxVersion, reverse, limit } = {},
     ) =>
       new Promise(resolve => {
@@ -120,10 +121,10 @@ export class ReduxEventStorageAdapter implements StorageAdapter {
         resolve({ events });
       });
 
-    this.listAggregateIds = ({
-      pageToken: inputPageToken,
-      ...inputOptions
-    } = {}) =>
+    this.listAggregateIds = (
+      _,
+      { pageToken: inputPageToken, ...inputOptions } = {},
+    ) =>
       new Promise(resolve => {
         const eventStoreState = this.getEventStoreState();
 

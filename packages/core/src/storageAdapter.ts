@@ -9,7 +9,7 @@ export type EventsQueryOptions = {
   reverse?: boolean;
 };
 
-export type PushEventContext = { eventStoreId?: string };
+export type EventStoreContext = { eventStoreId: string };
 
 export type ListAggregateIdsOptions = {
   limit?: number;
@@ -41,17 +41,19 @@ export type ListSnapshotsOptions = {
 export interface StorageAdapter {
   getEvents: (
     aggregateId: string,
+    context: EventStoreContext,
     options?: EventsQueryOptions,
   ) => Promise<{ events: EventDetail[] }>;
   pushEvent: (
     eventDetail: OmitTimestamp<EventDetail>,
-    context: PushEventContext,
+    context: EventStoreContext,
   ) => Promise<{ event: EventDetail }>;
   pushEventGroup: (
     ...groupedEvents: [GroupedEvent, ...GroupedEvent[]]
   ) => Promise<{ eventGroup: { event: EventDetail }[] }>;
   groupEvent: (eventDetail: OmitTimestamp<EventDetail>) => GroupedEvent;
   listAggregateIds: (
+    context: EventStoreContext,
     options?: ListAggregateIdsOptions,
   ) => Promise<ListAggregateIdsOutput>;
   putSnapshot: (aggregate: Aggregate) => Promise<void>;
