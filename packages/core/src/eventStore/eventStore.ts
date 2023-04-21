@@ -153,6 +153,7 @@ export class EventStore<
     this.getEvents = (aggregateId, queryOptions) =>
       this.getStorageAdapter().getEvents(
         aggregateId,
+        { eventStoreId: this.eventStoreId },
         queryOptions,
         /**
          * @debt feature "For the moment we just cast, we could implement validation + type guards at EventType level"
@@ -195,7 +196,10 @@ export class EventStore<
     };
 
     this.listAggregateIds = options =>
-      this.getStorageAdapter().listAggregateIds(options);
+      this.getStorageAdapter().listAggregateIds(
+        { eventStoreId: this.eventStoreId },
+        options,
+      );
 
     this.buildAggregate = (eventDetails, aggregate) =>
       eventDetails.reduce(this.reduce, aggregate) as AGGREGATE | undefined;

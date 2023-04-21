@@ -6,7 +6,7 @@ export type { EventDetail, OmitTimestamp } from './event/eventDetail';
 export type { StorageAdapter } from './storageAdapter';
 export type {
   EventsQueryOptions,
-  PushEventContext,
+  EventStoreContext,
   ListAggregateIdsOptions,
   ListAggregateIdsOutput,
 } from './storageAdapter';

@@ -3,7 +3,7 @@ import {
   Aggregate,
   EventDetail,
   GroupedEvent,
-  PushEventContext,
+  EventStoreContext,
   StorageAdapter,
 } from '@castore/core';
 
@@ -76,7 +76,7 @@ export class InMemoryStorageAdapter implements StorageAdapter {
   getEvents: StorageAdapter['getEvents'];
   pushEventSync: (
     eventDetail: EventDetail,
-    context: PushEventContext,
+    context: EventStoreContext,
   ) => Awaited<ReturnType<StorageAdapter['pushEvent']>>;
   pushEvent: StorageAdapter['pushEvent'];
   pushEventGroup: StorageAdapter['pushEventGroup'];
@@ -194,6 +194,7 @@ export class InMemoryStorageAdapter implements StorageAdapter {
 
     this.getEvents = (
       aggregateId,
+      _,
       { minVersion, maxVersion, reverse, limit } = {},
     ) =>
       new Promise(resolve => {
@@ -218,10 +219,10 @@ export class InMemoryStorageAdapter implements StorageAdapter {
         resolve({ events });
       });
 
-    this.listAggregateIds = ({
-      pageToken: inputPageToken,
-      ...inputOptions
-    } = {}) =>
+    this.listAggregateIds = (
+      _,
+      { pageToken: inputPageToken, ...inputOptions } = {},
+    ) =>
       new Promise(resolve => {
         const {
           limit,

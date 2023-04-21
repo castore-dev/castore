@@ -70,6 +70,7 @@ export class DynamoDbEventStorageAdapter implements StorageAdapter {
     // eslint-disable-next-line complexity
     this.getEvents = async (
       aggregateId,
+      _,
       { minVersion, maxVersion, reverse, limit } = {},
     ) => {
       const marshalledEvents: Record<string, AttributeValue>[] = [];
@@ -200,10 +201,10 @@ export class DynamoDbEventStorageAdapter implements StorageAdapter {
       new GroupedEvent({ event, eventStorageAdapter: this });
 
     // eslint-disable-next-line complexity
-    this.listAggregateIds = async ({
-      pageToken: inputPageToken,
-      ...inputOptions
-    } = {}) => {
+    this.listAggregateIds = async (
+      _,
+      { pageToken: inputPageToken, ...inputOptions } = {},
+    ) => {
       const aggregateIdsQueryCommandInput: QueryCommandInput = {
         TableName: this.getTableName(),
         KeyConditionExpression: '#isInitialEvent = :true',

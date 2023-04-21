@@ -72,7 +72,11 @@ describe('event store', () => {
       const response = await pokemonsEventStore.getEvents(pikachuId);
 
       expect(getEventsMock).toHaveBeenCalledTimes(1);
-      expect(getEventsMock).toHaveBeenCalledWith(pikachuId, undefined);
+      expect(getEventsMock).toHaveBeenCalledWith(
+        pikachuId,
+        { eventStoreId: pokemonsEventStore.eventStoreId },
+        undefined,
+      );
       expect(response).toStrictEqual({ events: pikachuEventsMocks });
     });
   });
@@ -82,7 +86,11 @@ describe('event store', () => {
       const response = await pokemonsEventStore.getAggregate(pikachuId);
 
       expect(getEventsMock).toHaveBeenCalledTimes(1);
-      expect(getEventsMock).toHaveBeenCalledWith(pikachuId, {});
+      expect(getEventsMock).toHaveBeenCalledWith(
+        pikachuId,
+        { eventStoreId: pokemonsEventStore.eventStoreId },
+        {},
+      );
       expect(response).toStrictEqual({
         aggregate: pikachuEventsMocks.reduce(
           pokemonsReducer,
@@ -99,7 +107,11 @@ describe('event store', () => {
       const response = await pokemonsEventStore.getExistingAggregate(pikachuId);
 
       expect(getEventsMock).toHaveBeenCalledTimes(1);
-      expect(getEventsMock).toHaveBeenCalledWith(pikachuId, {});
+      expect(getEventsMock).toHaveBeenCalledWith(
+        pikachuId,
+        { eventStoreId: pokemonsEventStore.eventStoreId },
+        {},
+      );
 
       expect(response).toStrictEqual({
         aggregate: pikachuEventsMocks.reduce(
@@ -331,13 +343,16 @@ describe('event store', () => {
       });
 
       expect(listAggregateIdsMock).toHaveBeenCalledTimes(1);
-      expect(listAggregateIdsMock).toHaveBeenCalledWith({
-        limit: limitMock,
-        pageToken: pageTokenMock,
-        initialEventAfter: initialEventAfterMock,
-        initialEventBefore: initialEventBeforeMock,
-        reverse: reverseMock,
-      });
+      expect(listAggregateIdsMock).toHaveBeenCalledWith(
+        { eventStoreId: pokemonsEventStore.eventStoreId },
+        {
+          limit: limitMock,
+          pageToken: pageTokenMock,
+          initialEventAfter: initialEventAfterMock,
+          initialEventBefore: initialEventBeforeMock,
+          reverse: reverseMock,
+        },
+      );
 
       expect(response).toStrictEqual({ aggregateIds: [pikachuId] });
     });
