@@ -11,7 +11,7 @@
     "linter-base-config": "eslint --ext=js,ts",
     "log": "env-cmd sls logs -t -f",
     "print": "env-cmd sls print",
-    "test": "yarn test-unit && test-type && yarn test-circular && yarn test-linter",
+    "test": "yarn test-type && yarn test-unit && yarn test-circular && yarn test-linter",
     "test-type": "tsc --noEmit --emitDeclarationOnly false",
     "test-unit": "yarn vitest run --passWithNoTests",
     "test-circular": "yarn depcruise --validate dependency-cruiser.js .",
