@@ -36,7 +36,7 @@
     "env-cmd": "^10.1.0",
     "esbuild": "^0.14.13",
     "eslint": "^8.14.0",
-    "json-schema-to-ts": "^2.5.4",
+    "json-schema-to-ts": "^2.7.2",
     "mockdate": "^3.0.5",
     "serverless": "^3.1.0",
     "serverless-esbuild": "^1.23.4",

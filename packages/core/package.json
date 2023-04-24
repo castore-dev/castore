@@ -37,7 +37,8 @@
     "watch": "rm -rf dist && concurrently 'yarn:package-* --watch'"
   },
   "dependencies": {
-    "@babel/runtime": "^7.18.3"
+    "@babel/runtime": "^7.18.3",
+    "ts-toolbelt": "^9.6.0"
   },
   "devDependencies": {
     "@babel/cli": "^7.17.6",
@@ -53,7 +54,6 @@
     "eslint": "^8.14.0",
     "prettier": "^2.6.2",
     "ts-node": "^10.7.0",
-    "ts-toolbelt": "^9.6.0",
     "ttypescript": "^1.5.13",
     "typescript": "^4.6.3",
     "vite-tsconfig-paths": "^4.0.3",

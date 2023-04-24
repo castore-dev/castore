@@ -44,7 +44,7 @@
     "concurrently": "^7.1.0",
     "dependency-cruiser": "^11.7.0",
     "eslint": "^8.14.0",
-    "json-schema-to-ts": "^2.5.4",
+    "json-schema-to-ts": "^2.7.2",
     "prettier": "^2.6.2",
     "ts-node": "^10.7.0",
     "ts-toolbelt": "^9.6.0",

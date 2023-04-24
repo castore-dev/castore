@@ -1,4 +1,4 @@
-import { EventDetail } from './eventDetail';
+import type { EventDetail } from './eventDetail';
 
 export class EventType<
   TYPE extends string = string,

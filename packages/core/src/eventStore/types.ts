@@ -1,5 +1,5 @@
 import type { Aggregate } from '~/aggregate';
-import type { EventDetail, OmitTimestamp } from '~/event/eventDetail';
+import type { EventDetail, OptionalTimestamp } from '~/event/eventDetail';
 import type { GroupedEvent } from '~/event/groupedEvent';
 import type {
   EventsQueryOptions,
@@ -34,7 +34,7 @@ export type EventPusher<
   AGGREGATE extends Aggregate,
   $AGGREGATE extends Aggregate,
 > = (
-  event: OmitTimestamp<$EVENT_DETAILS>,
+  event: OptionalTimestamp<$EVENT_DETAILS>,
   options?: { prevAggregate?: $AGGREGATE },
 ) => Promise<{ event: EVENT_DETAILS; nextAggregate?: AGGREGATE }>;
 
@@ -48,7 +48,7 @@ export type EventGrouper<
   AGGREGATE extends Aggregate,
   $AGGREGATE extends Aggregate,
 > = (
-  event: OmitTimestamp<$EVENT_DETAILS>,
+  event: OptionalTimestamp<$EVENT_DETAILS>,
   options?: { prevAggregate?: $AGGREGATE },
 ) => GroupedEvent<EVENT_DETAILS, AGGREGATE>;
 
