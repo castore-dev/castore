@@ -7,11 +7,9 @@ import { mockEventStore } from '@castore/test-tools';
 import { pokemonsEventStore } from '~/libs/eventStores/pokemons';
 import { trainersEventStore } from '~/libs/eventStores/trainers';
 
-describe('Commands - catchPokemon', () => {
-  const pikachuId = 'pikachu1';
-  const pikachuAppearedEvent: EventStoreEventsDetails<
-    typeof pokemonsEventStore
-  > = {
+const pikachuId = 'pikachu1';
+const pikachuAppearedEvent: EventStoreEventsDetails<typeof pokemonsEventStore> =
+  {
     aggregateId: pikachuId,
     version: 1,
     type: 'APPEARED',
@@ -19,20 +17,21 @@ describe('Commands - catchPokemon', () => {
     payload: { name: 'Pikachu', level: 42 },
     metadata: { trigger: 'random' },
   };
-  const pokemonsEventStoreMock = mockEventStore(pokemonsEventStore, [
-    pikachuAppearedEvent,
-  ]);
 
-  const ashId = 'ash';
-  const ashGameStartedEvent: EventStoreEventsDetails<
-    typeof trainersEventStore
-  > = {
+const ashId = 'ash';
+const ashGameStartedEvent: EventStoreEventsDetails<typeof trainersEventStore> =
+  {
     aggregateId: ashId,
     version: 1,
     type: 'GAME_STARTED',
     timestamp: '2021-01-01T00:00:00.000Z',
     payload: { trainerName: 'Ash Ketchum' },
   };
+
+describe('Commands - catchPokemon', () => {
+  const pokemonsEventStoreMock = mockEventStore(pokemonsEventStore, [
+    pikachuAppearedEvent,
+  ]);
   const trainersEventStoreMock = mockEventStore(trainersEventStore, [
     ashGameStartedEvent,
   ]);
