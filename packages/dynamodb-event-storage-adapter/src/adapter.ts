@@ -159,9 +159,11 @@ export class DynamoDbEventStorageAdapter implements StorageAdapter {
       };
     };
 
-    this.pushEvent = async (eventWithoutTimestamp, context) => {
-      const timestamp = new Date().toISOString();
-      const event = { ...eventWithoutTimestamp, timestamp };
+    this.pushEvent = async (eventWithOptTimestamp, context) => {
+      const event = {
+        timestamp: new Date().toISOString(),
+        ...eventWithOptTimestamp,
+      };
       const putEventCommand = new PutItemCommand(this.getPushEventInput(event));
 
       const { aggregateId, version } = event;

@@ -7,10 +7,10 @@
   "repository": "castore-dev/castore.git",
   "keywords": [
     "event",
+    "redux",
     "source",
     "store",
-    "typescript",
-    "redux"
+    "typescript"
   ],
   "publishConfig": {
     "access": "public"

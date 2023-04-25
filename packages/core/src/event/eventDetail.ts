@@ -1,4 +1,4 @@
-import { O } from 'ts-toolbelt';
+import type { O } from 'ts-toolbelt';
 
 export type EventDetail<
   TYPE extends string = string,
@@ -21,7 +21,9 @@ export type EventDetail<
   | (undefined extends METADATA ? 'metadata' : never)
 >;
 
-export type OmitTimestamp<EVENT_DETAILS extends EventDetail> =
+export type OptionalTimestamp<EVENT_DETAILS extends EventDetail> =
   EVENT_DETAILS extends infer EVENT_DETAIL
-    ? Omit<EVENT_DETAIL, 'timestamp'>
+    ? EVENT_DETAIL extends EventDetail
+      ? O.Optional<EVENT_DETAIL, 'timestamp'>
+      : never
     : never;

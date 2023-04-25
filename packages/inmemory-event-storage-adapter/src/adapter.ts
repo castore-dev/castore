@@ -36,6 +36,7 @@ const parseGroupedEvents = (
 ): (InMemoryGroupedEvent & {
   context: NonNullable<GroupedEvent['context']>;
 })[] => {
+  let timestamp: string | undefined;
   const inMemoryGroupedEvents: (InMemoryGroupedEvent & {
     context: NonNullable<InMemoryGroupedEvent['context']>;
   })[] = [];
@@ -49,6 +50,20 @@ const parseGroupedEvents = (
 
     if (!hasContext(groupedEvent)) {
       throw new Error(`Event group event #${groupedEventIndex} misses context`);
+    }
+
+    if (groupedEvent.event.timestamp !== undefined) {
+      if (timestamp === undefined) {
+        timestamp = groupedEvent.event.timestamp;
+      } else if (timestamp !== groupedEvent.event.timestamp) {
+        throw new Error(
+          `Event group event #${groupedEventIndex} has a different timestamp than the previous events`,
+        );
+      }
+    } else {
+      if (timestamp !== undefined) {
+        groupedEvent.event.timestamp = timestamp;
+      }
     }
 
     inMemoryGroupedEvents.push(groupedEvent);

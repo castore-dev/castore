@@ -1,8 +1,8 @@
 export type { Aggregate } from './aggregate';
 export { EventType } from './event/eventType';
-export { GroupedEvent } from './event/groupedEvent';
 export type { EventTypeDetail, EventTypesDetails } from './event/eventType';
-export type { EventDetail, OmitTimestamp } from './event/eventDetail';
+export { GroupedEvent } from './event/groupedEvent';
+export type { EventDetail, OptionalTimestamp } from './event/eventDetail';
 export type { StorageAdapter } from './storageAdapter';
 export type {
   EventsQueryOptions,

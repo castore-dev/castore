@@ -1,5 +1,5 @@
 import type { Aggregate } from '~/aggregate';
-import type { EventDetail, OmitTimestamp } from '~/event/eventDetail';
+import type { EventDetail, OptionalTimestamp } from '~/event/eventDetail';
 import type { GroupedEvent } from '~/event/groupedEvent';
 import type {
   EventsQueryOptions,
@@ -11,13 +11,13 @@ import type { $Contravariant } from '~/utils';
 export type Reducer<
   AGGREGATE extends Aggregate = Aggregate,
   EVENT_DETAIL extends EventDetail = EventDetail,
-  $EVENT_DETAIL extends EventDetail = $Contravariant<EVENT_DETAIL, EventDetail>,
-  $AGGREGATE extends Aggregate = $Contravariant<AGGREGATE, Aggregate>,
+  $EVENT_DETAIL = $Contravariant<EVENT_DETAIL, EventDetail>,
+  $AGGREGATE = $Contravariant<AGGREGATE, Aggregate>,
 > = (aggregate: $AGGREGATE, event: $EVENT_DETAIL) => AGGREGATE;
 
 export type SideEffectsSimulator<
   EVENT_DETAIL extends EventDetail,
-  $EVENT_DETAIL extends EventDetail = $Contravariant<EVENT_DETAIL, EventDetail>,
+  $EVENT_DETAIL = $Contravariant<EVENT_DETAIL, EventDetail>,
 > = (
   indexedEvents: Record<string, Omit<$EVENT_DETAIL, 'version'>>,
   event: $EVENT_DETAIL,
@@ -34,7 +34,9 @@ export type EventPusher<
   AGGREGATE extends Aggregate,
   $AGGREGATE extends Aggregate,
 > = (
-  event: OmitTimestamp<$EVENT_DETAILS>,
+  event: $EVENT_DETAILS extends EventDetail
+    ? OptionalTimestamp<$EVENT_DETAILS>
+    : $EVENT_DETAILS,
   options?: { prevAggregate?: $AGGREGATE },
 ) => Promise<{ event: EVENT_DETAILS; nextAggregate?: AGGREGATE }>;
 
@@ -44,11 +46,13 @@ export type AggregateIdsLister = (
 
 export type EventGrouper<
   EVENT_DETAILS extends EventDetail,
-  $EVENT_DETAILS extends EventDetail,
+  $EVENT_DETAILS,
   AGGREGATE extends Aggregate,
-  $AGGREGATE extends Aggregate,
+  $AGGREGATE,
 > = (
-  event: OmitTimestamp<$EVENT_DETAILS>,
+  event: $EVENT_DETAILS extends EventDetail
+    ? OptionalTimestamp<$EVENT_DETAILS>
+    : $EVENT_DETAILS,
   options?: { prevAggregate?: $AGGREGATE },
 ) => GroupedEvent<EVENT_DETAILS, AGGREGATE>;
 
@@ -104,10 +108,7 @@ export type AggregateGetter<
 
 export type SimulationOptions = { simulationDate?: string };
 
-export type AggregateSimulator<
-  $EVENT_DETAIL extends EventDetail,
-  AGGREGATE extends Aggregate,
-> = (
+export type AggregateSimulator<$EVENT_DETAIL, AGGREGATE extends Aggregate> = (
   events: $EVENT_DETAIL[],
   options?: SimulationOptions,
 ) => AGGREGATE | undefined;
