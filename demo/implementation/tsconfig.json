@@ -1,32 +1,22 @@
 {
   "extends": "../../tsconfig.json",
 
-  "include": ["./**/*.ts"],
   "compilerOptions": {
-    "lib": ["es2017"],
-    "removeComments": true,
-    "moduleResolution": "node",
-    "noUnusedLocals": true,
-    "noUnusedParameters": true,
-    "sourceMap": true,
-    "target": "es2017",
     "resolveJsonModule": true,
     "allowSyntheticDefaultImports": true,
-    "esModuleInterop": true,
-    "strict": true,
-    "skipLibCheck": true,
-    "baseUrl": ".",
     "composite": true,
     "preserveSymlinks": true,
     "plugins": [{ "transform": "@zerollup/ts-transform-paths" }],
-    "emitDeclarationOnly": true
+    "baseUrl": "."
   },
+  "include": ["./**/*.ts"],
   "references": [
     { "path": "../blueprint/tsconfig.build.json" },
     { "path": "../../packages/core/tsconfig.build.json" },
     {
       "path": "../../packages/dynamodb-event-storage-adapter/tsconfig.build.json"
-    }
+    },
+    { "path": "../../packages/test-tools/tsconfig.build.json" }
   ],
   "ts-node": {
     "files": true,

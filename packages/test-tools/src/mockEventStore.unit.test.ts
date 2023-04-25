@@ -1,5 +1,3 @@
-import MockDate from 'mockdate';
-
 import {
   pikachuAppearedEvent,
   pokemonsEventStore,
@@ -29,9 +27,7 @@ describe('mockEventStore', () => {
   });
 
   it('adds a a new event', async () => {
-    const { timestamp, ...event } = pikachuCatchedEvent;
-    MockDate.set(timestamp);
-    await mockedCounterEventStore.pushEvent(event);
+    await mockedCounterEventStore.pushEvent(pikachuCatchedEvent);
 
     expect(await mockedCounterEventStore.getEvents(pikachuId)).toStrictEqual({
       events: [pikachuAppearedEvent, pikachuCatchedEvent],

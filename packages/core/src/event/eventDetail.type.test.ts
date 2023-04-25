@@ -1,6 +1,6 @@
-import { A } from 'ts-toolbelt';
+import type { A } from 'ts-toolbelt';
 
-import { EventDetail } from './eventDetail';
+import type { EventDetail } from './eventDetail';
 
 const assertAnyEventDetail: A.Equals<
   EventDetail,

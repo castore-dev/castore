@@ -1,5 +1,5 @@
 import type { Aggregate } from '~/aggregate';
-import type { EventDetail, OmitTimestamp } from '~/event/eventDetail';
+import type { EventDetail, OptionalTimestamp } from '~/event/eventDetail';
 import type { GroupedEvent } from '~/event/groupedEvent';
 
 export type EventsQueryOptions = {
@@ -45,13 +45,13 @@ export interface StorageAdapter {
     options?: EventsQueryOptions,
   ) => Promise<{ events: EventDetail[] }>;
   pushEvent: (
-    eventDetail: OmitTimestamp<EventDetail>,
+    eventDetail: OptionalTimestamp<EventDetail>,
     context: EventStoreContext,
   ) => Promise<{ event: EventDetail }>;
   pushEventGroup: (
     ...groupedEvents: [GroupedEvent, ...GroupedEvent[]]
   ) => Promise<{ eventGroup: { event: EventDetail }[] }>;
-  groupEvent: (eventDetail: OmitTimestamp<EventDetail>) => GroupedEvent;
+  groupEvent: (eventDetail: OptionalTimestamp<EventDetail>) => GroupedEvent;
   listAggregateIds: (
     context: EventStoreContext,
     options?: ListAggregateIdsOptions,

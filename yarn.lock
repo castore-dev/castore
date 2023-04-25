@@ -4039,6 +4039,7 @@ __metadata:
     "@castore/core": "workspace:"
     "@castore/demo-blueprint": "workspace:"
     "@castore/dynamodb-event-storage-adapter": "workspace:"
+    "@castore/test-tools": "workspace:"
     "@middy/core": ^3.0.4
     "@middy/validator": ^3.0.4
     "@serverless/typescript": ^3.0.0
@@ -4050,10 +4051,12 @@ __metadata:
     esbuild: ^0.14.13
     eslint: ^8.14.0
     json-schema-to-ts: ^2.5.4
+    mockdate: ^3.0.5
     serverless: ^3.1.0
     serverless-esbuild: ^1.23.4
     source-map-support: ^0.5.19
     typescript: ^4.6.3
+    vitest: ^0.26.2
   languageName: unknown
   linkType: soft
 
@@ -4075,7 +4078,7 @@ __metadata:
     react: ^17.0.2
     react-dom: ^17.0.2
     rollup-plugin-visualizer: ^5.6.0
-    typescript: ^4.5.5
+    typescript: ^4.6.3
     uuid: ^9.0.0
     vite: ^2.9.12
     vite-plugin-svgr: ^2.1.0
@@ -4098,6 +4101,7 @@ __metadata:
     "@castore/core": "workspace:"
     "@castore/demo-blueprint": "workspace:"
     "@serverless/typescript": ^3.15.2
+    "@types/lodash.omit": ^4.5.7
     "@types/node": ^17.0.29
     "@zerollup/ts-transform-paths": ^1.7.18
     aws-sdk-client-mock: ^2.1.1
@@ -4105,6 +4109,7 @@ __metadata:
     concurrently: ^7.1.0
     dependency-cruiser: ^11.7.0
     eslint: ^8.14.0
+    lodash.omit: ^4.5.0
     mockdate: ^3.0.5
     prettier: ^2.6.2
     ts-node: ^10.7.0
@@ -4404,7 +4409,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@castore/test-tools@workspace:packages/test-tools":
+"@castore/test-tools@workspace:, @castore/test-tools@workspace:packages/test-tools":
   version: 0.0.0-use.local
   resolution: "@castore/test-tools@workspace:packages/test-tools"
   dependencies:
@@ -4422,7 +4427,6 @@ __metadata:
     concurrently: ^7.1.0
     dependency-cruiser: ^11.7.0
     eslint: ^8.14.0
-    mockdate: ^3.0.5
     prettier: ^2.6.2
     ts-node: ^10.7.0
     ttypescript: ^1.5.13
@@ -12612,26 +12616,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"json-schema-to-ts@npm:^2.5.4":
-  version: 2.5.4
-  resolution: "json-schema-to-ts@npm:2.5.4"
-  dependencies:
-    "@types/json-schema": ^7.0.9
-    ts-algebra: ^1.1.1
-    ts-toolbelt: ^9.6.0
-  checksum: 722239a1a45a9bfb1d174d2d6f667d042f9bfa8b84ea65cc2c806c7e4f0359854aaaf569bd07d782a056ef3b8345cf1451f8adaeb1c6cb5a1281dad6355eb1c1
-  languageName: node
-  linkType: hard
-
-"json-schema-to-ts@npm:^2.6.2":
-  version: 2.6.2
-  resolution: "json-schema-to-ts@npm:2.6.2"
+"json-schema-to-ts@npm:^2.5.4, json-schema-to-ts@npm:^2.6.2":
+  version: 2.8.0
+  resolution: "json-schema-to-ts@npm:2.8.0"
   dependencies:
     "@babel/runtime": ^7.18.3
     "@types/json-schema": ^7.0.9
-    ts-algebra: ^1.1.1
-    ts-toolbelt: ^9.6.0
-  checksum: e408f8d3d32dda1a001f194cf5514fea7ef0a4dc4ed4f5448b9ea02df3a071119a0517aaffb639de725f4a12102406dfdf7743455e0e30317e231bb551362039
+    ts-algebra: ^1.2.0
+  checksum: 2fe3e5aa894268eb2cc5a79b8a734f3850b78099d9099f3591006aba2e421f3f21644936be485ed855cca281045e64214b4ba6ca56a7dfa562633736e9c3e468
   languageName: node
   linkType: hard
 
@@ -16506,12 +16498,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ts-algebra@npm:^1.1.1":
-  version: 1.1.1
-  resolution: "ts-algebra@npm:1.1.1"
-  dependencies:
-    ts-toolbelt: ^9.6.0
-  checksum: 29fe27215863520377a94a14ccf1e78e921be6a5c514a0a8250dab09e325b006a9571ef1f366875d58e495b59ba880620718a1dd38b6af598cc6ea6de82d4f66
+"ts-algebra@npm:^1.2.0":
+  version: 1.2.0
+  resolution: "ts-algebra@npm:1.2.0"
+  checksum: 471d3a049dbceadf2355f980e4d0a4cba413b50e66f0c8fb5eece876c238f7d2a270e1c85aa9ebd04349ae70335715f8e6d87338fd8cf755d12e285e884b3d91
   languageName: node
   linkType: hard
 
@@ -16786,16 +16776,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"typescript@npm:^4.5.5":
-  version: 4.7.4
-  resolution: "typescript@npm:4.7.4"
-  bin:
-    tsc: bin/tsc
-    tsserver: bin/tsserver
-  checksum: 5750181b1cd7e6482c4195825547e70f944114fb47e58e4aa7553e62f11b3f3173766aef9c281783edfd881f7b8299cf35e3ca8caebe73d8464528c907a164df
-  languageName: node
-  linkType: hard
-
 "typescript@patch:typescript@^4.4.3#~builtin<compat/typescript>, typescript@patch:typescript@^4.6.3#~builtin<compat/typescript>":
   version: 4.6.4
   resolution: "typescript@patch:typescript@npm%3A4.6.4#~builtin<compat/typescript>::version=4.6.4&hash=493e53"
@@ -16803,16 +16783,6 @@ __metadata:
     tsc: bin/tsc
     tsserver: bin/tsserver
   checksum: 8cff08bf66d9ecfbf9fcc5edde04a5a7923e6cac3b21d99b4e9a06973bf5bd7f9a83ec7eed24129c1b9e13fd861de8c1070110d4b9ce9f18ab57c6999e9c9a6f
-  languageName: node
-  linkType: hard
-
-"typescript@patch:typescript@^4.5.5#~builtin<compat/typescript>":
-  version: 4.7.4
-  resolution: "typescript@patch:typescript@npm%3A4.7.4#~builtin<compat/typescript>::version=4.7.4&hash=493e53"
-  bin:
-    tsc: bin/tsc
-    tsserver: bin/tsserver
-  checksum: 96d3030cb01143570567cb4f3a616b10df65f658f0e74e853e77a089a6a954e35c800be7db8b9bfe9a1ae05d9c2897e281359f65e4caa1caf266368e1c4febd3
   languageName: node
   linkType: hard
 

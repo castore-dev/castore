@@ -56,6 +56,36 @@ export const getCastoreReducers = ({
             aggregateEvents.push(event);
           }
         },
+        eventReverted: (
+          state,
+          action: {
+            type: string;
+            payload: Draft<{ aggregateId: string; version: number }>;
+          },
+        ) => {
+          const event = action.payload;
+          const { aggregateId, version } = event;
+
+          const aggregateEvents = state.eventsByAggregateId[aggregateId];
+          const revertedEvent = aggregateEvents?.pop();
+
+          // Check that version is indeed last pushed event
+          if (revertedEvent?.version !== version) {
+            if (revertedEvent !== undefined) {
+              aggregateEvents?.push(revertedEvent);
+            }
+
+            throw new Error('Unable to revert partially pushed event group.');
+          }
+
+          if (revertedEvent.version === 1) {
+            delete state.eventsByAggregateId[aggregateId];
+            state.aggregateIds = state.aggregateIds.filter(
+              ({ aggregateId: storedAggregateId }) =>
+                storedAggregateId !== aggregateId,
+            );
+          }
+        },
       },
     });
 
