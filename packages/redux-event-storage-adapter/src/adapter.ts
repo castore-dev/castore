@@ -40,16 +40,21 @@ const hasContext = (
 } => groupedEvent.context !== undefined;
 
 const parseGroupedEvents = (
-  ...groupedEvents: GroupedEvent[]
-): (ReduxGroupedEvent & {
-  context: NonNullable<GroupedEvent['context']>;
-})[] => {
-  let timestamp: string | undefined;
-  const reduxGroupedEvents: (ReduxGroupedEvent & {
+  ...groupedEventsInput: GroupedEvent[]
+): {
+  groupedEvents: (ReduxGroupedEvent & {
+    context: NonNullable<GroupedEvent['context']>;
+  })[];
+  timestamp?: string;
+} => {
+  let timestampInfos:
+    | { timestamp: string; groupedEventIndex: number }
+    | undefined;
+  const groupedEvents: (ReduxGroupedEvent & {
     context: NonNullable<GroupedEvent['context']>;
   })[] = [];
 
-  groupedEvents.forEach((groupedEvent, groupedEventIndex) => {
+  groupedEventsInput.forEach((groupedEvent, groupedEventIndex) => {
     if (!hasReduxStorageAdapter(groupedEvent)) {
       throw new Error(
         `Event group event #${groupedEventIndex} is not connected to a ReduxEventStorageAdapter`,
@@ -60,24 +65,41 @@ const parseGroupedEvents = (
       throw new Error(`Event group event #${groupedEventIndex} misses context`);
     }
 
-    if (groupedEvent.event.timestamp !== undefined) {
-      if (timestamp === undefined) {
-        timestamp = groupedEvent.event.timestamp;
-      } else if (timestamp !== groupedEvent.event.timestamp) {
-        throw new Error(
-          `Event group event #${groupedEventIndex} has a different timestamp than the previous events`,
-        );
-      }
-    } else {
-      if (timestamp !== undefined) {
-        groupedEvent.event.timestamp = timestamp;
-      }
+    if (
+      groupedEvent.event.timestamp !== undefined &&
+      timestampInfos !== undefined
+    ) {
+      timestampInfos = {
+        timestamp: groupedEvent.event.timestamp,
+        groupedEventIndex,
+      };
     }
 
-    reduxGroupedEvents.push(groupedEvent);
+    groupedEvents.push(groupedEvent);
   });
 
-  return reduxGroupedEvents;
+  if (timestampInfos !== undefined) {
+    /**
+     * @debt type "strangely, a second const is needed to keep the type as defined in forEach loop"
+     */
+    const _timestampInfos = timestampInfos;
+    groupedEvents.forEach((groupedEvent, groupedEventIndex) => {
+      if (groupedEvent.event.timestamp === undefined) {
+        groupedEvent.event.timestamp = _timestampInfos.timestamp;
+      } else if (groupedEvent.event.timestamp !== _timestampInfos.timestamp) {
+        throw new Error(
+          `Event group events #${groupedEventIndex} and #${_timestampInfos.groupedEventIndex} have different timestamps`,
+        );
+      }
+    });
+  }
+
+  return {
+    groupedEvents,
+    ...(timestampInfos !== undefined
+      ? { timestamp: timestampInfos.timestamp }
+      : {}),
+  };
 };
 
 export class ReduxEventStorageAdapter implements StorageAdapter {
@@ -152,14 +174,14 @@ export class ReduxEventStorageAdapter implements StorageAdapter {
         resolve(this.pushEventSync({ timestamp, ...event }, context));
       });
 
-    this.pushEventGroup = async (...groupedEvents) =>
+    this.pushEventGroup = async (...groupedEventsInput) =>
       new Promise(resolve => {
-        const reduxGroupedEvents = parseGroupedEvents(...groupedEvents);
+        const { groupedEvents, timestamp = new Date().toISOString() } =
+          parseGroupedEvents(...groupedEventsInput);
 
         const responses: { event: EventDetail }[] = [];
 
-        const timestamp = new Date().toISOString();
-        for (const groupedEvent of reduxGroupedEvents) {
+        for (const groupedEvent of groupedEvents) {
           const { eventStorageAdapter, event, context } = groupedEvent;
 
           try {
@@ -169,7 +191,7 @@ export class ReduxEventStorageAdapter implements StorageAdapter {
             );
             responses.push(response);
           } catch (error) {
-            [...reduxGroupedEvents]
+            [...groupedEvents]
               .slice(0, responses.length)
               // Revert it in reversed order
               .reverse()

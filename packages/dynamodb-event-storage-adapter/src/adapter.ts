@@ -4,11 +4,18 @@ import {
   PutItemCommandInput,
   QueryCommand,
   QueryCommandInput,
+  AttributeValue,
+  DynamoDBClient,
+  TransactWriteItemsCommand,
 } from '@aws-sdk/client-dynamodb';
-import type { AttributeValue, DynamoDBClient } from '@aws-sdk/client-dynamodb';
 import { Marshaller } from '@aws/dynamodb-auto-marshaller';
 
-import { EventDetail, GroupedEvent, StorageAdapter } from '@castore/core';
+import {
+  Aggregate,
+  EventDetail,
+  GroupedEvent,
+  StorageAdapter,
+} from '@castore/core';
 
 import { DynamoDBEventAlreadyExistsError } from './error';
 import {
@@ -36,7 +43,91 @@ export const EVENT_TABLE_INITIAL_EVENT_INDEX_NAME = 'initialEvents';
 
 const isConditionalCheckFailedException = (error: Error): boolean =>
   typeof error === 'object' &&
-  (error as { code?: unknown }).code === 'ConditionalCheckFailedException';
+  ((error as { code?: unknown }).code === 'ConditionalCheckFailedException' ||
+    (error as { errorType?: unknown }).errorType ===
+      'ConditionalCheckFailedException' ||
+    (error as { name?: unknown }).name === 'ConditionalCheckFailedException');
+
+type DynamoDbGroupedEvent<
+  EVENT_DETAILS extends EventDetail = EventDetail,
+  AGGREGATE extends Aggregate = Aggregate,
+> = GroupedEvent<EVENT_DETAILS, AGGREGATE> & {
+  eventStorageAdapter: DynamoDbEventStorageAdapter;
+};
+
+const hasDynamoDbEventStorageAdapter = (
+  groupedEvent: GroupedEvent,
+): groupedEvent is DynamoDbGroupedEvent =>
+  groupedEvent.eventStorageAdapter instanceof DynamoDbEventStorageAdapter;
+
+const hasContext = (
+  groupedEvent: GroupedEvent,
+): groupedEvent is GroupedEvent & {
+  context: NonNullable<GroupedEvent['context']>;
+} => groupedEvent.context !== undefined;
+
+const parseGroupedEvents = (
+  ...groupedEventsInput: GroupedEvent[]
+): {
+  groupedEvents: (DynamoDbGroupedEvent & {
+    context: NonNullable<GroupedEvent['context']>;
+  })[];
+  timestamp?: string;
+} => {
+  let timestampInfos:
+    | { timestamp: string; groupedEventIndex: number }
+    | undefined;
+  const groupedEvents: (DynamoDbGroupedEvent & {
+    context: NonNullable<DynamoDbGroupedEvent['context']>;
+  })[] = [];
+
+  groupedEventsInput.forEach((groupedEvent, groupedEventIndex) => {
+    if (!hasDynamoDbEventStorageAdapter(groupedEvent)) {
+      throw new Error(
+        `Event group event #${groupedEventIndex} is not connected to a DynamoDbEventStorageAdapter`,
+      );
+    }
+
+    if (!hasContext(groupedEvent)) {
+      throw new Error(`Event group event #${groupedEventIndex} misses context`);
+    }
+
+    if (
+      groupedEvent.event.timestamp !== undefined &&
+      timestampInfos !== undefined
+    ) {
+      timestampInfos = {
+        timestamp: groupedEvent.event.timestamp,
+        groupedEventIndex,
+      };
+    }
+
+    groupedEvents.push(groupedEvent);
+  });
+
+  if (timestampInfos !== undefined) {
+    /**
+     * @debt type "strangely, a second const is needed to keep the type as defined in forEach loop"
+     */
+    const _timestampInfos = timestampInfos;
+    groupedEvents.forEach((groupedEvent, groupedEventIndex) => {
+      if (groupedEvent.event.timestamp === undefined) {
+        groupedEvent.event.timestamp = _timestampInfos.timestamp;
+      } else if (groupedEvent.event.timestamp !== _timestampInfos.timestamp) {
+        throw new Error(
+          `Event group events #${groupedEventIndex} and #${_timestampInfos.groupedEventIndex} have different timestamps`,
+        );
+      }
+    });
+  }
+
+  return {
+    groupedEvents,
+    ...(timestampInfos !== undefined
+      ? { timestamp: timestampInfos.timestamp }
+      : {}),
+  };
+};
 
 export class DynamoDbEventStorageAdapter implements StorageAdapter {
   getEvents: StorageAdapter['getEvents'];
@@ -190,14 +281,34 @@ export class DynamoDbEventStorageAdapter implements StorageAdapter {
       return { event };
     };
 
-    this.pushEventGroup = () =>
-      new Promise((_resolve, reject) =>
-        reject(
-          new Error(
-            'Event groups are not supported yet in DynamoDB event storage',
-          ),
-        ),
+    this.pushEventGroup = async (...groupedEventsInput) => {
+      const { groupedEvents, timestamp = new Date().toISOString() } =
+        parseGroupedEvents(...groupedEventsInput);
+
+      const [firstGroupedEvent] = groupedEvents;
+      const dynamodbClient =
+        firstGroupedEvent.eventStorageAdapter.dynamoDbClient;
+
+      /**
+       * @debt bug "TODO: Make pushEventGroup throws an EventAlreadyExists error if transaction fails"
+       */
+      await dynamodbClient.send(
+        new TransactWriteItemsCommand({
+          TransactItems: groupedEvents.map(groupedEvent => ({
+            Put: groupedEvent.eventStorageAdapter.getPushEventInput({
+              timestamp,
+              ...groupedEvent.event,
+            }),
+          })),
+        }),
       );
+
+      return {
+        eventGroup: groupedEvents.map(({ event }) => ({
+          event: { timestamp, ...event },
+        })),
+      };
+    };
 
     this.groupEvent = event =>
       new GroupedEvent({ event, eventStorageAdapter: this });
