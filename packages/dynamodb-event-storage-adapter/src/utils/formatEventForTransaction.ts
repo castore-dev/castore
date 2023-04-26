@@ -12,6 +12,9 @@ export interface EventTransaction {
   dynamoDbClient: DynamoDBClient;
 }
 
+/**
+ * @deprecated Use `eventStore.groupEvent` instead
+ */
 export const formatEventForTransaction = <EVENT_STORE extends EventStore>(
   eventStore: EVENT_STORE,
   eventDetail: EventStoreEventsDetails<EVENT_STORE>,

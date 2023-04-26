@@ -6,6 +6,9 @@ import {
 
 import type { EventTransaction } from './formatEventForTransaction';
 
+/**
+ * @deprecated Use static method `EventStore.pushEventGroup` instead
+ */
 export const pushEventsTransaction = async (
   eventsTransaction: [EventTransaction, ...EventTransaction[]],
   options: { dynamoDbClient?: DynamoDBClient } = {},
