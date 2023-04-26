@@ -29,6 +29,7 @@ import {
   EVENT_TABLE_TIMESTAMP_KEY,
 } from './constants';
 import { DynamoDBEventAlreadyExistsError } from './error';
+import { isConditionalCheckFailedException } from './utils/isConditionalCheckFailed';
 import {
   parseAppliedListAggregateIdsOptions,
   ParsedPageToken,
@@ -38,13 +39,6 @@ export const marshallOptions: MarshallOptions = {
   convertEmptyValues: false,
   removeUndefinedValues: true,
 };
-
-const isConditionalCheckFailedException = (error: Error): boolean =>
-  typeof error === 'object' &&
-  ((error as { code?: unknown }).code === 'ConditionalCheckFailedException' ||
-    (error as { errorType?: unknown }).errorType ===
-      'ConditionalCheckFailedException' ||
-    (error as { name?: unknown }).name === 'ConditionalCheckFailedException');
 
 type DynamoDbGroupedEvent<
   EVENT_DETAILS extends EventDetail = EventDetail,
