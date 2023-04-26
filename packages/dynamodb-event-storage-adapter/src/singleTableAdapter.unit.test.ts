@@ -10,15 +10,15 @@ import { mockClient } from 'aws-sdk-client-mock';
 import omit from 'lodash.omit';
 import MockDate from 'mockdate';
 
-import { DynamoDbEventStorageAdapter } from './adapter';
 import {
   EVENT_TABLE_PK,
   EVENT_TABLE_SK,
-  EVENT_TABLE_IS_INITIAL_EVENT_KEY,
   EVENT_TABLE_INITIAL_EVENT_INDEX_NAME,
   EVENT_TABLE_TIMESTAMP_KEY,
+  EVENT_TABLE_EVENT_STORE_ID_KEY,
   marshallOptions,
 } from './constants';
+import { DynamoDbSingleTableEventStorageAdapter } from './singleTableAdapter';
 
 const dynamoDbClientMock = mockClient(DynamoDBClient);
 
@@ -30,11 +30,21 @@ const dynamoDbTableName = 'my-table-name';
 const eventStoreId = 'my-event-store';
 const aggregateId = 'my-aggregate-id';
 
+const prefixAggregateId = (evtStoreId: string, aggrId: string) =>
+  `${evtStoreId}#${aggrId}`;
+
+const prefixedAggregateId = prefixAggregateId(eventStoreId, aggregateId);
+
 const initialEvent = {
   aggregateId,
   version: 1,
   type: 'event-type-1',
   timestamp: timestampA,
+};
+const savedInitialEvent = {
+  ...initialEvent,
+  aggregateId: prefixedAggregateId,
+  [EVENT_TABLE_EVENT_STORE_ID_KEY]: eventStoreId,
 };
 
 const secondEvent = {
@@ -42,6 +52,10 @@ const secondEvent = {
   version: 2,
   type: 'event-type-2',
   timestamp: timestampB,
+};
+const savedSecondEvent = {
+  ...secondEvent,
+  aggregateId: prefixedAggregateId,
 };
 
 describe('DynamoDbEventStorageAdapter', () => {
@@ -51,7 +65,7 @@ describe('DynamoDbEventStorageAdapter', () => {
     dynamoDbClientMock.on(QueryCommand).resolves({});
   });
 
-  const adapter = new DynamoDbEventStorageAdapter({
+  const adapter = new DynamoDbSingleTableEventStorageAdapter({
     tableName: dynamoDbTableName,
     dynamoDbClient: dynamoDbClientMock as unknown as DynamoDBClient,
   });
@@ -66,7 +80,7 @@ describe('DynamoDbEventStorageAdapter', () => {
       expect(dynamoDbClientMock.call(0).args[0].input).toStrictEqual({
         ConditionExpression: 'attribute_not_exists(#version)',
         ExpressionAttributeNames: { '#version': EVENT_TABLE_SK },
-        Item: marshall(secondEvent, marshallOptions),
+        Item: marshall(savedSecondEvent, marshallOptions),
         TableName: dynamoDbTableName,
       });
     });
@@ -78,10 +92,7 @@ describe('DynamoDbEventStorageAdapter', () => {
       // https://github.com/m-radzikowski/aws-sdk-client-mock/issues/139
       expect(dynamoDbClientMock.calls()).toHaveLength(1);
       expect(dynamoDbClientMock.call(0).args[0].input).toMatchObject({
-        Item: marshall(
-          { ...initialEvent, [EVENT_TABLE_IS_INITIAL_EVENT_KEY]: 1 },
-          marshallOptions,
-        ),
+        Item: marshall(savedInitialEvent, marshallOptions),
       });
     });
 
@@ -102,7 +113,7 @@ describe('DynamoDbEventStorageAdapter', () => {
 
   describe('table name getter', () => {
     it('works with event bus name getters', async () => {
-      const adapterWithGetter = new DynamoDbEventStorageAdapter({
+      const adapterWithGetter = new DynamoDbSingleTableEventStorageAdapter({
         tableName: () => dynamoDbTableName,
         dynamoDbClient: dynamoDbClientMock as unknown as DynamoDBClient,
       });
@@ -119,8 +130,8 @@ describe('DynamoDbEventStorageAdapter', () => {
     it('sends a correct QueryCommand to dynamoDbClient to get aggregate events', async () => {
       const queryCommandOutputMock: QueryCommandOutput = {
         Items: [
-          marshall(initialEvent, marshallOptions),
-          marshall(secondEvent, marshallOptions),
+          marshall(savedInitialEvent, marshallOptions),
+          marshall(savedSecondEvent, marshallOptions),
         ],
         $metadata: {},
       };
@@ -136,7 +147,7 @@ describe('DynamoDbEventStorageAdapter', () => {
         ConsistentRead: true,
         ExpressionAttributeNames: { '#aggregateId': EVENT_TABLE_PK },
         ExpressionAttributeValues: marshall(
-          { ':aggregateId': aggregateId },
+          { ':aggregateId': prefixedAggregateId },
           marshallOptions,
         ),
         KeyConditionExpression: '#aggregateId = :aggregateId',
@@ -154,12 +165,12 @@ describe('DynamoDbEventStorageAdapter', () => {
       const lastEvaluatedKey = marshall(initialEvent, marshallOptions);
 
       const firstQueryCommandOutputMock: QueryCommandOutput = {
-        Items: [marshall(initialEvent, marshallOptions)],
+        Items: [marshall(savedInitialEvent, marshallOptions)],
         $metadata: {},
         LastEvaluatedKey: lastEvaluatedKey,
       };
       const secondQueryCommandOutputMock: QueryCommandOutput = {
-        Items: [marshall(secondEvent, marshallOptions)],
+        Items: [marshall(savedSecondEvent, marshallOptions)],
         $metadata: {},
       };
 
@@ -200,15 +211,9 @@ describe('DynamoDbEventStorageAdapter', () => {
       // regularly check if vitest matchers are available (toHaveReceivedCommandWith)
       // https://github.com/m-radzikowski/aws-sdk-client-mock/issues/139
       expect(dynamoDbClientMock.call(0).args[0].input).toMatchObject({
-        ExpressionAttributeNames: {
-          '#aggregateId': EVENT_TABLE_PK,
-          '#version': EVENT_TABLE_SK,
-        },
+        ExpressionAttributeNames: { '#version': EVENT_TABLE_SK },
         ExpressionAttributeValues: marshall(
-          {
-            ':aggregateId': aggregateId,
-            ':minVersion': 3,
-          },
+          { ':minVersion': 3 },
           marshallOptions,
         ),
         KeyConditionExpression:
@@ -222,15 +227,9 @@ describe('DynamoDbEventStorageAdapter', () => {
       // regularly check if vitest matchers are available (toHaveReceivedCommandWith)
       // https://github.com/m-radzikowski/aws-sdk-client-mock/issues/139
       expect(dynamoDbClientMock.call(0).args[0].input).toMatchObject({
-        ExpressionAttributeNames: {
-          '#aggregateId': EVENT_TABLE_PK,
-          '#version': EVENT_TABLE_SK,
-        },
+        ExpressionAttributeNames: { '#version': EVENT_TABLE_SK },
         ExpressionAttributeValues: marshall(
-          {
-            ':aggregateId': aggregateId,
-            ':maxVersion': 5,
-          },
+          { ':maxVersion': 5 },
           marshallOptions,
         ),
         KeyConditionExpression:
@@ -248,16 +247,9 @@ describe('DynamoDbEventStorageAdapter', () => {
       // regularly check if vitest matchers are available (toHaveReceivedCommandWith)
       // https://github.com/m-radzikowski/aws-sdk-client-mock/issues/139
       expect(dynamoDbClientMock.call(0).args[0].input).toMatchObject({
-        ExpressionAttributeNames: {
-          '#aggregateId': EVENT_TABLE_PK,
-          '#version': EVENT_TABLE_SK,
-        },
+        ExpressionAttributeNames: { '#version': EVENT_TABLE_SK },
         ExpressionAttributeValues: marshall(
-          {
-            ':aggregateId': aggregateId,
-            ':minVersion': 3,
-            ':maxVersion': 5,
-          },
+          { ':minVersion': 3, ':maxVersion': 5 },
           marshallOptions,
         ),
         KeyConditionExpression:
@@ -279,9 +271,9 @@ describe('DynamoDbEventStorageAdapter', () => {
   describe('list aggregate ids', () => {
     const lastEvaluatedKey = marshall(
       {
-        aggregateId,
+        aggregateId: prefixedAggregateId,
         version: 1,
-        isInitialEvent: 1,
+        eventStoreId,
         timestamp: timestampA,
       },
       marshallOptions,
@@ -291,8 +283,10 @@ describe('DynamoDbEventStorageAdapter', () => {
       const secondAggregateIdMock = 'my-second-aggregate-id';
       const queryCommandOutputMock: QueryCommandOutput = {
         Items: [
-          marshall({ aggregateId }),
-          marshall({ aggregateId: secondAggregateIdMock }),
+          marshall({ aggregateId: prefixedAggregateId }),
+          marshall({
+            aggregateId: prefixAggregateId(eventStoreId, secondAggregateIdMock),
+          }),
         ],
         $metadata: {},
       };
@@ -306,11 +300,14 @@ describe('DynamoDbEventStorageAdapter', () => {
       expect(dynamoDbClientMock.calls()).toHaveLength(1);
       expect(dynamoDbClientMock.call(0).args[0].input).toStrictEqual({
         ExpressionAttributeNames: {
-          '#isInitialEvent': EVENT_TABLE_IS_INITIAL_EVENT_KEY,
+          '#eventStoreId': EVENT_TABLE_EVENT_STORE_ID_KEY,
         },
-        ExpressionAttributeValues: marshall({ ':true': 1 }, marshallOptions),
+        ExpressionAttributeValues: marshall(
+          { ':eventStoreId': eventStoreId },
+          marshallOptions,
+        ),
         IndexName: EVENT_TABLE_INITIAL_EVENT_INDEX_NAME,
-        KeyConditionExpression: '#isInitialEvent = :true',
+        KeyConditionExpression: '#eventStoreId = :eventStoreId',
         TableName: dynamoDbTableName,
       });
 
@@ -346,7 +343,7 @@ describe('DynamoDbEventStorageAdapter', () => {
         ),
         IndexName: EVENT_TABLE_INITIAL_EVENT_INDEX_NAME,
         KeyConditionExpression:
-          '#isInitialEvent = :true and #timestamp >= :initialEventAfter',
+          '#eventStoreId = :eventStoreId and #timestamp >= :initialEventAfter',
       });
     });
 
@@ -368,7 +365,7 @@ describe('DynamoDbEventStorageAdapter', () => {
         ),
         IndexName: EVENT_TABLE_INITIAL_EVENT_INDEX_NAME,
         KeyConditionExpression:
-          '#isInitialEvent = :true and #timestamp <= :initialEventBefore',
+          '#eventStoreId = :eventStoreId and #timestamp <= :initialEventBefore',
       });
     });
 
@@ -393,7 +390,7 @@ describe('DynamoDbEventStorageAdapter', () => {
         ),
         IndexName: EVENT_TABLE_INITIAL_EVENT_INDEX_NAME,
         KeyConditionExpression:
-          '#isInitialEvent = :true and #timestamp between :initialEventAfter and :initialEventBefore',
+          '#eventStoreId = :eventStoreId and #timestamp between :initialEventAfter and :initialEventBefore',
       });
     });
 
@@ -409,7 +406,9 @@ describe('DynamoDbEventStorageAdapter', () => {
 
     it('returns a nextPageToken if query has LastEvaluatedKey', async () => {
       const queryCommandOutputMock: QueryCommandOutput = {
-        Items: [marshall({ aggregateId }, marshallOptions)],
+        Items: [
+          marshall({ aggregateId: prefixedAggregateId }, marshallOptions),
+        ],
         LastEvaluatedKey: lastEvaluatedKey,
         $metadata: {},
       };
@@ -466,7 +465,7 @@ describe('DynamoDbEventStorageAdapter', () => {
           marshallOptions,
         ),
         KeyConditionExpression:
-          '#isInitialEvent = :true and #timestamp between :initialEventAfter and :initialEventBefore',
+          '#eventStoreId = :eventStoreId and #timestamp between :initialEventAfter and :initialEventBefore',
       });
     });
 
@@ -505,7 +504,7 @@ describe('DynamoDbEventStorageAdapter', () => {
           marshallOptions,
         ),
         KeyConditionExpression:
-          '#isInitialEvent = :true and #timestamp between :initialEventAfter and :initialEventBefore',
+          '#eventStoreId = :eventStoreId and #timestamp between :initialEventAfter and :initialEventBefore',
       });
     });
   });
