@@ -10,15 +10,14 @@ import { mockClient } from 'aws-sdk-client-mock';
 import omit from 'lodash.omit';
 import MockDate from 'mockdate';
 
+import { DynamoDbEventStorageAdapter, marshallOptions } from './adapter';
 import {
-  DynamoDbEventStorageAdapter,
   EVENT_TABLE_PK,
   EVENT_TABLE_SK,
   EVENT_TABLE_IS_INITIAL_EVENT_KEY,
   EVENT_TABLE_INITIAL_EVENT_INDEX_NAME,
   EVENT_TABLE_TIMESTAMP_KEY,
-  marshallOptions,
-} from './adapter';
+} from './constants';
 
 const dynamoDbClientMock = mockClient(DynamoDBClient);
 
@@ -26,19 +25,19 @@ const timestampA = '2022-01-01T00:00:00.000Z';
 const timestampB = '2023-01-01T00:00:00.000Z';
 const timestampC = '2024-01-01T00:00:00.000Z';
 
-const dynamoDbTableNameMock = 'my-table-name';
-const eventStoreIdMock = 'my-event-store';
-const aggregateIdMock = 'my-aggregate-id';
+const dynamoDbTableName = 'my-table-name';
+const eventStoreId = 'my-event-store';
+const aggregateId = 'my-aggregate-id';
 
-const initialEventMock = {
-  aggregateId: aggregateIdMock,
+const initialEvent = {
+  aggregateId,
   version: 1,
   type: 'event-type-1',
   timestamp: timestampA,
 };
 
-const secondEventMock = {
-  aggregateId: aggregateIdMock,
+const secondEvent = {
+  aggregateId,
   version: 2,
   type: 'event-type-2',
   timestamp: timestampB,
@@ -52,15 +51,13 @@ describe('DynamoDbEventStorageAdapter', () => {
   });
 
   const adapter = new DynamoDbEventStorageAdapter({
-    tableName: dynamoDbTableNameMock,
+    tableName: dynamoDbTableName,
     dynamoDbClient: dynamoDbClientMock as unknown as DynamoDBClient,
   });
 
   describe('push event', () => {
     it('sends a correct PutItemCommand to dynamoDbClient to push new event', async () => {
-      await adapter.pushEvent(secondEventMock, {
-        eventStoreId: eventStoreIdMock,
-      });
+      await adapter.pushEvent(secondEvent, { eventStoreId });
 
       // regularly check if vitest matchers are available (toHaveReceivedCommandWith)
       // https://github.com/m-radzikowski/aws-sdk-client-mock/issues/139
@@ -68,17 +65,29 @@ describe('DynamoDbEventStorageAdapter', () => {
       expect(dynamoDbClientMock.call(0).args[0].input).toStrictEqual({
         ConditionExpression: 'attribute_not_exists(#version)',
         ExpressionAttributeNames: { '#version': EVENT_TABLE_SK },
-        Item: marshall(secondEventMock, marshallOptions),
-        TableName: dynamoDbTableNameMock,
+        Item: marshall(secondEvent, marshallOptions),
+        TableName: dynamoDbTableName,
+      });
+    });
+
+    it('sends a correct PutItemCommand to dynamoDbClient to push new initial event', async () => {
+      await adapter.pushEvent(initialEvent, { eventStoreId });
+
+      // regularly check if vitest matchers are available (toHaveReceivedCommandWith)
+      // https://github.com/m-radzikowski/aws-sdk-client-mock/issues/139
+      expect(dynamoDbClientMock.calls()).toHaveLength(1);
+      expect(dynamoDbClientMock.call(0).args[0].input).toMatchObject({
+        Item: marshall(
+          { ...initialEvent, [EVENT_TABLE_IS_INITIAL_EVENT_KEY]: 1 },
+          marshallOptions,
+        ),
       });
     });
 
     it('appends a timestamp if none has been provided', async () => {
       MockDate.set(timestampA);
 
-      await adapter.pushEvent(omit(secondEventMock, 'timestamp'), {
-        eventStoreId: eventStoreIdMock,
-      });
+      await adapter.pushEvent(omit(secondEvent, 'timestamp'), { eventStoreId });
 
       // regularly check if vitest matchers are available (toHaveReceivedCommandWith)
       // https://github.com/m-radzikowski/aws-sdk-client-mock/issues/139
@@ -88,31 +97,16 @@ describe('DynamoDbEventStorageAdapter', () => {
 
       MockDate.reset();
     });
-
-    it('sends a correct PutItemCommand to dynamoDbClient to push new initial event', async () => {
-      await adapter.pushEvent(initialEventMock, {
-        eventStoreId: eventStoreIdMock,
-      });
-
-      // regularly check if vitest matchers are available (toHaveReceivedCommandWith)
-      // https://github.com/m-radzikowski/aws-sdk-client-mock/issues/139
-      expect(dynamoDbClientMock.calls()).toHaveLength(1);
-      expect(dynamoDbClientMock.call(0).args[0].input).toMatchObject({
-        Item: marshall(initialEventMock, marshallOptions),
-      });
-    });
   });
 
   describe('table name getter', () => {
     it('works with event bus name getters', async () => {
       const adapterWithGetter = new DynamoDbEventStorageAdapter({
-        tableName: () => dynamoDbTableNameMock,
+        tableName: () => dynamoDbTableName,
         dynamoDbClient: dynamoDbClientMock as unknown as DynamoDBClient,
       });
 
-      await adapterWithGetter.pushEvent(initialEventMock, {
-        eventStoreId: eventStoreIdMock,
-      });
+      await adapterWithGetter.pushEvent(initialEvent, { eventStoreId });
 
       // regularly check if vitest matchers are available (toHaveReceivedCommandWith)
       // https://github.com/m-radzikowski/aws-sdk-client-mock/issues/139
@@ -124,17 +118,15 @@ describe('DynamoDbEventStorageAdapter', () => {
     it('sends a correct QueryCommand to dynamoDbClient to get aggregate events', async () => {
       const queryCommandOutputMock: QueryCommandOutput = {
         Items: [
-          marshall(initialEventMock, marshallOptions),
-          marshall(secondEventMock, marshallOptions),
+          marshall(initialEvent, marshallOptions),
+          marshall(secondEvent, marshallOptions),
         ],
         $metadata: {},
       };
 
       dynamoDbClientMock.on(QueryCommand).resolves(queryCommandOutputMock);
 
-      const { events } = await adapter.getEvents(aggregateIdMock, {
-        eventStoreId: eventStoreIdMock,
-      });
+      const { events } = await adapter.getEvents(aggregateId, { eventStoreId });
 
       // regularly check if vitest matchers are available (toHaveReceivedCommandWith)
       // https://github.com/m-radzikowski/aws-sdk-client-mock/issues/139
@@ -143,30 +135,30 @@ describe('DynamoDbEventStorageAdapter', () => {
         ConsistentRead: true,
         ExpressionAttributeNames: { '#aggregateId': EVENT_TABLE_PK },
         ExpressionAttributeValues: marshall(
-          { ':aggregateId': aggregateIdMock },
+          { ':aggregateId': aggregateId },
           marshallOptions,
         ),
         KeyConditionExpression: '#aggregateId = :aggregateId',
-        TableName: dynamoDbTableNameMock,
+        TableName: dynamoDbTableName,
       });
 
       // We have to serialize / deserialize because DynamoDB numbers are not regular numbers
       expect(JSON.parse(JSON.stringify(events))).toMatchObject([
-        initialEventMock,
-        secondEventMock,
+        initialEvent,
+        secondEvent,
       ]);
     });
 
     it('repeats queries if it is paginated', async () => {
-      const lastEvaluatedKey = marshall(initialEventMock, marshallOptions);
+      const lastEvaluatedKey = marshall(initialEvent, marshallOptions);
 
       const firstQueryCommandOutputMock: QueryCommandOutput = {
-        Items: [marshall(initialEventMock, marshallOptions)],
+        Items: [marshall(initialEvent, marshallOptions)],
         $metadata: {},
         LastEvaluatedKey: lastEvaluatedKey,
       };
       const secondQueryCommandOutputMock: QueryCommandOutput = {
-        Items: [marshall(secondEventMock, marshallOptions)],
+        Items: [marshall(secondEvent, marshallOptions)],
         $metadata: {},
       };
 
@@ -175,9 +167,7 @@ describe('DynamoDbEventStorageAdapter', () => {
         .resolvesOnce(firstQueryCommandOutputMock)
         .resolvesOnce(secondQueryCommandOutputMock);
 
-      const { events } = await adapter.getEvents(aggregateIdMock, {
-        eventStoreId: eventStoreIdMock,
-      });
+      const { events } = await adapter.getEvents(aggregateId, { eventStoreId });
 
       // regularly check if vitest matchers are available (toHaveReceivedCommandWith)
       // https://github.com/m-radzikowski/aws-sdk-client-mock/issues/139
@@ -188,17 +178,13 @@ describe('DynamoDbEventStorageAdapter', () => {
 
       // We have to serialize / deserialize because DynamoDB numbers are not regular numbers
       expect(JSON.parse(JSON.stringify(events))).toMatchObject([
-        initialEventMock,
-        secondEventMock,
+        initialEvent,
+        secondEvent,
       ]);
     });
 
     it('fetches events in reverse', async () => {
-      await adapter.getEvents(
-        aggregateIdMock,
-        { eventStoreId: eventStoreIdMock },
-        { reverse: true },
-      );
+      await adapter.getEvents(aggregateId, { eventStoreId }, { reverse: true });
 
       // regularly check if vitest matchers are available (toHaveReceivedCommandWith)
       // https://github.com/m-radzikowski/aws-sdk-client-mock/issues/139
@@ -208,11 +194,7 @@ describe('DynamoDbEventStorageAdapter', () => {
     });
 
     it('adds min version', async () => {
-      await adapter.getEvents(
-        aggregateIdMock,
-        { eventStoreId: eventStoreIdMock },
-        { minVersion: 3 },
-      );
+      await adapter.getEvents(aggregateId, { eventStoreId }, { minVersion: 3 });
 
       // regularly check if vitest matchers are available (toHaveReceivedCommandWith)
       // https://github.com/m-radzikowski/aws-sdk-client-mock/issues/139
@@ -223,7 +205,7 @@ describe('DynamoDbEventStorageAdapter', () => {
         },
         ExpressionAttributeValues: marshall(
           {
-            ':aggregateId': aggregateIdMock,
+            ':aggregateId': aggregateId,
             ':minVersion': 3,
           },
           marshallOptions,
@@ -234,11 +216,7 @@ describe('DynamoDbEventStorageAdapter', () => {
     });
 
     it('adds max version', async () => {
-      await adapter.getEvents(
-        aggregateIdMock,
-        { eventStoreId: eventStoreIdMock },
-        { maxVersion: 5 },
-      );
+      await adapter.getEvents(aggregateId, { eventStoreId }, { maxVersion: 5 });
 
       // regularly check if vitest matchers are available (toHaveReceivedCommandWith)
       // https://github.com/m-radzikowski/aws-sdk-client-mock/issues/139
@@ -249,7 +227,7 @@ describe('DynamoDbEventStorageAdapter', () => {
         },
         ExpressionAttributeValues: marshall(
           {
-            ':aggregateId': aggregateIdMock,
+            ':aggregateId': aggregateId,
             ':maxVersion': 5,
           },
           marshallOptions,
@@ -261,12 +239,9 @@ describe('DynamoDbEventStorageAdapter', () => {
 
     it('adds min & max versions', async () => {
       await adapter.getEvents(
-        aggregateIdMock,
-        { eventStoreId: eventStoreIdMock },
-        {
-          minVersion: 3,
-          maxVersion: 5,
-        },
+        aggregateId,
+        { eventStoreId },
+        { minVersion: 3, maxVersion: 5 },
       );
 
       // regularly check if vitest matchers are available (toHaveReceivedCommandWith)
@@ -278,7 +253,7 @@ describe('DynamoDbEventStorageAdapter', () => {
         },
         ExpressionAttributeValues: marshall(
           {
-            ':aggregateId': aggregateIdMock,
+            ':aggregateId': aggregateId,
             ':minVersion': 3,
             ':maxVersion': 5,
           },
@@ -290,11 +265,7 @@ describe('DynamoDbEventStorageAdapter', () => {
     });
 
     it('adds limit', async () => {
-      await adapter.getEvents(
-        aggregateIdMock,
-        { eventStoreId: eventStoreIdMock },
-        { limit: 2 },
-      );
+      await adapter.getEvents(aggregateId, { eventStoreId }, { limit: 2 });
 
       // regularly check if vitest matchers are available (toHaveReceivedCommandWith)
       // https://github.com/m-radzikowski/aws-sdk-client-mock/issues/139
@@ -307,7 +278,7 @@ describe('DynamoDbEventStorageAdapter', () => {
   describe('list aggregate ids', () => {
     const lastEvaluatedKey = marshall(
       {
-        aggregateId: aggregateIdMock,
+        aggregateId,
         version: 1,
         isInitialEvent: 1,
         timestamp: timestampA,
@@ -319,7 +290,7 @@ describe('DynamoDbEventStorageAdapter', () => {
       const secondAggregateIdMock = 'my-second-aggregate-id';
       const queryCommandOutputMock: QueryCommandOutput = {
         Items: [
-          marshall({ aggregateId: aggregateIdMock }),
+          marshall({ aggregateId }),
           marshall({ aggregateId: secondAggregateIdMock }),
         ],
         $metadata: {},
@@ -327,9 +298,7 @@ describe('DynamoDbEventStorageAdapter', () => {
 
       dynamoDbClientMock.on(QueryCommand).resolves(queryCommandOutputMock);
 
-      const { aggregateIds } = await adapter.listAggregateIds({
-        eventStoreId: eventStoreIdMock,
-      });
+      const { aggregateIds } = await adapter.listAggregateIds({ eventStoreId });
 
       // regularly check if vitest matchers are available (toHaveReceivedCommandWith)
       // https://github.com/m-radzikowski/aws-sdk-client-mock/issues/139
@@ -341,21 +310,15 @@ describe('DynamoDbEventStorageAdapter', () => {
         ExpressionAttributeValues: marshall({ ':true': 1 }, marshallOptions),
         IndexName: EVENT_TABLE_INITIAL_EVENT_INDEX_NAME,
         KeyConditionExpression: '#isInitialEvent = :true',
-        TableName: dynamoDbTableNameMock,
+        TableName: dynamoDbTableName,
       });
 
       // We have to serialize / deserialize because DynamoDB numbers are not regular numbers
-      expect(aggregateIds).toMatchObject([
-        aggregateIdMock,
-        secondAggregateIdMock,
-      ]);
+      expect(aggregateIds).toMatchObject([aggregateId, secondAggregateIdMock]);
     });
 
     it('adds limit option', async () => {
-      await adapter.listAggregateIds(
-        { eventStoreId: eventStoreIdMock },
-        { limit: 1 },
-      );
+      await adapter.listAggregateIds({ eventStoreId }, { limit: 1 });
 
       // regularly check if vitest matchers are available (toHaveReceivedCommandWith)
       // https://github.com/m-radzikowski/aws-sdk-client-mock/issues/139
@@ -366,7 +329,7 @@ describe('DynamoDbEventStorageAdapter', () => {
 
     it('filters aggregate ids with initial event date after timestamp', async () => {
       await adapter.listAggregateIds(
-        { eventStoreId: eventStoreIdMock },
+        { eventStoreId },
         { initialEventAfter: timestampA },
       );
 
@@ -388,7 +351,7 @@ describe('DynamoDbEventStorageAdapter', () => {
 
     it('filters aggregate ids with initial event date before timestamp', async () => {
       await adapter.listAggregateIds(
-        { eventStoreId: eventStoreIdMock },
+        { eventStoreId },
         { initialEventBefore: timestampA },
       );
 
@@ -410,11 +373,8 @@ describe('DynamoDbEventStorageAdapter', () => {
 
     it('filters aggregate ids with initial event date between timestamp', async () => {
       await adapter.listAggregateIds(
-        { eventStoreId: eventStoreIdMock },
-        {
-          initialEventAfter: timestampA,
-          initialEventBefore: timestampB,
-        },
+        { eventStoreId },
+        { initialEventAfter: timestampA, initialEventBefore: timestampB },
       );
 
       // regularly check if vitest matchers are available (toHaveReceivedCommandWith)
@@ -437,10 +397,7 @@ describe('DynamoDbEventStorageAdapter', () => {
     });
 
     it('adds reverse option', async () => {
-      await adapter.listAggregateIds(
-        { eventStoreId: eventStoreIdMock },
-        { reverse: true },
-      );
+      await adapter.listAggregateIds({ eventStoreId }, { reverse: true });
 
       // regularly check if vitest matchers are available (toHaveReceivedCommandWith)
       // https://github.com/m-radzikowski/aws-sdk-client-mock/issues/139
@@ -451,7 +408,7 @@ describe('DynamoDbEventStorageAdapter', () => {
 
     it('returns a nextPageToken if query has LastEvaluatedKey', async () => {
       const queryCommandOutputMock: QueryCommandOutput = {
-        Items: [marshall({ aggregateId: aggregateIdMock }, marshallOptions)],
+        Items: [marshall({ aggregateId }, marshallOptions)],
         LastEvaluatedKey: lastEvaluatedKey,
         $metadata: {},
       };
@@ -459,7 +416,7 @@ describe('DynamoDbEventStorageAdapter', () => {
       dynamoDbClientMock.on(QueryCommand).resolves(queryCommandOutputMock);
 
       const { nextPageToken } = await adapter.listAggregateIds(
-        { eventStoreId: eventStoreIdMock },
+        { eventStoreId },
         {
           limit: 1,
           initialEventAfter: timestampA,
@@ -479,7 +436,7 @@ describe('DynamoDbEventStorageAdapter', () => {
 
     it('applies next page token in the query', async () => {
       await adapter.listAggregateIds(
-        { eventStoreId: eventStoreIdMock },
+        { eventStoreId },
         {
           pageToken: JSON.stringify({
             limit: 1,
@@ -514,7 +471,7 @@ describe('DynamoDbEventStorageAdapter', () => {
 
     it('uses the input limit even if the page token has an embedded limit', async () => {
       await adapter.listAggregateIds(
-        { eventStoreId: eventStoreIdMock },
+        { eventStoreId },
         {
           limit: 2,
           initialEventAfter: timestampB,
