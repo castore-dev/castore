@@ -32,16 +32,21 @@ const hasContext = (
 } => groupedEvent.context !== undefined;
 
 const parseGroupedEvents = (
-  ...groupedEvents: GroupedEvent[]
-): (InMemoryGroupedEvent & {
-  context: NonNullable<GroupedEvent['context']>;
-})[] => {
-  let timestamp: string | undefined;
-  const inMemoryGroupedEvents: (InMemoryGroupedEvent & {
+  ...groupedEventsInput: GroupedEvent[]
+): {
+  groupedEvents: (InMemoryGroupedEvent & {
+    context: NonNullable<GroupedEvent['context']>;
+  })[];
+  timestamp?: string;
+} => {
+  let timestampInfos:
+    | { timestamp: string; groupedEventIndex: number }
+    | undefined;
+  const groupedEvents: (InMemoryGroupedEvent & {
     context: NonNullable<InMemoryGroupedEvent['context']>;
   })[] = [];
 
-  groupedEvents.forEach((groupedEvent, groupedEventIndex) => {
+  groupedEventsInput.forEach((groupedEvent, groupedEventIndex) => {
     if (!hasInMemoryStorageAdapter(groupedEvent)) {
       throw new Error(
         `Event group event #${groupedEventIndex} is not connected to a InMemoryEventStorageAdapter`,
@@ -52,24 +57,41 @@ const parseGroupedEvents = (
       throw new Error(`Event group event #${groupedEventIndex} misses context`);
     }
 
-    if (groupedEvent.event.timestamp !== undefined) {
-      if (timestamp === undefined) {
-        timestamp = groupedEvent.event.timestamp;
-      } else if (timestamp !== groupedEvent.event.timestamp) {
-        throw new Error(
-          `Event group event #${groupedEventIndex} has a different timestamp than the previous events`,
-        );
-      }
-    } else {
-      if (timestamp !== undefined) {
-        groupedEvent.event.timestamp = timestamp;
-      }
+    if (
+      groupedEvent.event.timestamp !== undefined &&
+      timestampInfos !== undefined
+    ) {
+      timestampInfos = {
+        timestamp: groupedEvent.event.timestamp,
+        groupedEventIndex,
+      };
     }
 
-    inMemoryGroupedEvents.push(groupedEvent);
+    groupedEvents.push(groupedEvent);
   });
 
-  return inMemoryGroupedEvents;
+  if (timestampInfos !== undefined) {
+    /**
+     * @debt type "strangely, a second const is needed to keep the type as defined in forEach loop"
+     */
+    const _timestampInfos = timestampInfos;
+    groupedEvents.forEach((groupedEvent, groupedEventIndex) => {
+      if (groupedEvent.event.timestamp === undefined) {
+        groupedEvent.event.timestamp = _timestampInfos.timestamp;
+      } else if (groupedEvent.event.timestamp !== _timestampInfos.timestamp) {
+        throw new Error(
+          `Event group events #${groupedEventIndex} and #${_timestampInfos.groupedEventIndex} have different timestamps`,
+        );
+      }
+    });
+  }
+
+  return {
+    groupedEvents,
+    ...(timestampInfos !== undefined
+      ? { timestamp: timestampInfos.timestamp }
+      : {}),
+  };
 };
 
 const getInitialEventTimestamp = (
@@ -150,14 +172,14 @@ export class InMemoryStorageAdapter implements StorageAdapter {
         resolve(this.pushEventSync({ timestamp, ...event }, context));
       });
 
-    this.pushEventGroup = async (...groupedEvents) =>
+    this.pushEventGroup = async (...groupedEventsInput) =>
       new Promise(resolve => {
-        const inMemoryGroupedEvents = parseGroupedEvents(...groupedEvents);
+        const { groupedEvents, timestamp = new Date().toISOString() } =
+          parseGroupedEvents(...groupedEventsInput);
 
         const responses: { event: EventDetail }[] = [];
 
-        const timestamp = new Date().toISOString();
-        for (const groupedEvent of inMemoryGroupedEvents) {
+        for (const groupedEvent of groupedEvents) {
           const { eventStorageAdapter, event, context } = groupedEvent;
 
           try {
@@ -167,7 +189,7 @@ export class InMemoryStorageAdapter implements StorageAdapter {
             );
             responses.push(response);
           } catch (error) {
-            [...inMemoryGroupedEvents]
+            [...groupedEvents]
               .slice(0, responses.length)
               // Revert it in reversed order
               .reverse()
