@@ -8,7 +8,11 @@ import {
   DynamoDBClient,
   TransactWriteItemsCommand,
 } from '@aws-sdk/client-dynamodb';
-import { Marshaller } from '@aws/dynamodb-auto-marshaller';
+import {
+  marshall,
+  unmarshall,
+  marshallOptions as MarshallOptions,
+} from '@aws-sdk/util-dynamodb';
 
 import {
   Aggregate,
@@ -23,15 +27,6 @@ import {
   ParsedPageToken,
 } from './utils/parseAppliedListAggregateIdsOptions';
 
-const marshaller = new Marshaller() as {
-  marshallItem: (
-    item: Record<string, unknown>,
-  ) => Record<string, AttributeValue>;
-  unmarshallItem: (
-    item: Record<string, AttributeValue>,
-  ) => Record<string, unknown>;
-};
-
 export const EVENT_TABLE_PK = 'aggregateId';
 export const EVENT_TABLE_SK = 'version';
 export const EVENT_TABLE_TIMESTAMP_KEY = 'timestamp';
@@ -40,6 +35,11 @@ export const EVENT_TABLE_PAYLOAD_KEY = 'payload';
 export const EVENT_TABLE_METADATA_KEY = 'metadata';
 export const EVENT_TABLE_IS_INITIAL_EVENT_KEY = 'isInitialEvent';
 export const EVENT_TABLE_INITIAL_EVENT_INDEX_NAME = 'initialEvents';
+
+export const marshallOptions: MarshallOptions = {
+  convertEmptyValues: false,
+  removeUndefinedValues: true,
+};
 
 const isConditionalCheckFailedException = (error: Error): boolean =>
   typeof error === 'object' &&
@@ -182,11 +182,14 @@ export class DynamoDbEventStorageAdapter implements StorageAdapter {
             ? { '#version': EVENT_TABLE_SK }
             : {}),
         },
-        ExpressionAttributeValues: marshaller.marshallItem({
-          ':aggregateId': aggregateId,
-          ...(maxVersion !== undefined ? { ':maxVersion': maxVersion } : {}),
-          ...(minVersion !== undefined ? { ':minVersion': minVersion } : {}),
-        }),
+        ExpressionAttributeValues: marshall(
+          {
+            ':aggregateId': aggregateId,
+            ...(maxVersion !== undefined ? { ':maxVersion': maxVersion } : {}),
+            ...(minVersion !== undefined ? { ':minVersion': minVersion } : {}),
+          },
+          marshallOptions,
+        ),
         ConsistentRead: true,
         ...(reverse !== undefined ? { ScanIndexForward: !reverse } : {}),
         ...(limit !== undefined ? { Limit: limit } : {}),
@@ -207,7 +210,7 @@ export class DynamoDbEventStorageAdapter implements StorageAdapter {
 
       return {
         events: marshalledEvents
-          .map(item => marshaller.unmarshallItem(item))
+          .map(item => unmarshall(item))
           .map((item): EventDetail => {
             const {
               aggregateId: evtAggregateId,
@@ -236,15 +239,18 @@ export class DynamoDbEventStorageAdapter implements StorageAdapter {
 
       return {
         TableName: this.getTableName(),
-        Item: marshaller.marshallItem({
-          aggregateId,
-          version,
-          type,
-          timestamp,
-          ...(payload !== undefined ? { payload } : {}),
-          ...(metadata !== undefined ? { metadata } : {}),
-          ...(version === 1 ? { isInitialEvent: 1 } : {}),
-        }),
+        Item: marshall(
+          {
+            aggregateId,
+            version,
+            type,
+            timestamp,
+            ...(payload !== undefined ? { payload } : {}),
+            ...(metadata !== undefined ? { metadata } : {}),
+            ...(version === 1 ? { isInitialEvent: 1 } : {}),
+          },
+          marshallOptions,
+        ),
         ExpressionAttributeNames: { '#version': EVENT_TABLE_SK },
         ConditionExpression: 'attribute_not_exists(#version)',
       };
@@ -324,9 +330,7 @@ export class DynamoDbEventStorageAdapter implements StorageAdapter {
         ExpressionAttributeNames: {
           '#isInitialEvent': EVENT_TABLE_IS_INITIAL_EVENT_KEY,
         },
-        ExpressionAttributeValues: marshaller.marshallItem({
-          ':true': 1,
-        }),
+        ExpressionAttributeValues: marshall({ ':true': 1 }, marshallOptions),
         IndexName: EVENT_TABLE_INITIAL_EVENT_INDEX_NAME,
       };
 
@@ -359,14 +363,17 @@ export class DynamoDbEventStorageAdapter implements StorageAdapter {
 
         aggregateIdsQueryCommandInput.ExpressionAttributeValues = {
           ...aggregateIdsQueryCommandInput.ExpressionAttributeValues,
-          ...marshaller.marshallItem({
-            ...(initialEventBefore !== undefined
-              ? { ':initialEventBefore': initialEventBefore }
-              : {}),
-            ...(initialEventAfter !== undefined
-              ? { ':initialEventAfter': initialEventAfter }
-              : {}),
-          }),
+          ...marshall(
+            {
+              ...(initialEventBefore !== undefined
+                ? { ':initialEventBefore': initialEventBefore }
+                : {}),
+              ...(initialEventAfter !== undefined
+                ? { ':initialEventAfter': initialEventAfter }
+                : {}),
+            },
+            marshallOptions,
+          ),
         };
       }
 
@@ -395,7 +402,7 @@ export class DynamoDbEventStorageAdapter implements StorageAdapter {
 
       return {
         aggregateIds: unmarshalledInitialEvents
-          .map(item => marshaller.unmarshallItem(item))
+          .map(item => unmarshall(item))
           .map(item => {
             const { aggregateId } = item as Pick<EventDetail, 'aggregateId'>;
 
