@@ -23,7 +23,7 @@ import {
   EVENT_TABLE_PK,
   EVENT_TABLE_SK,
   EVENT_TABLE_TIMESTAMP_KEY,
-  marshallOptions,
+  MARSHALL_OPTIONS,
 } from './constants';
 import { DynamoDBEventAlreadyExistsError } from './error';
 import { isConditionalCheckFailedException } from './utils/isConditionalCheckFailed';
@@ -172,7 +172,7 @@ export class DynamoDbEventStorageAdapter implements StorageAdapter {
             ...(maxVersion !== undefined ? { ':maxVersion': maxVersion } : {}),
             ...(minVersion !== undefined ? { ':minVersion': minVersion } : {}),
           },
-          marshallOptions,
+          MARSHALL_OPTIONS,
         ),
         ConsistentRead: true,
         ...(reverse !== undefined ? { ScanIndexForward: !reverse } : {}),
@@ -233,7 +233,7 @@ export class DynamoDbEventStorageAdapter implements StorageAdapter {
             ...(metadata !== undefined ? { metadata } : {}),
             ...(version === 1 ? { isInitialEvent: 1 } : {}),
           },
-          marshallOptions,
+          MARSHALL_OPTIONS,
         ),
         ExpressionAttributeNames: { '#version': EVENT_TABLE_SK },
         ConditionExpression: 'attribute_not_exists(#version)',
@@ -314,7 +314,7 @@ export class DynamoDbEventStorageAdapter implements StorageAdapter {
         ExpressionAttributeNames: {
           '#isInitialEvent': EVENT_TABLE_IS_INITIAL_EVENT_KEY,
         },
-        ExpressionAttributeValues: marshall({ ':true': 1 }, marshallOptions),
+        ExpressionAttributeValues: marshall({ ':true': 1 }, MARSHALL_OPTIONS),
         IndexName: EVENT_TABLE_INITIAL_EVENT_INDEX_NAME,
       };
 
@@ -356,7 +356,7 @@ export class DynamoDbEventStorageAdapter implements StorageAdapter {
                 ? { ':initialEventAfter': initialEventAfter }
                 : {}),
             },
-            marshallOptions,
+            MARSHALL_OPTIONS,
           ),
         };
       }

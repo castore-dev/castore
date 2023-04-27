@@ -17,7 +17,7 @@ import {
   EVENT_TABLE_IS_INITIAL_EVENT_KEY,
   EVENT_TABLE_INITIAL_EVENT_INDEX_NAME,
   EVENT_TABLE_TIMESTAMP_KEY,
-  marshallOptions,
+  MARSHALL_OPTIONS,
 } from './constants';
 
 const dynamoDbClientMock = mockClient(DynamoDBClient);
@@ -66,7 +66,7 @@ describe('DynamoDbEventStorageAdapter', () => {
       expect(dynamoDbClientMock.call(0).args[0].input).toStrictEqual({
         ConditionExpression: 'attribute_not_exists(#version)',
         ExpressionAttributeNames: { '#version': EVENT_TABLE_SK },
-        Item: marshall(secondEvent, marshallOptions),
+        Item: marshall(secondEvent, MARSHALL_OPTIONS),
         TableName: dynamoDbTableName,
       });
     });
@@ -80,7 +80,7 @@ describe('DynamoDbEventStorageAdapter', () => {
       expect(dynamoDbClientMock.call(0).args[0].input).toMatchObject({
         Item: marshall(
           { ...initialEvent, [EVENT_TABLE_IS_INITIAL_EVENT_KEY]: 1 },
-          marshallOptions,
+          MARSHALL_OPTIONS,
         ),
       });
     });
@@ -93,7 +93,7 @@ describe('DynamoDbEventStorageAdapter', () => {
       // regularly check if vitest matchers are available (toHaveReceivedCommandWith)
       // https://github.com/m-radzikowski/aws-sdk-client-mock/issues/139
       expect(dynamoDbClientMock.call(0).args[0].input).toMatchObject({
-        Item: marshall({ timestamp: timestampA }, marshallOptions),
+        Item: marshall({ timestamp: timestampA }, MARSHALL_OPTIONS),
       });
 
       MockDate.reset();
@@ -119,8 +119,8 @@ describe('DynamoDbEventStorageAdapter', () => {
     it('sends a correct QueryCommand to dynamoDbClient to get aggregate events', async () => {
       const queryCommandOutputMock: QueryCommandOutput = {
         Items: [
-          marshall(initialEvent, marshallOptions),
-          marshall(secondEvent, marshallOptions),
+          marshall(initialEvent, MARSHALL_OPTIONS),
+          marshall(secondEvent, MARSHALL_OPTIONS),
         ],
         $metadata: {},
       };
@@ -137,7 +137,7 @@ describe('DynamoDbEventStorageAdapter', () => {
         ExpressionAttributeNames: { '#aggregateId': EVENT_TABLE_PK },
         ExpressionAttributeValues: marshall(
           { ':aggregateId': aggregateId },
-          marshallOptions,
+          MARSHALL_OPTIONS,
         ),
         KeyConditionExpression: '#aggregateId = :aggregateId',
         TableName: dynamoDbTableName,
@@ -151,15 +151,15 @@ describe('DynamoDbEventStorageAdapter', () => {
     });
 
     it('repeats queries if it is paginated', async () => {
-      const lastEvaluatedKey = marshall(initialEvent, marshallOptions);
+      const lastEvaluatedKey = marshall(initialEvent, MARSHALL_OPTIONS);
 
       const firstQueryCommandOutputMock: QueryCommandOutput = {
-        Items: [marshall(initialEvent, marshallOptions)],
+        Items: [marshall(initialEvent, MARSHALL_OPTIONS)],
         $metadata: {},
         LastEvaluatedKey: lastEvaluatedKey,
       };
       const secondQueryCommandOutputMock: QueryCommandOutput = {
-        Items: [marshall(secondEvent, marshallOptions)],
+        Items: [marshall(secondEvent, MARSHALL_OPTIONS)],
         $metadata: {},
       };
 
@@ -209,7 +209,7 @@ describe('DynamoDbEventStorageAdapter', () => {
             ':aggregateId': aggregateId,
             ':minVersion': 3,
           },
-          marshallOptions,
+          MARSHALL_OPTIONS,
         ),
         KeyConditionExpression:
           '#aggregateId = :aggregateId and #version >= :minVersion',
@@ -231,7 +231,7 @@ describe('DynamoDbEventStorageAdapter', () => {
             ':aggregateId': aggregateId,
             ':maxVersion': 5,
           },
-          marshallOptions,
+          MARSHALL_OPTIONS,
         ),
         KeyConditionExpression:
           '#aggregateId = :aggregateId and #version <= :maxVersion',
@@ -258,7 +258,7 @@ describe('DynamoDbEventStorageAdapter', () => {
             ':minVersion': 3,
             ':maxVersion': 5,
           },
-          marshallOptions,
+          MARSHALL_OPTIONS,
         ),
         KeyConditionExpression:
           '#aggregateId = :aggregateId and #version between :minVersion and :maxVersion',
@@ -284,7 +284,7 @@ describe('DynamoDbEventStorageAdapter', () => {
         isInitialEvent: 1,
         timestamp: timestampA,
       },
-      marshallOptions,
+      MARSHALL_OPTIONS,
     );
 
     it('sends a correct QueryCommand to dynamoDbClient to list aggregate ids', async () => {
@@ -308,7 +308,7 @@ describe('DynamoDbEventStorageAdapter', () => {
         ExpressionAttributeNames: {
           '#isInitialEvent': EVENT_TABLE_IS_INITIAL_EVENT_KEY,
         },
-        ExpressionAttributeValues: marshall({ ':true': 1 }, marshallOptions),
+        ExpressionAttributeValues: marshall({ ':true': 1 }, MARSHALL_OPTIONS),
         IndexName: EVENT_TABLE_INITIAL_EVENT_INDEX_NAME,
         KeyConditionExpression: '#isInitialEvent = :true',
         TableName: dynamoDbTableName,
@@ -342,7 +342,7 @@ describe('DynamoDbEventStorageAdapter', () => {
         },
         ExpressionAttributeValues: marshall(
           { ':initialEventAfter': timestampA },
-          marshallOptions,
+          MARSHALL_OPTIONS,
         ),
         IndexName: EVENT_TABLE_INITIAL_EVENT_INDEX_NAME,
         KeyConditionExpression:
@@ -364,7 +364,7 @@ describe('DynamoDbEventStorageAdapter', () => {
         },
         ExpressionAttributeValues: marshall(
           { ':initialEventBefore': timestampA },
-          marshallOptions,
+          MARSHALL_OPTIONS,
         ),
         IndexName: EVENT_TABLE_INITIAL_EVENT_INDEX_NAME,
         KeyConditionExpression:
@@ -389,7 +389,7 @@ describe('DynamoDbEventStorageAdapter', () => {
             ':initialEventAfter': timestampA,
             ':initialEventBefore': timestampB,
           },
-          marshallOptions,
+          MARSHALL_OPTIONS,
         ),
         IndexName: EVENT_TABLE_INITIAL_EVENT_INDEX_NAME,
         KeyConditionExpression:
@@ -409,7 +409,7 @@ describe('DynamoDbEventStorageAdapter', () => {
 
     it('returns a nextPageToken if query has LastEvaluatedKey', async () => {
       const queryCommandOutputMock: QueryCommandOutput = {
-        Items: [marshall({ aggregateId }, marshallOptions)],
+        Items: [marshall({ aggregateId }, MARSHALL_OPTIONS)],
         LastEvaluatedKey: lastEvaluatedKey,
         $metadata: {},
       };
@@ -463,7 +463,7 @@ describe('DynamoDbEventStorageAdapter', () => {
             ':initialEventAfter': timestampA,
             ':initialEventBefore': timestampB,
           },
-          marshallOptions,
+          MARSHALL_OPTIONS,
         ),
         KeyConditionExpression:
           '#isInitialEvent = :true and #timestamp between :initialEventAfter and :initialEventBefore',
@@ -502,7 +502,7 @@ describe('DynamoDbEventStorageAdapter', () => {
             ':initialEventAfter': timestampB,
             ':initialEventBefore': timestampC,
           },
-          marshallOptions,
+          MARSHALL_OPTIONS,
         ),
         KeyConditionExpression:
           '#isInitialEvent = :true and #timestamp between :initialEventAfter and :initialEventBefore',
