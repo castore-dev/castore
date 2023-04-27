@@ -15,11 +15,12 @@ import {
   EventDetail,
   GroupedEvent,
   StorageAdapter,
+  EventStoreContext,
 } from '@castore/core';
 
 import {
+  EVENT_TABLE_EVENT_STORE_ID_KEY,
   EVENT_TABLE_INITIAL_EVENT_INDEX_NAME,
-  EVENT_TABLE_IS_INITIAL_EVENT_KEY,
   EVENT_TABLE_PK,
   EVENT_TABLE_SK,
   EVENT_TABLE_TIMESTAMP_KEY,
@@ -32,17 +33,29 @@ import {
   ParsedPageToken,
 } from './utils/parseAppliedListAggregateIdsOptions';
 
-type DynamoDbGroupedEvent<
+const prefixAggregateId = (eventStoreId: string, aggregateId: string): string =>
+  `${eventStoreId}#${aggregateId}`;
+
+const unprefixAggregateId = (
+  eventStoreId: string,
+  aggregateId: string,
+): string =>
+  aggregateId.startsWith(`${eventStoreId}#`)
+    ? aggregateId.slice(eventStoreId.length + 1)
+    : aggregateId;
+
+type DynamoDbSingleTableGroupedEvent<
   EVENT_DETAILS extends EventDetail = EventDetail,
   AGGREGATE extends Aggregate = Aggregate,
 > = GroupedEvent<EVENT_DETAILS, AGGREGATE> & {
-  eventStorageAdapter: DynamoDbEventStorageAdapter;
+  eventStorageAdapter: DynamoDbSingleTableEventStorageAdapter;
 };
 
-const hasDynamoDbEventStorageAdapter = (
+const hasDynamoDbSingleTableEventStorageAdapter = (
   groupedEvent: GroupedEvent,
-): groupedEvent is DynamoDbGroupedEvent =>
-  groupedEvent.eventStorageAdapter instanceof DynamoDbEventStorageAdapter;
+): groupedEvent is DynamoDbSingleTableGroupedEvent =>
+  groupedEvent.eventStorageAdapter instanceof
+  DynamoDbSingleTableEventStorageAdapter;
 
 const hasContext = (
   groupedEvent: GroupedEvent,
@@ -53,7 +66,7 @@ const hasContext = (
 const parseGroupedEvents = (
   ...groupedEventsInput: GroupedEvent[]
 ): {
-  groupedEvents: (DynamoDbGroupedEvent & {
+  groupedEvents: (DynamoDbSingleTableGroupedEvent & {
     context: NonNullable<GroupedEvent['context']>;
   })[];
   timestamp?: string;
@@ -61,12 +74,12 @@ const parseGroupedEvents = (
   let timestampInfos:
     | { timestamp: string; groupedEventIndex: number }
     | undefined;
-  const groupedEvents: (DynamoDbGroupedEvent & {
-    context: NonNullable<DynamoDbGroupedEvent['context']>;
+  const groupedEvents: (DynamoDbSingleTableGroupedEvent & {
+    context: NonNullable<DynamoDbSingleTableGroupedEvent['context']>;
   })[] = [];
 
   groupedEventsInput.forEach((groupedEvent, groupedEventIndex) => {
-    if (!hasDynamoDbEventStorageAdapter(groupedEvent)) {
+    if (!hasDynamoDbSingleTableEventStorageAdapter(groupedEvent)) {
       throw new Error(
         `Event group event #${groupedEventIndex} is not connected to a DynamoDbEventStorageAdapter`,
       );
@@ -113,9 +126,12 @@ const parseGroupedEvents = (
   };
 };
 
-export class DynamoDbEventStorageAdapter implements StorageAdapter {
+export class DynamoDbSingleTableEventStorageAdapter implements StorageAdapter {
   getEvents: StorageAdapter['getEvents'];
-  getPushEventInput: (eventDetail: EventDetail) => PutItemCommandInput;
+  getPushEventInput: (
+    eventDetail: EventDetail,
+    context: EventStoreContext,
+  ) => PutItemCommandInput;
   pushEvent: StorageAdapter['pushEvent'];
   pushEventGroup: StorageAdapter['pushEventGroup'];
   groupEvent: StorageAdapter['groupEvent'];
@@ -145,7 +161,7 @@ export class DynamoDbEventStorageAdapter implements StorageAdapter {
     // eslint-disable-next-line complexity
     this.getEvents = async (
       aggregateId,
-      _,
+      { eventStoreId },
       { minVersion, maxVersion, reverse, limit } = {},
     ) => {
       const marshalledEvents: Record<string, AttributeValue>[] = [];
@@ -168,7 +184,7 @@ export class DynamoDbEventStorageAdapter implements StorageAdapter {
         },
         ExpressionAttributeValues: marshall(
           {
-            ':aggregateId': aggregateId,
+            ':aggregateId': prefixAggregateId(eventStoreId, aggregateId),
             ...(maxVersion !== undefined ? { ':maxVersion': maxVersion } : {}),
             ...(minVersion !== undefined ? { ':minVersion': minVersion } : {}),
           },
@@ -206,7 +222,7 @@ export class DynamoDbEventStorageAdapter implements StorageAdapter {
             } = item as EventDetail;
 
             return {
-              aggregateId: evtAggregateId,
+              aggregateId: unprefixAggregateId(eventStoreId, evtAggregateId),
               version,
               type,
               timestamp,
@@ -217,21 +233,22 @@ export class DynamoDbEventStorageAdapter implements StorageAdapter {
       };
     };
 
-    this.getPushEventInput = event => {
+    this.getPushEventInput = (event, context) => {
       const { aggregateId, version, type, timestamp, payload, metadata } =
         event;
+      const { eventStoreId } = context;
 
       return {
         TableName: this.getTableName(),
         Item: marshall(
           {
-            aggregateId,
+            aggregateId: prefixAggregateId(eventStoreId, aggregateId),
             version,
             type,
             timestamp,
             ...(payload !== undefined ? { payload } : {}),
             ...(metadata !== undefined ? { metadata } : {}),
-            ...(version === 1 ? { isInitialEvent: 1 } : {}),
+            ...(version === 1 ? { eventStoreId } : {}),
           },
           MARSHALL_OPTIONS,
         ),
@@ -245,7 +262,9 @@ export class DynamoDbEventStorageAdapter implements StorageAdapter {
         timestamp: new Date().toISOString(),
         ...eventWithOptTimestamp,
       };
-      const putEventCommand = new PutItemCommand(this.getPushEventInput(event));
+      const putEventCommand = new PutItemCommand(
+        this.getPushEventInput(event, context),
+      );
 
       const { aggregateId, version } = event;
 
@@ -285,10 +304,10 @@ export class DynamoDbEventStorageAdapter implements StorageAdapter {
       await dynamodbClient.send(
         new TransactWriteItemsCommand({
           TransactItems: groupedEvents.map(groupedEvent => ({
-            Put: groupedEvent.eventStorageAdapter.getPushEventInput({
-              timestamp,
-              ...groupedEvent.event,
-            }),
+            Put: groupedEvent.eventStorageAdapter.getPushEventInput(
+              { timestamp, ...groupedEvent.event },
+              groupedEvent.context,
+            ),
           })),
         }),
       );
@@ -305,16 +324,19 @@ export class DynamoDbEventStorageAdapter implements StorageAdapter {
 
     // eslint-disable-next-line complexity
     this.listAggregateIds = async (
-      _,
+      { eventStoreId },
       { pageToken: inputPageToken, ...inputOptions } = {},
     ) => {
       const aggregateIdsQueryCommandInput: QueryCommandInput = {
         TableName: this.getTableName(),
-        KeyConditionExpression: '#isInitialEvent = :true',
+        KeyConditionExpression: '#eventStoreId = :eventStoreId',
         ExpressionAttributeNames: {
-          '#isInitialEvent': EVENT_TABLE_IS_INITIAL_EVENT_KEY,
+          '#eventStoreId': EVENT_TABLE_EVENT_STORE_ID_KEY,
         },
-        ExpressionAttributeValues: marshall({ ':true': 1 }, MARSHALL_OPTIONS),
+        ExpressionAttributeValues: marshall(
+          { ':eventStoreId': eventStoreId },
+          MARSHALL_OPTIONS,
+        ),
         IndexName: EVENT_TABLE_INITIAL_EVENT_INDEX_NAME,
       };
 
@@ -334,11 +356,11 @@ export class DynamoDbEventStorageAdapter implements StorageAdapter {
         aggregateIdsQueryCommandInput.KeyConditionExpression =
           initialEventBefore !== undefined
             ? initialEventAfter !== undefined
-              ? '#isInitialEvent = :true and #timestamp between :initialEventAfter and :initialEventBefore'
-              : '#isInitialEvent = :true and #timestamp <= :initialEventBefore'
+              ? '#eventStoreId = :eventStoreId and #timestamp between :initialEventAfter and :initialEventBefore'
+              : '#eventStoreId = :eventStoreId and #timestamp <= :initialEventBefore'
             : initialEventAfter !== undefined
-            ? '#isInitialEvent = :true and #timestamp >= :initialEventAfter'
-            : '#isInitialEvent = :true';
+            ? '#eventStoreId = :eventStoreId and #timestamp >= :initialEventAfter'
+            : '#eventStoreId = :eventStoreId';
 
         aggregateIdsQueryCommandInput.ExpressionAttributeNames = {
           ...aggregateIdsQueryCommandInput.ExpressionAttributeNames,
@@ -390,7 +412,7 @@ export class DynamoDbEventStorageAdapter implements StorageAdapter {
           .map(item => {
             const { aggregateId } = item as Pick<EventDetail, 'aggregateId'>;
 
-            return aggregateId;
+            return unprefixAggregateId(eventStoreId, aggregateId);
           }),
         ...(lastEvaluatedKey !== undefined
           ? { nextPageToken: JSON.stringify(parsedNextPageToken) }
