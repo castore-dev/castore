@@ -82,6 +82,7 @@ Castore is opiniated. It comes with a collection of best practices and documente
   - [Event Store](#--eventstore)
   - [Event Storage Adapter](#---eventstorageadapter)
   - [Command](#--command)
+  - [Event Groups](#event-groups)
 - [💪 Advanced Usage](#-advanced-usage)
   - [Event-driven architecture](#--event-driven-architecture)
   - [Message queues](#--messagequeue)
@@ -423,6 +424,8 @@ const pokemonsEventStore = new EventStore({
 > const myPikachuAggregate = pokemonsEventStore.buildAggregate(myPikachuEvents);
 > ```
 >
+> - <code>groupEvent <i>((eventDetail: EventDetail, opt?: OptionsObj = {}) => GroupedEvent)</i></code>: See [Event Groups](#event-groups).
+>
 > **Async Methods:**
 >
 > The following methods interact with the data layer of your event store through its [`EventStorageAdapter`](#--eventstorageadapter). They will throw an `UndefinedStorageAdapterError` if you did not provide one.
@@ -667,11 +670,11 @@ type Context = { generateUuid: () => string };
 const catchPokemonCommand = new Command({
   commandId: 'CATCH_POKEMON',
   // 👇 "tuple" is needed to keep ordering in inferred type
-  requiredEventStores: tuple(pokemonsEventStore, otherEventStore),
+  requiredEventStores: tuple(pokemonsEventStore, trainersEventStore),
   // 👇 Code to execute
   handler: async (
     commandInput: Input,
-    [pokemonsEventStore, otherEventStore],
+    [pokemonsEventStore, trainersEventStore],
     // 👇 Additional context arguments can be provided
     { generateUuid }: Context,
   ): Promise<Output> => {
@@ -766,9 +769,44 @@ A few notes on commands handlers:
 
 ![Command Retry](./assets/docsImg/commandRetry.png)
 
-- Command handlers should be, as much as possible, [pure functions](https://en.wikipedia.org/wiki/Pure_function). If it depends on impure functions like functions with unpredictable outputs (like id generation), mutating effects, side effects or state dependency (like external data fetching), you should pass them through the additional context arguments rather than directly importing and using them. This will make them easier to test and to re-use in different contexts, such as in the [React Visualizer](./packages/react-visualizer/README.md).
+- Finally, Command handlers should be, as much as possible, [pure functions](https://en.wikipedia.org/wiki/Pure_function). If it depends on impure functions like functions with unpredictable outputs (like id generation), mutating effects, side effects or state dependency (like external data fetching), you should pass them through the additional context arguments rather than directly importing and using them. This will make them easier to test and to re-use in different contexts, such as in the [React Visualizer](./packages/react-visualizer/README.md).
 
-- Finally, when writing on several event stores at once, it is important to make sure that **all events are written or none**, i.e. use transactions: This ensures that the application is not in a corrupt state. Transactions accross event stores cannot be easily abstracted, so check you adapter library on how to achieve this. For instance, the [`DynamoDBEventStorageAdapter`](./packages/dynamodb-event-storage-adapter/README.md) exposes a [`pushEventsTransaction`](./packages/dynamodb-event-storage-adapter/src/utils/pushEventsTransaction.ts) util.
+### Event Groups
+
+Some commands can have an effect on several event stores, or on several aggregates of the same event store. For instance, the `CATCH_POKEMON` command could write both a `CATCHED_BY_TRAINER` event on a pokemon aggregate (changing its `status` to `'catched'`) and a `POKEMON_CATCHED` event on a trainer aggregate (appending the `pokemonId` to its `pokedex`).
+
+<!-- TODO: Add Schema -->
+
+To not have your application in a corrupt state, it's important to make sure that **all those events are pushed or none**. In Castore, this can be done through the **event groups** API:
+
+- You can use the `groupEvent` method to build an array of events that are to be pushed together. It has the same input interface as `pushEvent` but synchronously returns a `GroupedEvent` class.
+- The `EventStore` class exposes a static `pushEventGroup` method that can be used to effectively push this event group.
+
+```ts
+await EventStore.pushEventGroup(
+  pokemonsEventStore.groupEvent({
+    // 👇 Correctly typed
+    aggregateId: 'pikachu1',
+    type: 'CATCHED_BY_TRAINER',
+    payload: { trainerId: 'ashKetchum' },
+    ...
+  }),
+  trainersEventStore.groupEvent({
+    aggregateId: 'ashKetchum',
+    type: 'POKEMON_CATCHED',
+    payload: { pokemonId: 'pikachu1' },
+    ...
+  }),
+);
+```
+
+Like the `pushEvent` API, event groups are designed to throw an `EventAlreadyExistsError` if the transaction has failed, making sure that commands are retried as expected when race conditions arise.
+
+> ☝️ When pushing event groups on several event stores, they must use the same type of event storage adapters.
+>
+> ☝️ Also, be aware of technical constraints of your event storage solution. For instance, the [`DynamoDBEventStorageAdapter`](./packages/dynamodb-event-storage-adapter/README.md)'s implementation is based on [DynamoDB transactions](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/transaction-apis.html), which means that the event stores tables must be in the same region, and that a groups cannot contain more than 100 events.
+>
+> ☝️ Finally, event groups are not available in [Connected Event Stores](#--connectedeventstore) yet.
 
 ## 💪 Advanced usage
 
