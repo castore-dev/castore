@@ -775,7 +775,7 @@ A few notes on commands handlers:
 
 Some commands can have an effect on several event stores, or on several aggregates of the same event store. For instance, the `CATCH_POKEMON` command could write both a `CATCHED_BY_TRAINER` event on a pokemon aggregate (changing its `status` to `'catched'`) and a `POKEMON_CATCHED` event on a trainer aggregate (appending the `pokemonId` to its `pokedex`).
 
-<!-- TODO: Add Schema -->
+![Event Group](./assets/docsImg/eventGroup.png)
 
 To not have your application in a corrupt state, it's important to make sure that **all those events are pushed or none**. In Castore, this can be done through the **event groups** API:
 
