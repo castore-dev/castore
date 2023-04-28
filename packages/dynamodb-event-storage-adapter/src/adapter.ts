@@ -27,6 +27,7 @@ import {
 } from './constants';
 import { DynamoDBEventAlreadyExistsError } from './error';
 import { isConditionalCheckFailedException } from './utils/isConditionalCheckFailed';
+import { isTransactionCancelledBecauseOfConditionalCheckFailed } from './utils/isTransactionCancelledBecauseOfConditionalCheckFailed';
 import {
   parseAppliedListAggregateIdsOptions,
   ParsedPageToken,
@@ -271,6 +272,9 @@ export class DynamoDbEventStorageAdapter implements StorageAdapter {
       return { event };
     };
 
+    /**
+     * @debt test "Add  unit test for pushEventGroup"
+     */
     this.pushEventGroup = async (...groupedEventsInput) => {
       const { groupedEvents, timestamp = new Date().toISOString() } =
         parseGroupedEvents(...groupedEventsInput);
@@ -279,19 +283,31 @@ export class DynamoDbEventStorageAdapter implements StorageAdapter {
       const dynamodbClient =
         firstGroupedEvent.eventStorageAdapter.dynamoDbClient;
 
-      /**
-       * @debt bug "TODO: Make pushEventGroup throws an EventAlreadyExists error if transaction fails"
-       */
-      await dynamodbClient.send(
-        new TransactWriteItemsCommand({
-          TransactItems: groupedEvents.map(groupedEvent => ({
-            Put: groupedEvent.eventStorageAdapter.getPushEventInput({
-              timestamp,
-              ...groupedEvent.event,
-            }),
-          })),
-        }),
-      );
+      try {
+        await dynamodbClient.send(
+          new TransactWriteItemsCommand({
+            TransactItems: groupedEvents.map(groupedEvent => ({
+              Put: groupedEvent.eventStorageAdapter.getPushEventInput({
+                timestamp,
+                ...groupedEvent.event,
+              }),
+            })),
+          }),
+        );
+      } catch (error) {
+        if (isTransactionCancelledBecauseOfConditionalCheckFailed(error)) {
+          /**
+           * @debt feature "Detect which event caused the error within the event group"
+           */
+          throw new DynamoDBEventAlreadyExistsError({
+            aggregateId: '???',
+            version: NaN,
+            eventStoreId: '???',
+          });
+        }
+
+        throw error;
+      }
 
       return {
         eventGroup: groupedEvents.map(({ event }) => ({
