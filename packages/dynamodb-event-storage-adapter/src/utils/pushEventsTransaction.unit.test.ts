@@ -49,10 +49,10 @@ describe('pushEventsTransaction', () => {
     ]);
 
     expect(dynamoDbClientMockSeemless.calls()).toHaveLength(1);
-    expect(dynamoDbClientMockSeemless.calls()[0].args[0]).toBeInstanceOf(
+    expect(dynamoDbClientMockSeemless.calls()[0]?.args[0]).toBeInstanceOf(
       TransactWriteItemsCommand,
     );
-    expect(dynamoDbClientMockSeemless.calls()[0].args[0].input).toStrictEqual({
+    expect(dynamoDbClientMockSeemless.calls()[0]?.args[0].input).toStrictEqual({
       TransactItems: [
         formatEventForTransaction(pokemonsEventStore, pikachuCatchedEvent)
           .transactItem,
@@ -76,10 +76,10 @@ describe('pushEventsTransaction', () => {
     expect(dynamoDbClientMockSeemless.calls()).toHaveLength(0);
 
     expect(dynamoDbClientMockOption.calls()).toHaveLength(1);
-    expect(dynamoDbClientMockOption.calls()[0].args[0]).toBeInstanceOf(
+    expect(dynamoDbClientMockOption.calls()[0]?.args[0]).toBeInstanceOf(
       TransactWriteItemsCommand,
     );
-    expect(dynamoDbClientMockOption.calls()[0].args[0].input).toStrictEqual({
+    expect(dynamoDbClientMockOption.calls()[0]?.args[0].input).toStrictEqual({
       TransactItems: [
         formatEventForTransaction(pokemonsEventStore, pikachuCatchedEvent)
           .transactItem,

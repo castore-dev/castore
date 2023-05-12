@@ -42,6 +42,7 @@ Documentation:
     - [Terraform](#terraform)
   - [🤝 EventGroups](#-eventgroups)
   - [🔑 IAM](#-iam)
+  - [📸 `ImageParser`](#-imageparser)
 - [`DynamoDbEventStorageAdapter`](#legacy-dynamodbeventstorageadapter)
 
 ## `DynamoDbSingleTableEventStorageAdapter`
@@ -253,6 +254,28 @@ Required IAM permissions for each operations:
 - `getEvents` (+ `getAggregate`, `getExistingAggregate`): `dynamodb:Query`
 - `pushEvent`: `dynamodb:PutItem`
 - `listAggregateIds`: `dynamodb:Query` on the `initialEvents` index
+
+### 📸 `ImageParser`
+
+This library also exposes a useful `ImageParser` class to parse [DynamoDB stream](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/Streams.html) images from a `DynamoDbSingleTableEventStorageAdapter`. It will build a correctly typed `NotificationMessage` ouf of a stream image, unmarshalling it, removing the prefix of the `aggregateId` in the process and validating the `eventStoreId`:
+
+```ts
+import { ImageParser } from '@castore/dynamodb-event-storage-adapter';
+
+const imageParser = new ImageParser({
+  sourceEventStores: [pokemonsEventStore, trainersEventStore],
+});
+
+// 🙌 Typed as EventStoreNotificationMessage<
+//  typeof pokemonsEventStore
+//  | typeof trainersEventStore...
+// >
+const notificationMessage = imageParser.parseImage(
+  streamImage,
+  // 👇 Optional options
+  unmarshallOptions,
+);
+```
 
 ## Legacy `DynamoDbEventStorageAdapter`
 

@@ -13,3 +13,4 @@ export {
 } from './constants';
 export { formatEventForTransaction } from './utils/formatEventForTransaction';
 export { pushEventsTransaction } from './utils/pushEventsTransaction';
+export { ImageParser } from './utils/imageParser';
