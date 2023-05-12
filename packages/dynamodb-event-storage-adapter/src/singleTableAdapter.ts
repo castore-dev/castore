@@ -64,20 +64,20 @@ const hasContext = (
   context: NonNullable<GroupedEvent['context']>;
 } => groupedEvent.context !== undefined;
 
+type ParsedGroupedEvent = DynamoDbSingleTableGroupedEvent & {
+  context: NonNullable<GroupedEvent['context']>;
+};
+
 const parseGroupedEvents = (
-  ...groupedEventsInput: GroupedEvent[]
+  ...groupedEventsInput: [GroupedEvent, ...GroupedEvent[]]
 ): {
-  groupedEvents: (DynamoDbSingleTableGroupedEvent & {
-    context: NonNullable<GroupedEvent['context']>;
-  })[];
+  groupedEvents: [ParsedGroupedEvent, ...ParsedGroupedEvent[]];
   timestamp?: string;
 } => {
   let timestampInfos:
     | { timestamp: string; groupedEventIndex: number }
     | undefined;
-  const groupedEvents: (DynamoDbSingleTableGroupedEvent & {
-    context: NonNullable<DynamoDbSingleTableGroupedEvent['context']>;
-  })[] = [];
+  const groupedEvents: ParsedGroupedEvent[] = [];
 
   groupedEventsInput.forEach((groupedEvent, groupedEventIndex) => {
     if (!hasDynamoDbSingleTableEventStorageAdapter(groupedEvent)) {
@@ -120,7 +120,10 @@ const parseGroupedEvents = (
   }
 
   return {
-    groupedEvents,
+    groupedEvents: groupedEvents as [
+      ParsedGroupedEvent,
+      ...ParsedGroupedEvent[],
+    ],
     ...(timestampInfos !== undefined
       ? { timestamp: timestampInfos.timestamp }
       : {}),

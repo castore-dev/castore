@@ -51,20 +51,20 @@ const hasContext = (
   context: NonNullable<GroupedEvent['context']>;
 } => groupedEvent.context !== undefined;
 
+type ParsedGroupedEvent = DynamoDbGroupedEvent & {
+  context: NonNullable<GroupedEvent['context']>;
+};
+
 const parseGroupedEvents = (
-  ...groupedEventsInput: GroupedEvent[]
+  ...groupedEventsInput: [GroupedEvent, ...GroupedEvent[]]
 ): {
-  groupedEvents: (DynamoDbGroupedEvent & {
-    context: NonNullable<GroupedEvent['context']>;
-  })[];
+  groupedEvents: [ParsedGroupedEvent, ...ParsedGroupedEvent[]];
   timestamp?: string;
 } => {
   let timestampInfos:
     | { timestamp: string; groupedEventIndex: number }
     | undefined;
-  const groupedEvents: (DynamoDbGroupedEvent & {
-    context: NonNullable<DynamoDbGroupedEvent['context']>;
-  })[] = [];
+  const groupedEvents: ParsedGroupedEvent[] = [];
 
   groupedEventsInput.forEach((groupedEvent, groupedEventIndex) => {
     if (!hasDynamoDbEventStorageAdapter(groupedEvent)) {
@@ -107,7 +107,10 @@ const parseGroupedEvents = (
   }
 
   return {
-    groupedEvents,
+    groupedEvents: groupedEvents as [
+      ParsedGroupedEvent,
+      ...ParsedGroupedEvent[],
+    ],
     ...(timestampInfos !== undefined
       ? { timestamp: timestampInfos.timestamp }
       : {}),
