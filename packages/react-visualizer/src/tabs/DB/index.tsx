@@ -15,6 +15,8 @@ export const DB = ({
 }): JSX.Element => {
   const [selectedEventStoreId, selectEventStoreId] = useState(eventStoreIds[0]);
 
+  if (selectedEventStoreId === undefined) return <></>;
+
   return (
     <TabContext value={selectedEventStoreId}>
       <TabList
@@ -28,11 +30,17 @@ export const DB = ({
           <Tab key={eventStoreId} label={eventStoreId} value={eventStoreId} />
         ))}
       </TabList>
-      {eventStoreIds.map(eventStoreId => (
-        <TabPanel key={eventStoreId} value={eventStoreId}>
-          <EventStoreDB eventStore={eventStoresById[eventStoreId]} />
-        </TabPanel>
-      ))}
+      {eventStoreIds.map(eventStoreId => {
+        const eventStore = eventStoresById[eventStoreId];
+
+        if (eventStore === undefined) return <></>;
+
+        return (
+          <TabPanel key={eventStoreId} value={eventStoreId}>
+            <EventStoreDB eventStore={eventStore} />
+          </TabPanel>
+        );
+      })}
     </TabContext>
   );
 };

@@ -28,7 +28,7 @@ export const AggregateCard = ({
 }): JSX.Element => {
   const { events } = useAggregateEvents(eventStore, aggregateId);
 
-  const firstEventDate = events[0]?.timestamp as string | undefined;
+  const firstEventDate = events[0]?.timestamp;
   const maxVersion = events.length;
 
   const [aggregateTargetVersion, setAggregateTargetVersion] = useState(
