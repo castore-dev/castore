@@ -25,3 +25,9 @@ yarn add @castore/core @castore/json-schema-command react
 ## 👩‍💻 Usage
 
 _coming soon_
+
+Meanwhile, you can look at:
+
+- A [hosted example of the visualizer](https://castore-dev.github.io/castore/)
+- The [source code for the event stores & commands](https://github.com/castore-dev/castore/tree/main/demo/blueprint/src)
+- The [source code for the visualizer implementation](https://github.com/castore-dev/castore/blob/main/demo/visualization/src/index.tsx)
