@@ -22,7 +22,244 @@ npm install @castore/core @aws-sdk/client-dynamodb
 yarn add @castore/core @aws-sdk/client-dynamodb
 ```
 
-## 👩‍💻 Usage
+## Table of content
+
+This library exposes two adapters:
+
+- `DynamoDbSingleTableEventStorageAdapter` which can plug several event stores to a single DynamoDB table.
+- (_deprecated_) `DynamoDbEventStorageAdapter` which needs a DynamoDB table per event store.
+
+The legacy `DynamoDbEventStorageAdapter` is still exposed for backward compatibility. It will be deprecated and renamed `LegacyDynamoDbEventStorageAdapter` in the v2, to be finally removed in the v3.
+
+Documentation:
+
+- [`DynamoDbSingleTableEventStorageAdapter`](#dynamodbsingletableeventstorageadapter)
+  - [👩‍💻 Usage](#-usage)
+  - [🤔 How it works](#-how-it-works)
+  - [📝 Examples](#-examples)
+    - [CloudFormation](#cloudformation)
+    - [CDK](#cdk)
+    - [Terraform](#terraform)
+  - [🤝 EventGroups](#-eventgroups)
+  - [🔑 IAM](#-iam)
+- [`DynamoDbEventStorageAdapter`](#legacy-dynamodbeventstorageadapter)
+
+## `DynamoDbSingleTableEventStorageAdapter`
+
+### 👩‍💻 Usage
+
+```ts
+import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
+
+import { DynamoDbSingleTableEventStorageAdapter } from '@castore/dynamodb-event-storage-adapter';
+
+const dynamoDbClient = new DynamoDBClient({});
+
+const pokemonsEventsStorageAdapter = new DynamoDbSingleTableEventStorageAdapter(
+  {
+    tableName: 'my-table-name',
+    dynamoDbClient,
+  },
+);
+
+// 👇 Alternatively, provide a getter
+const pokemonsEventsStorageAdapter =
+  new DynamoDbSingleTableEventStorageAdapter({
+    tableName: () => process.env.MY_TABLE_NAME,
+    dynamoDbClient,
+  });
+
+const pokemonsEventStore = new EventStore({
+  ...
+  storageAdapter: pokemonsEventsStorageAdapter,
+});
+```
+
+This will directly plug your EventStore to DynamoDB 🙌
+
+### 🤔 How it works
+
+This adapter persists aggregates in **separate partitions**: When persisting an event, its `aggregateId`, prefixed by the `eventStoreId`, is used as partition key (_string_ attribute) and its `version` is used as sort key (_number_ attribute).
+
+A [Global Secondary Index](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/GSI.html) is also required to efficiently retrieve the event store aggregates ids (`listAggregateIds` operation). Only initial events (`version = 1`) are projected. A `KEYS_ONLY` projection type is sufficient.
+
+```ts
+// 👇 Initial event
+{
+  "aggregateId": "POKEMONS#123", // <= Partition key
+  "version": 1, // <= Sort key
+  "eventStoreId": "POKEMONS", // <= initialEvents index partition key
+  "timestamp": "2022-01-01T00:00:00.000Z", // <= initialEvents index sort key
+  "type": "POKEMON_APPEARED",
+  "payload": { "name": "Pikachu", "level": 42 },
+  "metadata": { "trigger": "random" }
+}
+
+// 👇 Non-initial event
+{
+  "aggregateId": "POKEMONS#123",
+  "version": 2,
+  // Event is not projected on initialEvents index (to limit costs)
+  "timestamp": "2023-01-01T00:00:00.000Z",
+  "type": "POKEMON_LEVELED_UP"
+}
+```
+
+The `getEvents` method (which is used by the `getAggregate` and `getExistingAggregate` methods of the `EventStore` class) uses consistent reads, so is **always consistent**.
+
+The `pushEvent` method is a write operation and so is **always consistent**. It is conditioned to avoid race conditions, as required by the [Castore specifications](https://github.com/castore-dev/castore/blob/main/docs/building-your-own-event-storage-adapter.md).
+
+By design, the `listAggregateIds` operation can only be **eventually consistent** (GSIs reads cannot be consistent).
+
+### 📝 Examples
+
+Note that if you define your infrastructure as code in TypeScript, you can directly use this package instead of hard-coding the below values:
+
+```ts
+import {
+  EVENT_TABLE_PK, // => aggregateId
+  EVENT_TABLE_SK, // => version
+  EVENT_TABLE_INITIAL_EVENT_INDEX_NAME, // => initialEvents
+  EVENT_TABLE_EVENT_STORE_ID_KEY, // => eventStoreId
+  EVENT_TABLE_TIMESTAMP_KEY, // => timestamp
+} from '@castore/dynamodb-event-storage-adapter';
+```
+
+#### CloudFormation
+
+```json
+{
+  "Type": "AWS::DynamoDB::Table",
+  "Properties": {
+    "AttributeDefinitions": [
+      { "AttributeName": "aggregateId", "AttributeType": "S" },
+      { "AttributeName": "version", "AttributeType": "N" }
+      { "AttributeName": "eventStoreId", "AttributeType": "S" },
+      { "AttributeName": "timestamp", "AttributeType": "S" }
+    ],
+    "KeySchema": [
+      { "AttributeName": "aggregateId", "KeyType": "HASH" },
+      { "AttributeName": "version", "KeyType": "RANGE" }
+    ],
+    "GlobalSecondaryIndexes": [
+      {
+        "IndexName": "initialEvents",
+        "KeySchema": [
+          { "AttributeName": "eventStoreId", "KeyType": "HASH" },
+          { "AttributeName": "timestamp", "KeyType": "RANGE" }
+        ],
+        "Projection": "KEYS_ONLY"
+      }
+    ]
+  }
+}
+```
+
+#### CDK
+
+```ts
+import { Table, AttributeType, ProjectionType } from 'aws-cdk-lib/aws-dynamodb';
+
+const { STRING, NUMBER } = AttributeType;
+const { KEYS_ONLY } = ProjectionType;
+
+const pokemonsEventsTable = new Table(scope, 'PokemonEvents', {
+  partitionKey: {
+    name: 'aggregateId',
+    type: STRING,
+  },
+  sortKey: {
+    name: 'version',
+    type: NUMBER,
+  },
+});
+
+pokemonsEventsTable.addGlobalSecondaryIndex({
+  indexName: 'initialEvents',
+  partitionKey: {
+    name: 'eventStoreId',
+    type: STRING,
+  },
+  sortKey: {
+    name: 'timestamp',
+    type: STRING,
+  },
+  projectionType: KEYS_ONLY,
+});
+```
+
+#### Terraform
+
+```h
+resource "aws_dynamodb_table" "pokemons-events-table" {
+  hash_key       = "aggregateId"
+  range_key      = "version"
+
+  attribute {
+    name = "aggregateId"
+    type = "S"
+  }
+
+  attribute {
+    name = "version"
+    type = "N"
+  }
+
+  attribute {
+    name = "eventStoreId"
+    type = "S"
+  }
+
+  attribute {
+    name = "timestamp"
+    type = "S"
+  }
+
+  global_secondary_index {
+    name               = "initialEvents"
+    hash_key           = "eventStoreId"
+    range_key          = "timestamp"
+    projection_type    = "KEYS_ONLY"
+  }
+}
+```
+
+### 🤝 EventGroups
+
+This adapter implements the [EventGroups](https://github.com/castore-dev/castore/#event-groups) API using the [DynamoDb Transactions API](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/transaction-apis.html):
+
+```ts
+import { EventStore } from '@castore/core';
+
+// 👇 TransactWriteItems N events simultaneously
+await EventStore.pushEventGroup(
+  // events are correctly typed 🙌
+  eventStoreA.groupEvent(eventA1),
+  eventStoreA.groupEvent(eventA2),
+  eventStoreB.groupEvent(eventB),
+  ...
+);
+```
+
+Note that:
+
+- All the event stores involved in the transaction need to use the `DynamoDbSingleTableEventStorageAdapter`
+- This util inherits of the [`TransactWriteItem` API](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/transaction-apis.html#transaction-apis-txwriteitems) limitations: It can target up to 100 distinct events in one or more DynamoDB tables within the same AWS account and in the same Region.
+
+### 🔑 IAM
+
+Required IAM permissions for each operations:
+
+- `getEvents` (+ `getAggregate`, `getExistingAggregate`): `dynamodb:Query`
+- `pushEvent`: `dynamodb:PutItem`
+- `listAggregateIds`: `dynamodb:Query` on the `initialEvents` index
+
+## Legacy `DynamoDbEventStorageAdapter`
+
+<details>
+<summary><b>🔧 Documentation</b></summary>
+
+### 👩‍💻 Usage
 
 ```ts
 import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
@@ -50,7 +287,7 @@ const pokemonsEventStore = new EventStore({
 
 This will directly plug your EventStore to DynamoDB 🙌
 
-## 🤔 How it works
+### 🤔 How it works
 
 This adapter persists aggregates in **separate partitions**: When persisting an event, its `aggregateId` is used as partition key (_string_ attribute) and its `version` is used as sort key (_number_ attribute).
 
@@ -84,7 +321,7 @@ The `pushEvent` method is a write operation and so is **always consistent**. It 
 
 By design, the `listAggregateIds` operation can only be **eventually consistent** (GSIs reads cannot be consistent).
 
-## 📝 Examples
+### 📝 Examples
 
 Note that if you define your infrastructure as code in TypeScript, you can directly use this package instead of hard-coding the below values:
 
@@ -98,7 +335,7 @@ import {
 } from '@castore/dynamodb-event-storage-adapter';
 ```
 
-### CloudFormation
+#### CloudFormation
 
 ```json
 {
@@ -128,7 +365,7 @@ import {
 }
 ```
 
-### CDK
+#### CDK
 
 ```ts
 import { Table, AttributeType, ProjectionType } from 'aws-cdk-lib/aws-dynamodb';
@@ -161,7 +398,7 @@ pokemonsEventsTable.addGlobalSecondaryIndex({
 });
 ```
 
-### Terraform
+#### Terraform
 
 ```h
 resource "aws_dynamodb_table" "pokemons-events-table" {
@@ -197,28 +434,21 @@ resource "aws_dynamodb_table" "pokemons-events-table" {
 }
 ```
 
-## 🤝 Transactions
+### 🤝 EventGroups
 
-As stated in the [main documentation](https://github.com/castore-dev/castore/#--command):
-
-> When writing on several event stores at once, it is important to make sure that **all events are written or none**, i.e. use transactions: This ensures that the application is not in a corrupt state.
-
-This package exposes a `pushEventsTransaction` util to do just that, using the [DynamoDb Transactions API](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/transaction-apis.html):
+This adapter implements the [EventGroups](https://github.com/castore-dev/castore/#event-groups) API using the [DynamoDb Transactions API](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/transaction-apis.html):
 
 ```ts
-import {
-  formatEventForTransaction,
-  pushEventsTransaction,
-} from '@castore/dynamodb-event-storage-adapter';
+import { EventStore } from '@castore/core';
 
-// 👇 Does N pushEvent operations simultaneously
-await pushEventsTransaction([
+// 👇 TransactWriteItems N events simultaneously
+await EventStore.pushEventGroup(
   // events are correctly typed 🙌
-  formatEventForTransaction(eventStoreA, eventA1),
-  formatEventForTransaction(eventStoreA, eventA2),
-  formatEventForTransaction(eventStoreB, eventB),
+  eventStoreA.groupEvent(eventA1),
+  eventStoreA.groupEvent(eventA2),
+  eventStoreB.groupEvent(eventB),
   ...
-]);
+);
 ```
 
 Note that:
@@ -226,10 +456,12 @@ Note that:
 - All the event stores involved in the transaction need to use the `DynamoDbEventStorageAdapter`
 - This util inherits of the [`TransactWriteItem` API](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/transaction-apis.html#transaction-apis-txwriteitems) limitations: It can target up to 100 distinct events in one or more DynamoDB tables within the same AWS account and in the same Region.
 
-## 🔑 IAM
+### 🔑 IAM
 
 Required IAM permissions for each operations:
 
 - `getEvents` (+ `getAggregate`, `getExistingAggregate`): `dynamodb:Query`
 - `pushEvent`: `dynamodb:PutItem`
 - `listAggregateIds`: `dynamodb:Query` on the `initialEvents` index
+
+</details>
