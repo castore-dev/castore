@@ -148,6 +148,12 @@ export class InMemoryMessageBusAdapter<MESSAGE extends Message = Message>
         this.filterPatterns.push([filterPattern]);
         handlerIndex = this.handlers.length - 1;
 
+        const filterPatterns = this.filterPatterns[handlerIndex];
+
+        if (filterPatterns === undefined) {
+          throw new Error('Internal error: filterPattern is undefined.');
+        }
+
         this.eventEmitter.on(
           'message',
           (
@@ -159,10 +165,7 @@ export class InMemoryMessageBusAdapter<MESSAGE extends Message = Message>
 
             if (
               retryHandlerIndex === undefined
-                ? doesMessageMatchAnyFilterPattern(
-                    message,
-                    this.filterPatterns[handlerIndex],
-                  )
+                ? doesMessageMatchAnyFilterPattern(message, filterPatterns)
                 : retryHandlerIndex === handlerIndex
             ) {
               void handler(message).catch(error => {
@@ -172,7 +175,13 @@ export class InMemoryMessageBusAdapter<MESSAGE extends Message = Message>
           },
         );
       } else {
-        this.filterPatterns[handlerIndex].push(filterPattern);
+        const filterPatterns = this.filterPatterns[handlerIndex];
+
+        if (filterPatterns === undefined) {
+          throw new Error('Internal error: filterPattern is undefined.');
+        }
+
+        filterPatterns.push(filterPattern);
       }
     };
   }

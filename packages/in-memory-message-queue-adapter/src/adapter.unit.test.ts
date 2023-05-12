@@ -238,8 +238,8 @@ describe('in-memory message queue adapter', () => {
 
         for (let attempt = 1; attempt <= retryAttempts; attempt++) {
           const receivedDelay =
-            workerExecutionsDates[attempt].getTime() -
-            workerExecutionsDates[attempt - 1].getTime();
+            (workerExecutionsDates[attempt] as Date).getTime() -
+            (workerExecutionsDates[attempt - 1] as Date).getTime();
           const expectedDelay =
             retryDelayInMs * Math.pow(retryBackoffRate, attempt - 1);
 
