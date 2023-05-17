@@ -11,6 +11,5 @@ export const EVENT_TABLE_EVENT_STORE_ID_KEY = 'eventStoreId';
 export const EVENT_TABLE_INITIAL_EVENT_INDEX_NAME = 'initialEvents';
 
 export const MARSHALL_OPTIONS: MarshallOptions = {
-  convertEmptyValues: false,
   removeUndefinedValues: true,
 };
