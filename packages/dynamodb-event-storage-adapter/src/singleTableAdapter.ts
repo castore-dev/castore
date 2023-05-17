@@ -8,7 +8,11 @@ import {
   DynamoDBClient,
   TransactWriteItemsCommand,
 } from '@aws-sdk/client-dynamodb';
-import { marshall, unmarshall } from '@aws-sdk/util-dynamodb';
+import {
+  marshall,
+  unmarshall,
+  unmarshallOptions as UnmarshallOptionsType,
+} from '@aws-sdk/util-dynamodb';
 
 import {
   Aggregate,
@@ -152,9 +156,11 @@ export class DynamoDbSingleTableEventStorageAdapter implements StorageAdapter {
   constructor({
     tableName,
     dynamoDbClient,
+    unmarshallOptions,
   }: {
     tableName: string | (() => string);
     dynamoDbClient: DynamoDBClient;
+    unmarshallOptions?: UnmarshallOptionsType;
   }) {
     this.tableName = tableName;
     this.dynamoDbClient = dynamoDbClient;
@@ -214,7 +220,7 @@ export class DynamoDbSingleTableEventStorageAdapter implements StorageAdapter {
 
       return {
         events: marshalledEvents
-          .map(item => unmarshall(item))
+          .map(item => unmarshall(item, unmarshallOptions))
           .map((item): EventDetail => {
             const {
               aggregateId: evtAggregateId,
@@ -427,7 +433,7 @@ export class DynamoDbSingleTableEventStorageAdapter implements StorageAdapter {
 
       return {
         aggregateIds: unmarshalledInitialEvents
-          .map(item => unmarshall(item))
+          .map(item => unmarshall(item, unmarshallOptions))
           .map(item => {
             const { aggregateId } = item as Pick<EventDetail, 'aggregateId'>;
 
