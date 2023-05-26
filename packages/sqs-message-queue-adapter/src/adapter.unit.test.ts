@@ -15,31 +15,28 @@ const sqsClientMock = mockClient(SQSClient);
 describe('SQSMessageQueueAdapter', () => {
   const queueUrlMock = 'queue.sqs';
 
-  const eventStoreIdMock = 'my-event-store';
+  const eventStoreId = 'my-event-store';
 
-  const eventMock = {
-    aggregateId: 'my-aggregate-id',
-    version: 1,
+  const aggregateId = 'my-aggregate-id';
+  const version = 1;
+
+  const event = {
+    aggregateId,
+    version,
     type: 'my-event-type',
     timestamp: new Date().toISOString(),
   };
 
-  const otherEventMock = {
-    aggregateId: 'my-aggregate-id',
-    version: 2,
+  const otherVersion = 2;
+  const otherEvent = {
+    aggregateId,
+    version: otherVersion,
     type: 'my-event-type',
     timestamp: new Date().toISOString(),
   };
 
-  const messageMock = {
-    eventStoreId: eventStoreIdMock,
-    event: eventMock,
-  };
-
-  const otherMessageMock = {
-    eventStoreId: eventStoreIdMock,
-    event: otherEventMock,
-  };
+  const message = { eventStoreId, event };
+  const otherMessage = { eventStoreId, event: otherEvent };
 
   beforeEach(() => {
     sqsClientMock.reset();
@@ -59,14 +56,32 @@ describe('SQSMessageQueueAdapter', () => {
     > = 1;
     assertMessage;
 
-    await adapter.publishMessage(messageMock);
+    await adapter.publishMessage(message);
 
     // regularly check if vitest matchers are available (toHaveReceivedCommandWith)
     // https://github.com/m-radzikowski/aws-sdk-client-mock/issues/139
     expect(sqsClientMock.calls()).toHaveLength(1);
     expect(sqsClientMock.call(0).args[0].input).toMatchObject({
       QueueUrl: queueUrlMock,
-      MessageBody: JSON.stringify(messageMock),
+      MessageBody: JSON.stringify(message),
+    });
+  });
+
+  it('appends MessageDeduplicationId & MessageGroupId if queue is of type fifo', async () => {
+    const adapter = new SQSMessageQueueAdapter({
+      queueUrl: queueUrlMock,
+      sqsClient: sqsClientMock as unknown as SQSClient,
+      fifo: true,
+    });
+
+    await adapter.publishMessage(message);
+
+    // regularly check if vitest matchers are available (toHaveReceivedCommandWith)
+    // https://github.com/m-radzikowski/aws-sdk-client-mock/issues/139
+    expect(sqsClientMock.calls()).toHaveLength(1);
+    expect(sqsClientMock.call(0).args[0].input).toMatchObject({
+      MessageDeduplicationId: [eventStoreId, aggregateId, version].join('#'),
+      MessageGroupId: [eventStoreId, aggregateId].join('#'),
     });
   });
 
@@ -82,7 +97,7 @@ describe('SQSMessageQueueAdapter', () => {
     > = 1;
     assertMessages;
 
-    await adapter.publishMessages([messageMock, otherMessageMock]);
+    await adapter.publishMessages([message, otherMessage]);
 
     // regularly check if vitest matchers are available (toHaveReceivedCommandWith)
     // https://github.com/m-radzikowski/aws-sdk-client-mock/issues/139
@@ -90,12 +105,45 @@ describe('SQSMessageQueueAdapter', () => {
     expect(sqsClientMock.call(0).args[0].input).toMatchObject({
       Entries: [
         {
-          Id: `${messageMock.eventStoreId}-${messageMock.event.aggregateId}-${messageMock.event.version}`,
-          MessageBody: JSON.stringify(messageMock),
+          Id: [eventStoreId, aggregateId, version].join('#'),
+          MessageBody: JSON.stringify(message),
         },
         {
-          Id: `${otherMessageMock.eventStoreId}-${otherMessageMock.event.aggregateId}-${otherMessageMock.event.version}`,
-          MessageBody: JSON.stringify(otherMessageMock),
+          Id: [eventStoreId, aggregateId, otherVersion].join('#'),
+          MessageBody: JSON.stringify(otherMessage),
+        },
+      ],
+      QueueUrl: queueUrlMock,
+    });
+  });
+
+  it('appends MessageDeduplicationIds & MessageGroupIds if queue is of type fifo', async () => {
+    const adapter = new SQSMessageQueueAdapter({
+      queueUrl: queueUrlMock,
+      sqsClient: sqsClientMock as unknown as SQSClient,
+      fifo: true,
+    });
+
+    await adapter.publishMessages([message, otherMessage]);
+
+    // regularly check if vitest matchers are available (toHaveReceivedCommandWith)
+    // https://github.com/m-radzikowski/aws-sdk-client-mock/issues/139
+    expect(sqsClientMock.calls()).toHaveLength(1);
+    expect(sqsClientMock.call(0).args[0].input).toMatchObject({
+      Entries: [
+        {
+          MessageDeduplicationId: [eventStoreId, aggregateId, version].join(
+            '#',
+          ),
+          MessageGroupId: [eventStoreId, aggregateId].join('#'),
+        },
+        {
+          MessageDeduplicationId: [
+            eventStoreId,
+            aggregateId,
+            otherVersion,
+          ].join('#'),
+          MessageGroupId: [eventStoreId, aggregateId].join('#'),
         },
       ],
       QueueUrl: queueUrlMock,
@@ -109,7 +157,7 @@ describe('SQSMessageQueueAdapter', () => {
     });
 
     await adapter.publishMessages(
-      Array.from({ length: SQS_MAX_MESSAGE_BATCH_SIZE + 1 }, () => messageMock),
+      Array.from({ length: SQS_MAX_MESSAGE_BATCH_SIZE + 1 }, () => message),
     );
 
     // regularly check if vitest matchers are available (toHaveReceivedCommandWith)
@@ -123,14 +171,14 @@ describe('SQSMessageQueueAdapter', () => {
       sqsClient: sqsClientMock as unknown as SQSClient,
     });
 
-    await adapter.publishMessage(messageMock);
+    await adapter.publishMessage(message);
 
     // regularly check if vitest matchers are available (toHaveReceivedCommandWith)
     // https://github.com/m-radzikowski/aws-sdk-client-mock/issues/139
     expect(sqsClientMock.calls()).toHaveLength(1);
     expect(sqsClientMock.call(0).args[0].input).toMatchObject({
       QueueUrl: queueUrlMock,
-      MessageBody: JSON.stringify(messageMock),
+      MessageBody: JSON.stringify(message),
     });
   });
 });
