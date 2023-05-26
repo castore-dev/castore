@@ -50,6 +50,16 @@ const appMessageQueue = new NotificationMessageQueue({
 
 This will directly plug your MessageQueue to SQS 🙌
 
+If your queue is of type FIFO, don't forget to specify it in the constructor:
+
+```ts
+const messageQueueAdapter = new SQSMessageQueueAdapter({
+  queueUrl: 'https://sqs.us-east-1.amazonaws.com/111122223333/my-super-queue',
+  sqsClient,
+  fifo: true,
+});
+```
+
 ## 🤔 How it works
 
 When publishing a message, it is JSON stringified and passed as the record body.
@@ -70,6 +80,18 @@ When publishing a message, it is JSON stringified and passed as the record body.
   }",
   ... // <= Other technical SQS properties
 }
+```
+
+If your queue is of type FIFO, the `MessageGroupId` and `MessageDeduplicationId` will be derived from a combination of the `eventStoreId`, `aggregateId` and `version`:
+
+```ts
+// 👇 Entry example
+const Entry = {
+  MessageBody: JSON.stringify({ ... }),
+  MessageGroupId: "POKEMONS#123",
+  MessageDeduplicationId: "POKEMONS#123#1",
+  ... // <= Other technical SQS properties
+};
 ```
 
 On the worker side, you can use the `SQSMessageQueueMessage` and `SQSMessageQueueMessageBody` TS types to type your argument:
