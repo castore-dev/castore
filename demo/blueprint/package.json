@@ -27,7 +27,8 @@
     "watch": "rm -rf dist && concurrently 'yarn:package-* --watch'"
   },
   "dependencies": {
-    "@babel/runtime": "^7.18.3"
+    "@babel/runtime": "^7.18.3",
+    "@castore/json-schema-command": "workspace:"
   },
   "devDependencies": {
     "@babel/cli": "^7.17.6",
@@ -36,7 +37,6 @@
     "@babel/preset-env": "^7.16.11",
     "@babel/preset-typescript": "^7.16.7",
     "@castore/core": "workspace:",
-    "@castore/json-schema-command": "workspace:",
     "@castore/json-schema-event": "workspace:",
     "@types/node": "^17.0.29",
     "@zerollup/ts-transform-paths": "^1.7.18",
