@@ -1,5 +1,7 @@
 export class UndefinedMessageQueueAdapterError extends Error {
   constructor({ messageQueueId }: { messageQueueId: string }) {
-    super(`Storage Adapter undefined for event store ${messageQueueId}`);
+    super(
+      `Message Queue Adapter undefined for message queue ${messageQueueId}`,
+    );
   }
 }
