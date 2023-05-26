@@ -138,5 +138,19 @@ module.exports = {
         '@typescript-eslint/switch-exhaustiveness-check': 'error',
       },
     },
+    {
+      files: ['**/src/**'],
+      excludedFiles: ['**/*.test.ts?(x)'],
+      rules: {
+        'import/no-extraneous-dependencies': [
+          'error',
+          {
+            devDependencies: false,
+            optionalDependencies: false,
+            peerDependencies: true,
+          },
+        ],
+      },
+    },
   ],
 };
