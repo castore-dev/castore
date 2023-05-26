@@ -117,6 +117,9 @@ const parseGroupedEvents = (
   };
 };
 
+/**
+ * @deprecated "use DynamoDbSingleTableEventStorageAdapter instead: https://github.com/castore-dev/castore/blob/main/packages/dynamodb-event-storage-adapter/README.md#table-of-content"
+ */
 export class DynamoDbEventStorageAdapter implements StorageAdapter {
   getEvents: StorageAdapter['getEvents'];
   getPushEventInput: (eventDetail: EventDetail) => PutItemCommandInput;

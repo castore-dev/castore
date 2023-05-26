@@ -1,7 +1,7 @@
 import { readdirSync, readFileSync, writeFileSync } from 'fs';
 import { join } from 'path';
 
-const newVersionTag = process.argv[2] as string | undefined;
+const newVersionTag = process.argv[2];
 
 const semanticVersioningRegex =
   /^v(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?:-((?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\.(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\+([0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?$/;
@@ -15,7 +15,9 @@ if (
 
 const NEW_VERSION = newVersionTag.slice(1);
 
-const VERSION_MAJOR = (newVersionTag.match(semanticVersioningRegex) ?? [])[1];
+const [VERSION_MAJOR] = newVersionTag.match(semanticVersioningRegex) as [
+  string,
+];
 
 type PackageJson = {
   version?: string;
