@@ -25,7 +25,7 @@
     "package": "nx run-many --target=package --all --parallel=4",
     "postinstall": "husky install && syncpack format",
     "resolve-audit": "resolve-audit --yarn",
-    "set-packages-versions": "yarn ts-node scripts/setPackagesVersions",
+    "set-packages-versions": "ts-node scripts/setPackagesVersions",
     "test": "nx run-many --target=test --all",
     "test-affected": "nx affected --target=test",
     "test-circular": "yarn depcruise --validate dependency-cruiser.js .",
