@@ -6,7 +6,11 @@ module.exports = {
     ...baseConfig.options,
     exclude: {
       ...baseConfig.options.exclude,
-      path: ['src/event/groupedEvent.ts'],
+      path: [
+        'src/event/groupedEvent.ts',
+        // type dependency only
+        'src/connectedEventStore/publishPushedEvent.ts',
+      ],
     },
   },
 };
