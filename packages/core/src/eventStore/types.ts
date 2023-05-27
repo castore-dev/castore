@@ -87,6 +87,11 @@ export type EventGroupPusherResponse<GROUPED_EVENTS extends GroupedEvent[]> =
       : never
     : [];
 
+export type OnEventPushed<$EVENT_DETAILS, $AGGREGATE> = (props: {
+  event: $EVENT_DETAILS;
+  nextAggregate?: $AGGREGATE;
+}) => Promise<void>;
+
 export type GetAggregateOptions = {
   maxVersion?: number;
 };

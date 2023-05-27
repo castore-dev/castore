@@ -11,23 +11,13 @@ import type {
   AggregateGetter,
   AggregateSimulator,
   EventStore,
+  OnEventPushed,
 } from '~/eventStore';
-import {
-  EventStoreNotificationMessage,
-  NotificationMessageBus,
-  NotificationMessageQueue,
-  EventStoreStateCarryingMessage,
-  StateCarryingMessageBus,
-  StateCarryingMessageQueue,
-} from '~/messaging';
+import type { EventStoreMessageChannel } from '~/messaging';
 import type { StorageAdapter } from '~/storageAdapter';
 import type { $Contravariant } from '~/utils';
 
-type MessageChannel<EVENT_STORE extends EventStore> =
-  | NotificationMessageQueue<EVENT_STORE>
-  | NotificationMessageBus<EVENT_STORE>
-  | StateCarryingMessageQueue<EVENT_STORE>
-  | StateCarryingMessageBus<EVENT_STORE>;
+import { publishPushedEvent } from './publishPushedEvent';
 
 export class ConnectedEventStore<
   EVENT_STORE_ID extends string = string,
@@ -41,7 +31,7 @@ export class ConnectedEventStore<
   AGGREGATE extends Aggregate = ReturnType<REDUCER>,
   $AGGREGATE extends Aggregate = $Contravariant<AGGREGATE, Aggregate>,
   MESSAGE_CHANNEL extends Pick<
-    MessageChannel<
+    EventStoreMessageChannel<
       EventStore<
         EVENT_STORE_ID,
         EVENT_TYPES,
@@ -54,7 +44,7 @@ export class ConnectedEventStore<
     >,
     'publishMessage'
   > = Pick<
-    MessageChannel<
+    EventStoreMessageChannel<
       EventStore<
         EVENT_STORE_ID,
         EVENT_TYPES,
@@ -137,43 +127,8 @@ export class ConnectedEventStore<
 
     this.pushEvent = async (eventInput, options = {}) => {
       const response = await this.eventStore.pushEvent(eventInput, options);
-      const { event, nextAggregate } = response;
 
-      if (
-        /**
-         * @debt refactor "Create NotificationMessageChannel class w. only publish prop, extended by MessageQueues & Bus"
-         */
-        this.messageChannel instanceof NotificationMessageQueue ||
-        this.messageChannel instanceof NotificationMessageBus
-      ) {
-        await this.messageChannel.publishMessage({
-          eventStoreId: this.eventStoreId,
-          event,
-        } as EventStoreNotificationMessage<this['eventStore']>);
-      }
-
-      if (
-        /**
-         * @debt refactor "Create StateCarryingMessageChannel class w. only publish prop, extended by MessageQueues & Bus"
-         */
-        this.messageChannel instanceof StateCarryingMessageQueue ||
-        this.messageChannel instanceof StateCarryingMessageBus
-      ) {
-        let aggregate: AGGREGATE | undefined = nextAggregate;
-
-        if (aggregate === undefined) {
-          const { aggregateId } = event;
-          aggregate = (
-            await this.getAggregate(aggregateId, { maxVersion: event.version })
-          ).aggregate;
-        }
-
-        await this.messageChannel.publishMessage({
-          eventStoreId: this.eventStoreId,
-          event,
-          aggregate,
-        } as EventStoreStateCarryingMessage<this['eventStore']>);
-      }
+      await publishPushedEvent(this, response);
 
       return response;
     };
@@ -191,5 +146,24 @@ export class ConnectedEventStore<
 
   get storageAdapter(): StorageAdapter | undefined {
     return this.eventStore.storageAdapter;
+  }
+
+  set onEventPushed(
+    onEventPushed: OnEventPushed<$EVENT_DETAIL, $AGGREGATE> | undefined,
+  ) {
+    this.eventStore.onEventPushed = onEventPushed;
+  }
+
+  get onEventPushed(): OnEventPushed<$EVENT_DETAIL, $AGGREGATE> {
+    return async props => {
+      if (this.eventStore.onEventPushed !== undefined) {
+        await this.eventStore.onEventPushed(props);
+      }
+
+      await publishPushedEvent(
+        this,
+        props as unknown as { event: EVENT_DETAIL; nextAggregate?: AGGREGATE },
+      );
+    };
   }
 }

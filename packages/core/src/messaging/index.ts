@@ -7,3 +7,4 @@ export type {
   EventStoreNotificationMessage,
   EventStoreStateCarryingMessage,
 } from './message';
+export type { EventStoreMessageChannel } from './messageChannel';
