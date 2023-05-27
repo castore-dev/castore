@@ -16,16 +16,16 @@ export const ashPokemonGameStartedEvent: EventStoreEventsDetails<
   },
 };
 
-export const ashPokemonCatchedEvent: EventStoreEventsDetails<
+export const ashPokemonCaughtEvent: EventStoreEventsDetails<
   typeof trainersEventStore
 > = {
   aggregateId: ashId,
   version: 2,
-  type: 'POKEMON_CATCHED',
+  type: 'POKEMON_CAUGHT',
   timestamp: '2023-01-01T00:00:00.000Z',
   payload: {
     pokemonId: 'pikachu-id',
   },
 };
 
-export const ashEvents = [ashPokemonGameStartedEvent, ashPokemonCatchedEvent];
+export const ashEvents = [ashPokemonGameStartedEvent, ashPokemonCaughtEvent];

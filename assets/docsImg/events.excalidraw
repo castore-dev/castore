@@ -346,11 +346,11 @@
       "locked": false,
       "fontSize": 28,
       "fontFamily": 3,
-      "text": "POKEMON\nCATCHED",
+      "text": "POKEMON\nCAUGHT",
       "textAlign": "center",
       "verticalAlign": "top",
       "containerId": null,
-      "originalText": "POKEMON\nCATCHED",
+      "originalText": "POKEMON\nCAUGHT",
       "lineHeight": 1.2
     },
     {

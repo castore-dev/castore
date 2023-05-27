@@ -5,5 +5,5 @@ export type PokemonAggregate = Aggregate & {
   level: number;
 } & (
     | { status: 'wild'; trainerId?: undefined }
-    | { status: 'catched'; trainerId: string }
+    | { status: 'caught'; trainerId: string }
   );

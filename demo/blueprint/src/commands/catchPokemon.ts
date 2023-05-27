@@ -35,8 +35,8 @@ export const catchPokemonCommand = new JSONSchemaCommand({
     }
 
     const { version: pokemonVersion, status: pokemonStatus } = pokemonAggregate;
-    if (pokemonStatus === 'catched') {
-      throw new Error('Pokemon already catched');
+    if (pokemonStatus === 'caught') {
+      throw new Error('Pokemon already caught');
     }
 
     const { version: trainerVersion } = trainerAggregate;
@@ -45,7 +45,7 @@ export const catchPokemonCommand = new JSONSchemaCommand({
       pokemonsStore.groupEvent({
         aggregateId: pokemonId,
         version: pokemonVersion + 1,
-        type: 'CATCHED_BY_TRAINER',
+        type: 'CAUGHT_BY_TRAINER',
         payload: {
           trainerId,
         },
@@ -53,7 +53,7 @@ export const catchPokemonCommand = new JSONSchemaCommand({
       trainersStore.groupEvent({
         aggregateId: trainerId,
         version: trainerVersion + 1,
-        type: 'POKEMON_CATCHED',
+        type: 'POKEMON_CAUGHT',
         payload: {
           pokemonId,
         },

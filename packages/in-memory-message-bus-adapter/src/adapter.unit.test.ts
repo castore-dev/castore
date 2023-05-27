@@ -11,7 +11,7 @@ import {
   pokemonsEventStore,
   trainersEventStore,
   pikachuAppearedEvent,
-  pikachuCatchedEvent,
+  pikachuCaughtEvent,
 } from '@castore/demo-blueprint';
 
 import { InMemoryMessageBusAdapter } from './adapter';
@@ -30,11 +30,11 @@ const pikachuAppearedMessage: EventStoreNotificationMessage<
   event: pikachuAppearedEvent,
 };
 
-const pikachuCatchedMessage: EventStoreNotificationMessage<
+const pikachuCaughtMessage: EventStoreNotificationMessage<
   typeof pokemonsEventStore
 > = {
   eventStoreId: 'POKEMONS',
-  event: pikachuCatchedEvent,
+  event: pikachuCaughtEvent,
 };
 
 const sleep = (ms: number): Promise<void> =>
@@ -89,19 +89,19 @@ describe('in-memory message queue adapter', () => {
       );
 
       await inMemoryMessageBusAdapter.publishMessage(pikachuAppearedMessage);
-      await inMemoryMessageBusAdapter.publishMessage(pikachuCatchedMessage);
+      await inMemoryMessageBusAdapter.publishMessage(pikachuCaughtMessage);
 
       expect(handler1).toHaveBeenCalledOnce();
       expect(handler1).toHaveBeenCalledWith(pikachuAppearedMessage);
 
       inMemoryMessageBusAdapter.on(
-        { eventStoreId: 'POKEMONS', eventType: 'CATCHED_BY_TRAINER' },
+        { eventStoreId: 'POKEMONS', eventType: 'CAUGHT_BY_TRAINER' },
         handler1,
       );
 
-      await inMemoryMessageBusAdapter.publishMessage(pikachuCatchedMessage);
+      await inMemoryMessageBusAdapter.publishMessage(pikachuCaughtMessage);
       expect(handler1).toHaveBeenCalledTimes(2);
-      expect(handler1).toHaveBeenCalledWith(pikachuCatchedMessage);
+      expect(handler1).toHaveBeenCalledWith(pikachuCaughtMessage);
     });
 
     it('calls handler only once, event if matches several filter patterns', async () => {
@@ -123,7 +123,7 @@ describe('in-memory message queue adapter', () => {
 
     it('statically rejects invalid handlers', async () => {
       inMemoryMessageBusAdapter.on(
-        { eventStoreId: 'POKEMONS', eventType: 'CATCHED_BY_TRAINER' },
+        { eventStoreId: 'POKEMONS', eventType: 'CAUGHT_BY_TRAINER' },
         // @ts-expect-error handler doesn't handle POKEMONS event store
         handler3,
       );

@@ -14,7 +14,7 @@ const eventStoreId = pokemonsEventStore.eventStoreId;
 
 describe('publishPushedEvent', () => {
   const aggregateId = 'pokemon-1';
-  const type = 'POKEMON_CATCHED';
+  const type = 'POKEMON_CAUGHT';
   const version = 2;
   const timestamp = '2022-01-01T00:00:00.000Z';
 

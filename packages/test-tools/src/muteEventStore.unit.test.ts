@@ -1,6 +1,6 @@
 import {
   pikachuAppearedEvent,
-  pikachuCatchedEvent,
+  pikachuCaughtEvent,
   pokemonsEventStore,
   pikachuId,
 } from '@castore/demo-blueprint';
@@ -25,10 +25,10 @@ describe('muteEventStore', () => {
   });
 
   it('adds a a new event', async () => {
-    await pokemonsEventStore.pushEvent(pikachuCatchedEvent);
+    await pokemonsEventStore.pushEvent(pikachuCaughtEvent);
 
     expect(await pokemonsEventStore.getEvents(pikachuId)).toStrictEqual({
-      events: [pikachuAppearedEvent, pikachuCatchedEvent],
+      events: [pikachuAppearedEvent, pikachuCaughtEvent],
     });
   });
 });

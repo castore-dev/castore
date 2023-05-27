@@ -1,11 +1,11 @@
 import { EventStore } from '@castore/core';
 
 import type { TrainerAggregate } from './aggregate';
-import { gameStartedEvent, pokemonCatchedEvent } from './events';
+import { gameStartedEvent, pokemonCaughtEvent } from './events';
 
 export const trainersEventStore = new EventStore({
   eventStoreId: 'TRAINERS',
-  eventStoreEvents: [gameStartedEvent, pokemonCatchedEvent],
+  eventStoreEvents: [gameStartedEvent, pokemonCaughtEvent],
   reduce: (trainerAggregate: TrainerAggregate, event): TrainerAggregate => {
     const { version, aggregateId } = event;
 
@@ -17,18 +17,18 @@ export const trainersEventStore = new EventStore({
           aggregateId,
           version: event.version,
           name: trainerName,
-          catchedPokemonIds: [],
-          catchedPokemonsCount: 0,
+          caughtPokemonIds: [],
+          caughtPokemonsCount: 0,
         };
       }
-      case 'POKEMON_CATCHED': {
+      case 'POKEMON_CAUGHT': {
         const { pokemonId } = event.payload;
 
         return {
           ...trainerAggregate,
           version,
-          catchedPokemonIds: [...trainerAggregate.catchedPokemonIds, pokemonId],
-          catchedPokemonsCount: trainerAggregate.catchedPokemonsCount + 1,
+          caughtPokemonIds: [...trainerAggregate.caughtPokemonIds, pokemonId],
+          caughtPokemonsCount: trainerAggregate.caughtPokemonsCount + 1,
         };
       }
     }

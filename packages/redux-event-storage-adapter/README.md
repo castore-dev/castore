@@ -54,7 +54,7 @@ const CatchPokemonButton = ({ pokemonId }) => (
     onClick={async () => {
       await pokemonsEventStore.pushEvent({
         aggregateId: pokemonId,
-        type: 'POKEMON_CATCHED',
+        type: 'POKEMON_CAUGHT',
         version: currentPokemonVersion + 1,
       });
     }}

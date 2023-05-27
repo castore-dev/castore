@@ -32,8 +32,8 @@ export const pokemonAppearedEvent = new EventType<
   { name: string; level: number }
 >({ type: 'POKEMON_APPEARED' });
 
-export const pokemonCatchedEvent = new EventType({
-  type: 'POKEMON_CATCHED',
+export const pokemonCaughtEvent = new EventType({
+  type: 'POKEMON_CAUGHT',
 });
 
 export const pokemonLeveledUpEvent = new EventType({
@@ -42,7 +42,7 @@ export const pokemonLeveledUpEvent = new EventType({
 
 export type PokemonEventDetails =
   | EventTypeDetail<typeof pokemonAppearedEvent>
-  | EventTypeDetail<typeof pokemonCatchedEvent>
+  | EventTypeDetail<typeof pokemonCaughtEvent>
   | EventTypeDetail<typeof pokemonLeveledUpEvent>;
 
 export type PokemonAggregate = {
@@ -50,7 +50,7 @@ export type PokemonAggregate = {
   version: number;
   name: string;
   level: number;
-  status: 'wild' | 'catched';
+  status: 'wild' | 'caught';
 };
 
 export const pikachuId = 'pikachuId';
@@ -61,10 +61,10 @@ export const pikachuAppearedEvent: PokemonEventDetails = {
   timestamp: '2022',
   payload: { name: 'Pikachu', level: 42 },
 };
-export const pikachuCatchedEvent: PokemonEventDetails = {
+export const pikachuCaughtEvent: PokemonEventDetails = {
   aggregateId: pikachuId,
   version: 2,
-  type: 'POKEMON_CATCHED',
+  type: 'POKEMON_CAUGHT',
   timestamp: '2023',
 };
 export const pikachuLeveledUpEvent: PokemonEventDetails = {
@@ -75,7 +75,7 @@ export const pikachuLeveledUpEvent: PokemonEventDetails = {
 };
 export const pikachuEventsMocks = [
   pikachuAppearedEvent,
-  pikachuCatchedEvent,
+  pikachuCaughtEvent,
   pikachuLeveledUpEvent,
 ];
 
@@ -97,11 +97,11 @@ export const pokemonsReducer = (
         status: 'wild',
       };
     }
-    case 'POKEMON_CATCHED':
+    case 'POKEMON_CAUGHT':
       return {
         ...pokemonAggregate,
         version,
-        status: 'catched',
+        status: 'caught',
       };
     case 'POKEMON_LEVELED_UP':
       return {
@@ -116,7 +116,7 @@ export const pokemonsEventStore = new EventStore({
   eventStoreId: 'POKEMONS',
   eventStoreEvents: [
     pokemonAppearedEvent,
-    pokemonCatchedEvent,
+    pokemonCaughtEvent,
     pokemonLeveledUpEvent,
   ],
   reduce: pokemonsReducer,

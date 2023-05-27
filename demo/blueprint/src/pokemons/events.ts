@@ -20,8 +20,8 @@ export const appearedEvent = new JSONSchemaEventType({
   } as const,
 });
 
-export const catchedByTrainerEvent = new JSONSchemaEventType({
-  type: 'CATCHED_BY_TRAINER',
+export const caughtByTrainerEvent = new JSONSchemaEventType({
+  type: 'CAUGHT_BY_TRAINER',
   payloadSchema: {
     type: 'object',
     properties: {

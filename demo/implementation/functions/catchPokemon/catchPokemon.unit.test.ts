@@ -56,7 +56,7 @@ describe('Commands - catchPokemon', () => {
       {
         aggregateId: pikachuId,
         version: 2,
-        type: 'CATCHED_BY_TRAINER',
+        type: 'CAUGHT_BY_TRAINER',
         timestamp,
         payload: { trainerId: ashId },
       },
@@ -68,7 +68,7 @@ describe('Commands - catchPokemon', () => {
       {
         aggregateId: ashId,
         version: 2,
-        type: 'POKEMON_CATCHED',
+        type: 'POKEMON_CAUGHT',
         timestamp,
         payload: { pokemonId: pikachuId },
       },
