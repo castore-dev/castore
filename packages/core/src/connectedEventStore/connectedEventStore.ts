@@ -11,6 +11,7 @@ import type {
   AggregateGetter,
   AggregateSimulator,
   EventStore,
+  OnEventPushed,
 } from '~/eventStore';
 import type { EventStoreMessageChannel } from '~/messaging';
 import type { StorageAdapter } from '~/storageAdapter';
@@ -145,5 +146,24 @@ export class ConnectedEventStore<
 
   get storageAdapter(): StorageAdapter | undefined {
     return this.eventStore.storageAdapter;
+  }
+
+  set onEventPushed(
+    onEventPushed: OnEventPushed<$EVENT_DETAIL, $AGGREGATE> | undefined,
+  ) {
+    this.eventStore.onEventPushed = onEventPushed;
+  }
+
+  get onEventPushed(): OnEventPushed<$EVENT_DETAIL, $AGGREGATE> {
+    return async props => {
+      if (this.eventStore.onEventPushed !== undefined) {
+        await this.eventStore.onEventPushed(props);
+      }
+
+      await publishPushedEvent(
+        this,
+        props as unknown as { event: EVENT_DETAIL; nextAggregate?: AGGREGATE },
+      );
+    };
   }
 }

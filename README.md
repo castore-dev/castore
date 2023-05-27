@@ -369,6 +369,7 @@ const pokemonsEventStore = new EventStore({
 > - <code>eventStoreId <i>(string)</i></code>: A string identifying the event store
 > - <code>eventStoreEvents <i>(EventType[])</i></code>: The list of event types in the event store
 > - <code>reduce <i>(EventType[])</i></code>: A [reducer function](#--reducer) that can be applied to the store event types
+> - <code>onEventPushed <i>(?(pushEventResponse: PushEventResponse => Promise\<void\>))</i></code>: To run a callback after events are pushed (input is exactly the return value of the `pushEvent` method)
 > - <code>storageAdapter <i>(?EventStorageAdapter)</i></code>: See [`EventStorageAdapter`](#--eventstorageadapter)
 >
 > ☝️ The return type of the `reducer` is used to infer the `Aggregate` type of the `EventStore`, so it is important to type it explicitely.
@@ -394,6 +395,13 @@ const pokemonsEventStore = new EventStore({
 > ```ts
 > const reducer = pokemonsEventStore.reduce;
 > // => pokemonsReducer
+> ```
+>
+> - <code>onEventPushed <i>(?(pushEventResponse: PushEventResponse) => Promise\<void\>)</i></code>: The callback to run after events are pushed
+>
+> ```ts
+> const onEventPushed = pokemonsEventStore.onEventPushed;
+> // => undefined (we did not provide one in this example)
 > ```
 >
 > - <code>storageAdapter <i>?EventStorageAdapter</i></code>: See [`EventStorageAdapter`](#--eventstorageadapter)
@@ -805,8 +813,6 @@ Like the `pushEvent` API, event groups are designed to throw an `EventAlreadyExi
 > ☝️ When pushing event groups on several event stores, they must use the same type of event storage adapters.
 >
 > ☝️ Also, be aware of technical constraints of your event storage solution. For instance, the [`DynamoDBEventStorageAdapter`](./packages/dynamodb-event-storage-adapter/README.md)'s implementation is based on [DynamoDB transactions](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/transaction-apis.html), which means that the event stores tables must be in the same region, and that a groups cannot contain more than 100 events.
->
-> ☝️ Finally, event groups are not available in [Connected Event Stores](#--connectedeventstore) yet.
 
 ## 💪 Advanced usage
 
@@ -1137,7 +1143,7 @@ const pokemonMessagesListener = async (
 
 If your storage solution exposes data streaming capabilities (such as [DynamoDB streams](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/Streams.html)), you can leverage them to push your freshly written events to a message bus or queue.
 
-You can also use the `ConnectedEventStore` class. Its interface matches the `EventStore` one, but successfully pushing a new event will automatically forward it to a message queue or bus:
+You can also use the `ConnectedEventStore` class. Its interface matches the `EventStore` one, but successfully pushing a new event will automatically forward it to a message queue/bus, and pushing a event group will also automatically forward the events to their respective message queues/buses:
 
 ```ts
 import { ConnectedEventStore } from '@castore/core';
@@ -1158,6 +1164,8 @@ await connectedPokemonsEventStore.pushEvent({
   ...
 });
 ```
+
+> Note that setting a connected event store `storageAdapter` and `onEventPushed` properties will override those of the original event store instead.
 
 If the message bus or queue is a state-carrying one, the `pushEvent` method will re-fetch the aggregate to append it to the message before publishing it. You can reduce this overhead by providing the previous aggregate as an option:
 

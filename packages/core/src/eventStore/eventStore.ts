@@ -11,6 +11,7 @@ import { UndefinedStorageAdapterError } from './errors/undefinedStorageAdapter';
 import type {
   AggregateIdsLister,
   EventPusher,
+  OnEventPushed,
   EventGroupPusher,
   EventGroupPusherResponse,
   EventsGetter,
@@ -45,14 +46,14 @@ export class EventStore<
   ) => {
     const [groupedEventsHead, ...groupedEventsTail] = groupedEvents;
 
-    const { eventGroup } =
+    const { eventGroup: eventGroupWithoutAggregates } =
       await groupedEventsHead.eventStorageAdapter.pushEventGroup(
         groupedEventsHead,
         ...groupedEventsTail,
       );
 
-    return {
-      eventGroup: eventGroup.map(({ event }, eventIndex) => {
+    const eventGroupWithAggregates = eventGroupWithoutAggregates.map(
+      ({ event }, eventIndex) => {
         const groupedEvent = groupedEvents[eventIndex];
 
         let nextAggregate: Aggregate | undefined = undefined;
@@ -66,8 +67,22 @@ export class EventStore<
         }
 
         return { event, ...(nextAggregate ? { nextAggregate } : {}) };
-      }) as EventGroupPusherResponse<GROUPED_EVENTS>,
-    };
+      },
+    ) as EventGroupPusherResponse<GROUPED_EVENTS>;
+
+    await Promise.all(
+      groupedEvents.map((groupedEvent, eventIndex) => {
+        const eventStore = groupedEvent.eventStore;
+        const pushEventResponse = eventGroupWithAggregates[eventIndex];
+
+        return pushEventResponse !== undefined &&
+          eventStore?.onEventPushed !== undefined
+          ? eventStore.onEventPushed(pushEventResponse)
+          : null;
+      }),
+    );
+
+    return { eventGroup: eventGroupWithAggregates };
   };
 
   _types?: {
@@ -87,6 +102,7 @@ export class EventStore<
 
   getEvents: EventsGetter<EVENT_DETAILS>;
   pushEvent: EventPusher<EVENT_DETAILS, $EVENT_DETAILS, AGGREGATE, $AGGREGATE>;
+  onEventPushed?: OnEventPushed<$EVENT_DETAILS, $AGGREGATE>;
   groupEvent: EventGrouper<
     EVENT_DETAILS,
     $EVENT_DETAILS,
@@ -172,10 +188,21 @@ export class EventStore<
         nextAggregate = this.reduce(prevAggregate, event) as AGGREGATE;
       }
 
-      return {
+      const response = {
         event: event as unknown as EVENT_DETAILS,
         ...(nextAggregate ? { nextAggregate } : {}),
       };
+
+      if (this.onEventPushed !== undefined) {
+        await this.onEventPushed(
+          response as unknown as {
+            event: $EVENT_DETAILS;
+            nextAggregate?: $AGGREGATE;
+          },
+        );
+      }
+
+      return response;
     };
 
     this.groupEvent = (eventDetail, { prevAggregate } = {}) => {
