@@ -7,13 +7,13 @@ import {
   PokemonAggregate,
   pokemonsEventStore,
   pokemonAppearedEvent,
-  pokemonCatchedEvent,
+  pokemonCaughtEvent,
   pokemonLeveledUpEvent,
   pokemonsReducer,
   pikachuId,
   pikachuAppearedEvent,
   pikachuLeveledUpEvent,
-  pikachuCatchedEvent,
+  pikachuCaughtEvent,
   pikachuEventsMocks,
   getEventsMock,
   pushEventMock,
@@ -62,7 +62,7 @@ describe('event store', () => {
 
     expect(pokemonsEventStore.eventStoreEvents).toStrictEqual([
       pokemonAppearedEvent,
-      pokemonCatchedEvent,
+      pokemonCaughtEvent,
       pokemonLeveledUpEvent,
     ]);
   });
@@ -173,7 +173,7 @@ describe('event store', () => {
         {
           prevAggregate: pokemonsEventStore.buildAggregate([
             pikachuAppearedEvent,
-            pikachuCatchedEvent,
+            pikachuCaughtEvent,
           ]),
         },
       );
@@ -182,7 +182,7 @@ describe('event store', () => {
         event: pikachuLeveledUpEvent,
         nextAggregate: pokemonsEventStore.buildAggregate([
           pikachuAppearedEvent,
-          pikachuCatchedEvent,
+          pikachuCaughtEvent,
           pikachuLeveledUpEvent,
         ]),
       });
@@ -214,7 +214,7 @@ describe('event store', () => {
     it('appends the prevAggregate if one has been provided', () => {
       const prevAggregate = pokemonsEventStore.buildAggregate([
         pikachuAppearedEvent,
-        pikachuCatchedEvent,
+        pikachuCaughtEvent,
       ]);
 
       const groupedEvent = pokemonsEventStore.groupEvent(
@@ -295,14 +295,14 @@ describe('event store', () => {
     it('returns the next aggregate if prev aggregate has been provided', async () => {
       pushEventGroupMock.mockResolvedValue({
         eventGroup: [
-          { event: pikachuCatchedEvent },
+          { event: pikachuCaughtEvent },
           { event: charizardLeveledUpEvent },
         ],
       });
 
       const eventGroup = [
         new GroupedEvent({
-          event: pikachuCatchedEvent,
+          event: pikachuCaughtEvent,
           prevAggregate: pokemonsEventStore.buildAggregate([
             pikachuAppearedEvent,
           ]),
@@ -320,7 +320,7 @@ describe('event store', () => {
       expect(response.eventGroup[0].nextAggregate).toStrictEqual(
         pokemonsEventStore.buildAggregate([
           pikachuAppearedEvent,
-          pikachuCatchedEvent,
+          pikachuCaughtEvent,
         ]),
       );
     });

@@ -20,12 +20,12 @@ export const pikachuAppearedEvent: EventStoreEventsDetails<
   },
 };
 
-export const pikachuCatchedEvent: EventStoreEventsDetails<
+export const pikachuCaughtEvent: EventStoreEventsDetails<
   typeof pokemonsEventStore
 > = {
   aggregateId: pikachuId,
   version: 2,
-  type: 'CATCHED_BY_TRAINER',
+  type: 'CAUGHT_BY_TRAINER',
   timestamp: '2023-01-01T00:00:00.000Z',
   payload: {
     trainerId: 'ash-ketchum-id',
@@ -43,6 +43,6 @@ export const pikachuLevelledUpEvent: EventStoreEventsDetails<
 
 export const pikachuEvents = [
   pikachuAppearedEvent,
-  pikachuCatchedEvent,
+  pikachuCaughtEvent,
   pikachuLevelledUpEvent,
 ];

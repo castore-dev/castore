@@ -12,8 +12,8 @@ export const gameStartedEvent = new JSONSchemaEventType({
   } as const,
 });
 
-export const pokemonCatchedEvent = new JSONSchemaEventType({
-  type: 'POKEMON_CATCHED',
+export const pokemonCaughtEvent = new JSONSchemaEventType({
+  type: 'POKEMON_CAUGHT',
   payloadSchema: {
     type: 'object',
     properties: {

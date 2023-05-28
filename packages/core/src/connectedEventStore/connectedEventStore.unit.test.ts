@@ -7,7 +7,7 @@ import {
   storageAdapterMock,
   pikachuAppearedEvent,
   pikachuLeveledUpEvent,
-  pikachuCatchedEvent,
+  pikachuCaughtEvent,
   pushEventGroupMock,
   PokemonEventDetails,
 } from '~/eventStore/eventStore.fixtures.test';
@@ -44,7 +44,7 @@ describe('ConnectedEventStore', () => {
 
   describe('pushEvent', () => {
     const aggregateId = 'pokemon-1';
-    const type = 'POKEMON_CATCHED';
+    const type = 'POKEMON_CAUGHT';
     const version = 2;
     const timestamp = '2022-01-01T00:00:00.000Z';
 
@@ -115,12 +115,12 @@ describe('ConnectedEventStore', () => {
       ]);
       const nextPikachuAggregate = pokemonsEventStore.buildAggregate([
         pikachuAppearedEvent,
-        pikachuCatchedEvent,
+        pikachuCaughtEvent,
       ]);
 
       const eventGroup = [
         new GroupedEvent({
-          event: pikachuCatchedEvent,
+          event: pikachuCaughtEvent,
           prevAggregate: prevPikachuAggregate,
           eventStore: pokemonsEventStoreWithStateCarryingMessageBus,
           eventStorageAdapter: storageAdapterMock,
@@ -134,7 +134,7 @@ describe('ConnectedEventStore', () => {
 
       pushEventGroupMock.mockResolvedValue({
         eventGroup: [
-          { event: pikachuCatchedEvent },
+          { event: pikachuCaughtEvent },
           { event: charizardLeveledUpEvent },
         ],
       });
@@ -144,7 +144,7 @@ describe('ConnectedEventStore', () => {
       expect(publishPushedEventMock).toHaveBeenCalledTimes(2);
       expect(publishPushedEventMock).toHaveBeenCalledWith(
         pokemonsEventStoreWithStateCarryingMessageBus,
-        { event: pikachuCatchedEvent, nextAggregate: nextPikachuAggregate },
+        { event: pikachuCaughtEvent, nextAggregate: nextPikachuAggregate },
       );
       expect(publishPushedEventMock).toHaveBeenCalledWith(
         pokemonsEventStoreWithNotificationMessageQueue,

@@ -5,8 +5,8 @@ import {
 import { mockClient } from 'aws-sdk-client-mock';
 
 import {
-  ashPokemonCatchedEvent,
-  pikachuCatchedEvent,
+  ashPokemonCaughtEvent,
+  pikachuCaughtEvent,
   pokemonsEventStore,
   trainersEventStore,
 } from '@castore/demo-blueprint';
@@ -44,8 +44,8 @@ describe('pushEventsTransaction', () => {
 
   it('sends correct command', async () => {
     await pushEventsTransaction([
-      formatEventForTransaction(pokemonsEventStore, pikachuCatchedEvent),
-      formatEventForTransaction(trainersEventStore, ashPokemonCatchedEvent),
+      formatEventForTransaction(pokemonsEventStore, pikachuCaughtEvent),
+      formatEventForTransaction(trainersEventStore, ashPokemonCaughtEvent),
     ]);
 
     expect(dynamoDbClientMockSeemless.calls()).toHaveLength(1);
@@ -54,9 +54,9 @@ describe('pushEventsTransaction', () => {
     );
     expect(dynamoDbClientMockSeemless.calls()[0]?.args[0].input).toStrictEqual({
       TransactItems: [
-        formatEventForTransaction(pokemonsEventStore, pikachuCatchedEvent)
+        formatEventForTransaction(pokemonsEventStore, pikachuCaughtEvent)
           .transactItem,
-        formatEventForTransaction(trainersEventStore, ashPokemonCatchedEvent)
+        formatEventForTransaction(trainersEventStore, ashPokemonCaughtEvent)
           .transactItem,
       ],
     });
@@ -67,8 +67,8 @@ describe('pushEventsTransaction', () => {
   it('uses options dynamoDbClient if one has been provided', async () => {
     await pushEventsTransaction(
       [
-        formatEventForTransaction(pokemonsEventStore, pikachuCatchedEvent),
-        formatEventForTransaction(trainersEventStore, ashPokemonCatchedEvent),
+        formatEventForTransaction(pokemonsEventStore, pikachuCaughtEvent),
+        formatEventForTransaction(trainersEventStore, ashPokemonCaughtEvent),
       ],
       { dynamoDbClient: dynamoDbClientMockOption as unknown as DynamoDBClient },
     );
@@ -81,9 +81,9 @@ describe('pushEventsTransaction', () => {
     );
     expect(dynamoDbClientMockOption.calls()[0]?.args[0].input).toStrictEqual({
       TransactItems: [
-        formatEventForTransaction(pokemonsEventStore, pikachuCatchedEvent)
+        formatEventForTransaction(pokemonsEventStore, pikachuCaughtEvent)
           .transactItem,
-        formatEventForTransaction(trainersEventStore, ashPokemonCatchedEvent)
+        formatEventForTransaction(trainersEventStore, ashPokemonCaughtEvent)
           .transactItem,
       ],
     });

@@ -228,7 +228,7 @@ See the following packages for examples:
 > >;
 >
 > // 👇 Equivalent to:
-> type PokemonCatchedEventTypeDetail = {
+> type PokemonCaughtEventTypeDetail = {
 >   aggregateId: string;
 >   version: number;
 >   timestamp: string;
@@ -244,10 +244,10 @@ See the following packages for examples:
 > import type { EventTypesDetails } from '@castore/core';
 >
 > type PokemonEventTypeDetails = EventTypesDetails<
->   [typeof pokemonAppearedEventType, typeof pokemonCatchedEventType]
+>   [typeof pokemonAppearedEventType, typeof pokemonCaughtEventType]
 > >;
 > // => EventTypeDetail<typeof pokemonAppearedEventType>
-> // | EventTypeDetail<typeof pokemonCatchedEventType>
+> // | EventTypeDetail<typeof pokemonCaughtEventType>
 > ```
 >
 > </details>
@@ -269,7 +269,7 @@ import type { Aggregate } from '@castore/core';
 interface PokemonAggregate extends Aggregate {
   name: string;
   level: number;
-  status: 'wild' | 'catched';
+  status: 'wild' | 'caught';
 }
 
 // 👇 Equivalent to:
@@ -278,7 +278,7 @@ interface PokemonAggregate {
   version: number;
   name: string;
   level: number;
-  status: 'wild' | 'catched';
+  status: 'wild' | 'caught';
 }
 ```
 
@@ -310,8 +310,8 @@ const pokemonsReducer: Reducer<PokemonAggregate, PokemonEventDetails> = (
         status: 'wild',
       };
     }
-    case 'POKEMON_CATCHED':
-      return { ...pokemonAggregate, version, status: 'catched' };
+    case 'POKEMON_CAUGHT':
+      return { ...pokemonAggregate, version, status: 'caught' };
     case 'POKEMON_LEVELED_UP':
       return {
         ...pokemonAggregate,
@@ -349,7 +349,7 @@ const pokemonsEventStore = new EventStore({
   eventStoreId: 'POKEMONS',
   eventStoreEvents: [
     pokemonAppearedEventType,
-    pokemonCatchedEventType,
+    pokemonCaughtEventType,
     pokemonLeveledUpEventType,
     ...
   ],
@@ -387,7 +387,7 @@ const pokemonsEventStore = new EventStore({
 >
 > ```ts
 > const pokemonsEventStoreEvents = pokemonsEventStore.eventStoreEvents;
-> // => [pokemonAppearedEventType, pokemonCatchedEventType...]
+> // => [pokemonAppearedEventType, pokemonCaughtEventType...]
 > ```
 >
 > - <code>reduce <i>((Aggregate, EventType) => Aggregate)</i></code>
@@ -597,7 +597,7 @@ const pokemonsEventStore = new EventStore({
 > import type { EventStoreEventsTypes } from '@castore/core';
 >
 > type PokemonEventTypes = EventStoreEventsTypes<typeof pokemonsEventStore>;
-> // => [typeof pokemonAppearedEventType, typeof pokemonCatchedEventType...]
+> // => [typeof pokemonAppearedEventType, typeof pokemonCaughtEventType...]
 > ```
 >
 > - <code>EventStoreEventsDetails</code>: Returns the union of all the `EventStore` possible events details
@@ -607,7 +607,7 @@ const pokemonsEventStore = new EventStore({
 >
 > type PokemonEventDetails = EventStoreEventsDetails<typeof pokemonsEventStore>;
 > // => EventTypeDetail<typeof pokemonAppearedEventType>
-> // | EventTypeDetail<typeof pokemonCatchedEventType>
+> // | EventTypeDetail<typeof pokemonCaughtEventType>
 > // | ...
 > ```
 >
@@ -692,7 +692,7 @@ const catchPokemonCommand = new Command({
     await pokemonsEventStore.pushEvent({
       aggregateId: pokemonId,
       version: 1,
-      type: 'POKEMON_CATCHED',
+      type: 'POKEMON_CAUGHT',
       payload: { name, level },
     });
 
@@ -781,7 +781,7 @@ A few notes on commands handlers:
 
 ### Event Groups
 
-Some commands can have an effect on several event stores, or on several aggregates of the same event store. For instance, the `CATCH_POKEMON` command could write both a `CATCHED_BY_TRAINER` event on a pokemon aggregate (changing its `status` to `'catched'`) and a `POKEMON_CATCHED` event on a trainer aggregate (appending the `pokemonId` to its `pokedex`).
+Some commands can have an effect on several event stores, or on several aggregates of the same event store. For instance, the `CATCH_POKEMON` command could write both a `CAUGHT_BY_TRAINER` event on a pokemon aggregate (changing its `status` to `'caught'`) and a `POKEMON_CAUGHT` event on a trainer aggregate (appending the `pokemonId` to its `pokedex`).
 
 ![Event Group](./assets/docsImg/eventGroup.png)
 
@@ -795,13 +795,13 @@ await EventStore.pushEventGroup(
   pokemonsEventStore.groupEvent({
     // 👇 Correctly typed
     aggregateId: 'pikachu1',
-    type: 'CATCHED_BY_TRAINER',
+    type: 'CAUGHT_BY_TRAINER',
     payload: { trainerId: 'ashKetchum' },
     ...
   }),
   trainersEventStore.groupEvent({
     aggregateId: 'ashKetchum',
-    type: 'POKEMON_CATCHED',
+    type: 'POKEMON_CAUGHT',
     payload: { pokemonId: 'pikachu1' },
     ...
   }),
@@ -1184,7 +1184,7 @@ await connectedPokemonsEventStore.pushEvent(
 
 ![Connected Event Store](./assets/docsImg/connectedEventStore.png)
 
-Compared to data streams, connected event stores have the advantage of simplicity, performances and costs. However, they **strongly decouple your storage and messaging solutions**: Make sure to anticipate any issue that might arise (consistency, non-catched errors etc.).
+Compared to data streams, connected event stores have the advantage of simplicity, performances and costs. However, they **strongly decouple your storage and messaging solutions**: Make sure to anticipate any issue that might arise (consistency, non-caught errors etc.).
 
 > <details>
 > <summary><b>🔧 Technical description</b></summary>

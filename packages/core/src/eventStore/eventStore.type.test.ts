@@ -16,11 +16,11 @@ import {
   pokemonsEventStore,
   PokemonAggregate,
   pokemonAppearedEvent,
-  pokemonCatchedEvent,
+  pokemonCaughtEvent,
   pokemonLeveledUpEvent,
   PokemonEventDetails,
   pikachuAppearedEvent,
-  pikachuCatchedEvent,
+  pikachuCaughtEvent,
 } from './eventStore.fixtures.test';
 
 // --- EXTENDS ---
@@ -101,7 +101,7 @@ assertGetAggregateOutput;
 const assertPushEventInput1: A.Equals<
   Parameters<typeof pokemonsEventStore.pushEvent>[0],
   | OptionalTimestamp<EventTypeDetail<typeof pokemonAppearedEvent>>
-  | OptionalTimestamp<EventTypeDetail<typeof pokemonCatchedEvent>>
+  | OptionalTimestamp<EventTypeDetail<typeof pokemonCaughtEvent>>
   | OptionalTimestamp<EventTypeDetail<typeof pokemonLeveledUpEvent>>
 > = 1;
 assertPushEventInput1;
@@ -126,7 +126,7 @@ assertPushEventOutput;
 const assertGroupEventInput1: A.Equals<
   Parameters<typeof pokemonsEventStore.groupEvent>[0],
   | OptionalTimestamp<EventTypeDetail<typeof pokemonAppearedEvent>>
-  | OptionalTimestamp<EventTypeDetail<typeof pokemonCatchedEvent>>
+  | OptionalTimestamp<EventTypeDetail<typeof pokemonCaughtEvent>>
   | OptionalTimestamp<EventTypeDetail<typeof pokemonLeveledUpEvent>>
 > = 1;
 assertGroupEventInput1;
@@ -165,7 +165,7 @@ assertGenericPushEventGroupOutput;
 const pushTwoPokemonsEventGroup = () =>
   EventStore.pushEventGroup(
     pokemonsEventStore.groupEvent(pikachuAppearedEvent),
-    pokemonsEventStore.groupEvent(pikachuCatchedEvent),
+    pokemonsEventStore.groupEvent(pikachuCaughtEvent),
   );
 
 const assertPushEventGroupOutput: A.Equals<

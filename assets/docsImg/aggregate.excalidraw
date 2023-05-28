@@ -345,11 +345,11 @@
       "locked": false,
       "fontSize": 28,
       "fontFamily": 3,
-      "text": "POKEMON\nCATCHED",
+      "text": "POKEMON\nCAUGHT",
       "textAlign": "center",
       "verticalAlign": "top",
       "containerId": null,
-      "originalText": "POKEMON\nCATCHED",
+      "originalText": "POKEMON\nCAUGHT",
       "lineHeight": 1.2
     },
     {
@@ -588,11 +588,11 @@
       "locked": false,
       "fontSize": 20,
       "fontFamily": 3,
-      "text": "{\n  aggregateId:\n    'pikachu1',\n  version: 3,\n  name: 'Pikachu',\n  level: 43,\n  status: 'catched'\n}",
+      "text": "{\n  aggregateId:\n    'pikachu1',\n  version: 3,\n  name: 'Pikachu',\n  level: 43,\n  status: 'caught'\n}",
       "textAlign": "left",
       "verticalAlign": "top",
       "containerId": null,
-      "originalText": "{\n  aggregateId:\n    'pikachu1',\n  version: 3,\n  name: 'Pikachu',\n  level: 43,\n  status: 'catched'\n}",
+      "originalText": "{\n  aggregateId:\n    'pikachu1',\n  version: 3,\n  name: 'Pikachu',\n  level: 43,\n  status: 'caught'\n}",
       "lineHeight": 1.2
     },
     {

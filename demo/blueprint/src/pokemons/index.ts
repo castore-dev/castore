@@ -1,14 +1,10 @@
 export type { PokemonAggregate } from './aggregate';
-export {
-  appearedEvent,
-  catchedByTrainerEvent,
-  levelledUpEvent,
-} from './events';
+export { appearedEvent, caughtByTrainerEvent, levelledUpEvent } from './events';
 export { pokemonsEventStore } from './eventStore';
 export {
   pikachuId,
   pikachuAppearedEvent,
-  pikachuCatchedEvent,
+  pikachuCaughtEvent,
   pikachuLevelledUpEvent,
   pikachuEvents,
 } from './mock';
