@@ -5,7 +5,7 @@ import type {
   StateCarryingMessageQueue,
   EventStoreNotificationMessage,
   EventStoreStateCarryingMessage,
-  MessageQueueSourceEventStores,
+  MessageChannelSourceEventStores,
 } from '@castore/core';
 
 export type SQSMessageQueueMessage = SQSEvent;
@@ -23,12 +23,12 @@ export type SQSMessageQueueMessageBody<
   MESSAGE_QUEUE extends StateCarryingMessageQueue
     ? EventStoreStateCarryingMessage<
         EventStoreNotificationMessage<
-          MessageQueueSourceEventStores<MESSAGE_QUEUE>
+          MessageChannelSourceEventStores<MESSAGE_QUEUE>
         >
       >
     : MESSAGE_QUEUE extends NotificationMessageQueue
     ? EventStoreNotificationMessage<
-        MessageQueueSourceEventStores<MESSAGE_QUEUE>
+        MessageChannelSourceEventStores<MESSAGE_QUEUE>
       >
     : never
 >;

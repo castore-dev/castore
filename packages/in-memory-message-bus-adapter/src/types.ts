@@ -2,7 +2,7 @@ import type { EventEmitter } from 'events';
 
 import type {
   Message,
-  MessageBusSourceEventStores,
+  MessageChannelSourceEventStores,
   NotificationMessageBus,
   EventStoreNotificationMessage,
   StateCarryingMessageBus,
@@ -21,9 +21,9 @@ export type InMemoryBusMessage<
 > = StateCarryingMessageBus | NotificationMessageBus extends MESSAGE_BUS
   ? Message
   : MESSAGE_BUS extends StateCarryingMessageBus
-  ? EventStoreStateCarryingMessage<MessageBusSourceEventStores<MESSAGE_BUS>>
+  ? EventStoreStateCarryingMessage<MessageChannelSourceEventStores<MESSAGE_BUS>>
   : MESSAGE_BUS extends NotificationMessageBus
-  ? EventStoreNotificationMessage<MessageBusSourceEventStores<MESSAGE_BUS>>
+  ? EventStoreNotificationMessage<MessageChannelSourceEventStores<MESSAGE_BUS>>
   : never;
 
 export type FilterPattern<

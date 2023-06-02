@@ -7,9 +7,9 @@ import type {
   StateCarryingMessageBus,
   NotificationMessage,
   StateCarryingMessage,
-  MessageBusSourceEventStoresIds,
-  MessageBusSourceEventStoreIdTypes,
-  MessageBusSourceEventStores,
+  MessageChannelSourceEventStoreIds,
+  MessageChannelSourceEventStoreIdTypes,
+  MessageChannelSourceEventStores,
 } from '@castore/core';
 
 type Prettify<OBJECTS extends Record<string, unknown>> =
@@ -21,16 +21,16 @@ type Prettify<OBJECTS extends Record<string, unknown>> =
 
 export type EventBridgeMessageBusMessage<
   MESSAGE_BUS extends StateCarryingMessageBus | NotificationMessageBus,
-  EVENT_STORE_IDS extends MessageBusSourceEventStoresIds<MESSAGE_BUS> = MessageBusSourceEventStoresIds<MESSAGE_BUS>,
-  EVENT_TYPES extends MessageBusSourceEventStoreIdTypes<
+  EVENT_STORE_IDS extends MessageChannelSourceEventStoreIds<MESSAGE_BUS> = MessageChannelSourceEventStoreIds<MESSAGE_BUS>,
+  EVENT_TYPES extends MessageChannelSourceEventStoreIdTypes<
     MESSAGE_BUS,
     EVENT_STORE_IDS
-  > = MessageBusSourceEventStoreIdTypes<MESSAGE_BUS, EVENT_STORE_IDS>,
+  > = MessageChannelSourceEventStoreIdTypes<MESSAGE_BUS, EVENT_STORE_IDS>,
 > = Prettify<
   EVENT_STORE_IDS extends infer EVENT_STORE_ID
     ? EVENT_STORE_ID extends string
       ? EVENT_TYPES extends infer EVENT_TYPE
-        ? EVENT_TYPE extends MessageBusSourceEventStoreIdTypes<
+        ? EVENT_TYPE extends MessageChannelSourceEventStoreIdTypes<
             MESSAGE_BUS,
             EVENT_STORE_ID
           >
@@ -42,7 +42,7 @@ export type EventBridgeMessageBusMessage<
                     Extract<
                       EventStoreEventsDetails<
                         Extract<
-                          MessageBusSourceEventStores<MESSAGE_BUS>,
+                          MessageChannelSourceEventStores<MESSAGE_BUS>,
                           { eventStoreId: EVENT_STORE_IDS }
                         >
                       >,
@@ -50,7 +50,7 @@ export type EventBridgeMessageBusMessage<
                     >,
                     EventStoreAggregate<
                       Extract<
-                        MessageBusSourceEventStores<MESSAGE_BUS>,
+                        MessageChannelSourceEventStores<MESSAGE_BUS>,
                         { eventStoreId: EVENT_STORE_IDS }
                       >
                     >
@@ -61,7 +61,7 @@ export type EventBridgeMessageBusMessage<
                     Extract<
                       EventStoreEventsDetails<
                         Extract<
-                          MessageBusSourceEventStores<MESSAGE_BUS>,
+                          MessageChannelSourceEventStores<MESSAGE_BUS>,
                           { eventStoreId: EVENT_STORE_IDS }
                         >
                       >,

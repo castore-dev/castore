@@ -3,10 +3,8 @@ import type {
   EventStoreEventsDetails,
 } from '~/eventStore/generics';
 import {
-  NotificationMessageBus,
-  NotificationMessageQueue,
-  StateCarryingMessageBus,
-  StateCarryingMessageQueue,
+  NotificationMessageChannel,
+  StateCarryingMessageChannel,
 } from '~/messaging';
 
 import type { ConnectedEventStore } from './connectedEventStore';
@@ -23,11 +21,7 @@ export const publishPushedEvent = async <
   const { event, nextAggregate } = message;
 
   if (
-    /**
-     * @debt refactor "Create NotificationMessageChannel class w. only publish prop, extended by MessageQueues & Bus"
-     */
-    connectedEventStore.messageChannel instanceof NotificationMessageQueue ||
-    connectedEventStore.messageChannel instanceof NotificationMessageBus
+    connectedEventStore.messageChannel instanceof NotificationMessageChannel
   ) {
     await connectedEventStore.messageChannel.publishMessage({
       eventStoreId: connectedEventStore.eventStoreId,
@@ -36,11 +30,7 @@ export const publishPushedEvent = async <
   }
 
   if (
-    /**
-     * @debt refactor "Create StateCarryingMessageChannel class w. only publish prop, extended by MessageQueues & Bus"
-     */
-    connectedEventStore.messageChannel instanceof StateCarryingMessageQueue ||
-    connectedEventStore.messageChannel instanceof StateCarryingMessageBus
+    connectedEventStore.messageChannel instanceof StateCarryingMessageChannel
   ) {
     let aggregate: EventStoreAggregate<CONNECTED_EVENT_STORE> | undefined =
       nextAggregate;

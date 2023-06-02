@@ -3,7 +3,7 @@ import { EventEmitter } from 'events';
 import type { A } from 'ts-toolbelt';
 
 import {
-  MessageBusMessage,
+  MessageChannelMessage,
   EventStoreNotificationMessage,
   NotificationMessageBus,
 } from '@castore/core';
@@ -21,7 +21,7 @@ const messageBus = new NotificationMessageBus({
   sourceEventStores: [pokemonsEventStore, trainersEventStore],
 });
 
-type ExpectedMessage = MessageBusMessage<typeof messageBus>;
+type ExpectedMessage = MessageChannelMessage<typeof messageBus>;
 
 const pikachuAppearedMessage: EventStoreNotificationMessage<
   typeof pokemonsEventStore
@@ -170,7 +170,7 @@ describe('in-memory message queue adapter', () => {
         { eventEmitter: new EventEmitter() },
       );
 
-      expect(messageBus.messageBusAdapter).toBe(inMemoryMessageBusAdapter);
+      expect(messageBus.messageChannelAdapter).toBe(inMemoryMessageBusAdapter);
 
       const assertQueueType: A.Equals<
         typeof inMemoryMessageBusAdapter,

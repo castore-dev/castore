@@ -3,7 +3,7 @@ import type { queueAsPromised } from 'fastq';
 import type { A } from 'ts-toolbelt';
 
 import {
-  MessageQueueMessage,
+  MessageChannelMessage,
   EventStoreNotificationMessage,
   NotificationMessageQueue,
 } from '@castore/core';
@@ -20,7 +20,7 @@ const messageQueue = new NotificationMessageQueue({
   sourceEventStores: [pokemonsEventStore, trainersEventStore],
 });
 
-type ExpectedMessage = MessageQueueMessage<typeof messageQueue>;
+type ExpectedMessage = MessageChannelMessage<typeof messageQueue>;
 
 const pikachuAppearedMessage: EventStoreNotificationMessage<
   typeof pokemonsEventStore
@@ -91,7 +91,7 @@ describe('in-memory message queue adapter', () => {
     });
 
     it('actually connects to a messageQueue', async () => {
-      messageQueue.messageQueueAdapter = inMemoryMessageQueueAdapter;
+      messageQueue.messageChannelAdapter = inMemoryMessageQueueAdapter;
 
       await messageQueue.publishMessage(pikachuAppearedMessage);
 
@@ -118,7 +118,7 @@ describe('in-memory message queue adapter', () => {
     });
 
     it('calls the worker as many times as the number of messages to publish', async () => {
-      messageQueue.messageQueueAdapter = inMemoryMessageQueueAdapter;
+      messageQueue.messageChannelAdapter = inMemoryMessageQueueAdapter;
       const mockNumberOfEventToPublish = 3;
       await messageQueue.publishMessages(
         Array.from(
