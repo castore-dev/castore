@@ -4,13 +4,13 @@ import {
 } from '@aws-sdk/client-eventbridge';
 import chunk from 'lodash.chunk';
 
-import type { MessageBusAdapter } from '@castore/core';
+import type { MessageChannelAdapter } from '@castore/core';
 
 export const EVENTBRIDGE_MAX_ENTRIES_BATCH_SIZE = 10;
 
-export class EventBridgeMessageBusAdapter implements MessageBusAdapter {
-  publishMessage: MessageBusAdapter['publishMessage'];
-  publishMessages: MessageBusAdapter['publishMessages'];
+export class EventBridgeMessageBusAdapter implements MessageChannelAdapter {
+  publishMessage: MessageChannelAdapter['publishMessage'];
+  publishMessages: MessageChannelAdapter['publishMessages'];
   getEventBusName: () => string;
   eventBusName: string | (() => string);
   eventBridgeClient: EventBridgeClient;

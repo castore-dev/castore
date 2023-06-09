@@ -1,3 +1,4 @@
+export * from './channel';
 export * from './bus';
 export * from './queue';
 export type {
@@ -7,4 +8,3 @@ export type {
   EventStoreNotificationMessage,
   EventStoreStateCarryingMessage,
 } from './message';
-export type { EventStoreMessageChannel } from './messageChannel';

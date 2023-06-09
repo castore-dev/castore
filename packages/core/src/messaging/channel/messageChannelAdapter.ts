@@ -1,6 +1,6 @@
 import type { Message } from '../message';
 
-export interface MessageBusAdapter {
+export interface MessageChannelAdapter {
   publishMessage: (message: Message) => Promise<void>;
   publishMessages: (messages: Message[]) => Promise<void>;
 }

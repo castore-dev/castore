@@ -5,13 +5,13 @@ import {
 } from '@aws-sdk/client-sqs';
 import chunk from 'lodash.chunk';
 
-import type { MessageQueueAdapter } from '@castore/core';
+import type { MessageChannelAdapter } from '@castore/core';
 
 export const SQS_MAX_MESSAGE_BATCH_SIZE = 10;
 
-export class SQSMessageQueueAdapter implements MessageQueueAdapter {
-  publishMessage: MessageQueueAdapter['publishMessage'];
-  publishMessages: MessageQueueAdapter['publishMessages'];
+export class SQSMessageQueueAdapter implements MessageChannelAdapter {
+  publishMessage: MessageChannelAdapter['publishMessage'];
+  publishMessages: MessageChannelAdapter['publishMessages'];
   getQueueUrl: () => string;
   queueUrl: string | (() => string);
   sqsClient: SQSClient;

@@ -1,7 +1,7 @@
 import type { EventEmitter } from 'node:events';
 
 import type {
-  MessageBusAdapter,
+  MessageChannelAdapter,
   Message,
   NotificationMessageBus,
   StateCarryingMessageBus,
@@ -21,7 +21,7 @@ import {
 } from './utils';
 
 export class InMemoryMessageBusAdapter<MESSAGE extends Message = Message>
-  implements MessageBusAdapter
+  implements MessageChannelAdapter
 {
   static attachTo<
     MESSAGE_BUS extends StateCarryingMessageBus | NotificationMessageBus,
@@ -33,13 +33,13 @@ export class InMemoryMessageBusAdapter<MESSAGE extends Message = Message>
       InMemoryBusMessage<MESSAGE_BUS>
     >(constructorArgs);
 
-    messageBus.messageBusAdapter = messageBusAdapter;
+    messageBus.messageChannelAdapter = messageBusAdapter;
 
     return messageBusAdapter;
   }
 
-  publishMessage: MessageBusAdapter['publishMessage'];
-  publishMessages: MessageBusAdapter['publishMessages'];
+  publishMessage: MessageChannelAdapter['publishMessage'];
+  publishMessages: MessageChannelAdapter['publishMessages'];
   retryAttempts: number;
   retryDelayInMs: number;
   retryBackoffRate: number;

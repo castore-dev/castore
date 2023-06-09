@@ -1,12 +1,12 @@
 import { promise as fastQ, queueAsPromised } from 'fastq';
 
 import type {
-  MessageQueueSourceEventStores,
+  MessageChannelSourceEventStores,
   NotificationMessageQueue,
   EventStoreNotificationMessage,
   StateCarryingMessageQueue,
   EventStoreStateCarryingMessage,
-  MessageQueueAdapter,
+  MessageChannelAdapter,
   Message,
 } from '@castore/core';
 
@@ -21,9 +21,9 @@ type InMemoryQueueMessage<
 > = StateCarryingMessageQueue | NotificationMessageQueue extends MESSAGE
   ? Message
   : MESSAGE extends StateCarryingMessageQueue
-  ? EventStoreStateCarryingMessage<MessageQueueSourceEventStores<MESSAGE>>
+  ? EventStoreStateCarryingMessage<MessageChannelSourceEventStores<MESSAGE>>
   : MESSAGE extends NotificationMessageQueue
-  ? EventStoreNotificationMessage<MessageQueueSourceEventStores<MESSAGE>>
+  ? EventStoreNotificationMessage<MessageChannelSourceEventStores<MESSAGE>>
   : never;
 
 export type Task<MESSAGE extends Message = Message> = {
@@ -40,7 +40,7 @@ type ConstructorArgs<MESSAGE extends Message = Message> = {
 };
 
 export class InMemoryMessageQueueAdapter<MESSAGE extends Message = Message>
-  implements MessageQueueAdapter
+  implements MessageChannelAdapter
 {
   static attachTo<
     MESSAGE_QUEUE extends StateCarryingMessageQueue | NotificationMessageQueue,
@@ -52,13 +52,13 @@ export class InMemoryMessageQueueAdapter<MESSAGE extends Message = Message>
       InMemoryQueueMessage<MESSAGE_QUEUE>
     >(constructorArgs);
 
-    messageQueue.messageQueueAdapter = messageQueueAdapter;
+    messageQueue.messageChannelAdapter = messageQueueAdapter;
 
     return messageQueueAdapter;
   }
 
-  publishMessage: MessageQueueAdapter['publishMessage'];
-  publishMessages: MessageQueueAdapter['publishMessages'];
+  publishMessage: MessageChannelAdapter['publishMessage'];
+  publishMessages: MessageChannelAdapter['publishMessages'];
   private subscribe: (nextHandler: (message: MESSAGE) => Promise<void>) => void;
   retryAttempts: number;
   retryDelayInMs: number;
