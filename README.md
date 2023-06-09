@@ -875,7 +875,7 @@ type PokemonEventStateCarryingMessage = EventStoreStateCarryingMessage<
 >;
 ```
 
-Both kinds of messages can be published to [Message Queues](#--messagequeue) or [Message Buses](#--messagebus).
+Both kinds of messages can be published to message channels, i.e. [Message Queues](#--messagequeue) or [Message Buses](#--messagebus).
 
 ### - `MessageQueue`
 
@@ -913,14 +913,14 @@ await appMessageQueue.publishMessage({
 >
 > - <code>messageQueueId <i>(string)</i></code>: A string identifying the message queue
 > - <code>sourceEventStores <i>(EventStore[])</i></code>: List of event stores that the message queue will broadcast events from
-> - <code>messageQueueAdapter <i>(?MessageQueueAdapter)</i></code>: See section on [`MessageQueueAdapters`](#--messagequeueadapter)
+> - <code>messageQueueAdapter <i>(?MessageChannelAdapter)</i></code>: See section on [`MessageQueueAdapters`](#--messagequeueadapter)
 >
 > **Properties:**
 >
-> - <code>messageQueueId <i>(string)</i></code>
+> - <code>messageChannelId <i>(string)</i></code>
 >
 > ```ts
-> const appMessageQueueId = appMessageQueue.messageQueueId;
+> const appMessageQueueId = appMessageQueue.messageChannelId;
 > // => 'APP_MESSAGE_QUEUE'
 > ```
 >
@@ -931,18 +931,18 @@ await appMessageQueue.publishMessage({
 > // => [pokemonsEventStore, trainersEventStore...]
 > ```
 >
-> - <code>messageQueueAdapter <i>?MessageQueueAdapter</i></code>: See section on [`MessageQueueAdapters`](#--messagequeueadapter)
+> - <code>messageChannelAdapter <i>?MessageChannelAdapter</i></code>: See section on [`MessageQueueAdapters`](#--messagequeueadapter)
 >
 > ```ts
-> const appMessageQueueAdapter = appMessageQueue.messageQueueAdapter;
+> const appMessageQueueAdapter = appMessageQueue.messageChannelAdapter;
 > // => undefined (we did not provide one in this example)
 > ```
 >
-> ☝️ The `messageQueueAdapter` is not read-only so you do not have to provide it right away.
+> ☝️ The `messageChannelAdapter` is not read-only so you do not have to provide it right away.
 >
 > **Async Methods:**
 >
-> The following methods interact with the messaging solution of your application through a `MessageQueueAdapter`. They will throw an `UndefinedMessageQueueAdapterError` if you did not provide one.
+> The following methods interact with the messaging solution of your application through a `MessageQueueAdapter`. They will throw an `UndefinedMessageChannelAdapterError` if you did not provide one.
 >
 > - <code>publishMessage <i>((message: NotificationMessage | StateCarryingMessage) => Promise\<void\>)</i></code>: Publish a `NotificationMessage` (for `NotificationMessageQueues`) or a `StateCarryingMessage` (for `StateCarryingMessageQueues`) to the message queue.
 >
@@ -952,12 +952,12 @@ await appMessageQueue.publishMessage({
 >
 > **Type Helpers:**
 >
-> - <code>MessageQueueMessage</code>: Given a `MessageQueue`, returns the TS type of its messages
+> - <code>MessageChannelMessage</code>: Given a `MessageQueue`, returns the TS type of its messages
 >
 > ```ts
-> import type { MessageQueueMessage } from '@castore/core';
+> import type { MessageChannelMessage } from '@castore/core';
 >
-> type AppMessage = MessageQueueMessage<typeof appMessageQueue>;
+> type AppMessage = MessageChannelMessage<typeof appMessageQueue>;
 >
 > // 👇 Equivalent to:
 > type AppMessage = EventStoreNotificationMessage<
@@ -981,10 +981,11 @@ const messageQueue = new NotificationMessageQueue({
 });
 
 // 👇 ...or set/switch it in context later
-messageQueue.messageQueueAdapter = mySuperMessageQueueAdapter;
+messageQueue.messageChannelAdapter = mySuperMessageQueueAdapter;
+// Named `messageChannelAdapter` as queues inherit from the `MessageChannel` class
 ```
 
-You can code your own `MessageQueueAdapter` (simply implement the interface), but we highly recommend using an off-the-shelf adapter:
+You can code your own `MessageQueueAdapter` (simply implement the `MessageChannelAdapter` interface), but we highly recommend using an off-the-shelf adapter:
 
 - [SQS Message Queue Adapter](./packages/sqs-message-queue-adapter/README.md)
 - [In-Memory Message Queue Adapter](./packages/in-memory-message-queue-adapter/README.md)
@@ -1044,7 +1045,7 @@ await appMessageBus.publishMessage({
 >
 > - <code>messageBusId <i>(string)</i></code>: A string identifying the message bus
 > - <code>sourceEventStores <i>(EventStore[])</i></code>: List of event stores that the message bus will broadcast events from
-> - <code>messageBusAdapter <i>(?MessageBusAdapter)</i></code>: See section on [`MessageBusAdapters`](#--messagebusadapter)
+> - <code>messageBusAdapter <i>(?MessageChannelAdapter)</i></code>: See section on [`MessageBusAdapters`](#--messagebusadapter)
 >
 > **Properties:**
 >
@@ -1062,18 +1063,18 @@ await appMessageBus.publishMessage({
 > // => [pokemonsEventStore, trainersEventStore...]
 > ```
 >
-> - <code>messageBusAdapter <i>?MessageBusAdapter</i></code>: See section on [`MessageBusAdapters`](#--messagebusadapter)
+> - <code>messageChannelAdapter <i>?MessageChannelAdapter</i></code>: See section on [`MessageBusAdapters`](#--messagebusadapter)
 >
 > ```ts
-> const appMessageBusAdapter = appMessageBus.messageBusAdapter;
+> const appMessageBusAdapter = appMessageBus.messageChannelAdapter;
 > // => undefined (we did not provide one in this example)
 > ```
 >
-> ☝️ The `messageBusAdapter` is not read-only so you do not have to provide it right away.
+> ☝️ The `messageChannelAdapter` is not read-only so you do not have to provide it right away.
 >
 > **Async Methods:**
 >
-> The following methods interact with the messaging solution of your application through a `MessageBusAdapter`. They will throw an `UndefinedMessageBusAdapterError` if you did not provide one.
+> The following methods interact with the messaging solution of your application through a `MessageBusAdapter`. They will throw an `UndefinedMessageChannelAdapterError` if you did not provide one.
 >
 > - <code>publishMessage <i>((message: NotificationMessage | StateCarryingMessage) => Promise\<void\>)</i></code>: Publish a `NotificationMessage` (for `NotificationMessageBuses`) or a `StateCarryingMessage` (for `StateCarryingMessageBuses`) to the message bus.
 >
@@ -1083,12 +1084,12 @@ await appMessageBus.publishMessage({
 >
 > **Type Helpers:**
 >
-> - <code>MessageBusMessage</code>: Given a `MessageBus`, returns the TS type of its messages
+> - <code>MessageChannelMessage</code>: Given a `MessageBus`, returns the TS type of its messages
 >
 > ```ts
-> import type { MessageBusMessage } from '@castore/core';
+> import type { MessageChannelMessage } from '@castore/core';
 >
-> type AppMessage = MessageBusMessage<typeof appMessageBus>;
+> type AppMessage = MessageChannelMessage<typeof appMessageBus>;
 >
 > // 👇 Equivalent to:
 > type AppMessage = EventStoreNotificationMessage<
@@ -1112,10 +1113,11 @@ const messageBus = new NotificationMessageBus({
 });
 
 // 👇 ...or set/switch it in context later
-messageBus.messageBusAdapter = mySuperMessageBusAdapter;
+messageBus.messageChannelAdapter = mySuperMessageBusAdapter;
+// Named `messageChannelAdapter` as buses inherit from the `MessageChannel` class
 ```
 
-You can code your own `MessageBusAdapter` (simply implement the interface), but we highly recommend using an off-the-shelf adapter:
+You can code your own `MessageBusAdapter` (simply implement the `MessageChannelAdapter` interface), but we highly recommend using an off-the-shelf adapter:
 
 - [EventBridge Message Bus Adapter](./packages/event-bridge-message-bus-adapter/README.md)
 - [In-Memory Message Bus Adapter](./packages/in-memory-message-bus-adapter/README.md)
