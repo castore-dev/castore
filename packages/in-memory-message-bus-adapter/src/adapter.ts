@@ -1,10 +1,13 @@
 import type { EventEmitter } from 'node:events';
 
-import type {
+import {
   MessageChannelAdapter,
   Message,
+  AggregateExistsMessageBus,
   NotificationMessageBus,
+  NotificationMessage,
   StateCarryingMessageBus,
+  StateCarryingMessage,
 } from '@castore/core';
 
 import type { InMemoryMessageBusMessage, Task } from './message';
@@ -24,7 +27,10 @@ export class InMemoryMessageBusAdapter<MESSAGE extends Message = Message>
   implements MessageChannelAdapter
 {
   static attachTo<
-    MESSAGE_BUS extends StateCarryingMessageBus | NotificationMessageBus,
+    MESSAGE_BUS extends
+      | AggregateExistsMessageBus
+      | NotificationMessageBus
+      | StateCarryingMessageBus,
   >(
     messageBus: MESSAGE_BUS,
     constructorArgs: ConstructorArgs,
@@ -49,13 +55,13 @@ export class InMemoryMessageBusAdapter<MESSAGE extends Message = Message>
 
   on: <
     EVENT_STORE_ID extends MESSAGE['eventStoreId'] = MESSAGE['eventStoreId'],
-    EVENT_TYPE extends Extract<
-      MESSAGE,
-      { eventStoreId: EVENT_STORE_ID }
-    >['event']['type'] = Extract<
-      MESSAGE,
-      { eventStoreId: EVENT_STORE_ID }
-    >['event']['type'],
+    EVENT_TYPE extends MESSAGE extends
+      | NotificationMessage
+      | StateCarryingMessage
+      ? Extract<MESSAGE, { eventStoreId: EVENT_STORE_ID }>['event']['type']
+      : never = MESSAGE extends NotificationMessage | StateCarryingMessage
+      ? Extract<MESSAGE, { eventStoreId: EVENT_STORE_ID }>['event']['type']
+      : never,
   >(
     filterPattern: FilterPattern<EVENT_STORE_ID, EVENT_TYPE>,
     handler: (
@@ -126,13 +132,13 @@ export class InMemoryMessageBusAdapter<MESSAGE extends Message = Message>
 
     this.on = <
       EVENT_STORE_ID extends MESSAGE['eventStoreId'] = MESSAGE['eventStoreId'],
-      EVENT_TYPE extends Extract<
-        MESSAGE,
-        { eventStoreId: EVENT_STORE_ID }
-      >['event']['type'] = Extract<
-        MESSAGE,
-        { eventStoreId: EVENT_STORE_ID }
-      >['event']['type'],
+      EVENT_TYPE extends MESSAGE extends
+        | NotificationMessage
+        | StateCarryingMessage
+        ? Extract<MESSAGE, { eventStoreId: EVENT_STORE_ID }>['event']['type']
+        : never = MESSAGE extends NotificationMessage | StateCarryingMessage
+        ? Extract<MESSAGE, { eventStoreId: EVENT_STORE_ID }>['event']['type']
+        : never,
     >(
       filterPattern: FilterPattern<EVENT_STORE_ID, EVENT_TYPE>,
       handler: (
@@ -140,11 +146,15 @@ export class InMemoryMessageBusAdapter<MESSAGE extends Message = Message>
       ) => Promise<void>,
     ) => {
       let handlerIndex = this.handlers.findIndex(
-        savedHandler => savedHandler === handler,
+        savedHandler =>
+          savedHandler ===
+          (handler as unknown as (message: MESSAGE) => Promise<void>),
       );
 
       if (handlerIndex === -1) {
-        this.handlers.push(handler as (message: MESSAGE) => Promise<void>);
+        this.handlers.push(
+          handler as unknown as (message: MESSAGE) => Promise<void>,
+        );
         this.filterPatterns.push([filterPattern]);
         handlerIndex = this.handlers.length - 1;
 

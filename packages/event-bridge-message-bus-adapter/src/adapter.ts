@@ -4,9 +4,26 @@ import {
 } from '@aws-sdk/client-eventbridge';
 import chunk from 'lodash.chunk';
 
-import type { MessageChannelAdapter } from '@castore/core';
+import type { Message, MessageChannelAdapter } from '@castore/core';
+import {
+  isAggregateExistsMessage,
+  isNotificationMessage,
+  isStateCarryingMessage,
+} from '@castore/core';
 
 export const EVENTBRIDGE_MAX_ENTRIES_BATCH_SIZE = 10;
+
+const getDetailType = (message: Message): string => {
+  if (isNotificationMessage(message) || isStateCarryingMessage(message)) {
+    return message.event.type;
+  }
+
+  if (isAggregateExistsMessage(message)) {
+    return '__AGGREGATE_EXISTS__';
+  }
+
+  throw new Error('Unable to infer detail-type from message');
+};
 
 export class EventBridgeMessageBusAdapter implements MessageChannelAdapter {
   publishMessage: MessageChannelAdapter['publishMessage'];
@@ -31,8 +48,7 @@ export class EventBridgeMessageBusAdapter implements MessageChannelAdapter {
         : this.eventBusName();
 
     this.publishMessage = async message => {
-      const { eventStoreId, event } = message;
-      const { type } = event;
+      const { eventStoreId } = message;
 
       await this.eventBridgeClient.send(
         new PutEventsCommand({
@@ -40,7 +56,7 @@ export class EventBridgeMessageBusAdapter implements MessageChannelAdapter {
             {
               EventBusName: this.getEventBusName(),
               Source: eventStoreId,
-              DetailType: type,
+              DetailType: getDetailType(message),
               Detail: JSON.stringify(message),
             },
           ],
@@ -58,7 +74,7 @@ export class EventBridgeMessageBusAdapter implements MessageChannelAdapter {
             Entries: chunkMessages.map(message => ({
               EventBusName: this.getEventBusName(),
               Source: message.eventStoreId,
-              DetailType: message.event.type,
+              DetailType: getDetailType(message),
               Detail: JSON.stringify(message),
             })),
           }),

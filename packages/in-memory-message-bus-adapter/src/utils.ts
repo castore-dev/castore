@@ -1,4 +1,5 @@
 import type { Message } from '@castore/core';
+import { isEventCarryingMessage } from '@castore/core';
 
 import type { FilterPattern } from './types';
 
@@ -8,8 +9,13 @@ export const doesMessageMatchFilterPattern = (
 ): boolean => {
   const { eventStoreId: filterEventStoreId, eventType: filterEventType } =
     filterPattern;
-  const { eventStoreId: messageEventStoreId, event } = message;
-  const { type: messageEventType } = event;
+
+  let messageEventType: string | undefined = undefined;
+  const { eventStoreId: messageEventStoreId } = message;
+
+  if (isEventCarryingMessage(message)) {
+    messageEventType = message.event.type;
+  }
 
   if (filterEventStoreId !== undefined && filterEventType !== undefined) {
     return (

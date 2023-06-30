@@ -5,9 +5,33 @@ import {
 } from '@aws-sdk/client-sqs';
 import chunk from 'lodash.chunk';
 
-import type { MessageChannelAdapter } from '@castore/core';
+import {
+  isAggregateExistsMessage,
+  isEventCarryingMessage,
+  Message,
+  MessageChannelAdapter,
+} from '@castore/core';
 
 export const SQS_MAX_MESSAGE_BATCH_SIZE = 10;
+
+const parseMessage = (
+  message: Message,
+): { aggregateId?: string; version?: number } => {
+  if (isAggregateExistsMessage(message)) {
+    return { aggregateId: message.aggregateId };
+  }
+
+  if (isEventCarryingMessage(message)) {
+    const { event } = message;
+
+    return {
+      aggregateId: event.aggregateId,
+      version: event.version,
+    };
+  }
+
+  return {};
+};
 
 export class SQSMessageQueueAdapter implements MessageChannelAdapter {
   publishMessage: MessageChannelAdapter['publishMessage'];
@@ -34,8 +58,8 @@ export class SQSMessageQueueAdapter implements MessageChannelAdapter {
       typeof this.queueUrl === 'string' ? this.queueUrl : this.queueUrl();
 
     this.publishMessage = async message => {
-      const { eventStoreId, event } = message;
-      const { aggregateId, version } = event;
+      const { eventStoreId } = message;
+      const { aggregateId, version } = parseMessage(message);
 
       await this.sqsClient.send(
         new SendMessageCommand({
@@ -43,11 +67,9 @@ export class SQSMessageQueueAdapter implements MessageChannelAdapter {
           QueueUrl: this.getQueueUrl(),
           ...(this.fifo
             ? {
-                MessageDeduplicationId: [
-                  eventStoreId,
-                  aggregateId,
-                  version,
-                ].join('#'),
+                MessageDeduplicationId: [eventStoreId, aggregateId, version]
+                  .filter(Boolean)
+                  .join('#'),
                 MessageGroupId: [eventStoreId, aggregateId].join('#'),
               }
             : {}),
@@ -60,9 +82,12 @@ export class SQSMessageQueueAdapter implements MessageChannelAdapter {
         await this.sqsClient.send(
           new SendMessageBatchCommand({
             Entries: chunkMessages.map(message => {
-              const { eventStoreId, event } = message;
-              const { aggregateId, version } = event;
-              const messageId = [eventStoreId, aggregateId, version].join('#');
+              const { eventStoreId } = message;
+              const { aggregateId, version } = parseMessage(message);
+
+              const messageId = [eventStoreId, aggregateId, version]
+                .filter(Boolean)
+                .join('#');
 
               return {
                 Id: messageId,
