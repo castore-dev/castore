@@ -1,14 +1,14 @@
 import type { EventStore } from '~/eventStore/eventStore';
 import type { $Contravariant } from '~/utils';
 
-import type { EventStoreNotificationMessage } from '../generics';
+import type { EventStoreAggregateExistsMessage } from '../generics';
 import {
   MessageChannelEventStoreNotFoundError,
   UndefinedMessageChannelAdapterError,
 } from './errors';
 import type { MessageChannelAdapter } from './messageChannelAdapter';
 
-export class NotificationMessageChannel<
+export class AggregateExistsMessageChannel<
   EVENT_STORE extends EventStore = EventStore,
 > {
   messageChannelType: string;
@@ -21,17 +21,17 @@ export class NotificationMessageChannel<
   getEventStore: (eventStoreId: string) => EVENT_STORE;
 
   publishMessage: (
-    notificationMessage: $Contravariant<
+    aggregateExistsMessage: $Contravariant<
       EVENT_STORE,
       EventStore,
-      EventStoreNotificationMessage<EVENT_STORE>
+      EventStoreAggregateExistsMessage<EVENT_STORE>
     >,
   ) => Promise<void>;
   publishMessages: (
-    notificationMessages: $Contravariant<
+    aggregateExistsMessages: $Contravariant<
       EVENT_STORE,
       EventStore,
-      EventStoreNotificationMessage<EVENT_STORE>
+      EventStoreAggregateExistsMessage<EVENT_STORE>
     >[],
   ) => Promise<void>;
 
@@ -84,23 +84,23 @@ export class NotificationMessageChannel<
       return eventStore;
     };
 
-    this.publishMessage = async notificationMessage => {
-      const { eventStoreId } = notificationMessage;
+    this.publishMessage = async aggregateExistsMessage => {
+      const { eventStoreId } = aggregateExistsMessage;
       this.getEventStore(eventStoreId);
 
       const messageChannelAdapter = this.getMessageChannelAdapter();
 
-      await messageChannelAdapter.publishMessage(notificationMessage);
+      await messageChannelAdapter.publishMessage(aggregateExistsMessage);
     };
 
-    this.publishMessages = async notificationMessages => {
-      for (const notificationMessage of notificationMessages) {
-        const { eventStoreId } = notificationMessage;
+    this.publishMessages = async aggregateExistsMessages => {
+      for (const aggregateExistsMessage of aggregateExistsMessages) {
+        const { eventStoreId } = aggregateExistsMessage;
         this.getEventStore(eventStoreId);
       }
       const messageChannelAdapter = this.getMessageChannelAdapter();
 
-      await messageChannelAdapter.publishMessages(notificationMessages);
+      await messageChannelAdapter.publishMessages(aggregateExistsMessages);
     };
   }
 }
