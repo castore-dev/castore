@@ -81,6 +81,6 @@ const customTheme = createTheme({
 const MyPage = () =>
   <ThemeProvider theme={customTheme}>
     <CssBaseline/>
-    <Visualizer ... />
+    <UnthemedVisualizer ... />
   </Theme>
 ```
