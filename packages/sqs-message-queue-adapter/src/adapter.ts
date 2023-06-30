@@ -16,7 +16,7 @@ export const SQS_MAX_MESSAGE_BATCH_SIZE = 10;
 
 const parseMessage = (
   message: Message,
-): { aggregateId?: string; version?: number } => {
+): { aggregateId: string; version?: number } => {
   if (isAggregateExistsMessage(message)) {
     return { aggregateId: message.aggregateId };
   }
@@ -30,7 +30,7 @@ const parseMessage = (
     };
   }
 
-  return {};
+  throw new Error('Unable to parse message');
 };
 
 export class SQSMessageQueueAdapter implements MessageChannelAdapter {

@@ -52,12 +52,25 @@ This will directly plug your MessageBus to EventBridge 🙌
 
 ## 🤔 How it works
 
-When publishing a message, its `eventStoreId` is used as the message `source` and its event `type` is used as `detail-type`. The whole message is passed to the `detail` property.
+When publishing a message, its `eventStoreId` is used as the message `source` and its event `type` is used as `detail-type` (except for `AggregateExistsMessageBus` for which a constant is used). The whole message is passed to the `detail` property.
 
 ```ts
-// 👇 Entry example
+// 👇 Aggregate exists
 {
   "source": "POKEMONS", // <= eventStoreId
+  "detail-type": "__AGGREGATE_EXISTS__", // <= constant
+  "detail": {
+    "eventStoreId": "POKEMONS",
+    "aggregateId": "123",
+  },
+  ... // <= Other technical EventBridge properties
+}
+```
+
+```ts
+// 👇 Notification
+{
+  "source": "POKEMONS",
   "detail-type": "POKEMON_APPEARED", // <= event type
   "detail": {
     "eventStoreId": "POKEMONS",
@@ -68,9 +81,25 @@ When publishing a message, its `eventStoreId` is used as the message `source` an
       "timestamp": ...
       ...
     },
-    "aggregate": ... // <= for state-carrying message buses
   },
-  ... // <= Other technical EventBridge properties
+  ...
+}
+```
+
+```ts
+// 👇 State-carrying
+{
+  "source": "POKEMONS",
+  "detail-type": "POKEMON_APPEARED",
+  "detail": {
+    "eventStoreId": "POKEMONS",
+    "event": {
+      "aggregateId": "123",
+      ...
+    },
+    "aggregate": { ... } // <= aggregate
+  },
+  ...
 }
 ```
 

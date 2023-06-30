@@ -60,7 +60,7 @@ appMessageBus.messageBusAdapter = messageBusAdapter;
 
 Similarly to event emitters, the `inMemoryMessageBusAdapter` exposes an `on` method that takes two arguments:
 
-- A filter patterns to optionally specify an `eventStoreId` and an event `type` to listen to
+- A filter patterns to optionally specify an `eventStoreId` and an event `type` to listen to (`NotificationEventBus` and `StateCarryingEventBus` only)
 - An async callback to execute if the message matches the filter pattern
 
 ```ts
@@ -70,7 +70,7 @@ messageBusAdapter.on({}, async message => {
   const { eventStoreId, event } = message;
 });
 
-// 👇 Listen to pokemons messages
+// 👇 Listen only to pokemons messages
 messageBusAdapter.on({ eventStoreId: 'POKEMONS' }, async message => {
   // 🙌 Correctly typed!
   const { eventStoreId, event } = message;
