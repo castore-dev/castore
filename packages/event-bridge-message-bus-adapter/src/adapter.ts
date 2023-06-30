@@ -7,14 +7,13 @@ import chunk from 'lodash.chunk';
 import type { Message, MessageChannelAdapter } from '@castore/core';
 import {
   isAggregateExistsMessage,
-  isNotificationMessage,
-  isStateCarryingMessage,
+  isEventCarryingMessage,
 } from '@castore/core';
 
 export const EVENTBRIDGE_MAX_ENTRIES_BATCH_SIZE = 10;
 
 const getDetailType = (message: Message): string => {
-  if (isNotificationMessage(message) || isStateCarryingMessage(message)) {
+  if (isEventCarryingMessage(message)) {
     return message.event.type;
   }
 
