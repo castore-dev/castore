@@ -186,7 +186,7 @@ const pokemonAppearedEventType = new EventType<
 >({ type: 'POKEMON_APPEARED' });
 ```
 
-Note that we only provided TS types for `payload` and `metadata` properties. That is because, as stated in the [core design](#-core-design), **Castore is meant to be as flexible as possible**, and that includes the validation library you want to use: The `EventType` class is not meant to be used directly, but rather implemented by other classes which will add run-time validation methods to it 👍
+Note that we only provided TS types for `payload` and `metadata` properties. That is because, as stated in the [core design](#-core-design), **Castore is meant to be as flexible as possible**, and that includes the validation library you want to use (if any): The `EventType` class can be used directly if no validation is required, or implemented by other classes which will add run-time validation methods to it 👍
 
 See the following packages for examples:
 
@@ -701,7 +701,7 @@ const catchPokemonCommand = new Command({
 });
 ```
 
-Note that we only provided TS types for `Input` and `Output` properties. That is because, as stated in the [core design](#-core-design), **Castore is meant to be as flexible as possible**, and that includes the validation library you want to use: The `Command` class is not meant to be used directly, but rather extended by other classes which will add run-time validation methods to it 👍
+Note that we only provided TS types for `Input` and `Output` properties. That is because, as stated in the [core design](#-core-design), **Castore is meant to be as flexible as possible**, and that includes the validation library you want to use (if any): The `Command` class can be used directly if no validation is required, or implemented by other classes which will add run-time validation methods to it 👍
 
 See the following packages for examples:
 
@@ -818,7 +818,7 @@ Like the `pushEvent` API, event groups are designed to throw an `EventAlreadyExi
 
 ### - Event-driven architecture
 
-Event Sourcing integrates very well with [event-driven architectures](https://en.wikipedia.org/wiki/Event-driven_architecture). In a traditional architecture, you would need design your system events (or **messages** for clarity) separately from your data. With Event Sourcing, they can simply **broadcast the business events you already designed**.
+Event Sourcing integrates very well with [event-driven architectures](https://en.wikipedia.org/wiki/Event-driven_architecture). In a traditional architecture, you would need to design your system events (or **messages** for clarity) separately from your data. With Event Sourcing, they can simply **broadcast the business events you already designed**.
 
 In Castore, we distinguish three types of message:
 
@@ -901,7 +901,7 @@ type PokemonEventStateCarryingMessage = EventStoreStateCarryingMessage<
 >;
 ```
 
-All types of message can be published to message channels, i.e. [Message Queues](#--messagequeue) or [Message Buses](#--messagebus).
+All types of message can be published through message channels, i.e. [Message Queues](#--messagequeue) or [Message Buses](#--messagebus).
 
 ### - `MessageQueue`
 
