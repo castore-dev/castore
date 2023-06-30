@@ -65,7 +65,18 @@ const messageQueueAdapter = new SQSMessageQueueAdapter({
 When publishing a message, it is JSON stringified and passed as the record body.
 
 ```ts
-// 👇 Record example
+// 👇 Aggregate exists
+{
+  "body": "{
+    \"eventStoreId\": \"POKEMONS\",
+    \"aggregateId\": \"123\",
+  }",
+  ... // <= Other technical SQS properties
+}
+```
+
+```ts
+// 👇 Notification
 {
   "body": "{
     \"eventStoreId\": \"POKEMONS\",
@@ -76,9 +87,23 @@ When publishing a message, it is JSON stringified and passed as the record body.
       \"timestamp\": ...
       ...
     },
-    \"aggregate\": ... // <= for state-carrying message queues
   }",
-  ... // <= Other technical SQS properties
+  ...
+}
+```
+
+```ts
+// 👇 State-carrying
+{
+  "body": "{
+    \"eventStoreId\": \"POKEMONS\",
+    \"event\": {
+      \"aggregateId\": \"123\",
+      ...
+    },
+    \"aggregate\": ...
+  }",
+  ...
 }
 ```
 
@@ -89,7 +114,7 @@ If your queue is of type FIFO, the `MessageGroupId` and `MessageDeduplicationId`
 const Entry = {
   MessageBody: JSON.stringify({ ... }),
   MessageGroupId: "POKEMONS#123",
-  MessageDeduplicationId: "POKEMONS#123#1",
+  MessageDeduplicationId: "POKEMONS#123#1", // <= Or "POKEMONS#123" for AggregateExistsMessageQueues
   ... // <= Other technical SQS properties
 };
 ```

@@ -1,9 +1,11 @@
 import type { SQSEvent } from 'aws-lambda';
 
 import type {
+  AggregateExistsMessageQueue,
+  EventStoreAggregateExistsMessage,
   NotificationMessageQueue,
-  StateCarryingMessageQueue,
   EventStoreNotificationMessage,
+  StateCarryingMessageQueue,
   EventStoreStateCarryingMessage,
   MessageChannelSourceEventStores,
 } from '@castore/core';
@@ -18,7 +20,10 @@ type Prettify<OBJECTS extends Record<string, unknown>> =
     : never;
 
 export type SQSMessageQueueMessageBody<
-  MESSAGE_QUEUE extends StateCarryingMessageQueue | NotificationMessageQueue,
+  MESSAGE_QUEUE extends
+    | AggregateExistsMessageQueue
+    | StateCarryingMessageQueue
+    | NotificationMessageQueue,
 > = Prettify<
   MESSAGE_QUEUE extends StateCarryingMessageQueue
     ? EventStoreStateCarryingMessage<
@@ -28,6 +33,10 @@ export type SQSMessageQueueMessageBody<
       >
     : MESSAGE_QUEUE extends NotificationMessageQueue
     ? EventStoreNotificationMessage<
+        MessageChannelSourceEventStores<MESSAGE_QUEUE>
+      >
+    : MESSAGE_QUEUE extends AggregateExistsMessageQueue
+    ? EventStoreAggregateExistsMessage<
         MessageChannelSourceEventStores<MESSAGE_QUEUE>
       >
     : never

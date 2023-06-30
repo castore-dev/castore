@@ -820,12 +820,36 @@ Like the `pushEvent` API, event groups are designed to throw an `EventAlreadyExi
 
 Event Sourcing integrates very well with [event-driven architectures](https://en.wikipedia.org/wiki/Event-driven_architecture). In a traditional architecture, you would need design your system events (or **messages** for clarity) separately from your data. With Event Sourcing, they can simply **broadcast the business events you already designed**.
 
-There are two kinds of messages:
+In Castore, we distinguish three types of message:
 
-- **Notification messages** which only carry events details
+- **AggregateExists messages** which only carry aggregate ids (mainly for maintenance purposes)
+- **Notification messages** which also carry event details
 - **State-carrying messages** which also carry their corresponding aggregates
 
-In Castore, they are implemented by the `NotificationMessage` and `StateCarryingMessage` TS types:
+![Messages Types](./assets/docsImg/messageTypes.png)
+
+In Castore, they are implemented by the `AggregateExistsMessage`, `NotificationMessage` and `StateCarryingMessage` TS types:
+
+```ts
+// AggregateExistsMessage
+import type {
+  AggregateExistsMessage,
+  EventStoreAggregateExistsMessage,
+} from '@castore/core';
+
+type PokemonAggregateExistsMessage = AggregateExistsMessage<'POKEMONS'>;
+
+// 👇 Equivalent to:
+type PokemonAggregateExistsMessage = {
+  eventStoreId: 'POKEMONS';
+  aggregateId: string;
+};
+
+// // 👇 Also equivalent to:
+type PokemonAggregateExistsMessage = EventStoreAggregateExistsMessage<
+  typeof pokemonsEventStore
+>;
+```
 
 ```ts
 // NotificationMessage
@@ -849,7 +873,9 @@ type PokemonEventNotificationMessage = {
 type PokemonEventNotificationMessage = EventStoreNotificationMessage<
   typeof pokemonsEventStore
 >;
+```
 
+```ts
 // StateCarryingMessage
 import type {
   StateCarryingMessage,
@@ -875,7 +901,7 @@ type PokemonEventStateCarryingMessage = EventStoreStateCarryingMessage<
 >;
 ```
 
-Both kinds of messages can be published to message channels, i.e. [Message Queues](#--messagequeue) or [Message Buses](#--messagebus).
+All types of message can be published to message channels, i.e. [Message Queues](#--messagequeue) or [Message Buses](#--messagebus).
 
 ### - `MessageQueue`
 
@@ -883,7 +909,7 @@ Both kinds of messages can be published to message channels, i.e. [Message Queue
 
 ![Message Queue](./assets/docsImg/messageQueue.png)
 
-You can use the `NotificationMessageQueue` or the `StateCarryingMessageQueue` classes to implement message queues:
+You can use the `AggregateExistsMessageQueue`, `NotificationMessageQueue` or `StateCarryingMessageQueue` classes to implement message queues:
 
 ```ts
 import { NotificationMessageQueue } from '@castore/core';
@@ -902,7 +928,7 @@ await appMessageQueue.publishMessage({
   },
 });
 
-// Same usage for StateCarryingMessageQueues
+// Similar for AggregateExistsMessageQueue and StateCarryingMessageQueue
 ```
 
 > <details>
@@ -1015,7 +1041,7 @@ const appMessagesWorker = async ({ Records }: SQSMessageQueueMessage) => {
 
 ![Message Bus](./assets/docsImg/messageBus.png)
 
-You can use the `NotificationMessageBus` or the `StateCarryingMessageBus` classes to implement message buses:
+You can use the `AggregateExistsMessageBus`, `NotificationMessageBus` or `StateCarryingMessageBus` classes to implement message buses:
 
 ```ts
 import { NotificationMessageBus } from '@castore/core';
@@ -1034,7 +1060,7 @@ await appMessageBus.publishMessage({
   }
 })
 
-// Same usage for StateCarryingMessageBus
+// Similar for AggregateExistsMessageBus and StateCarryingMessageBus
 ```
 
 > <details>

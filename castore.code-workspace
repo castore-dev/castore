@@ -20,7 +20,7 @@
     "[html][javascript][json]": {
       "editor.defaultFormatter": "esbenp.prettier-vscode"
     },
-    "typescript.tsdk": "node_modules/typescript/lib"
+    "typescript.tsdk": "🫀  Core/node_modules/typescript/lib"
   },
   "extensions": {
     "recommendations": [
@@ -28,8 +28,6 @@
       "dbaeumer.vscode-eslint",
       "editorconfig.editorconfig",
       "foxundermoon.shell-format",
-      "streetsidesoftware.code-spell-checker",
-      "streetsidesoftware.code-spell-checker-french",
       "stylelint.vscode-stylelint",
       "styled-components.vscode-styled-components"
     ]

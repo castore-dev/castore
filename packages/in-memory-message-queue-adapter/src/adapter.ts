@@ -2,6 +2,8 @@ import { promise as fastQ, queueAsPromised } from 'fastq';
 
 import type {
   MessageChannelSourceEventStores,
+  AggregateExistsMessageQueue,
+  EventStoreAggregateExistsMessage,
   NotificationMessageQueue,
   EventStoreNotificationMessage,
   StateCarryingMessageQueue,
@@ -17,13 +19,27 @@ import {
 } from './utils';
 
 type InMemoryQueueMessage<
-  MESSAGE extends StateCarryingMessageQueue | NotificationMessageQueue,
-> = StateCarryingMessageQueue | NotificationMessageQueue extends MESSAGE
+  MESSAGE_QUEUE extends
+    | AggregateExistsMessageQueue
+    | StateCarryingMessageQueue
+    | NotificationMessageQueue,
+> =
+  | AggregateExistsMessageQueue
+  | StateCarryingMessageQueue
+  | NotificationMessageQueue extends MESSAGE_QUEUE
   ? Message
-  : MESSAGE extends StateCarryingMessageQueue
-  ? EventStoreStateCarryingMessage<MessageChannelSourceEventStores<MESSAGE>>
-  : MESSAGE extends NotificationMessageQueue
-  ? EventStoreNotificationMessage<MessageChannelSourceEventStores<MESSAGE>>
+  : MESSAGE_QUEUE extends StateCarryingMessageQueue
+  ? EventStoreStateCarryingMessage<
+      MessageChannelSourceEventStores<MESSAGE_QUEUE>
+    >
+  : MESSAGE_QUEUE extends NotificationMessageQueue
+  ? EventStoreNotificationMessage<
+      MessageChannelSourceEventStores<MESSAGE_QUEUE>
+    >
+  : MESSAGE_QUEUE extends AggregateExistsMessageQueue
+  ? EventStoreAggregateExistsMessage<
+      MessageChannelSourceEventStores<MESSAGE_QUEUE>
+    >
   : never;
 
 export type Task<MESSAGE extends Message = Message> = {
@@ -43,7 +59,10 @@ export class InMemoryMessageQueueAdapter<MESSAGE extends Message = Message>
   implements MessageChannelAdapter
 {
   static attachTo<
-    MESSAGE_QUEUE extends StateCarryingMessageQueue | NotificationMessageQueue,
+    MESSAGE_QUEUE extends
+      | AggregateExistsMessageQueue
+      | StateCarryingMessageQueue
+      | NotificationMessageQueue,
   >(
     messageQueue: MESSAGE_QUEUE,
     constructorArgs: ConstructorArgs<InMemoryQueueMessage<MESSAGE_QUEUE>> = {},

@@ -4,7 +4,7 @@ import type { $Contravariant } from '~/utils';
 import type {
   EventStoreStateCarryingMessage,
   EventStoreNotificationMessage,
-} from '../message';
+} from '../generics';
 import {
   MessageChannelEventStoreNotFoundError,
   UndefinedMessageChannelAdapterError,

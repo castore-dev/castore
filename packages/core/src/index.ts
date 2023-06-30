@@ -41,12 +41,19 @@ export type { $Contravariant } from './utils';
 export {
   MessageChannelEventStoreNotFoundError,
   UndefinedMessageChannelAdapterError,
+  AggregateExistsMessageChannel,
   NotificationMessageChannel,
   StateCarryingMessageChannel,
-  NotificationMessageBus,
-  StateCarryingMessageBus,
+  AggregateExistsMessageQueue,
   NotificationMessageQueue,
   StateCarryingMessageQueue,
+  AggregateExistsMessageBus,
+  NotificationMessageBus,
+  StateCarryingMessageBus,
+  isAggregateExistsMessage,
+  isEventCarryingMessage,
+  isNotificationMessage,
+  isStateCarryingMessage,
 } from './messaging';
 export type {
   MessageChannelSourceEventStores,
@@ -54,9 +61,11 @@ export type {
   MessageChannelSourceEventStoreIds,
   MessageChannelSourceEventStoreIdTypes,
   MessageChannelAdapter,
+  AggregateExistsMessage,
   NotificationMessage,
   StateCarryingMessage,
   Message,
+  EventStoreAggregateExistsMessage,
   EventStoreNotificationMessage,
   EventStoreStateCarryingMessage,
 } from './messaging';
