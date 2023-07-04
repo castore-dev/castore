@@ -1,0 +1,1 @@
+"use strict";(self.webpackChunk_castore_docs_docusaurus=self.webpackChunk_castore_docs_docusaurus||[]).push([[3244],{8781:s=>{s.exports=JSON.parse('{"permalink":"/docs/blog/tags/castor-dev","page":1,"postsPerPage":10,"totalPages":1,"totalCount":1,"blogDescription":"Blog","blogTitle":"Blog"}')}}]);
