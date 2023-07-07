@@ -16,6 +16,7 @@
     "react-visualizer": "packages/react-visualizer",
     "demo-blueprint": "demo/blueprint",
     "demo-implementation": "demo/implementation",
-    "demo-visualization": "demo/visualization"
+    "demo-visualization": "demo/visualization",
+    "docs-docusaurus": "docs/docusaurus"
   }
 }

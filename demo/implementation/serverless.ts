@@ -9,7 +9,7 @@ const serverlessConfiguration: AWS = {
   plugins: ['serverless-esbuild'],
   provider: {
     name: 'aws',
-    runtime: 'nodejs14.x',
+    runtime: 'nodejs16.x',
     architecture: 'arm64',
     stage: '${env:STAGE}',
     profile: '${env:PROFILE}',
@@ -71,7 +71,7 @@ const serverlessConfiguration: AWS = {
       bundle: true,
       minify: true,
       sourcemap: true,
-      target: 'node14',
+      target: 'node16',
       keepNames: true,
       define: { 'require.resolve': undefined },
       platform: 'node',
