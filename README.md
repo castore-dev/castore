@@ -95,6 +95,7 @@ Castore is opiniated. It comes with a collection of best practices and documente
 - [📖 Resources](#-resources)
   - [Test Tools](#--test-tools)
   - [React Visualizer](#--react-visualizer)
+  - [Dam](#--dam)
   - [Packages List](#--packages-list)
   - [Common Patterns](#--common-patterns)
 
@@ -1276,6 +1277,10 @@ Read models are not implemented in Castore yet, but we have big plans for them, 
 ### - Test Tools
 
 Castore comes with a handy [Test Tool package](./packages/test-tools/README.md) that facilitates the writing of unit tests: It allows mocking event stores, populating them with an initial state and resetting them to it in a boilerplate-free and type-safe way.
+
+### - Dam
+
+[Dam](./packages/dam/README.md) is a suite of utils that facilitates data migration and maintenance operations with Castore (for instance, dispatching all the events of an event store - ordered by their timestamps - to a message queue).
 
 ### - React Visualizer
 

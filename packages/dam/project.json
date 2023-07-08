@@ -1,0 +1,6 @@
+{
+  "root": "packages/dam",
+  "projectType": "library",
+  "tags": [],
+  "implicitDependencies": []
+}
