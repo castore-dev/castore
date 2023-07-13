@@ -4,7 +4,7 @@ sidebar_position: 10
 
 # In Memory Message Queue Adapter
 
-DRY Castore [`MessageQueue`](https://github.com/castore-dev/castore/#--messagequeue) definition using [FastQ](https://github.com/mcollina/fastq).
+DRY Castore [`MessageQueue`](../../advanced-usage/#messagequeue) definition using [FastQ](https://github.com/mcollina/fastq).
 
 ## 📥 Installation
 

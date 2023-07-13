@@ -89,7 +89,7 @@ type PokemonEventStateCarryingMessage = EventStoreStateCarryingMessage<
 >;
 ```
 
-All types of message can be published through message channels, i.e. [Message Queues](#--messagequeue) or [Message Buses](#--messagebus).
+All types of message can be published through message channels, i.e. [Message Queues](#messagequeue) or [Message Buses](#messagebus).
 
 ## `MessageQueue`
 
@@ -201,8 +201,8 @@ messageQueue.messageChannelAdapter = mySuperMessageQueueAdapter;
 
 You can code your own `MessageQueueAdapter` (simply implement the `MessageChannelAdapter` interface), but we highly recommend using an off-the-shelf adapter:
 
-- [SQS Message Queue Adapter](./packages/sqs-message-queue-adapter/README.md)
-- [In-Memory Message Queue Adapter](./packages/in-memory-message-queue-adapter/README.md)
+- [SQS Message Queue Adapter](../resources/sqs-message-queue-adapter/)
+- [In-Memory Message Queue Adapter](../resources/in-memory-message-queue-adapter/)
 
 If the messaging solution that you use is missing, feel free to create/upvote an issue, or contribute 🤗
 
@@ -333,8 +333,8 @@ messageBus.messageChannelAdapter = mySuperMessageBusAdapter;
 
 You can code your own `MessageBusAdapter` (simply implement the `MessageChannelAdapter` interface), but we highly recommend using an off-the-shelf adapter:
 
-- [EventBridge Message Bus Adapter](./packages/event-bridge-message-bus-adapter/README.md)
-- [In-Memory Message Bus Adapter](./packages/in-memory-message-bus-adapter/README.md)
+- [EventBridge Message Bus Adapter](../resources/event-bridge-message-bus-adapter/)
+- [In-Memory Message Bus Adapter](../resources/in-memory-message-bus-adapter/)
 
 If the messaging solution that you use is missing, feel free to create/upvote an issue, or contribute 🤗
 

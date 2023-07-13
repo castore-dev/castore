@@ -24,9 +24,9 @@ After years of using it at [Kumo](https://dev.to/kumo), we have grown to love it
 
 With Castore, you'll be able to:
 
-- Define your [event stores](#--eventstore)
-- Fetch and push new [events](#--events) seamlessly
-- Implement and test your [commands](#--command)
+- Define your [event stores](../the-basics#eventstore)
+- Fetch and push new [events](../the-basics#events) seamlessly
+- Implement and test your [commands](../the-basics#command)
 - ...and much more!
 
 All that with first-class developer experience and minimal boilerplate ✨
@@ -39,7 +39,7 @@ Some important decisions that we've made early on:
 
 Castore has been designed with **flexibility** in mind. It gives you abstractions that are meant to be used **anywhere**: React apps, containers, Lambdas... you name it!
 
-For instance, `EventStore` classes are **stack agnostic**: They need an `EventStorageAdapter` class to interact with actual data. You can code your own `EventStorageAdapter` (simply implement the interface), but it's much simpler to use an off-the-shelf adapter like [`DynamoDBEventStorageAdapter`](./packages/dynamodb-event-storage-adapter/README.md).
+For instance, `EventStore` classes are **stack agnostic**: They need an `EventStorageAdapter` class to interact with actual data. You can code your own `EventStorageAdapter` (simply implement the interface), but it's much simpler to use an off-the-shelf adapter like [`DynamoDBEventStorageAdapter`](../resources/dynamodb-event-storage-adapter/).
 
 ### 🙅‍♂️ **We do NOT deploy resources**
 

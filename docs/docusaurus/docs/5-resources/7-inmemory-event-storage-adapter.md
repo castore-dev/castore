@@ -4,7 +4,7 @@ sidebar_position: 7
 
 # In Memory Event Storage Adapter
 
-DRY Castore [`EventStorageAdapter`](https://github.com/castore-dev/castore/#--eventstorageadapter) implementation using a JS object.
+DRY Castore [`EventStorageAdapter`](../../the-basics/#eventstorageadapter) implementation using a JS object.
 
 This class is mainly useful for manual and unit tests. It is obviously not recommended for production uses 🙂
 

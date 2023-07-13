@@ -4,7 +4,7 @@ sidebar_position: 4
 
 # Zod Event
 
-DRY Castore [`EventType`](https://github.com/castore-dev/castore/#--eventtype) definition using [`zod`](https://github.com/colinhacks/zod).
+DRY Castore [`EventType`](../../the-basics/#eventtype) definition using [`zod`](https://github.com/colinhacks/zod).
 
 ## 📥 Installation
 
@@ -64,7 +64,7 @@ const pokemonAppearedEventType = new EventType<
 
 ## ⚙️ Properties & Methods
 
-`ZodEventType` implements the [`EventType`](https://github.com/castore-dev/castore/#--eventtype) class and adds the following properties to it:
+`ZodEventType` implements the [`EventType`](../../the-basics/#eventtype) class and adds the following properties to it:
 
 - <code>payloadSchema <i>(?object)</i></code>: The event type payload zod schema
 

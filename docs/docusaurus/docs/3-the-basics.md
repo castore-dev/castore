@@ -55,12 +55,12 @@ const pokemonAppearedEventType = new EventType<
 >({ type: 'POKEMON_APPEARED' });
 ```
 
-Note that we only provided TS types for `payload` and `metadata` properties. That is because, as stated in the [core design](#-core-design), **Castore is meant to be as flexible as possible**, and that includes the validation library you want to use (if any): The `EventType` class can be used directly if no validation is required, or implemented by other classes which will add run-time validation methods to it 👍
+Note that we only provided TS types for `payload` and `metadata` properties. That is because, as stated in the [core design](../introduction/#-core-design), **Castore is meant to be as flexible as possible**, and that includes the validation library you want to use (if any): The `EventType` class can be used directly if no validation is required, or implemented by other classes which will add run-time validation methods to it 👍
 
 See the following packages for examples:
 
-- [JSON Schema Event Type](https://google.com/)
-- [Zod Event Type](https://google.com/)
+- [JSON Schema Event Type](../resources/json-schema-event/)
+- [Zod Event Type](../resources/zod-event/)
 
 > <details>
 > <summary><b>🔧 Technical description</b></summary>
@@ -198,13 +198,13 @@ const myPikachuAggregate: PokemonAggregate =
 
 ## `EventStore`
 
-Once you've defined your [event types](#--eventtype) and how to [aggregate](#--reducer) them, you can bundle them together in an `EventStore` class.
+Once you've defined your [event types](#eventtype) and how to [aggregate](#reducer) them, you can bundle them together in an `EventStore` class.
 
 Each event store in your application represents a business entity. Think of event stores as _"what tables would be in CRUD"_, except that instead of directly updating data, you just append new events to it!
 
 ![Event Store](../assets/docsImg/eventStore.png)
 
-In Castore, `EventStore` classes are NOT responsible for actually storing data (this will come with [event storage adapters](#--eventstorageadapter)). But rather to provide a boilerplate-free and type-safe interface to perform many actions such as:
+In Castore, `EventStore` classes are NOT responsible for actually storing data (this will come with [event storage adapters](#eventstorageadapter)). But rather to provide a boilerplate-free and type-safe interface to perform many actions such as:
 
 - Listing aggregate ids
 - Accessing events of an aggregate
@@ -519,11 +519,11 @@ const pokemonsEventStore = new EventStore({
 pokemonsEventStore.storageAdapter = mySuperStorageAdapter;
 ```
 
-You can choose to [build an event storage adapter](https://google.com/) that suits your usage. However, we highly recommend using an off-the-shelf adapter:
+You can choose to [build an event storage adapter](../additional-docs/building-your-own-event-storage-adapter/) that suits your usage. However, we highly recommend using an off-the-shelf adapter:
 
-- [DynamoDB Event Storage Adapter](https://google.com/)
-- [Redux Event Storage Adapter](https://google.com/)
-- [In-Memory Event Storage Adapter](https://google.com/)
+- [DynamoDB Event Storage Adapter](../resources/dynamodb-event-storage-adapter/)
+- [Redux Event Storage Adapter](../resources/redux-event-storage-adapter/)
+- [In-Memory Event Storage Adapter](../resources/inmemory-event-storage-adapter/)
 
 If the storage solution that you use is missing, feel free to create/upvote an issue, or contribute 🤗
 
@@ -570,11 +570,11 @@ const catchPokemonCommand = new Command({
 });
 ```
 
-Note that we only provided TS types for `Input` and `Output` properties. That is because, as stated in the [core design](#-core-design), **Castore is meant to be as flexible as possible**, and that includes the validation library you want to use (if any): The `Command` class can be used directly if no validation is required, or implemented by other classes which will add run-time validation methods to it 👍
+Note that we only provided TS types for `Input` and `Output` properties. That is because, as stated in the [core design](../introduction/#-core-design), **Castore is meant to be as flexible as possible**, and that includes the validation library you want to use (if any): The `Command` class can be used directly if no validation is required, or implemented by other classes which will add run-time validation methods to it 👍
 
 See the following packages for examples:
 
-- [JSON Schema Event Type](https://google.com/)
+- [JSON Schema Command Type](../resources/json-schema-command/)
 
 > <details>
 > <summary><b>🔧 Technical description</b></summary>
@@ -640,13 +640,13 @@ See the following packages for examples:
 
 A few notes on commands handlers:
 
-- `Commands` handlers should NOT use [read models](#--read-models) when validating that a modification is acceptable. Read models are like cache: They are not the source of truth, and may not represent the freshest state.
+- `Commands` handlers should NOT use [read models](../advanced-usage/#read-models) when validating that a modification is acceptable. Read models are like cache: They are not the source of truth, and may not represent the freshest state.
 
 - Fetching and pushing events non-simultaneously exposes your application to [race conditions](https://en.wikipedia.org/wiki/Race_condition). To counter that, commands are designed to be retried when an `EventAlreadyExistsError` is triggered (which is part of the `EventStorageAdapter` interface).
 
 ![Command Retry](../assets/docsImg/commandRetry.png)
 
-- Finally, Command handlers should be, as much as possible, [pure functions](https://en.wikipedia.org/wiki/Pure_function). If it depends on impure functions like functions with unpredictable outputs (like id generation), mutating effects, side effects or state dependency (like external data fetching), you should pass them through the additional context arguments rather than directly importing and using them. This will make them easier to test and to re-use in different contexts, such as in the [React Visualizer](https://google.com/).
+- Finally, Command handlers should be, as much as possible, [pure functions](https://en.wikipedia.org/wiki/Pure_function). If it depends on impure functions like functions with unpredictable outputs (like id generation), mutating effects, side effects or state dependency (like external data fetching), you should pass them through the additional context arguments rather than directly importing and using them. This will make them easier to test and to re-use in different contexts, such as in the [React Visualizer](../resources/react-visualizer/).
 
 ## Event Groups
 
@@ -681,4 +681,4 @@ Like the `pushEvent` API, event groups are designed to throw an `EventAlreadyExi
 
 > ☝️ When pushing event groups on several event stores, they must use the same type of event storage adapters.
 >
-> ☝️ Also, be aware of technical constraints of your event storage solution. For instance, the [`DynamoDBEventStorageAdapter`](https://google.com/)'s implementation is based on [DynamoDB transactions](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/transaction-apis.html), which means that the event stores tables must be in the same region, and that a groups cannot contain more than 100 events.
+> ☝️ Also, be aware of technical constraints of your event storage solution. For instance, the [`DynamoDBEventStorageAdapter`](../resources/dynamodb-event-storage-adapter/)'s implementation is based on [DynamoDB transactions](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/transaction-apis.html), which means that the event stores tables must be in the same region, and that a groups cannot contain more than 100 events.

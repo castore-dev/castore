@@ -6,7 +6,7 @@ sidebar_position: 2
 
 React component to visualize, design and manually test [Castore](https://github.com/castore-dev/castore) event stores and commands.
 
-Here is a [hosted example](https://castore-dev.github.io/castore/), based on the main README code snippets on pokemons and trainers. You can find the related source code (commands & event stores) in the [demo package](https://github.com/castore-dev/castore/tree/main/demo/blueprint/src).
+Here is a [hosted example](https://castore-dev.github.io/castore/visualizer/), based on the main README code snippets on pokemons and trainers. You can find the related source code (commands & event stores) in the [demo package](https://github.com/castore-dev/castore/tree/main/demo/blueprint/src).
 
 ## 📥 Installation
 
@@ -57,7 +57,7 @@ const MyPage = () =>
   />
 ```
 
-It will render a [visualizer](https://castore-dev.github.io/castore/).
+It will render a [visualizer](https://castore-dev.github.io/castore/visualizer/).
 
 ## ☝️ Warning
 
