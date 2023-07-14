@@ -11,6 +11,8 @@ import type { MessageChannelAdapter } from './messageChannelAdapter';
 export class NotificationMessageChannel<
   EVENT_STORE extends EventStore = EventStore,
 > {
+  // Mainly for type discrimination
+  messageType: 'notification';
   messageChannelType: string;
   messageChannelId: string;
   sourceEventStores: EVENT_STORE[];
@@ -46,6 +48,7 @@ export class NotificationMessageChannel<
     messageChannelId: string;
     messageChannelAdapter?: MessageChannelAdapter;
   }) {
+    this.messageType = 'notification';
     this.messageChannelType = messageChannelType;
     this.messageChannelId = messageChannelId;
     this.sourceEventStores = sourceEventStores;

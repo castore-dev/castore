@@ -11,6 +11,8 @@ import type { MessageChannelAdapter } from './messageChannelAdapter';
 export class AggregateExistsMessageChannel<
   EVENT_STORE extends EventStore = EventStore,
 > {
+  // Mainly for type discrimination
+  messageType: 'aggregateExists';
   messageChannelType: string;
   messageChannelId: string;
   sourceEventStores: EVENT_STORE[];
@@ -46,6 +48,7 @@ export class AggregateExistsMessageChannel<
     messageChannelId: string;
     messageChannelAdapter?: MessageChannelAdapter;
   }) {
+    this.messageType = 'aggregateExists';
     this.messageChannelType = messageChannelType;
     this.messageChannelId = messageChannelId;
     this.sourceEventStores = sourceEventStores;

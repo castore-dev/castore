@@ -20,7 +20,7 @@
     "[html][javascript][json]": {
       "editor.defaultFormatter": "esbenp.prettier-vscode"
     },
-    "typescript.tsdk": "🫀  Core/node_modules/typescript/lib"
+    "typescript.tsdk": "🦫  Root/node_modules/typescript/lib"
   },
   "extensions": {
     "recommendations": [
@@ -84,6 +84,10 @@
     {
       "path": "packages/react-visualizer",
       "name": "🔨  React Visualizer"
+    },
+    {
+      "path": "packages/dam",
+      "name": "🔨  Dam"
     },
     {
       "path": "demo/blueprint",

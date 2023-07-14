@@ -89,7 +89,7 @@ type EventBridgeNotificationMessageBusMessage<
   : never;
 
 type EventBridgeAggregateExistsMessageBusMessage<
-  MESSAGE_BUS extends NotificationMessageBus,
+  MESSAGE_BUS extends AggregateExistsMessageBus,
   EVENT_STORE_IDS extends MessageChannelSourceEventStoreIds<MESSAGE_BUS> = MessageChannelSourceEventStoreIds<MESSAGE_BUS>,
 > = EVENT_STORE_IDS extends infer EVENT_STORE_ID
   ? EVENT_STORE_ID extends string

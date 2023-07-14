@@ -14,6 +14,7 @@
     "in-memory-message-queue-adapter": "packages/in-memory-message-queue-adapter",
     "test-tools": "packages/test-tools",
     "react-visualizer": "packages/react-visualizer",
+    "dam": "packages/dam",
     "demo-blueprint": "demo/blueprint",
     "demo-implementation": "demo/implementation",
     "demo-visualization": "demo/visualization"

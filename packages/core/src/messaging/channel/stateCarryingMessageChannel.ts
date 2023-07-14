@@ -14,6 +14,8 @@ import type { MessageChannelAdapter } from './messageChannelAdapter';
 export class StateCarryingMessageChannel<
   EVENT_STORE extends EventStore = EventStore,
 > {
+  // Mainly for type discrimination
+  messageType: 'stateCarrying';
   messageChannelType: string;
   messageChannelId: string;
   sourceEventStores: EVENT_STORE[];
@@ -57,6 +59,7 @@ export class StateCarryingMessageChannel<
     messageChannelId: string;
     messageChannelAdapter?: MessageChannelAdapter;
   }) {
+    this.messageType = 'stateCarrying';
     this.messageChannelType = messageChannelType;
     this.messageChannelId = messageChannelId;
     this.sourceEventStores = sourceEventStores;
