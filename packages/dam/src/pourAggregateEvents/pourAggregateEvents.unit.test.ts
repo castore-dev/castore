@@ -88,7 +88,7 @@ describe('pourAggregateEvents', () => {
     });
   });
 
-  it('correctly use options', async () => {
+  it('correctly passes options', async () => {
     const options: EventsQueryOptions = {
       reverse: true,
       limit: 1,
@@ -106,5 +106,7 @@ describe('pourAggregateEvents', () => {
     });
 
     expect(getEventsMock).toHaveBeenCalledWith(aggregate1Id, options);
+
+    getEventsMock.mockRestore();
   });
 });

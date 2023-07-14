@@ -2,31 +2,28 @@ import type {
   AggregateExistsMessage,
   EventStore,
   EventStoreId,
+  ListAggregateIdsOptions,
 } from '@castore/core';
 
 import type { ScannedAggregate } from '~/types';
 
-interface PourEventStoreAggregateIdsOptions {
-  reverse?: boolean;
-  initialEventAfter?: string;
-  initialEventBefore?: string;
-}
-
-export const pourEventStoreAggregateIds = async <
-  EVENT_STORE extends EventStore,
->(
-  eventStore: EVENT_STORE,
+interface Props<EVENT_STORE extends EventStore> {
+  eventStore: EVENT_STORE;
   messageChannel: {
     publishMessages: (
       messages: AggregateExistsMessage<EventStoreId<EVENT_STORE>>[],
     ) => Promise<void>;
-  },
-  {
-    reverse,
-    initialEventAfter,
-    initialEventBefore,
-  }: PourEventStoreAggregateIdsOptions = {},
-): Promise<{
+  };
+  options?: Omit<ListAggregateIdsOptions, 'pageToken'>;
+}
+
+export const pourEventStoreAggregateIds = async <
+  EVENT_STORE extends EventStore,
+>({
+  eventStore,
+  messageChannel,
+  options: listAggregateIdsOptions = {},
+}: Props<EVENT_STORE>): Promise<{
   pouredAggregateIdCount: number;
   firstScannedAggregate?: ScannedAggregate;
   lastScannedAggregate?: ScannedAggregate;
@@ -41,10 +38,8 @@ export const pourEventStoreAggregateIds = async <
 
   do {
     const { aggregateIds, nextPageToken } = await eventStore.listAggregateIds({
-      pageToken: pageToken,
-      reverse,
-      initialEventAfter,
-      initialEventBefore,
+      ...listAggregateIdsOptions,
+      pageToken,
     });
 
     const areAllAggregatesScanned = nextPageToken === undefined;
