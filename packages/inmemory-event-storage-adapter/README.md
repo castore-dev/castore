@@ -40,7 +40,7 @@ const pokemonsEventsStorageAdapter = new InMemoryStorageAdapter({
 });
 
 const pokemonsEventStore = new EventStore({
-  // ...
+  ...
   storageAdapter: pokemonsEventsStorageAdapter,
 });
 ```

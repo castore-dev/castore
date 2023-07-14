@@ -925,7 +925,7 @@ await appMessageQueue.publishMessage({
   eventStoreId: 'POKEMONS',
   event: {
     type: 'POKEMON_LEVELED_UP',
-    // ...
+    ...
   },
 });
 

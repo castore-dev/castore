@@ -40,7 +40,10 @@ describe('pourEventStoreEvents', () => {
 
   it('pours event store events in correct order', async () => {
     const { pouredEventCount, firstScannedAggregate, lastScannedAggregate } =
-      await pourEventStoreEvents(mockedEventStore, messageQueue);
+      await pourEventStoreEvents({
+        eventStore: mockedEventStore,
+        messageChannel: messageQueue,
+      });
 
     expect(pouredEventCount).toStrictEqual(5);
     expect(firstScannedAggregate).toStrictEqual({ aggregateId: aggregate1Id });
@@ -72,9 +75,13 @@ describe('pourEventStoreEvents', () => {
 
   it('correctly filters events based on from & to', async () => {
     const { pouredEventCount, firstScannedAggregate, lastScannedAggregate } =
-      await pourEventStoreEvents(mockedEventStore, messageQueue, {
-        from: '2021-07-01T00:00:00.000Z',
-        to: '2023-02-01T00:00:00.000Z',
+      await pourEventStoreEvents({
+        eventStore: mockedEventStore,
+        messageChannel: messageQueue,
+        filters: {
+          from: '2021-07-01T00:00:00.000Z',
+          to: '2023-02-01T00:00:00.000Z',
+        },
       });
 
     expect(pouredEventCount).toStrictEqual(3);

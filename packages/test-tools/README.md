@@ -33,11 +33,11 @@ import { EventStore } from '@castore/core';
 import { mockEventStore } from '@castore/test-tools';
 
 const pokemonsEventStore = new EventStore({
-  // ...
+  ...
 });
 
 const pokemonAppearCommand = new Command({
-  // ...
+  ...
 });
 
 describe('My awesome test', () => {
@@ -47,7 +47,7 @@ describe('My awesome test', () => {
       aggregateId: '123',
       version: 1,
       type: 'POKEMON_APPEARED',
-      // ...
+      ...
     },
   ]);
 
@@ -59,7 +59,7 @@ describe('My awesome test', () => {
   it('pushes a POKEMON_APPEARED event', async () => {
     const { pokemonId } = await pokemonAppearCommand.handler({
       requiredEventsStores: [mockedPokemonsEventStore],
-      // ...
+      ...
     });
 
     const { events } = await mockedPokemonsEventStore.getEvents(pokemonId);
@@ -78,11 +78,11 @@ import { EventStore } from '@castore/core';
 import { muteEventStore } from '@castore/test-tools';
 
 const pokemonsEventStore = new EventStore({
-  // ...
+  ...
 });
 
 const functionUsingTheEventStore = async () => {
-  // ...
+  ...
 };
 
 describe('My awesome test', () => {
@@ -92,7 +92,7 @@ describe('My awesome test', () => {
       aggregateId: '123',
       version: 1,
       type: 'POKEMON_APPEARED',
-      // ...
+      ...
     },
   ]);
 

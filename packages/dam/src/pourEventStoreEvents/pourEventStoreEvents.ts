@@ -9,20 +9,21 @@ import type { ScannedAggregate } from '~/types';
 import { EventBook } from './eventBook';
 import { MessagePourer } from './messagePourer';
 
-interface PourEventStoreAggregateIdsOptions {
-  from?: string;
-  to?: string;
-}
-
-export const pourEventStoreEvents = async <EVENT_STORE extends EventStore>(
-  eventStore: EVENT_STORE,
+interface Props<EVENT_STORE extends EventStore> {
+  eventStore: EVENT_STORE;
   messageChannel: {
     publishMessage: (
       message: EventStoreNotificationMessage<EVENT_STORE>,
     ) => Promise<void>;
-  },
-  { from, to }: PourEventStoreAggregateIdsOptions = {},
-): Promise<{
+  };
+  filters?: { from?: string; to?: string };
+}
+
+export const pourEventStoreEvents = async <EVENT_STORE extends EventStore>({
+  eventStore,
+  messageChannel,
+  filters: { from, to } = {},
+}: Props<EVENT_STORE>): Promise<{
   pouredEventCount: number;
   firstScannedAggregate?: ScannedAggregate;
   lastScannedAggregate?: ScannedAggregate;

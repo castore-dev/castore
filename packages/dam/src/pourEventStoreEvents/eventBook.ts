@@ -4,6 +4,8 @@ import {
   EventStoreEventsDetails,
 } from '@castore/core';
 
+import { getIsBetween } from '~/utils';
+
 export class EventBook<EVENT_STORE extends EventStore> {
   eventStore: EVENT_STORE;
   eventsByAggregateId: Record<string, EventDetail[]>;
@@ -58,11 +60,7 @@ export class EventBook<EVENT_STORE extends EventStore> {
     }
 
     return eventsToPour
-      .filter(
-        ({ timestamp }) =>
-          (from === undefined || from <= timestamp) &&
-          (to === undefined || to >= timestamp),
-      )
+      .filter(getIsBetween({ from, to }))
       .sort((eventA, eventB) =>
         eventA.timestamp <= eventB.timestamp ? -1 : 1,
       );

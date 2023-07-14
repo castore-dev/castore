@@ -75,7 +75,7 @@ import { CssBaseline, ThemeProvider, createTheme } from '@mui/material';
 import { UnthemedVisualizer } from '@castore/react-visualizer';
 
 const customTheme = createTheme({
-  // ...
+  ...
 })
 
 const MyPage = () =>
