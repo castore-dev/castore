@@ -13,7 +13,7 @@ import {
   aggregate2Events,
   aggregate3Id,
   aggregate3Events,
-} from './fixtures.test';
+} from '../fixtures.test';
 import { pourEventStoreEvents } from './pourEventStoreEvents';
 
 const messageQueue = new NotificationMessageQueue({
@@ -39,12 +39,12 @@ describe('pourEventStoreEvents', () => {
   });
 
   it('pours event store events in correct order', async () => {
-    const { pouredEventCount, startAggregateId, endAggregateId } =
+    const { pouredEventCount, firstScannedAggregate, lastScannedAggregate } =
       await pourEventStoreEvents(mockedEventStore, messageQueue);
 
     expect(pouredEventCount).toStrictEqual(5);
-    expect(startAggregateId).toStrictEqual(aggregate1Id);
-    expect(endAggregateId).toStrictEqual(aggregate3Id);
+    expect(firstScannedAggregate).toStrictEqual({ aggregateId: aggregate1Id });
+    expect(lastScannedAggregate).toStrictEqual({ aggregateId: aggregate3Id });
 
     expect(receivedMessages).toHaveLength(5);
 
@@ -71,15 +71,15 @@ describe('pourEventStoreEvents', () => {
   });
 
   it('correctly filters events based on from & to', async () => {
-    const { pouredEventCount, startAggregateId, endAggregateId } =
+    const { pouredEventCount, firstScannedAggregate, lastScannedAggregate } =
       await pourEventStoreEvents(mockedEventStore, messageQueue, {
         from: '2021-07-01T00:00:00.000Z',
         to: '2023-02-01T00:00:00.000Z',
       });
 
     expect(pouredEventCount).toStrictEqual(3);
-    expect(startAggregateId).toStrictEqual(aggregate1Id);
-    expect(endAggregateId).toStrictEqual(aggregate3Id);
+    expect(firstScannedAggregate).toStrictEqual({ aggregateId: aggregate1Id });
+    expect(lastScannedAggregate).toStrictEqual({ aggregateId: aggregate3Id });
 
     expect(receivedMessages).toHaveLength(3);
 
