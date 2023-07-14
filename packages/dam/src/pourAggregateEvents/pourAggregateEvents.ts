@@ -15,26 +15,25 @@ interface Props<EVENT_STORE extends EventStore> {
     ) => Promise<void>;
   };
   aggregateId: string;
-  options?: {
+  options?: EventsQueryOptions;
+  filters?: {
     from?: string;
     to?: string;
-  } & EventsQueryOptions;
+  };
 }
 
 export const pourAggregateEvents = async <EVENT_STORE extends EventStore>({
   eventStore,
   messageChannel,
   aggregateId,
-  options: { from, to, ...eventsQueryOptions } = {},
+  options = {},
+  filters: { from, to } = {},
 }: Props<EVENT_STORE>): Promise<{
   pouredEventCount: number;
   firstPouredEvent?: EventDetail;
   lastPouredEvent?: EventDetail;
 }> => {
-  const { events } = await eventStore.getEvents(
-    aggregateId,
-    eventsQueryOptions,
-  );
+  const { events } = await eventStore.getEvents(aggregateId, options);
 
   const eventsToPour = events.filter(getIsBetween({ from, to }));
 

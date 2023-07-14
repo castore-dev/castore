@@ -16,13 +16,13 @@ interface Props<EVENT_STORE extends EventStore> {
       message: EventStoreNotificationMessage<EVENT_STORE>,
     ) => Promise<void>;
   };
-  options?: { from?: string; to?: string };
+  filters?: { from?: string; to?: string };
 }
 
 export const pourEventStoreEvents = async <EVENT_STORE extends EventStore>({
   eventStore,
   messageChannel,
-  options: { from, to } = {},
+  filters: { from, to } = {},
 }: Props<EVENT_STORE>): Promise<{
   pouredEventCount: number;
   firstScannedAggregate?: ScannedAggregate;

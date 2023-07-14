@@ -71,7 +71,7 @@ describe('pourAggregateEvents', () => {
         eventStore: mockedEventStore,
         messageChannel: messageQueue,
         aggregateId: aggregate1Id,
-        options: {
+        filters: {
           from: '2021-02-01T00:00:00.000Z',
           to: '2023-06-01T00:00:00.000Z',
         },
