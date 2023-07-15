@@ -2,9 +2,10 @@ import type {
   EventDetail,
   EventStore,
   EventStoreEventsDetails,
+  EventStoreNotificationMessage,
 } from '@castore/core';
 
-import { getIsBetween } from '~/utils/getIsBetween';
+import { MessageBatch } from './messageBatch';
 
 export class EventBook<EVENT_STORE extends EventStore> {
   eventStore: EVENT_STORE;
@@ -15,9 +16,7 @@ export class EventBook<EVENT_STORE extends EventStore> {
     this.eventsByAggregateId = {};
   }
 
-  fetchAndBookAggregateEvents = async (
-    aggregateIds: string[],
-  ): Promise<void[]> =>
+  feedAggregateEvents = async (aggregateIds: string[]): Promise<void[]> =>
     Promise.all(
       aggregateIds.map(async aggregateId => {
         const { events } = await this.eventStore.getEvents(aggregateId);
@@ -30,17 +29,13 @@ export class EventBook<EVENT_STORE extends EventStore> {
   ): EventStoreEventsDetails<EVENT_STORE>[] =>
     this.eventsByAggregateId[aggregateId] ?? [];
 
-  getEventsToPour = ({
+  getMessagesToPour = ({
     areAllAggregatesScanned,
     fetchedEventsCursor,
-    from,
-    to,
   }: {
     areAllAggregatesScanned: boolean;
     fetchedEventsCursor: string;
-    from?: string;
-    to?: string;
-  }): EventStoreEventsDetails<EVENT_STORE>[] => {
+  }): MessageBatch<EVENT_STORE> => {
     const eventsToPour: EventStoreEventsDetails<EVENT_STORE>[] = [];
 
     for (const aggregateId in this.eventsByAggregateId) {
@@ -59,10 +54,14 @@ export class EventBook<EVENT_STORE extends EventStore> {
       }
     }
 
-    return eventsToPour
-      .filter(getIsBetween({ from, to }))
-      .sort((eventA, eventB) =>
-        eventA.timestamp <= eventB.timestamp ? -1 : 1,
-      );
+    return new MessageBatch(
+      eventsToPour.map(
+        event =>
+          ({
+            eventStoreId: this.eventStore.eventStoreId,
+            event,
+          } as EventStoreNotificationMessage<EVENT_STORE>),
+      ),
+    );
   };
 }

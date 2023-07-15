@@ -5,8 +5,8 @@ import type {
   EventsQueryOptions,
 } from '@castore/core';
 
-import { getIsBetween } from '~/utils/getIsBetween';
 import { getThrottle } from '~/utils/getThrottle';
+import { getIsBetween } from '~/utils/isBetween';
 
 interface Props<EVENT_STORE extends EventStore> {
   eventStore: EVENT_STORE;

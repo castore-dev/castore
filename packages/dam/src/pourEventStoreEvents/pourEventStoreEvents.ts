@@ -1,14 +1,10 @@
-import type {
-  EventDetail,
-  EventStore,
-  EventStoreNotificationMessage,
-} from '@castore/core';
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
+import type { EventStore, EventStoreNotificationMessage } from '@castore/core';
 
 import type { ScanInfos } from '~/types';
+import { EventBook } from '~/utils/eventBook';
+import { MessagePourer } from '~/utils/messagePourer';
 import { updateScanInfos } from '~/utils/updateScanInfos';
-
-import { EventBook } from './eventBook';
-import { MessagePourer } from './messagePourer';
 
 interface Props<EVENT_STORE extends EventStore> {
   eventStore: EVENT_STORE;
@@ -28,14 +24,14 @@ export const pourEventStoreEvents = async <EVENT_STORE extends EventStore>({
   rateLimit,
 }: Props<EVENT_STORE>): Promise<{ pouredEventCount: number } & ScanInfos> => {
   const eventBook = new EventBook(eventStore);
-  const messagePourer = new MessagePourer(
-    eventStore,
+  const messagePourer = new MessagePourer<EVENT_STORE>(
     messageChannel,
     rateLimit,
   );
 
   let pageToken: string | undefined;
   let fetchedEventsCursor: string | undefined = undefined;
+  let areAllAggregatesScanned = false;
 
   const scanInfos: ScanInfos = {};
 
@@ -47,7 +43,7 @@ export const pourEventStoreEvents = async <EVENT_STORE extends EventStore>({
       initialEventBefore: to,
     });
 
-    const areAllAggregatesScanned = nextPageToken === undefined;
+    areAllAggregatesScanned = nextPageToken === undefined;
 
     updateScanInfos({
       scanInfos,
@@ -61,28 +57,29 @@ export const pourEventStoreEvents = async <EVENT_STORE extends EventStore>({
       break;
     }
 
-    await eventBook.fetchAndBookAggregateEvents(aggregateIds);
+    await eventBook.feedAggregateEvents(aggregateIds);
 
     const lastScannedAggregateEvents = eventBook.getBookedEvents(
       lastScannedAggregateId,
-    ) as [EventDetail, ...EventDetail[]];
+    );
 
     /**
      * @debt v2 "make listAggregateIds return initialEventTimestamp and use it here"
      */
-    fetchedEventsCursor = lastScannedAggregateEvents[0].timestamp;
+    fetchedEventsCursor = lastScannedAggregateEvents[0]!.timestamp;
 
-    const eventsToPour = eventBook.getEventsToPour({
+    const messagesToPour = eventBook.getMessagesToPour({
       areAllAggregatesScanned,
       fetchedEventsCursor,
-      from,
-      to,
     });
 
-    await messagePourer.pourEvents(eventsToPour);
+    messagesToPour.filterByTimestamp({ from, to });
+    messagesToPour.sortByTimestamp();
+
+    await messagePourer.pourMessageBatch(messagesToPour);
 
     pageToken = nextPageToken;
-  } while (pageToken !== undefined);
+  } while (!areAllAggregatesScanned);
 
   return {
     pouredEventCount: messagePourer.pouredEventCount,

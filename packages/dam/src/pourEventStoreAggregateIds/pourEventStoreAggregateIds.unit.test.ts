@@ -7,22 +7,22 @@ import {
 import { InMemoryMessageQueueAdapter } from '@castore/in-memory-message-queue-adapter';
 
 import {
-  mockedEventStore,
-  eventStoreId,
-  aggregate1Id,
-  aggregate2Id,
-  aggregate3Id,
+  pokemonEventStore,
+  pokemonEvtStoreId,
+  pikachuId,
+  charizardId,
+  arcanineId,
 } from '../fixtures.test';
 import { pourEventStoreAggregateIds } from './pourEventStoreAggregateIds';
 
 const messageQueue = new AggregateExistsMessageQueue({
   messageQueueId: 'testMessageQueue',
-  sourceEventStores: [mockedEventStore],
+  sourceEventStores: [pokemonEventStore],
 });
 
 let receivedMessages: {
   date: Date;
-  message: AggregateExistsMessage<EventStoreId<typeof mockedEventStore>>;
+  message: AggregateExistsMessage<EventStoreId<typeof pokemonEventStore>>;
 }[] = [];
 
 InMemoryMessageQueueAdapter.attachTo(messageQueue, {
@@ -44,27 +44,27 @@ describe('pourEventStoreAggregateIds', () => {
       firstScannedAggregate,
       lastScannedAggregate,
     } = await pourEventStoreAggregateIds({
-      eventStore: mockedEventStore,
+      eventStore: pokemonEventStore,
       messageChannel: messageQueue,
     });
 
     expect(pouredAggregateIdCount).toStrictEqual(3);
-    expect(firstScannedAggregate).toStrictEqual({ aggregateId: aggregate1Id });
-    expect(lastScannedAggregate).toStrictEqual({ aggregateId: aggregate3Id });
+    expect(firstScannedAggregate).toStrictEqual({ aggregateId: pikachuId });
+    expect(lastScannedAggregate).toStrictEqual({ aggregateId: arcanineId });
 
     expect(receivedMessages).toHaveLength(3);
 
     expect(receivedMessages[0]?.message).toStrictEqual({
-      eventStoreId,
-      aggregateId: aggregate1Id,
+      eventStoreId: pokemonEvtStoreId,
+      aggregateId: pikachuId,
     });
     expect(receivedMessages[1]?.message).toStrictEqual({
-      eventStoreId,
-      aggregateId: aggregate2Id,
+      eventStoreId: pokemonEvtStoreId,
+      aggregateId: charizardId,
     });
     expect(receivedMessages[2]?.message).toStrictEqual({
-      eventStoreId,
-      aggregateId: aggregate3Id,
+      eventStoreId: pokemonEvtStoreId,
+      aggregateId: arcanineId,
     });
   });
 
@@ -76,10 +76,13 @@ describe('pourEventStoreAggregateIds', () => {
       reverse: true,
     };
 
-    const listAggregateIdsMock = vi.spyOn(mockedEventStore, 'listAggregateIds');
+    const listAggregateIdsMock = vi.spyOn(
+      pokemonEventStore,
+      'listAggregateIds',
+    );
 
     await pourEventStoreAggregateIds({
-      eventStore: mockedEventStore,
+      eventStore: pokemonEventStore,
       messageChannel: messageQueue,
       options,
     });
@@ -93,7 +96,7 @@ describe('pourEventStoreAggregateIds', () => {
     const rateLimit = 2;
 
     await pourEventStoreAggregateIds({
-      eventStore: mockedEventStore,
+      eventStore: pokemonEventStore,
       messageChannel: messageQueue,
       rateLimit,
     });

@@ -1,18 +1,29 @@
 import type { EventStoreEventsDetails } from '@castore/core';
-import { pokemonsEventStore } from '@castore/demo-blueprint';
+import {
+  pokemonsEventStore,
+  trainersEventStore,
+} from '@castore/demo-blueprint';
 import { mockEventStore } from '@castore/test-tools';
 
-export const eventStoreId = pokemonsEventStore.eventStoreId;
+export const pokemonEvtStoreId = pokemonsEventStore.eventStoreId;
+export const trainerEvtStoreId = trainersEventStore.eventStoreId;
 
-export const aggregate1Id = 'pikachu1';
-export const aggregate2Id = 'charizard1';
-export const aggregate3Id = 'pikachu2';
+// AGGREGATE IDS
 
-export const aggregate1Events: EventStoreEventsDetails<
+export const pikachuId = 'pikachu1';
+export const charizardId = 'charizard1';
+export const arcanineId = 'arcanine1';
+
+export const ashKetchumId = 'ashKetchum';
+export const garyOakId = 'garyOak';
+
+// POKEMON EVENTS
+
+export const pikachuEvents: EventStoreEventsDetails<
   typeof pokemonsEventStore
 >[] = [
   {
-    aggregateId: aggregate1Id,
+    aggregateId: pikachuId,
     version: 1,
     type: 'APPEARED',
     timestamp: '2021-01-01T00:00:00.000Z',
@@ -20,25 +31,25 @@ export const aggregate1Events: EventStoreEventsDetails<
     metadata: {},
   },
   {
-    aggregateId: aggregate1Id,
+    aggregateId: pikachuId,
     version: 2,
     type: 'CAUGHT_BY_TRAINER',
     timestamp: '2022-01-01T00:00:00.000Z',
-    payload: { trainerId: 'ashKetchum' },
+    payload: { trainerId: ashKetchumId },
   },
   {
-    aggregateId: aggregate1Id,
+    aggregateId: pikachuId,
     version: 3,
     type: 'LEVELLED_UP',
     timestamp: '2023-07-01T00:00:00.000Z',
   },
 ];
 
-export const aggregate2Events: EventStoreEventsDetails<
+export const charizardEvents: EventStoreEventsDetails<
   typeof pokemonsEventStore
 >[] = [
   {
-    aggregateId: aggregate2Id,
+    aggregateId: charizardId,
     version: 1,
     type: 'APPEARED',
     timestamp: '2022-07-01T00:00:00.000Z',
@@ -47,21 +58,75 @@ export const aggregate2Events: EventStoreEventsDetails<
   },
 ];
 
-export const aggregate3Events: EventStoreEventsDetails<
+export const arcanineEvents: EventStoreEventsDetails<
   typeof pokemonsEventStore
 >[] = [
   {
-    aggregateId: aggregate3Id,
+    aggregateId: arcanineId,
     version: 1,
     type: 'APPEARED',
     timestamp: '2023-01-01T00:00:00.000Z',
     payload: { name: 'Pikachu', level: 3 },
     metadata: {},
   },
+  {
+    aggregateId: arcanineId,
+    version: 2,
+    type: 'CAUGHT_BY_TRAINER',
+    timestamp: '2024-01-01T00:00:00.000Z',
+    payload: { trainerId: garyOakId },
+  },
 ];
 
-export const mockedEventStore = mockEventStore(pokemonsEventStore, [
-  ...aggregate1Events,
-  ...aggregate2Events,
-  ...aggregate3Events,
+// TRAINER EVENTS
+
+export const ashKetchumEvents: EventStoreEventsDetails<
+  typeof trainersEventStore
+>[] = [
+  {
+    aggregateId: ashKetchumId,
+    version: 1,
+    type: 'GAME_STARTED',
+    timestamp: '2020-12-01T00:00:00.000Z',
+    payload: { trainerName: 'Ash Ketchum' },
+  },
+  {
+    aggregateId: ashKetchumId,
+    version: 2,
+    type: 'POKEMON_CAUGHT',
+    timestamp: '2022-01-01T00:00:00.000Z',
+    payload: { pokemonId: pikachuId },
+  },
+];
+
+export const garyOakEvents: EventStoreEventsDetails<
+  typeof trainersEventStore
+>[] = [
+  {
+    aggregateId: garyOakId,
+    version: 1,
+    type: 'GAME_STARTED',
+    timestamp: '2022-12-01T00:00:00.000Z',
+    payload: { trainerName: 'Gary Oak' },
+  },
+  {
+    aggregateId: garyOakId,
+    version: 2,
+    type: 'POKEMON_CAUGHT',
+    timestamp: '2024-01-01T00:00:00.000Z',
+    payload: { pokemonId: arcanineId },
+  },
+];
+
+// EVENT STORES
+
+export const trainerEventStore = mockEventStore(trainersEventStore, [
+  ...ashKetchumEvents,
+  ...garyOakEvents,
+]);
+
+export const pokemonEventStore = mockEventStore(pokemonsEventStore, [
+  ...pikachuEvents,
+  ...charizardEvents,
+  ...arcanineEvents,
 ]);
