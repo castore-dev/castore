@@ -20,14 +20,15 @@ const messageQueue = new AggregateExistsMessageQueue({
   sourceEventStores: [mockedEventStore],
 });
 
-let receivedMessages: AggregateExistsMessage<
-  EventStoreId<typeof mockedEventStore>
->[] = [];
+let receivedMessages: {
+  date: Date;
+  message: AggregateExistsMessage<EventStoreId<typeof mockedEventStore>>;
+}[] = [];
 
 InMemoryMessageQueueAdapter.attachTo(messageQueue, {
   worker: message =>
     new Promise(resolve => {
-      receivedMessages.push(message);
+      receivedMessages.push({ date: new Date(), message });
       resolve();
     }),
 });
@@ -53,15 +54,15 @@ describe('pourEventStoreAggregateIds', () => {
 
     expect(receivedMessages).toHaveLength(3);
 
-    expect(receivedMessages[0]).toStrictEqual({
+    expect(receivedMessages[0]?.message).toStrictEqual({
       eventStoreId,
       aggregateId: aggregate1Id,
     });
-    expect(receivedMessages[1]).toStrictEqual({
+    expect(receivedMessages[1]?.message).toStrictEqual({
       eventStoreId,
       aggregateId: aggregate2Id,
     });
-    expect(receivedMessages[2]).toStrictEqual({
+    expect(receivedMessages[2]?.message).toStrictEqual({
       eventStoreId,
       aggregateId: aggregate3Id,
     });
@@ -86,5 +87,29 @@ describe('pourEventStoreAggregateIds', () => {
     expect(listAggregateIdsMock).toHaveBeenCalledWith(options);
 
     listAggregateIdsMock.mockRestore();
+  });
+
+  it('correctly rate limits', async () => {
+    const rateLimit = 2;
+
+    await pourEventStoreAggregateIds({
+      eventStore: mockedEventStore,
+      messageChannel: messageQueue,
+      rateLimit,
+    });
+
+    const expectedDelay = 1000 / rateLimit;
+
+    expect(receivedMessages.length).toBe(3);
+    [...new Array(receivedMessages.length - 1).keys()].forEach(index => {
+      const receivedDelay =
+        (receivedMessages[index + 1]?.date as Date).getTime() -
+        (receivedMessages[index]?.date as Date).getTime();
+
+      // Expect delay imprecision to be less than 5%
+      expect(
+        Math.abs((receivedDelay - expectedDelay) / expectedDelay),
+      ).toBeLessThan(0.05);
+    });
   });
 });

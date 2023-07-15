@@ -4017,6 +4017,7 @@ __metadata:
     dependency-cruiser: ^11.7.0
     eslint: ^8.14.0
     prettier: ^2.6.2
+    throttled-queue: ^2.1.4
     ts-node: ^10.7.0
     ttypescript: ^1.5.13
     typescript: ^4.6.3
@@ -16359,6 +16360,13 @@ __metadata:
   version: 6.0.1
   resolution: "throat@npm:6.0.1"
   checksum: 782d4171ee4e3cf947483ed2ff1af3e17cc4354c693b9d339284f61f99fbc401d171e0b0d2db3295bb7d447630333e9319c174ebd7ef315c6fb791db9675369c
+  languageName: node
+  linkType: hard
+
+"throttled-queue@npm:^2.1.4":
+  version: 2.1.4
+  resolution: "throttled-queue@npm:2.1.4"
+  checksum: 99571cb816e1c2d3df678d6fdb0a73eca9ba1f8aa9026daf89855d4c9444491d70e3aecaaad6c77b1202ab773f78e03b9a91b1e89c4983f17835b783137266c7
   languageName: node
   linkType: hard
 

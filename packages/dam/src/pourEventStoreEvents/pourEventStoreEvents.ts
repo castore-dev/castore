@@ -4,7 +4,8 @@ import type {
   EventStoreNotificationMessage,
 } from '@castore/core';
 
-import type { ScannedAggregate } from '~/types';
+import type { ScanInfos } from '~/types';
+import { updateScanInfos } from '~/utils/updateScanInfos';
 
 import { EventBook } from './eventBook';
 import { MessagePourer } from './messagePourer';
@@ -17,25 +18,26 @@ interface Props<EVENT_STORE extends EventStore> {
     ) => Promise<void>;
   };
   filters?: { from?: string; to?: string };
+  rateLimit?: number;
 }
 
 export const pourEventStoreEvents = async <EVENT_STORE extends EventStore>({
   eventStore,
   messageChannel,
   filters: { from, to } = {},
-}: Props<EVENT_STORE>): Promise<{
-  pouredEventCount: number;
-  firstScannedAggregate?: ScannedAggregate;
-  lastScannedAggregate?: ScannedAggregate;
-}> => {
+  rateLimit,
+}: Props<EVENT_STORE>): Promise<{ pouredEventCount: number } & ScanInfos> => {
   const eventBook = new EventBook(eventStore);
-  const messagePourer = new MessagePourer(eventStore, messageChannel);
+  const messagePourer = new MessagePourer(
+    eventStore,
+    messageChannel,
+    rateLimit,
+  );
 
   let pageToken: string | undefined;
   let fetchedEventsCursor: string | undefined = undefined;
 
-  let firstScannedAggregate: ScannedAggregate | undefined;
-  let lastScannedAggregate: ScannedAggregate | undefined;
+  const scanInfos: ScanInfos = {};
 
   do {
     const { aggregateIds, nextPageToken } = await eventStore.listAggregateIds({
@@ -47,11 +49,11 @@ export const pourEventStoreEvents = async <EVENT_STORE extends EventStore>({
 
     const areAllAggregatesScanned = nextPageToken === undefined;
 
-    if (firstScannedAggregate === undefined && aggregateIds[0] !== undefined) {
-      firstScannedAggregate = {
-        aggregateId: aggregateIds[0],
-      };
-    }
+    updateScanInfos({
+      scanInfos,
+      aggregateIds,
+      areAllAggregatesScanned,
+    });
 
     const lastScannedAggregateId = aggregateIds[aggregateIds.length - 1];
     if (lastScannedAggregateId === undefined) {
@@ -59,17 +61,12 @@ export const pourEventStoreEvents = async <EVENT_STORE extends EventStore>({
       break;
     }
 
-    if (areAllAggregatesScanned) {
-      lastScannedAggregate = {
-        aggregateId: lastScannedAggregateId,
-      };
-    }
-
     await eventBook.fetchAndBookAggregateEvents(aggregateIds);
 
     const lastScannedAggregateEvents = eventBook.getBookedEvents(
       lastScannedAggregateId,
     ) as [EventDetail, ...EventDetail[]];
+
     /**
      * @debt v2 "make listAggregateIds return initialEventTimestamp and use it here"
      */
@@ -89,7 +86,6 @@ export const pourEventStoreEvents = async <EVENT_STORE extends EventStore>({
 
   return {
     pouredEventCount: messagePourer.pouredEventCount,
-    ...(firstScannedAggregate !== undefined ? { firstScannedAggregate } : {}),
-    ...(lastScannedAggregate !== undefined ? { lastScannedAggregate } : {}),
+    ...scanInfos,
   };
 };

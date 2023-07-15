@@ -5,13 +5,14 @@ import type {
   EventsQueryOptions,
 } from '@castore/core';
 
-import { getIsBetween } from '~/utils';
+import { getIsBetween } from '~/utils/getIsBetween';
+import { getThrottle } from '~/utils/getThrottle';
 
 interface Props<EVENT_STORE extends EventStore> {
   eventStore: EVENT_STORE;
   messageChannel: {
-    publishMessages: (
-      message: EventStoreNotificationMessage<EVENT_STORE>[],
+    publishMessage: (
+      message: EventStoreNotificationMessage<EVENT_STORE>,
     ) => Promise<void>;
   };
   aggregateId: string;
@@ -20,6 +21,7 @@ interface Props<EVENT_STORE extends EventStore> {
     from?: string;
     to?: string;
   };
+  rateLimit?: number;
 }
 
 export const pourAggregateEvents = async <EVENT_STORE extends EventStore>({
@@ -28,24 +30,26 @@ export const pourAggregateEvents = async <EVENT_STORE extends EventStore>({
   aggregateId,
   options = {},
   filters: { from, to } = {},
+  rateLimit,
 }: Props<EVENT_STORE>): Promise<{
   pouredEventCount: number;
   firstPouredEvent?: EventDetail;
   lastPouredEvent?: EventDetail;
 }> => {
+  const throttle = getThrottle(rateLimit);
+
   const { events } = await eventStore.getEvents(aggregateId, options);
 
   const eventsToPour = events.filter(getIsBetween({ from, to }));
 
-  await messageChannel.publishMessages(
-    eventsToPour.map(
-      event =>
-        ({
-          eventStoreId: eventStore.eventStoreId,
-          event,
-        } as EventStoreNotificationMessage<EVENT_STORE>),
-    ),
-  );
+  for (const eventToPour of eventsToPour) {
+    await throttle(() =>
+      messageChannel.publishMessage({
+        eventStoreId: eventStore.eventStoreId,
+        event: eventToPour,
+      } as EventStoreNotificationMessage<EVENT_STORE>),
+    );
+  }
 
   const pouredEventCount = eventsToPour.length;
   const firstPouredEvent = eventsToPour[0];

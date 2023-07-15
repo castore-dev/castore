@@ -24,9 +24,17 @@ yarn add @castore/core
 
 ## 👩‍💻 Usage
 
+`@castore/dam` exposes a series of utils that scan past events and re-publish them in [message channels](https://github.com/castore-dev/castore#--event-driven-architecture) – or _"pour them"_ as in _"pouring water from a container to another"_ 🫗.
+
+Those utils are typically very useful for data maintenance and migration, and can be rate limited to limit impact on production traffic. They are the following:
+
+- [`pourEventStoreAggregateIds`](#poureventstoreaggregateids): Pour all the aggregate ids of an event store in an `AggregateExistsMessageChannel`.
+- [`pourAggregateEvents`](#pouraggregateevents): Pour all the events of a specific aggregate in a provided `NotificationMessageChannel`.
+- [`pourEventStoreEvents`](#poureventstoreevents): Pour all the events of an event store in a provided `NotificationMessageChannel`.
+
 ### `pourEventStoreAggregateIds`
 
-Publish all the aggregate ids of an event store to a provided [`AggregateExistsMessageChannel`](https://github.com/castore-dev/castore#--event-driven-architecture). Aggregate ids are published in the order in which they are retrieved (by default, ordered by their initial timestamps).
+Pour all the aggregate ids of an event store in a provided [`AggregateExistsMessageChannel`](https://github.com/castore-dev/castore#--event-driven-architecture). Aggregate ids are published in the order in which they are retrieved (by default, ordered by their initial timestamps).
 
 ```ts
 import { pourEventStoreAggregateIds } from '@castore/dam';
@@ -46,12 +54,14 @@ await pourEventStoreAggregateIds({
     initialEventBefore: '2023-01-01T00:00:00.000Z',
     reverse: false,
   },
+  // 👇 Optional rate limit (messages/second)
+  rateLimit: 100,
 });
 ```
 
 ### `pourAggregateEvents`
 
-Publish all the events of an aggregate to a provided [`NotificationMessageChannel`](https://github.com/castore-dev/castore#--event-driven-architecture). Events are published in the order in which they are retrieved (by default, ordered by their timestamps).
+Pour all the events of a specific aggregate in a provided [`NotificationMessageChannel`](https://github.com/castore-dev/castore#--event-driven-architecture). Events are published in the order in which they are retrieved (by default, ordered by their timestamps).
 
 ```ts
 import { pourAggregateEvents } from '@castore/dam';
@@ -77,12 +87,14 @@ await pourAggregateEvents({
     from: '2020-01-01T00:00:00.000Z',
     to: '2023-01-01T00:00:00.000Z',
   },
+  // 👇 Optional rate limit (messages/second)
+  rateLimit: 100,
 });
 ```
 
 ### `pourEventStoreEvents`
 
-Publish all the events of an event store to a provided [`NotificationMessageChannel`](https://github.com/castore-dev/castore#--event-driven-architecture). Events are published in the order of their timestamps.
+Pour all the events of an event store in a provided [`NotificationMessageChannel`](https://github.com/castore-dev/castore#--event-driven-architecture). Events are published in the order of their timestamps (accross aggregates).
 
 ```ts
 import { pourEventStoreEvents } from '@castore/dam';
@@ -100,5 +112,7 @@ await pourEventStoreEvents({
     from: '2020-01-01T00:00:00.000Z',
     to: '2023-01-01T00:00:00.000Z',
   },
+  // 👇 Optional rate limit (messages/second)
+  rateLimit: 100,
 });
 ```

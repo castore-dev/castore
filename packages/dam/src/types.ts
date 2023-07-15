@@ -5,3 +5,8 @@ export interface ScannedAggregate {
    */
   // initialEventTimestamp: number;
 }
+
+export interface ScanInfos {
+  firstScannedAggregate?: ScannedAggregate;
+  lastScannedAggregate?: ScannedAggregate;
+}
