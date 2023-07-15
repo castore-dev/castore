@@ -1,10 +1,10 @@
-import {
+import type {
   EventDetail,
   EventStore,
   EventStoreEventsDetails,
 } from '@castore/core';
 
-import { getIsBetween } from '~/utils';
+import { getIsBetween } from '~/utils/getIsBetween';
 
 export class EventBook<EVENT_STORE extends EventStore> {
   eventStore: EVENT_STORE;

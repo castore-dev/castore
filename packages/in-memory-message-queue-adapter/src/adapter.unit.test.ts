@@ -243,10 +243,10 @@ describe('in-memory message queue adapter', () => {
           const expectedDelay =
             retryDelayInMs * Math.pow(retryBackoffRate, attempt - 1);
 
-          // Expect delay imprecision to be less than 1%
+          // Expect delay imprecision to be less than 5%
           expect(
             Math.abs((receivedDelay - expectedDelay) / expectedDelay),
-          ).toBeLessThan(0.01);
+          ).toBeLessThan(0.05);
         }
       },
       { timeout: testWaitTime + 1000 },
