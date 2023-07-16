@@ -31,6 +31,7 @@ Those utils are typically very useful for data maintenance and migration, and ca
 - [`pourEventStoreAggregateIds`](#poureventstoreaggregateids): Pour all the aggregate ids of an event store in an `AggregateExistsMessageChannel`.
 - [`pourAggregateEvents`](#pouraggregateevents): Pour all the events of a specific aggregate in a provided `NotificationMessageChannel`.
 - [`pourEventStoreEvents`](#poureventstoreevents): Pour all the events of an event store in a provided `NotificationMessageChannel`.
+- [`pourEventStoreCollectionEvents`](#poureventstorecollectionevents): Pour all the events of a collection of event stores in a provided `NotificationMessageChannel`.
 
 ### `pourEventStoreAggregateIds`
 
