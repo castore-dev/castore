@@ -103,7 +103,7 @@ const results = await pourAggregateEvents({
 });
 
 const {
-  // 👇 Count of poured aggregate ids
+  // 👇 Count of poured events
   pouredEventCount,
   // 👇 Infos about first/last scanned events (potentially undefined)
   firstPouredEvent,
