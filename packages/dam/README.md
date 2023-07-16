@@ -41,11 +41,12 @@ import { pourEventStoreAggregateIds } from '@castore/dam';
 
 // 👇 ...or AggregateExistsMessageBus
 const maintenanceMessageQueue = new AggregateExistsMessageQueue({
+  sourceEventStores: [pokemonEventStore],
   ...
 });
 
-await pourEventStoreAggregateIds({
-  eventStore: pokemonsEventStore,
+const results = await pourEventStoreAggregateIds({
+  eventStore: pokemonEventStore,
   messageChannel: maintenanceMessageQueue,
   // 👇 Optional `listAggregateIds` options (except "pageToken")
   options: {
@@ -57,6 +58,14 @@ await pourEventStoreAggregateIds({
   // 👇 Optional rate limit (messages/second)
   rateLimit: 100,
 });
+
+const {
+  // 👇 Count of poured aggregate ids
+  pouredAggregateIdCount,
+  // 👇 Infos about first/last scanned aggregates (potentially undefined)
+  firstScannedAggregate,
+  lastScannedAggregate,
+} = results;
 ```
 
 ### `pourAggregateEvents`
@@ -68,11 +77,12 @@ import { pourAggregateEvents } from '@castore/dam';
 
 // 👇 ...or NotificationMessageBus
 const maintenanceMessageQueue = new NotificationMessageQueue({
+  sourceEventStores: [pokemonEventStore],
   ...
 });
 
-await pourAggregateEvents({
-  eventStore: pokemonsEventStore,
+const results = await pourAggregateEvents({
+  eventStore: pokemonEventStore,
   messageChannel: maintenanceMessageQueue,
   aggregateId: 'pikachu1',
   // 👇 Optional `getEvents` options
@@ -90,22 +100,31 @@ await pourAggregateEvents({
   // 👇 Optional rate limit (messages/second)
   rateLimit: 100,
 });
+
+const {
+  // 👇 Count of poured aggregate ids
+  pouredEventCount,
+  // 👇 Infos about first/last scanned events (potentially undefined)
+  firstPouredEvent,
+  lastPouredEvent,
+} = results;
 ```
 
 ### `pourEventStoreEvents`
 
-Pour all the events of an event store in a provided [`NotificationMessageChannel`](https://github.com/castore-dev/castore#--event-driven-architecture). Events are published in the order of their timestamps (accross aggregates).
+Pour all the events of an event store in a provided [`NotificationMessageChannel`](https://github.com/castore-dev/castore#--event-driven-architecture). Events are published in the order of their timestamps (independently of their aggregate).
 
 ```ts
 import { pourEventStoreEvents } from '@castore/dam';
 
 // 👇 ...or NotificationMessageBus
 const maintenanceMessageQueue = new NotificationMessageQueue({
+  sourceEventStores: [pokemonEventStore],
   ...
 });
 
-await pourEventStoreEvents({
-  eventStore: pokemonsEventStore,
+const results = await pourEventStoreEvents({
+  eventStore: pokemonEventStore,
   messageChannel: maintenanceMessageQueue,
   // 👇 Optional `timestamp` filters
   filters: {
@@ -115,4 +134,49 @@ await pourEventStoreEvents({
   // 👇 Optional rate limit (messages/second)
   rateLimit: 100,
 });
+
+const {
+  // 👇 Count of poured events
+  pouredEventCount,
+  // 👇 Infos about first/last scanned aggregates (potentially undefined)
+  firstScannedAggregate,
+  lastScannedAggregate,
+} = results;
+```
+
+### `pourEventStoreCollectionEvents`
+
+Pour all the events of a **collection of event stores** in a provided [`NotificationMessageChannel`](https://github.com/castore-dev/castore#--event-driven-architecture). Events are published in the order of their timestamps (independently of their aggregate and event store).
+
+```ts
+import { pourEventStoreEvents } from '@castore/dam';
+
+// 👇 ...or NotificationMessageBus
+const maintenanceMessageQueue = new NotificationMessageQueue({
+  sourceEventStores: [pokemonEventStore, trainerEventStore],
+  // ...
+});
+
+const results = await pourEventStoreCollectionEvents({
+  eventStores: [pokemonEventStore, trainerEventStore],
+  messageChannel: maintenanceMessageQueue,
+  // 👇 Optional `timestamp` filters
+  filters: {
+    from: '2020-01-01T00:00:00.000Z',
+    to: '2023-01-01T00:00:00.000Z',
+  },
+  // 👇 Optional rate limit (messages/second)
+  rateLimit: 100,
+});
+
+const {
+  // 👇 Count of poured events
+  pouredEventCount,
+  // 👇 Infos about first/last scanned aggregates (potentially undefined)
+  scans: {
+    // 👇 By event store id
+    POKEMONS: { firstScannedAggregate, lastScannedAggregate },
+    TRAINERS: { firstScannedAggregate, lastScannedAggregate },
+  },
+} = results;
 ```

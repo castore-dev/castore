@@ -1,13 +1,10 @@
-import type {
-  EventStore,
-  EventStoreEventsDetails,
-  EventStoreNotificationMessage,
-} from '@castore/core';
+import type { EventStore, EventStoreNotificationMessage } from '@castore/core';
 
 import { getThrottle } from '~/utils/getThrottle';
 
+import type { MessageBatch } from './messageBatch';
+
 export class MessagePourer<EVENT_STORE extends EventStore> {
-  eventStore: EVENT_STORE;
   messageChannel: {
     publishMessage: (
       message: EventStoreNotificationMessage<EVENT_STORE>,
@@ -19,7 +16,6 @@ export class MessagePourer<EVENT_STORE extends EventStore> {
   ) => Promise<RESPONSE>;
 
   constructor(
-    eventStore: EVENT_STORE,
     messageChannel: {
       publishMessage: (
         message: EventStoreNotificationMessage<EVENT_STORE>,
@@ -27,22 +23,16 @@ export class MessagePourer<EVENT_STORE extends EventStore> {
     },
     rateLimit = Infinity,
   ) {
-    this.eventStore = eventStore;
     this.messageChannel = messageChannel;
     this.pouredEventCount = 0;
     this.throttle = getThrottle(rateLimit);
   }
 
-  pourEvents = async (
-    eventsToPour: EventStoreEventsDetails<EVENT_STORE>[],
-  ): Promise<void> => {
-    for (const event of eventsToPour) {
-      await this.throttle(() =>
-        this.messageChannel.publishMessage({
-          eventStoreId: this.eventStore.eventStoreId,
-          event,
-        } as EventStoreNotificationMessage<EVENT_STORE>),
-      );
+  pourMessageBatch = async ({
+    messages,
+  }: MessageBatch<EVENT_STORE>): Promise<void> => {
+    for (const message of messages) {
+      await this.throttle(() => this.messageChannel.publishMessage(message));
 
       this.pouredEventCount += 1;
     }

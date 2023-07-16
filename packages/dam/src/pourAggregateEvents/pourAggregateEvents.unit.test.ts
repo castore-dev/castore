@@ -7,21 +7,21 @@ import {
 import { InMemoryMessageQueueAdapter } from '@castore/in-memory-message-queue-adapter';
 
 import {
-  mockedEventStore,
-  eventStoreId,
-  aggregate1Id,
-  aggregate1Events,
+  pokemonEventStore,
+  pokemonEvtStoreId,
+  pikachuId,
+  pikachuEvents,
 } from '../fixtures.test';
 import { pourAggregateEvents } from './pourAggregateEvents';
 
 const messageQueue = new NotificationMessageQueue({
   messageQueueId: 'testMessageQueue',
-  sourceEventStores: [mockedEventStore],
+  sourceEventStores: [pokemonEventStore],
 });
 
 let receivedMessages: {
   date: Date;
-  message: NotificationMessage<EventStoreId<typeof mockedEventStore>>;
+  message: NotificationMessage<EventStoreId<typeof pokemonEventStore>>;
 }[] = [];
 
 InMemoryMessageQueueAdapter.attachTo(messageQueue, {
@@ -40,38 +40,38 @@ describe('pourAggregateEvents', () => {
   it('pours event store aggregate ids in correct order', async () => {
     const { pouredEventCount, firstPouredEvent, lastPouredEvent } =
       await pourAggregateEvents({
-        eventStore: mockedEventStore,
+        eventStore: pokemonEventStore,
         messageChannel: messageQueue,
-        aggregateId: aggregate1Id,
+        aggregateId: pikachuId,
       });
 
     expect(pouredEventCount).toStrictEqual(3);
-    expect(firstPouredEvent).toStrictEqual(aggregate1Events[0]);
+    expect(firstPouredEvent).toStrictEqual(pikachuEvents[0]);
     expect(lastPouredEvent).toStrictEqual(
-      aggregate1Events[aggregate1Events.length - 1],
+      pikachuEvents[pikachuEvents.length - 1],
     );
 
     expect(receivedMessages).toHaveLength(3);
     expect(receivedMessages[0]?.message).toStrictEqual({
-      eventStoreId,
-      event: aggregate1Events[0],
+      eventStoreId: pokemonEvtStoreId,
+      event: pikachuEvents[0],
     });
     expect(receivedMessages[1]?.message).toStrictEqual({
-      eventStoreId,
-      event: aggregate1Events[1],
+      eventStoreId: pokemonEvtStoreId,
+      event: pikachuEvents[1],
     });
     expect(receivedMessages[2]?.message).toStrictEqual({
-      eventStoreId,
-      event: aggregate1Events[2],
+      eventStoreId: pokemonEvtStoreId,
+      event: pikachuEvents[2],
     });
   });
 
   it('correctly applies from & to filters', async () => {
     const { pouredEventCount, firstPouredEvent, lastPouredEvent } =
       await pourAggregateEvents({
-        eventStore: mockedEventStore,
+        eventStore: pokemonEventStore,
         messageChannel: messageQueue,
-        aggregateId: aggregate1Id,
+        aggregateId: pikachuId,
         filters: {
           from: '2021-02-01T00:00:00.000Z',
           to: '2023-06-01T00:00:00.000Z',
@@ -79,13 +79,13 @@ describe('pourAggregateEvents', () => {
       });
 
     expect(pouredEventCount).toStrictEqual(1);
-    expect(firstPouredEvent).toStrictEqual(aggregate1Events[1]);
-    expect(lastPouredEvent).toStrictEqual(aggregate1Events[1]);
+    expect(firstPouredEvent).toStrictEqual(pikachuEvents[1]);
+    expect(lastPouredEvent).toStrictEqual(pikachuEvents[1]);
 
     expect(receivedMessages).toHaveLength(1);
     expect(receivedMessages[0]?.message).toStrictEqual({
-      eventStoreId,
-      event: aggregate1Events[1],
+      eventStoreId: pokemonEvtStoreId,
+      event: pikachuEvents[1],
     });
   });
 
@@ -97,16 +97,16 @@ describe('pourAggregateEvents', () => {
       maxVersion: 3,
     };
 
-    const getEventsMock = vi.spyOn(mockedEventStore, 'getEvents');
+    const getEventsMock = vi.spyOn(pokemonEventStore, 'getEvents');
 
     await pourAggregateEvents({
-      eventStore: mockedEventStore,
+      eventStore: pokemonEventStore,
       messageChannel: messageQueue,
-      aggregateId: aggregate1Id,
+      aggregateId: pikachuId,
       options,
     });
 
-    expect(getEventsMock).toHaveBeenCalledWith(aggregate1Id, options);
+    expect(getEventsMock).toHaveBeenCalledWith(pikachuId, options);
 
     getEventsMock.mockRestore();
   });
@@ -115,9 +115,9 @@ describe('pourAggregateEvents', () => {
     const rateLimit = 2;
 
     await pourAggregateEvents({
-      eventStore: mockedEventStore,
+      eventStore: pokemonEventStore,
       messageChannel: messageQueue,
-      aggregateId: aggregate1Id,
+      aggregateId: pikachuId,
       rateLimit,
     });
 
