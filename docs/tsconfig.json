@@ -1,0 +1,35 @@
+{
+  "extends": "../tsconfig.json",
+  "compilerOptions": {
+    "baseUrl": ".",
+    "composite": true,
+    "plugins": [{ "transform": "@zerollup/ts-transform-paths" }],
+    "emitDeclarationOnly": true,
+    "lib": ["dom", "dom.iterable", "esnext"],
+    "removeComments": true,
+    "forceConsistentCasingInFileNames": true,
+    "moduleResolution": "node",
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "sourceMap": true,
+    "target": "es2017",
+    "resolveJsonModule": true,
+    "allowSyntheticDefaultImports": true,
+    "allowJs": true,
+    "esModuleInterop": true,
+    "strict": true,
+    "skipLibCheck": true,
+    "preserveSymlinks": true,
+    "jsx": "react",
+    "module": "esnext",
+    "noFallthroughCasesInSwitch": true
+  },
+  "references": [
+    { "path": "../packages/core/tsconfig.build.json" },
+    { "path": "../packages/json-schema-command/tsconfig.build.json" },
+    { "path": "../packages/react-visualizer/tsconfig.build.json" },
+    { "path": "../demo/blueprint/tsconfig.build.json" }
+  ],
+  "exclude": ["./dist", "dependency-cruiser.js"],
+  "include": ["."]
+}

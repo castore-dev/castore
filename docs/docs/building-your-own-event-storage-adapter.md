@@ -26,7 +26,7 @@ export class CustomStorageAdapter implements StorageAdapter {
 
 The required methods are the following:
 
-- <code>getEvents <i>((aggregateId: string, opt?: OptionsObj = {}) => Promise\<ResponseObj\>)</i></code>: Retrieves the events of an aggregate, ordered by `version`. Returns an empty array if no event is found for this `aggregateId`.
+- <code>getEvents <i>((aggregateId: string, opt?: OptionsObj = {}) => Promise\u003CResponseObj\u003E)</i></code>: Retrieves the events of an aggregate, ordered by `version`. Returns an empty array if no event is found for this `aggregateId`.
 
   `OptionsObj` contains the following attributes:
 
@@ -55,7 +55,7 @@ const { events: onlyLastEvent } = await customStorageAdapter.getEvents(
 );
 ```
 
-- <code>pushEvent <i>((eventDetail: EventDetail) => Promise\<void\>)</i></code>: Pushes a new event to the event store.
+- <code>pushEvent <i>((eventDetail: EventDetail) => Promise\u003Cvoid\u003E)</i></code>: Pushes a new event to the event store.
 
 ```ts
 await customStorageAdapter.pushEvent({
@@ -106,9 +106,9 @@ class CustomEventAlreadyExistsError
 }
 ```
 
-> This ensures that executed [`Commands`](../README.md#%EF%B8%8F-command) are not subject to [race conditions](https://en.wikipedia.org/wiki/Race_condition) and are accordingly retried.
+> This ensures that executed `Commands` are not subject to [race conditions](https://en.wikipedia.org/wiki/Race_condition) and are accordingly retried.
 
-- <code>listAggregateIds <i>((opt?: OptionsObj = {}) => Promise\<ResponseObj\>)</i></code>: Retrieves the list of `aggregateId` of an event store, ordered by `timestamp` of their initial event. Returns an empty array if no aggregate is found.
+- <code>listAggregateIds <i>((opt?: OptionsObj = {}) => Promise\u003CResponseObj\u003E)</i></code>: Retrieves the list of `aggregateId` of an event store, ordered by `timestamp` of their initial event. Returns an empty array if no aggregate is found.
 
   `OptionsObj` contains the following attributes:
 
@@ -139,11 +139,11 @@ if (nextPageToken) {
 }
 ```
 
-- <code>putSnapshot <i>((aggregate: Aggregate) => Promise\<void\>)</i></code>: Saves a snapshot of an aggregate.
+- <code>putSnapshot <i>((aggregate: Aggregate) => Promise\u003Cvoid\u003E)</i></code>: Saves a snapshot of an aggregate.
 
 > ⚠️ Snapshot methods are a work in progress. Don't use them in production yet!
 
-- <code>getLastSnapshot <i>((aggregateId: string, opt?: OptionsObj = {}) => Promise\<ResponseObj\>)</i></code>: Fetches the last snapshot of an aggregate.
+- <code>getLastSnapshot <i>((aggregateId: string, opt?: OptionsObj = {}) => Promise\u003CResponseObj\u003E)</i></code>: Fetches the last snapshot of an aggregate.
 
   `OptionsObj` contains the following attributes:
 
@@ -155,7 +155,7 @@ if (nextPageToken) {
 
 > ⚠️ Snapshot methods are a work in progress. Don't use them in production yet!
 
-- <code>listSnapshots <i>((aggregateId: string, opt?: OptionsObj = {}) => Promise\<ResponseObj\>)</i></code>: Fetches all snapshots of an aggregate.
+- <code>listSnapshots <i>((aggregateId: string, opt?: OptionsObj = {}) => Promise\u003CResponseObj\u003E)</i></code>: Fetches all snapshots of an aggregate.
 
   `OptionsObj` contains the following attributes:
 

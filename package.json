@@ -14,7 +14,7 @@
   "workspaces": [
     "packages/*",
     "demo/*",
-    "docs/*"
+    "docs"
   ],
   "scripts": {
     "build-all": "nx run-many --target=build --all --parallel=4",
