@@ -90,6 +90,10 @@
       "name": "🔨  Dam"
     },
     {
+      "path": "docs",
+      "name": "📖  Docs"
+    },
+    {
       "path": "demo/blueprint",
       "name": "✨  Blueprint"
     },

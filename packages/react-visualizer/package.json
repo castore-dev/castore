@@ -30,10 +30,10 @@
     "package-esm": "NODE_ENV=esm BABEL_ENV=modern yarn transpile --out-dir dist/esm --source-maps",
     "package-types": "ttsc -p tsconfig.build.json",
     "test": "yarn test-type && yarn test-unit && yarn test-circular && yarn test-linter",
-    "test-type": "tsc --noEmit --emitDeclarationOnly false",
-    "test-unit": "yarn vitest run --passWithNoTests",
     "test-circular": "yarn depcruise --validate dependency-cruiser.js .",
     "test-linter": "yarn linter-base-config .",
+    "test-type": "tsc --noEmit --emitDeclarationOnly false",
+    "test-unit": "yarn vitest run --passWithNoTests",
     "transpile": "babel src --extensions .ts,.tsx --quiet",
     "watch": "rm -rf dist && concurrently 'yarn:package-* --watch'"
   },

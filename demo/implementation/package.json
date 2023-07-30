@@ -12,10 +12,10 @@
     "log": "env-cmd sls logs -t -f",
     "print": "env-cmd sls print",
     "test": "yarn test-type && yarn test-unit && yarn test-circular && yarn test-linter",
-    "test-type": "tsc --noEmit --emitDeclarationOnly false",
-    "test-unit": "yarn vitest run --passWithNoTests",
     "test-circular": "yarn depcruise --validate dependency-cruiser.js .",
-    "test-linter": "yarn linter-base-config ."
+    "test-linter": "yarn linter-base-config .",
+    "test-type": "tsc --noEmit --emitDeclarationOnly false",
+    "test-unit": "yarn vitest run --passWithNoTests"
   },
   "dependencies": {
     "@aws-sdk/client-dynamodb": "^3.2.0",
