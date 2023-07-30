@@ -3,6 +3,7 @@ name: 🚀 Release to NPM
 on:
   release:
     types: [published]
+
 jobs:
   build:
     name: release

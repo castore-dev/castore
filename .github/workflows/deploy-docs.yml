@@ -1,0 +1,30 @@
+name: 📖 Deploy docs
+
+on:
+  release:
+    types: [published]
+
+jobs:
+  deploy-docs:
+    name: 📖 Deploy docs
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - name: Install node_modules
+        uses: ./.github/actions/install-node-modules
+
+      - name: Package
+        uses: ./.github/actions/package
+
+      - name: Build website
+        run: yarn nx run docs:build
+
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./build
