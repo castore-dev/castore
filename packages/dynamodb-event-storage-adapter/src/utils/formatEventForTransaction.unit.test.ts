@@ -25,7 +25,9 @@ describe('formatEventForTransaction', () => {
     ).toStrictEqual({
       dynamoDbClient: dynamoDbClientMock,
       transactItem: {
-        Put: storageAdapter.getPushEventInput(pikachuAppearedEvent),
+        Put: storageAdapter.getPushEventInput(pikachuAppearedEvent, {
+          eventStoreId: pokemonsEventStore.eventStoreId,
+        }),
       },
     });
   });

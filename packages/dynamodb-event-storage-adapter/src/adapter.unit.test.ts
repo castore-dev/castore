@@ -98,6 +98,17 @@ describe('DynamoDbEventStorageAdapter', () => {
 
       MockDate.reset();
     });
+
+    it('does not add condition if force option is set to true', async () => {
+      await adapter.pushEvent(secondEvent, { eventStoreId, force: true });
+
+      // regularly check if vitest matchers are available (toHaveReceivedCommandWith)
+      // https://github.com/m-radzikowski/aws-sdk-client-mock/issues/139
+      expect(dynamoDbClientMock.calls()).toHaveLength(1);
+      const input = dynamoDbClientMock.call(0).args[0].input;
+      expect(input).not.toHaveProperty('ConditionExpression');
+      expect(input).not.toHaveProperty('ExpressionAttributeNames');
+    });
   });
 
   describe('table name getter', () => {

@@ -10,12 +10,13 @@ import {
 } from '@aws-sdk/client-dynamodb';
 import { marshall, unmarshall } from '@aws-sdk/util-dynamodb';
 
-import {
+import type {
   Aggregate,
   EventDetail,
-  GroupedEvent,
+  PushEventOptions,
   StorageAdapter,
 } from '@castore/core';
+import { GroupedEvent } from '@castore/core';
 
 import {
   EVENT_TABLE_INITIAL_EVENT_INDEX_NAME,
@@ -122,7 +123,10 @@ const parseGroupedEvents = (
  */
 export class DynamoDbEventStorageAdapter implements StorageAdapter {
   getEvents: StorageAdapter['getEvents'];
-  getPushEventInput: (eventDetail: EventDetail) => PutItemCommandInput;
+  getPushEventInput: (
+    eventDetail: EventDetail,
+    options: PushEventOptions,
+  ) => PutItemCommandInput;
   pushEvent: StorageAdapter['pushEvent'];
   pushEventGroup: StorageAdapter['pushEventGroup'];
   groupEvent: StorageAdapter['groupEvent'];
@@ -224,9 +228,10 @@ export class DynamoDbEventStorageAdapter implements StorageAdapter {
       };
     };
 
-    this.getPushEventInput = event => {
+    this.getPushEventInput = (event, options) => {
       const { aggregateId, version, type, timestamp, payload, metadata } =
         event;
+      const force = options.force ?? false;
 
       return {
         TableName: this.getTableName(),
@@ -242,17 +247,23 @@ export class DynamoDbEventStorageAdapter implements StorageAdapter {
           },
           MARSHALL_OPTIONS,
         ),
-        ExpressionAttributeNames: { '#version': EVENT_TABLE_SK },
-        ConditionExpression: 'attribute_not_exists(#version)',
+        ...(force
+          ? {}
+          : {
+              ExpressionAttributeNames: { '#version': EVENT_TABLE_SK },
+              ConditionExpression: 'attribute_not_exists(#version)',
+            }),
       };
     };
 
-    this.pushEvent = async (eventWithOptTimestamp, context) => {
+    this.pushEvent = async (eventWithOptTimestamp, options) => {
       const event = {
         timestamp: new Date().toISOString(),
         ...eventWithOptTimestamp,
       };
-      const putEventCommand = new PutItemCommand(this.getPushEventInput(event));
+      const putEventCommand = new PutItemCommand(
+        this.getPushEventInput(event, options),
+      );
 
       const { aggregateId, version } = event;
 
@@ -263,7 +274,7 @@ export class DynamoDbEventStorageAdapter implements StorageAdapter {
           error instanceof Error &&
           isConditionalCheckFailedException(error)
         ) {
-          const { eventStoreId } = context;
+          const { eventStoreId } = options;
 
           throw new DynamoDBEventAlreadyExistsError({
             eventStoreId,
@@ -293,10 +304,10 @@ export class DynamoDbEventStorageAdapter implements StorageAdapter {
         await dynamodbClient.send(
           new TransactWriteItemsCommand({
             TransactItems: groupedEvents.map(groupedEvent => ({
-              Put: groupedEvent.eventStorageAdapter.getPushEventInput({
-                timestamp,
-                ...groupedEvent.event,
-              }),
+              Put: groupedEvent.eventStorageAdapter.getPushEventInput(
+                { timestamp, ...groupedEvent.event },
+                { eventStoreId: groupedEvent.context.eventStoreId },
+              ),
             })),
           }),
         );

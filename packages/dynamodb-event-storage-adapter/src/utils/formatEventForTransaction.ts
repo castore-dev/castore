@@ -31,7 +31,7 @@ export const formatEventForTransaction = <EVENT_STORE extends EventStore>(
 
   return {
     transactItem: {
-      Put: storageAdapter.getPushEventInput(eventDetail),
+      Put: storageAdapter.getPushEventInput(eventDetail, { eventStoreId }),
     },
     dynamoDbClient,
   };
