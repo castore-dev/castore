@@ -15,6 +15,7 @@
     "test-tools": "packages/test-tools",
     "react-visualizer": "packages/react-visualizer",
     "dam": "packages/dam",
+    "docs": "docs",
     "demo-blueprint": "demo/blueprint",
     "demo-implementation": "demo/implementation",
     "demo-visualization": "demo/visualization"

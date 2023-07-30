@@ -7,9 +7,9 @@
     "linter-base-config": "eslint --ext=js,ts",
     "start": "vite",
     "test": "yarn test-type && yarn test-circular && yarn test-linter",
-    "test-type": "tsc --noEmit --emitDeclarationOnly false",
     "test-circular": "yarn depcruise --validate dependency-cruiser.js .",
-    "test-linter": "yarn linter-base-config ."
+    "test-linter": "yarn linter-base-config .",
+    "test-type": "tsc --noEmit --emitDeclarationOnly false"
   },
   "browserslist": {
     "production": [
