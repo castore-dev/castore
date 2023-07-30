@@ -5,6 +5,7 @@ export type {
   MessageChannelSourceEventStoreIds,
   MessageChannelSourceEventStoreIdTypes,
 } from './generics';
+export type { PublishMessageOptions } from './types';
 export type { MessageChannelAdapter } from './messageChannelAdapter';
 export { AggregateExistsMessageChannel } from './aggregateExistsMessageChannel';
 export { NotificationMessageChannel } from './notificationMessageChannel';

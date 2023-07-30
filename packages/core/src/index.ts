@@ -6,6 +6,7 @@ export type { EventDetail, OptionalTimestamp } from './event/eventDetail';
 export type { StorageAdapter } from './storageAdapter';
 export type {
   EventsQueryOptions,
+  PushEventOptions,
   EventStoreContext,
   ListAggregateIdsOptions,
   ListAggregateIdsOutput,
@@ -65,6 +66,7 @@ export type {
   NotificationMessage,
   StateCarryingMessage,
   Message,
+  PublishMessageOptions,
   EventStoreAggregateExistsMessage,
   EventStoreNotificationMessage,
   EventStoreStateCarryingMessage,

@@ -5,7 +5,7 @@ import {
 import { mockClient } from 'aws-sdk-client-mock';
 import type { A } from 'ts-toolbelt';
 
-import type { Message } from '@castore/core';
+import type { Message, PublishMessageOptions } from '@castore/core';
 
 import {
   EventBridgeMessageBusAdapter,
@@ -56,7 +56,7 @@ describe('EventBridgeMessageBusAdapter', () => {
 
     const assertMessage: A.Equals<
       Parameters<typeof adapter.publishMessage>,
-      [Message]
+      [message: Message, options?: PublishMessageOptions | undefined]
     > = 1;
     assertMessage;
 
@@ -85,7 +85,7 @@ describe('EventBridgeMessageBusAdapter', () => {
 
     const assertMessage: A.Equals<
       Parameters<typeof adapter.publishMessages>,
-      [Message[]]
+      [messages: Message[], options?: PublishMessageOptions | undefined]
     > = 1;
     assertMessage;
 

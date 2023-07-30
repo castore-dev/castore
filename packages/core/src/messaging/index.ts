@@ -1,4 +1,19 @@
-export * from './channel';
+export {
+  AggregateExistsMessageChannel,
+  NotificationMessageChannel,
+  StateCarryingMessageChannel,
+  MessageChannelEventStoreNotFoundError,
+  UndefinedMessageChannelAdapterError,
+} from './channel';
+export type {
+  EventStoreMessageChannel,
+  MessageChannelSourceEventStores,
+  MessageChannelMessage,
+  MessageChannelSourceEventStoreIds,
+  MessageChannelSourceEventStoreIdTypes,
+  PublishMessageOptions,
+  MessageChannelAdapter,
+} from './channel';
 export * from './bus';
 export * from './queue';
 export type {

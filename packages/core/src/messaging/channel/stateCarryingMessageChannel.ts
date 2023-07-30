@@ -10,6 +10,7 @@ import {
   UndefinedMessageChannelAdapterError,
 } from './errors';
 import type { MessageChannelAdapter } from './messageChannelAdapter';
+import type { PublishMessageOptions } from './types';
 
 export class StateCarryingMessageChannel<
   EVENT_STORE extends EventStore = EventStore,
@@ -31,6 +32,7 @@ export class StateCarryingMessageChannel<
       EventStore,
       EventStoreStateCarryingMessage<EVENT_STORE>
     >,
+    options?: PublishMessageOptions,
   ) => Promise<void>;
   getAggregateAndPublishMessage: (
     notificationMessage: $Contravariant<
@@ -38,6 +40,7 @@ export class StateCarryingMessageChannel<
       EventStore,
       EventStoreNotificationMessage<EVENT_STORE>
     >,
+    options?: PublishMessageOptions,
   ) => Promise<void>;
 
   publishMessages: (
@@ -46,6 +49,7 @@ export class StateCarryingMessageChannel<
       EventStore,
       EventStoreStateCarryingMessage<EVENT_STORE>
     >[],
+    options?: PublishMessageOptions,
   ) => Promise<void>;
 
   constructor({
@@ -98,16 +102,24 @@ export class StateCarryingMessageChannel<
       return eventStore;
     };
 
-    this.publishMessage = async stateCarryingMessage => {
+    this.publishMessage = async (
+      stateCarryingMessage,
+      { replay = false } = {},
+    ) => {
       const { eventStoreId } = stateCarryingMessage;
       this.getEventStore(eventStoreId);
 
       const messageChannelAdapter = this.getMessageChannelAdapter();
 
-      await messageChannelAdapter.publishMessage(stateCarryingMessage);
+      await messageChannelAdapter.publishMessage(stateCarryingMessage, {
+        replay,
+      });
     };
 
-    this.getAggregateAndPublishMessage = async notificationMessage => {
+    this.getAggregateAndPublishMessage = async (
+      notificationMessage,
+      { replay = false } = {},
+    ) => {
       const { eventStoreId, event } = notificationMessage;
       const { aggregateId, version } = event;
 
@@ -117,10 +129,16 @@ export class StateCarryingMessageChannel<
         maxVersion: version,
       });
 
-      await this.publishMessage({ ...notificationMessage, aggregate });
+      await this.publishMessage(
+        { ...notificationMessage, aggregate },
+        { replay },
+      );
     };
 
-    this.publishMessages = async stateCarryingMessages => {
+    this.publishMessages = async (
+      stateCarryingMessages,
+      { replay = false } = {},
+    ) => {
       for (const stateCarryingMessage of stateCarryingMessages) {
         const { eventStoreId } = stateCarryingMessage;
         this.getEventStore(eventStoreId);
@@ -128,7 +146,9 @@ export class StateCarryingMessageChannel<
 
       const messageChannelAdapter = this.getMessageChannelAdapter();
 
-      await messageChannelAdapter.publishMessages(stateCarryingMessages);
+      await messageChannelAdapter.publishMessages(stateCarryingMessages, {
+        replay,
+      });
     };
   }
 }

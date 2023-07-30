@@ -7,6 +7,7 @@ import {
   UndefinedMessageChannelAdapterError,
 } from './errors';
 import type { MessageChannelAdapter } from './messageChannelAdapter';
+import type { PublishMessageOptions } from './types';
 
 export class NotificationMessageChannel<
   EVENT_STORE extends EventStore = EventStore,
@@ -28,6 +29,7 @@ export class NotificationMessageChannel<
       EventStore,
       EventStoreNotificationMessage<EVENT_STORE>
     >,
+    options?: PublishMessageOptions,
   ) => Promise<void>;
   publishMessages: (
     notificationMessages: $Contravariant<
@@ -35,6 +37,7 @@ export class NotificationMessageChannel<
       EventStore,
       EventStoreNotificationMessage<EVENT_STORE>
     >[],
+    options?: PublishMessageOptions,
   ) => Promise<void>;
 
   constructor({
@@ -87,23 +90,33 @@ export class NotificationMessageChannel<
       return eventStore;
     };
 
-    this.publishMessage = async notificationMessage => {
+    this.publishMessage = async (
+      notificationMessage,
+      { replay = false } = {},
+    ) => {
       const { eventStoreId } = notificationMessage;
       this.getEventStore(eventStoreId);
 
       const messageChannelAdapter = this.getMessageChannelAdapter();
 
-      await messageChannelAdapter.publishMessage(notificationMessage);
+      await messageChannelAdapter.publishMessage(notificationMessage, {
+        replay,
+      });
     };
 
-    this.publishMessages = async notificationMessages => {
+    this.publishMessages = async (
+      notificationMessages,
+      { replay = false } = {},
+    ) => {
       for (const notificationMessage of notificationMessages) {
         const { eventStoreId } = notificationMessage;
         this.getEventStore(eventStoreId);
       }
       const messageChannelAdapter = this.getMessageChannelAdapter();
 
-      await messageChannelAdapter.publishMessages(notificationMessages);
+      await messageChannelAdapter.publishMessages(notificationMessages, {
+        replay,
+      });
     };
   }
 }

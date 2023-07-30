@@ -108,7 +108,7 @@ assertPushEventInput1;
 
 const assertPushEventInput2: A.Equals<
   Parameters<typeof pokemonsEventStore.pushEvent>[1],
-  { prevAggregate?: PokemonAggregate | undefined } | undefined
+  { prevAggregate?: PokemonAggregate | undefined; force?: boolean } | undefined
 > = 1;
 assertPushEventInput2;
 

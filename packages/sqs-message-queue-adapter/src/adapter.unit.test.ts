@@ -6,7 +6,7 @@ import {
 import { mockClient } from 'aws-sdk-client-mock';
 import type { A } from 'ts-toolbelt';
 
-import type { Message } from '@castore/core';
+import type { Message, PublishMessageOptions } from '@castore/core';
 
 import { SQSMessageQueueAdapter, SQS_MAX_MESSAGE_BATCH_SIZE } from './adapter';
 
@@ -52,7 +52,7 @@ describe('SQSMessageQueueAdapter', () => {
 
     const assertMessage: A.Equals<
       Parameters<typeof adapter.publishMessage>,
-      [Message]
+      [message: Message, options?: PublishMessageOptions | undefined]
     > = 1;
     assertMessage;
 
@@ -93,7 +93,7 @@ describe('SQSMessageQueueAdapter', () => {
 
     const assertMessages: A.Equals<
       Parameters<typeof adapter.publishMessages>,
-      [Message[]]
+      [messages: Message[], options?: PublishMessageOptions | undefined]
     > = 1;
     assertMessages;
 

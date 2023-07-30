@@ -11,6 +11,10 @@ export type EventsQueryOptions = {
 
 export type EventStoreContext = { eventStoreId: string };
 
+export type PushEventOptions = EventStoreContext & {
+  force?: boolean;
+};
+
 export type ListAggregateIdsOptions = {
   limit?: number;
   pageToken?: string;
@@ -46,7 +50,7 @@ export interface StorageAdapter {
   ) => Promise<{ events: EventDetail[] }>;
   pushEvent: (
     eventDetail: OptionalTimestamp<EventDetail>,
-    context: EventStoreContext,
+    options: PushEventOptions,
   ) => Promise<{ event: EventDetail }>;
   pushEventGroup: (
     ...groupedEvents: [GroupedEvent, ...GroupedEvent[]]
