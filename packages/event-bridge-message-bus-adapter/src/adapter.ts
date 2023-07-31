@@ -4,7 +4,11 @@ import {
 } from '@aws-sdk/client-eventbridge';
 import chunk from 'lodash.chunk';
 
-import type { Message, MessageChannelAdapter } from '@castore/core';
+import type {
+  Message,
+  MessageChannelAdapter,
+  PublishMessageOptions,
+} from '@castore/core';
 import {
   isAggregateExistsMessage,
   isEventCarryingMessage,
@@ -12,9 +16,12 @@ import {
 
 export const EVENTBRIDGE_MAX_ENTRIES_BATCH_SIZE = 10;
 
-const getDetailType = (message: Message): string => {
+const getDetailType = (
+  message: Message,
+  { replay = false }: PublishMessageOptions = {},
+): string => {
   if (isEventCarryingMessage(message)) {
-    return message.event.type;
+    return replay ? '__REPLAYED__' : message.event.type;
   }
 
   if (isAggregateExistsMessage(message)) {
@@ -46,7 +53,7 @@ export class EventBridgeMessageBusAdapter implements MessageChannelAdapter {
         ? this.eventBusName
         : this.eventBusName();
 
-    this.publishMessage = async message => {
+    this.publishMessage = async (message, options) => {
       const { eventStoreId } = message;
 
       await this.eventBridgeClient.send(
@@ -55,7 +62,7 @@ export class EventBridgeMessageBusAdapter implements MessageChannelAdapter {
             {
               EventBusName: this.getEventBusName(),
               Source: eventStoreId,
-              DetailType: getDetailType(message),
+              DetailType: getDetailType(message, options),
               Detail: JSON.stringify(message),
             },
           ],
@@ -63,7 +70,7 @@ export class EventBridgeMessageBusAdapter implements MessageChannelAdapter {
       );
     };
 
-    this.publishMessages = async messages => {
+    this.publishMessages = async (messages, options) => {
       for (const chunkMessages of chunk(
         messages,
         EVENTBRIDGE_MAX_ENTRIES_BATCH_SIZE,
@@ -73,7 +80,7 @@ export class EventBridgeMessageBusAdapter implements MessageChannelAdapter {
             Entries: chunkMessages.map(message => ({
               EventBusName: this.getEventBusName(),
               Source: message.eventStoreId,
-              DetailType: getDetailType(message),
+              DetailType: getDetailType(message, options),
               Detail: JSON.stringify(message),
             })),
           }),
