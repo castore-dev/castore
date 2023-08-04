@@ -2,6 +2,8 @@ import {
   SQSClient,
   SendMessageCommand,
   SendMessageBatchCommand,
+  SendMessageCommandInput,
+  SendMessageBatchRequestEntry,
 } from '@aws-sdk/client-sqs';
 import chunk from 'lodash.chunk';
 
@@ -57,48 +59,75 @@ export class SQSMessageQueueAdapter implements MessageChannelAdapter {
     this.getQueueUrl = () =>
       typeof this.queueUrl === 'string' ? this.queueUrl : this.queueUrl();
 
-    this.publishMessage = async message => {
+    this.publishMessage = async (message, { replay = false } = {}) => {
       const { eventStoreId } = message;
       const { aggregateId, version } = parseMessage(message);
 
+      const sendMessageCommandInput: SendMessageCommandInput = {
+        MessageBody: JSON.stringify(message),
+        QueueUrl: this.getQueueUrl(),
+      };
+
+      if (this.fifo) {
+        sendMessageCommandInput.MessageDeduplicationId = [
+          eventStoreId,
+          aggregateId,
+          version,
+        ]
+          .filter(Boolean)
+          .join('#');
+
+        sendMessageCommandInput.MessageGroupId = [
+          eventStoreId,
+          aggregateId,
+        ].join('#');
+      }
+
+      if (replay) {
+        sendMessageCommandInput.MessageAttributes = {
+          replay: { DataType: 'String', StringValue: 'true' },
+        };
+      }
+
       await this.sqsClient.send(
-        new SendMessageCommand({
-          MessageBody: JSON.stringify(message),
-          QueueUrl: this.getQueueUrl(),
-          ...(this.fifo
-            ? {
-                MessageDeduplicationId: [eventStoreId, aggregateId, version]
-                  .filter(Boolean)
-                  .join('#'),
-                MessageGroupId: [eventStoreId, aggregateId].join('#'),
-              }
-            : {}),
-        }),
+        new SendMessageCommand(sendMessageCommandInput),
       );
     };
 
-    this.publishMessages = async messages => {
+    this.publishMessages = async (messages, { replay = false } = {}) => {
+      const baseEntry: Omit<
+        SendMessageBatchRequestEntry,
+        'Id' | 'MessageBody'
+      > = {};
+
+      if (replay) {
+        baseEntry.MessageAttributes = {
+          replay: { DataType: 'String', StringValue: 'true' },
+        };
+      }
+
       for (const chunkMessages of chunk(messages, SQS_MAX_MESSAGE_BATCH_SIZE)) {
         await this.sqsClient.send(
           new SendMessageBatchCommand({
             Entries: chunkMessages.map(message => {
               const { eventStoreId } = message;
               const { aggregateId, version } = parseMessage(message);
-
               const messageId = [eventStoreId, aggregateId, version]
                 .filter(Boolean)
                 .join('#');
 
-              return {
+              const entry: SendMessageBatchRequestEntry = {
+                ...baseEntry,
                 Id: messageId,
                 MessageBody: JSON.stringify(message),
-                ...(this.fifo
-                  ? {
-                      MessageDeduplicationId: messageId,
-                      MessageGroupId: [eventStoreId, aggregateId].join('#'),
-                    }
-                  : {}),
               };
+
+              if (this.fifo) {
+                entry.MessageDeduplicationId = messageId;
+                entry.MessageGroupId = [eventStoreId, aggregateId].join('#');
+              }
+
+              return entry;
             }),
             QueueUrl: this.getQueueUrl(),
           }),

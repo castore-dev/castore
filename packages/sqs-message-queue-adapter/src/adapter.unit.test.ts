@@ -1,3 +1,4 @@
+/* eslint-disable max-lines */
 import {
   SQSClient,
   SendMessageCommand,
@@ -85,6 +86,25 @@ describe('SQSMessageQueueAdapter', () => {
     });
   });
 
+  it('appends replay MessageAttribute if replay is set to true', async () => {
+    const adapter = new SQSMessageQueueAdapter({
+      queueUrl: queueUrlMock,
+      sqsClient: sqsClientMock as unknown as SQSClient,
+      fifo: true,
+    });
+
+    await adapter.publishMessage(message, { replay: true });
+
+    // regularly check if vitest matchers are available (toHaveReceivedCommandWith)
+    // https://github.com/m-radzikowski/aws-sdk-client-mock/issues/139
+    expect(sqsClientMock.calls()).toHaveLength(1);
+    expect(sqsClientMock.call(0).args[0].input).toMatchObject({
+      MessageAttributes: {
+        replay: { DataType: 'String', StringValue: 'true' },
+      },
+    });
+  });
+
   it('send a SendMessageBatchCommand to sqs client on messages batch published', async () => {
     const adapter = new SQSMessageQueueAdapter({
       queueUrl: queueUrlMock,
@@ -144,6 +164,34 @@ describe('SQSMessageQueueAdapter', () => {
             otherVersion,
           ].join('#'),
           MessageGroupId: [eventStoreId, aggregateId].join('#'),
+        },
+      ],
+      QueueUrl: queueUrlMock,
+    });
+  });
+
+  it('appends replay MessageAttribute if replay is set to true', async () => {
+    const adapter = new SQSMessageQueueAdapter({
+      queueUrl: queueUrlMock,
+      sqsClient: sqsClientMock as unknown as SQSClient,
+    });
+
+    await adapter.publishMessages([message, otherMessage], { replay: true });
+
+    // regularly check if vitest matchers are available (toHaveReceivedCommandWith)
+    // https://github.com/m-radzikowski/aws-sdk-client-mock/issues/139
+    expect(sqsClientMock.calls()).toHaveLength(1);
+    expect(sqsClientMock.call(0).args[0].input).toMatchObject({
+      Entries: [
+        {
+          MessageAttributes: {
+            replay: { DataType: 'String', StringValue: 'true' },
+          },
+        },
+        {
+          MessageAttributes: {
+            replay: { DataType: 'String', StringValue: 'true' },
+          },
         },
       ],
       QueueUrl: queueUrlMock,
