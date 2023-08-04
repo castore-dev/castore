@@ -44,5 +44,9 @@ export type FilterPattern<
   EVENT_STORE_ID extends string = string,
   EVENT_TYPE extends string = string,
 > =
-  | { eventStoreId?: EVENT_STORE_ID; eventType?: never }
-  | { eventStoreId: EVENT_STORE_ID; eventType?: EVENT_TYPE };
+  | { eventStoreId?: EVENT_STORE_ID; eventType?: never; onReplay?: boolean }
+  | {
+      eventStoreId: EVENT_STORE_ID;
+      eventType?: EVENT_TYPE;
+      onReplay?: boolean;
+    };

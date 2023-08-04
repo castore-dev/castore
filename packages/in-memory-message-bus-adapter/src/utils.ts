@@ -1,20 +1,28 @@
-import type { Message } from '@castore/core';
 import { isEventCarryingMessage } from '@castore/core';
 
+import type { Task } from './message';
 import type { FilterPattern } from './types';
 
-export const doesMessageMatchFilterPattern = (
-  message: Message,
+export const doesTaskMatchFilterPattern = (
+  task: Task,
   filterPattern: FilterPattern,
 ): boolean => {
-  const { eventStoreId: filterEventStoreId, eventType: filterEventType } =
-    filterPattern;
+  const { message, isReplay = false } = task;
+  const {
+    eventStoreId: filterEventStoreId,
+    eventType: filterEventType,
+    onReplay = false,
+  } = filterPattern;
 
   let messageEventType: string | undefined = undefined;
   const { eventStoreId: messageEventStoreId } = message;
 
   if (isEventCarryingMessage(message)) {
     messageEventType = message.event.type;
+  }
+
+  if (isReplay && !onReplay) {
+    return false;
   }
 
   if (filterEventStoreId !== undefined && filterEventType !== undefined) {
@@ -31,12 +39,12 @@ export const doesMessageMatchFilterPattern = (
   return true;
 };
 
-export const doesMessageMatchAnyFilterPattern = (
-  message: Message,
+export const doesTaskMatchAnyFilterPattern = (
+  task: Task,
   filterPatterns: FilterPattern[],
 ): boolean =>
   filterPatterns.some(filterPattern =>
-    doesMessageMatchFilterPattern(message, filterPattern),
+    doesTaskMatchFilterPattern(task, filterPattern),
   );
 
 export const parseRetryDelayInMs = (retryDelayInMs: number): number => {

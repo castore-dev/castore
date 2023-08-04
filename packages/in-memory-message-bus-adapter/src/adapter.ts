@@ -17,7 +17,7 @@ import type {
   InMemoryBusMessage,
 } from './types';
 import {
-  doesMessageMatchAnyFilterPattern,
+  doesTaskMatchAnyFilterPattern,
   parseBackoffRate,
   parseRetryAttempts,
   parseRetryDelayInMs,
@@ -108,12 +108,13 @@ export class InMemoryMessageBusAdapter<MESSAGE extends Message = Message>
       },
     );
 
-    this.publishMessage = async message =>
+    this.publishMessage = async (message, { replay = false } = {}) =>
       new Promise<void>(resolve => {
         const task: Task = {
           message,
           attempt: 1,
           retryAttemptsLeft: this.retryAttempts,
+          isReplay: replay,
         };
 
         this.eventEmitter.emit('message', task);
@@ -121,9 +122,9 @@ export class InMemoryMessageBusAdapter<MESSAGE extends Message = Message>
         resolve();
       });
 
-    this.publishMessages = async messages => {
+    this.publishMessages = async (messages, options) => {
       for (const message of messages) {
-        await this.publishMessage(message);
+        await this.publishMessage(message, options);
       }
     };
 
@@ -175,7 +176,7 @@ export class InMemoryMessageBusAdapter<MESSAGE extends Message = Message>
 
             if (
               retryHandlerIndex === undefined
-                ? doesMessageMatchAnyFilterPattern(message, filterPatterns)
+                ? doesTaskMatchAnyFilterPattern(task, filterPatterns)
                 : retryHandlerIndex === handlerIndex
             ) {
               void handler(message).catch(error => {

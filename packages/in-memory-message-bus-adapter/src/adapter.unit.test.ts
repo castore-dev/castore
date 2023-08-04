@@ -82,7 +82,7 @@ describe('in-memory message queue adapter', () => {
       expect(handler2).not.toHaveBeenCalled();
     });
 
-    it('calls handler if it has been set', async () => {
+    it('calls handler only if it has been set', async () => {
       inMemoryMessageBusAdapter.on(
         { eventStoreId: 'POKEMONS', eventType: 'APPEARED' },
         handler1,
@@ -110,6 +110,37 @@ describe('in-memory message queue adapter', () => {
 
       expect(handler1).toHaveBeenCalledOnce();
       expect(handler1).toHaveBeenCalledWith(pikachuAppearedMessage);
+    });
+
+    it('calls handler only if replay has been specified', async () => {
+      await inMemoryMessageBusAdapter.publishMessage(pikachuCaughtMessage, {
+        replay: true,
+      });
+
+      // Both are still triggered on real-time messages since prev tests
+      expect(handler1).not.toHaveBeenCalled();
+      expect(handler2).not.toHaveBeenCalled();
+
+      inMemoryMessageBusAdapter.on(
+        { eventStoreId: 'POKEMONS', onReplay: true },
+        handler1,
+      );
+      inMemoryMessageBusAdapter.on(
+        {
+          eventStoreId: 'POKEMONS',
+          eventType: 'CAUGHT_BY_TRAINER',
+          onReplay: true,
+        },
+        handler2,
+      );
+
+      await inMemoryMessageBusAdapter.publishMessage(pikachuCaughtMessage, {
+        replay: true,
+      });
+
+      // Both are still triggered on real-time messages since prev tests
+      expect(handler1).toHaveBeenCalledOnce();
+      expect(handler2).toHaveBeenCalledOnce();
     });
 
     it('calls all handlers if needed', async () => {
