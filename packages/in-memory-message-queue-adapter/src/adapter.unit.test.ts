@@ -13,7 +13,7 @@ import {
   pikachuAppearedEvent,
 } from '@castore/demo-blueprint';
 
-import { Task, InMemoryMessageQueueAdapter } from './adapter';
+import { Task, InMemoryMessageQueueAdapter, TaskContext } from './adapter';
 
 const messageQueue = new NotificationMessageQueue({
   messageQueueId: 'messageQueueId',
@@ -27,6 +27,12 @@ const pikachuAppearedMessage: EventStoreNotificationMessage<
 > = {
   eventStoreId: 'POKEMONS',
   event: pikachuAppearedEvent,
+};
+
+const context: TaskContext = {
+  attempt: 1,
+  retryAttemptsLeft: 2,
+  replay: false,
 };
 
 const sleep = (ms: number): Promise<void> =>
@@ -77,8 +83,19 @@ describe('in-memory message queue adapter', () => {
 
       await inMemoryMessageQueueAdapter.publishMessage(pikachuAppearedMessage);
 
-      expect(worker1).toHaveBeenCalledWith(pikachuAppearedMessage);
+      expect(worker1).toHaveBeenCalledWith(pikachuAppearedMessage, context);
       expect(worker2).not.toHaveBeenCalled();
+    });
+
+    it('passes replay option to context', async () => {
+      await inMemoryMessageQueueAdapter.publishMessage(pikachuAppearedMessage, {
+        replay: true,
+      });
+
+      expect(worker1).toHaveBeenCalledWith(pikachuAppearedMessage, {
+        ...context,
+        replay: true,
+      });
     });
 
     it('recreates queue if new worker is set', async () => {
@@ -87,7 +104,7 @@ describe('in-memory message queue adapter', () => {
       await inMemoryMessageQueueAdapter.publishMessage(pikachuAppearedMessage);
 
       expect(worker1).not.toHaveBeenCalled();
-      expect(worker2).toHaveBeenCalledWith(pikachuAppearedMessage);
+      expect(worker2).toHaveBeenCalledWith(pikachuAppearedMessage, context);
     });
 
     it('actually connects to a messageQueue', async () => {
@@ -95,7 +112,7 @@ describe('in-memory message queue adapter', () => {
 
       await messageQueue.publishMessage(pikachuAppearedMessage);
 
-      expect(worker2).toHaveBeenCalledWith(pikachuAppearedMessage);
+      expect(worker2).toHaveBeenCalledWith(pikachuAppearedMessage, context);
     });
 
     it('accepts worker in constructor', async () => {
@@ -129,6 +146,18 @@ describe('in-memory message queue adapter', () => {
 
       expect(worker2).toHaveBeenCalledTimes(mockNumberOfEventToPublish);
     });
+
+    it('passes replay option to context', async () => {
+      await messageQueue.publishMessages([pikachuAppearedMessage], {
+        replay: true,
+      });
+
+      expect(worker2).toHaveBeenCalledOnce();
+      expect(worker2).toHaveBeenCalledWith(pikachuAppearedMessage, {
+        ...context,
+        replay: true,
+      });
+    });
   });
 
   describe('through static method', () => {
@@ -157,7 +186,7 @@ describe('in-memory message queue adapter', () => {
       inMemoryMessageQueueAdapter.worker = worker;
 
       await messageQueue.publishMessage(pikachuAppearedMessage);
-      expect(worker).toHaveBeenCalledWith(pikachuAppearedMessage);
+      expect(worker).toHaveBeenCalledWith(pikachuAppearedMessage, context);
     });
 
     it('correctly instanciates a class and attach it (with worker)', async () => {
@@ -183,7 +212,7 @@ describe('in-memory message queue adapter', () => {
       assertQueueType;
 
       await messageQueue.publishMessage(pikachuAppearedMessage);
-      expect(worker).toHaveBeenCalledWith(pikachuAppearedMessage);
+      expect(worker).toHaveBeenCalledWith(pikachuAppearedMessage, context);
     });
   });
 
