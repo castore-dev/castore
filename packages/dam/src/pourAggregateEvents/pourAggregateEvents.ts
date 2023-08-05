@@ -3,6 +3,7 @@ import type {
   EventStore,
   EventStoreNotificationMessage,
   EventsQueryOptions,
+  PublishMessageOptions,
 } from '@castore/core';
 
 import { getThrottle } from '~/utils/getThrottle';
@@ -13,6 +14,7 @@ interface Props<EVENT_STORE extends EventStore> {
   messageChannel: {
     publishMessage: (
       message: EventStoreNotificationMessage<EVENT_STORE>,
+      options?: PublishMessageOptions,
     ) => Promise<void>;
   };
   aggregateId: string;
@@ -44,10 +46,13 @@ export const pourAggregateEvents = async <EVENT_STORE extends EventStore>({
 
   for (const eventToPour of eventsToPour) {
     await throttle(() =>
-      messageChannel.publishMessage({
-        eventStoreId: eventStore.eventStoreId,
-        event: eventToPour,
-      } as EventStoreNotificationMessage<EVENT_STORE>),
+      messageChannel.publishMessage(
+        {
+          eventStoreId: eventStore.eventStoreId,
+          event: eventToPour,
+        } as EventStoreNotificationMessage<EVENT_STORE>,
+        { replay: true },
+      ),
     );
   }
 

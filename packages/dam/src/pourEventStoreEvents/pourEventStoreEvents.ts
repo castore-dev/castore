@@ -1,5 +1,9 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
-import type { EventStore, EventStoreNotificationMessage } from '@castore/core';
+import type {
+  EventStore,
+  EventStoreNotificationMessage,
+  PublishMessageOptions,
+} from '@castore/core';
 
 import type { ScanInfos } from '~/types';
 import { EventBook } from '~/utils/eventBook';
@@ -11,6 +15,7 @@ interface Props<EVENT_STORE extends EventStore> {
   messageChannel: {
     publishMessage: (
       message: EventStoreNotificationMessage<EVENT_STORE>,
+      options?: PublishMessageOptions,
     ) => Promise<void>;
   };
   filters?: { from?: string; to?: string };
@@ -76,7 +81,7 @@ export const pourEventStoreEvents = async <EVENT_STORE extends EventStore>({
     messagesToPour.filterByTimestamp({ from, to });
     messagesToPour.sortByTimestamp();
 
-    await messagePourer.pourMessageBatch(messagesToPour);
+    await messagePourer.pourMessageBatch(messagesToPour, { replay: true });
 
     pageToken = nextPageToken;
   } while (!areAllAggregatesScanned);

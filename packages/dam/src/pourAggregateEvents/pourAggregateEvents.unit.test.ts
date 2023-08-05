@@ -4,7 +4,10 @@ import {
   EventStoreId,
   EventsQueryOptions,
 } from '@castore/core';
-import { InMemoryMessageQueueAdapter } from '@castore/in-memory-message-queue-adapter';
+import {
+  InMemoryMessageQueueAdapter,
+  TaskContext,
+} from '@castore/in-memory-message-queue-adapter';
 
 import {
   pokemonEventStore,
@@ -22,12 +25,13 @@ const messageQueue = new NotificationMessageQueue({
 let receivedMessages: {
   date: Date;
   message: NotificationMessage<EventStoreId<typeof pokemonEventStore>>;
+  context: TaskContext;
 }[] = [];
 
 InMemoryMessageQueueAdapter.attachTo(messageQueue, {
-  worker: message =>
+  worker: (message, context) =>
     new Promise(resolve => {
-      receivedMessages.push({ date: new Date(), message });
+      receivedMessages.push({ date: new Date(), message, context });
       resolve();
     }),
 });
@@ -56,6 +60,7 @@ describe('pourAggregateEvents', () => {
       eventStoreId: pokemonEvtStoreId,
       event: pikachuEvents[0],
     });
+    expect(receivedMessages[0]?.context).toMatchObject({ replay: true });
     expect(receivedMessages[1]?.message).toStrictEqual({
       eventStoreId: pokemonEvtStoreId,
       event: pikachuEvents[1],
