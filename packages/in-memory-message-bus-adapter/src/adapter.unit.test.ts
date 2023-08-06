@@ -15,6 +15,7 @@ import {
 } from '@castore/demo-blueprint';
 
 import { InMemoryMessageBusAdapter } from './adapter';
+import type { TaskContext } from './types';
 
 const messageBus = new NotificationMessageBus({
   messageBusId: 'messageBusId',
@@ -35,6 +36,12 @@ const pikachuCaughtMessage: EventStoreNotificationMessage<
 > = {
   eventStoreId: 'POKEMONS',
   event: pikachuCaughtEvent,
+};
+
+const context: TaskContext = {
+  attempt: 1,
+  retryAttemptsLeft: 2,
+  replay: false,
 };
 
 const sleep = (ms: number): Promise<void> =>
@@ -92,7 +99,7 @@ describe('in-memory message queue adapter', () => {
       await inMemoryMessageBusAdapter.publishMessage(pikachuCaughtMessage);
 
       expect(handler1).toHaveBeenCalledOnce();
-      expect(handler1).toHaveBeenCalledWith(pikachuAppearedMessage);
+      expect(handler1).toHaveBeenCalledWith(pikachuAppearedMessage, context);
 
       inMemoryMessageBusAdapter.on(
         { eventStoreId: 'POKEMONS', eventType: 'CAUGHT_BY_TRAINER' },
@@ -101,7 +108,7 @@ describe('in-memory message queue adapter', () => {
 
       await inMemoryMessageBusAdapter.publishMessage(pikachuCaughtMessage);
       expect(handler1).toHaveBeenCalledTimes(2);
-      expect(handler1).toHaveBeenCalledWith(pikachuCaughtMessage);
+      expect(handler1).toHaveBeenCalledWith(pikachuCaughtMessage, context);
     });
 
     it('calls handler only once, event if matches several filter patterns', async () => {
@@ -109,7 +116,7 @@ describe('in-memory message queue adapter', () => {
       await inMemoryMessageBusAdapter.publishMessage(pikachuAppearedMessage);
 
       expect(handler1).toHaveBeenCalledOnce();
-      expect(handler1).toHaveBeenCalledWith(pikachuAppearedMessage);
+      expect(handler1).toHaveBeenCalledWith(pikachuAppearedMessage, context);
     });
 
     it('calls handler only if replay has been specified', async () => {
@@ -140,7 +147,15 @@ describe('in-memory message queue adapter', () => {
 
       // Both are still triggered on real-time messages since prev tests
       expect(handler1).toHaveBeenCalledOnce();
+      expect(handler1).toHaveBeenCalledWith(pikachuCaughtMessage, {
+        ...context,
+        replay: true,
+      });
       expect(handler2).toHaveBeenCalledOnce();
+      expect(handler2).toHaveBeenCalledWith(pikachuCaughtMessage, {
+        ...context,
+        replay: true,
+      });
     });
 
     it('calls all handlers if needed', async () => {
@@ -148,8 +163,8 @@ describe('in-memory message queue adapter', () => {
 
       await inMemoryMessageBusAdapter.publishMessage(pikachuAppearedMessage);
 
-      expect(handler1).toHaveBeenCalledWith(pikachuAppearedMessage);
-      expect(handler2).toHaveBeenCalledWith(pikachuAppearedMessage);
+      expect(handler1).toHaveBeenCalledWith(pikachuAppearedMessage, context);
+      expect(handler2).toHaveBeenCalledWith(pikachuAppearedMessage, context);
     });
 
     it('statically rejects invalid handlers', async () => {
@@ -212,7 +227,7 @@ describe('in-memory message queue adapter', () => {
       inMemoryMessageBusAdapter.on({}, handler);
 
       await messageBus.publishMessage(pikachuAppearedMessage);
-      expect(handler).toHaveBeenCalledWith(pikachuAppearedMessage);
+      expect(handler).toHaveBeenCalledWith(pikachuAppearedMessage, context);
     });
   });
 
