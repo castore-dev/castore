@@ -100,7 +100,7 @@ describe('SQSMessageQueueAdapter', () => {
     expect(sqsClientMock.calls()).toHaveLength(1);
     expect(sqsClientMock.call(0).args[0].input).toMatchObject({
       MessageAttributes: {
-        replay: { DataType: 'String', StringValue: 'true' },
+        replay: { DataType: 'Number', StringValue: '1' },
       },
     });
   });
@@ -185,12 +185,12 @@ describe('SQSMessageQueueAdapter', () => {
       Entries: [
         {
           MessageAttributes: {
-            replay: { DataType: 'String', StringValue: 'true' },
+            replay: { DataType: 'Number', StringValue: '1' },
           },
         },
         {
           MessageAttributes: {
-            replay: { DataType: 'String', StringValue: 'true' },
+            replay: { DataType: 'Number', StringValue: '1' },
           },
         },
       ],

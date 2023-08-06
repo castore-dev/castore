@@ -85,7 +85,7 @@ export class SQSMessageQueueAdapter implements MessageChannelAdapter {
 
       if (replay) {
         sendMessageCommandInput.MessageAttributes = {
-          replay: { DataType: 'String', StringValue: 'true' },
+          replay: { DataType: 'Number', StringValue: '1' },
         };
       }
 
@@ -102,7 +102,7 @@ export class SQSMessageQueueAdapter implements MessageChannelAdapter {
 
       if (replay) {
         baseEntry.MessageAttributes = {
-          replay: { DataType: 'String', StringValue: 'true' },
+          replay: { DataType: 'Number', StringValue: '1' },
         };
       }
 
