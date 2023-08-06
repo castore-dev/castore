@@ -82,6 +82,23 @@ messageQueueAdapter.worker = async message => {
 
 > Only one worker at a time can be set up
 
+For more control, the worker has access to more context through its second argument:
+
+```ts
+messageQueueAdapter.worker = async (message, context) => {
+  const { eventStoreId, event } = message;
+  const {
+    // 👇 See "Retry policy" section below
+    attempt,
+    retryAttemptsLeft,
+    // 👇 If event is replayed
+    replay,
+  } = context;
+
+  ...
+};
+```
+
 ## ♻️ Retry policy
 
 This adapter will retry failed messages handling. You can specify a different retry policy than the default one via its constructor arguments:

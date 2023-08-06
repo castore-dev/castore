@@ -1,3 +1,4 @@
+/* eslint-disable max-lines */
 import type { EventEmitter } from 'node:events';
 
 import {
@@ -15,6 +16,7 @@ import type {
   ConstructorArgs,
   FilterPattern,
   InMemoryBusMessage,
+  TaskContext,
 } from './types';
 import {
   doesTaskMatchAnyFilterPattern,
@@ -66,6 +68,7 @@ export class InMemoryMessageBusAdapter<MESSAGE extends Message = Message>
     filterPattern: FilterPattern<EVENT_STORE_ID, EVENT_TYPE>,
     handler: (
       message: InMemoryMessageBusMessage<MESSAGE, EVENT_STORE_ID, EVENT_TYPE>,
+      context: TaskContext,
     ) => Promise<void>,
   ) => void;
 
@@ -114,7 +117,7 @@ export class InMemoryMessageBusAdapter<MESSAGE extends Message = Message>
           message,
           attempt: 1,
           retryAttemptsLeft: this.retryAttempts,
-          isReplay: replay,
+          replay,
         };
 
         this.eventEmitter.emit('message', task);
@@ -144,6 +147,7 @@ export class InMemoryMessageBusAdapter<MESSAGE extends Message = Message>
       filterPattern: FilterPattern<EVENT_STORE_ID, EVENT_TYPE>,
       handler: (
         message: InMemoryMessageBusMessage<MESSAGE, EVENT_STORE_ID, EVENT_TYPE>,
+        context: TaskContext,
       ) => Promise<void>,
     ) => {
       let handlerIndex = this.handlers.findIndex(
@@ -172,14 +176,21 @@ export class InMemoryMessageBusAdapter<MESSAGE extends Message = Message>
               InMemoryMessageBusMessage<MESSAGE, EVENT_STORE_ID, EVENT_TYPE>
             >,
           ) => {
-            const { message, retryHandlerIndex } = task;
+            const {
+              message,
+              retryHandlerIndex,
+              attempt,
+              retryAttemptsLeft,
+              replay = false,
+            } = task;
+            const context: TaskContext = { attempt, retryAttemptsLeft, replay };
 
             if (
               retryHandlerIndex === undefined
                 ? doesTaskMatchAnyFilterPattern(task, filterPatterns)
                 : retryHandlerIndex === handlerIndex
             ) {
-              void handler(message).catch(error => {
+              void handler(message, context).catch(error => {
                 this.eventEmitter.emit('error', error, task, handlerIndex);
               });
             }

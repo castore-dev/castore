@@ -7,7 +7,7 @@ export const doesTaskMatchFilterPattern = (
   task: Task,
   filterPattern: FilterPattern,
 ): boolean => {
-  const { message, isReplay = false } = task;
+  const { message, replay = false } = task;
   const {
     eventStoreId: filterEventStoreId,
     eventType: filterEventType,
@@ -21,7 +21,7 @@ export const doesTaskMatchFilterPattern = (
     messageEventType = message.event.type;
   }
 
-  if (isReplay && !onReplay) {
+  if (replay && !onReplay) {
     return false;
   }
 

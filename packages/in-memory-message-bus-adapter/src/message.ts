@@ -43,5 +43,5 @@ export type Task<
   retryHandlerIndex?: number;
   attempt: number;
   retryAttemptsLeft: number;
-  isReplay?: boolean;
+  replay?: boolean;
 };

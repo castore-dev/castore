@@ -20,6 +20,12 @@ export type ConstructorArgs = {
   retryBackoffRate?: number;
 };
 
+export type TaskContext = {
+  attempt: number;
+  retryAttemptsLeft: number;
+  replay: boolean;
+};
+
 export type InMemoryBusMessage<
   MESSAGE_BUS extends
     | AggregateExistsMessageBus

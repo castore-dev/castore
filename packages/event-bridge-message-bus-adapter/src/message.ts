@@ -29,7 +29,7 @@ type EventBridgeStateCarryingMessageBusMessage<
           EVENT_STORE_ID
         >
         ? EventBridgeEvent<
-            EVENT_TYPE,
+            EVENT_TYPE | '__REPLAYED__',
             StateCarryingMessage<
               EVENT_STORE_ID,
               Extract<
@@ -69,7 +69,7 @@ type EventBridgeNotificationMessageBusMessage<
           EVENT_STORE_ID
         >
         ? EventBridgeEvent<
-            EVENT_TYPE,
+            EVENT_TYPE | '__REPLAYED__',
             NotificationMessage<
               EVENT_STORE_ID,
               Extract<
