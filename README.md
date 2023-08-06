@@ -972,11 +972,11 @@ await appMessageQueue.publishMessage({
 >
 > The following methods interact with the messaging solution of your application through a `MessageQueueAdapter`. They will throw an `UndefinedMessageChannelAdapterError` if you did not provide one.
 >
-> - <code>publishMessage <i>((message: Message, opt?: OptionsObj = {}) => Promise\<void\>)</i></code>: Publish a `Message` (of the appropriate type) to the message queue.
+> - <code>publishMessage <i>(message: Message, opt?: OptionsObj = {}) => Promise\<void\>)</i></code>: Publish a `Message` (of the appropriate type) to the message queue.
 >
 >   `OptionsObj` contains the following properties:
 >
->   - <code>replay <i>(?boolean)</i></code>: Signals that the event is not happening in real-time, e.g. in maintenance or migration operations. This information can be used downstream to react appropriately (e.g. prevent sending notification emails). Check the implementation of you adapter for more details.
+>   - <code>replay <i>(?boolean = false)</i></code>: Signals that the event is not happening in real-time, e.g. in maintenance or migration operations. This information can be used downstream to react appropriately. Check the implementation of you adapter for more details.
 >
 > - <code>publishMessages <i>(messages: Message[], opt?: OptionsObj) => Promise\<void\>)</i></code>: Publish several `Messages` (of the appropriate type) to the message queue. Options are similar to the `publishMessage` options.
 >
@@ -1108,11 +1108,11 @@ await appMessageBus.publishMessage({
 >
 > The following methods interact with the messaging solution of your application through a `MessageBusAdapter`. They will throw an `UndefinedMessageChannelAdapterError` if you did not provide one.
 >
-> - <code>publishMessage <i>((message: Message, opt?: OptionsObj = {}) => Promise\<void\>)</i></code>: Publish a `Message` (of the appropriate type) to the message bus.
+> - <code>publishMessage <i>(message: Message, opt?: OptionsObj = {}) => Promise\<void\>)</i></code>: Publish a `Message` (of the appropriate type) to the message bus.
 >
 >   `OptionsObj` contains the following properties:
 >
->   - <code>replay <i>(?boolean)</i></code>: Signals that the event is not happening in real-time, e.g. in maintenance or migration operations. This information can be used downstream to react appropriately (e.g. prevent sending notification emails). Check the implementation of you adapter for more details.
+>   - <code>replay <i>(?boolean = false)</i></code>: Signals that the event is not happening in real-time, e.g. in maintenance or migration operations. This information can be used downstream to react appropriately. Check the implementation of you adapter for more details.
 >
 > - <code>publishMessages <i>(messages: Message[], opt?: OptionsObj) => Promise\<void\>)</i></code>: Publish several `Messages` (of the appropriate type) to the message bus. Options are similar to the `publishMessage` options.
 >
