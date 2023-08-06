@@ -3,6 +3,7 @@ import type {
   EventStore,
   EventStoreId,
   ListAggregateIdsOptions,
+  PublishMessageOptions,
 } from '@castore/core';
 
 import type { ScanInfos } from '~/types';
@@ -14,6 +15,7 @@ interface Props<EVENT_STORE extends EventStore> {
   messageChannel: {
     publishMessage: (
       messages: AggregateExistsMessage<EventStoreId<EVENT_STORE>>,
+      options?: PublishMessageOptions,
     ) => Promise<void>;
   };
   options?: Omit<ListAggregateIdsOptions, 'pageToken'>;
@@ -53,7 +55,10 @@ export const pourEventStoreAggregateIds = async <
 
     for (const aggregateId of aggregateIds) {
       await throttle(() =>
-        messageChannel.publishMessage({ eventStoreId, aggregateId }),
+        messageChannel.publishMessage(
+          { eventStoreId, aggregateId },
+          { replay: true },
+        ),
       );
     }
 

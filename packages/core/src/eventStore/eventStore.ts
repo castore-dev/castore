@@ -176,11 +176,15 @@ export class EventStore<
          */
       ) as Promise<{ events: EVENT_DETAILS[] }>;
 
-    this.pushEvent = async (eventDetail, { prevAggregate } = {}) => {
+    this.pushEvent = async (
+      eventDetail,
+      { prevAggregate, force = false } = {},
+    ) => {
       const storageAdapter = this.getStorageAdapter();
 
       const { event } = (await storageAdapter.pushEvent(eventDetail, {
         eventStoreId: this.eventStoreId,
+        force,
       })) as { event: $EVENT_DETAILS };
 
       let nextAggregate: AGGREGATE | undefined = undefined;

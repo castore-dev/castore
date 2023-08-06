@@ -26,7 +26,7 @@ yarn add @castore/core
 
 `@castore/dam` exposes a series of utils that scan past events and re-publish them in [message channels](https://github.com/castore-dev/castore#--event-driven-architecture) – or _"pour them"_ as in _"pouring water from a container to another"_ 🫗.
 
-Those utils are typically very useful for data maintenance and migration, and can be rate limited to limit impact on production traffic. They are the following:
+Those utils are typically very useful for data maintenance and migration. They publish messages with the `replay` option enabled and can be **rate limited** to limit impact on production traffic. They are the following:
 
 - [`pourEventStoreAggregateIds`](#poureventstoreaggregateids): Pour all the aggregate ids of an event store in an `AggregateExistsMessageChannel`.
 - [`pourAggregateEvents`](#pouraggregateevents): Pour all the events of a specific aggregate in a provided `NotificationMessageChannel`.

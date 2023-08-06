@@ -18,7 +18,7 @@ import {
   parseRetryDelayInMs,
 } from './utils';
 
-type InMemoryQueueMessage<
+export type InMemoryQueueMessage<
   MESSAGE_QUEUE extends
     | AggregateExistsMessageQueue
     | StateCarryingMessageQueue
@@ -42,14 +42,18 @@ type InMemoryQueueMessage<
     >
   : never;
 
-export type Task<MESSAGE extends Message = Message> = {
-  message: MESSAGE;
+export type TaskContext = {
   attempt: number;
   retryAttemptsLeft: number;
+  replay: boolean;
 };
 
+export type Task<MESSAGE extends Message = Message> = {
+  message: MESSAGE;
+} & TaskContext;
+
 type ConstructorArgs<MESSAGE extends Message = Message> = {
-  worker?: (message: MESSAGE) => Promise<void>;
+  worker?: (message: MESSAGE, context: TaskContext) => Promise<void>;
   retryAttempts?: number;
   retryDelayInMs?: number;
   retryBackoffRate?: number;
@@ -78,7 +82,9 @@ export class InMemoryMessageQueueAdapter<MESSAGE extends Message = Message>
 
   publishMessage: MessageChannelAdapter['publishMessage'];
   publishMessages: MessageChannelAdapter['publishMessages'];
-  private subscribe: (nextHandler: (message: MESSAGE) => Promise<void>) => void;
+  private subscribe: (
+    nextHandler: (message: MESSAGE, context: TaskContext) => Promise<void>,
+  ) => void;
   retryAttempts: number;
   retryDelayInMs: number;
   retryBackoffRate: number;
@@ -96,14 +102,17 @@ export class InMemoryMessageQueueAdapter<MESSAGE extends Message = Message>
     this.retryBackoffRate = parseBackoffRate(retryBackoffRate);
 
     this.subscribe = (
-      nextHandler: (message: MESSAGE) => Promise<void>,
+      nextHandler: (message: MESSAGE, context: TaskContext) => Promise<void>,
     ): void => {
-      this.queue = fastQ(({ message }) => nextHandler(message), 1);
+      this.queue = fastQ(
+        ({ message, ...context }) => nextHandler(message, context),
+        1,
+      );
       this.queue.error((error, task) => {
         // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
         if (error === null) return;
 
-        const { message, attempt, retryAttemptsLeft } = task;
+        const { attempt, retryAttemptsLeft, ...restTask } = task;
 
         if (retryAttemptsLeft <= 0) {
           console.error(error);
@@ -120,9 +129,9 @@ export class InMemoryMessageQueueAdapter<MESSAGE extends Message = Message>
           if (queue === undefined) return;
 
           void queue.push({
-            message,
             attempt: attempt + 1,
             retryAttemptsLeft: retryAttemptsLeft - 1,
+            ...restTask,
           });
         }, waitTimeInMs);
       });
@@ -132,7 +141,7 @@ export class InMemoryMessageQueueAdapter<MESSAGE extends Message = Message>
       this.subscribe(worker);
     }
 
-    this.publishMessage = async message =>
+    this.publishMessage = async (message, { replay = false } = {}) =>
       new Promise<void>(resolve => {
         const queue = this.queue;
 
@@ -146,19 +155,22 @@ export class InMemoryMessageQueueAdapter<MESSAGE extends Message = Message>
           message: message as MESSAGE,
           attempt: 1,
           retryAttemptsLeft: this.retryAttempts,
+          replay,
         });
 
         resolve();
       });
 
-    this.publishMessages = async messages => {
+    this.publishMessages = async (messages, options) => {
       for (const message of messages) {
-        await this.publishMessage(message);
+        await this.publishMessage(message, options);
       }
     };
   }
 
-  set worker(worker: (message: MESSAGE) => Promise<void>) {
+  set worker(
+    worker: (message: MESSAGE, context: TaskContext) => Promise<void>,
+  ) {
     this.subscribe(worker);
   }
 }

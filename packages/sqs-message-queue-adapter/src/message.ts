@@ -1,4 +1,4 @@
-import type { SQSEvent } from 'aws-lambda';
+import type { SQSRecord } from 'aws-lambda';
 
 import type {
   AggregateExistsMessageQueue,
@@ -10,7 +10,15 @@ import type {
   MessageChannelSourceEventStores,
 } from '@castore/core';
 
-export type SQSMessageQueueMessage = SQSEvent;
+export interface SQSMessageQueueRecord extends SQSRecord {
+  messageAttributes: {
+    replay?: { stringValue: '1'; dataType: 'Number' };
+  };
+}
+
+export interface SQSMessageQueueMessage {
+  Records: SQSMessageQueueRecord[];
+}
 
 type Prettify<OBJECTS extends Record<string, unknown>> =
   OBJECTS extends infer OBJECT

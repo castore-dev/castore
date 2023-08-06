@@ -7,6 +7,7 @@ import {
   UndefinedMessageChannelAdapterError,
 } from './errors';
 import type { MessageChannelAdapter } from './messageChannelAdapter';
+import type { PublishMessageOptions } from './types';
 
 export class AggregateExistsMessageChannel<
   EVENT_STORE extends EventStore = EventStore,
@@ -28,6 +29,7 @@ export class AggregateExistsMessageChannel<
       EventStore,
       EventStoreAggregateExistsMessage<EVENT_STORE>
     >,
+    options?: PublishMessageOptions,
   ) => Promise<void>;
   publishMessages: (
     aggregateExistsMessages: $Contravariant<
@@ -35,6 +37,7 @@ export class AggregateExistsMessageChannel<
       EventStore,
       EventStoreAggregateExistsMessage<EVENT_STORE>
     >[],
+    options?: PublishMessageOptions,
   ) => Promise<void>;
 
   constructor({
@@ -87,23 +90,33 @@ export class AggregateExistsMessageChannel<
       return eventStore;
     };
 
-    this.publishMessage = async aggregateExistsMessage => {
+    this.publishMessage = async (
+      aggregateExistsMessage,
+      { replay = false } = {},
+    ) => {
       const { eventStoreId } = aggregateExistsMessage;
       this.getEventStore(eventStoreId);
 
       const messageChannelAdapter = this.getMessageChannelAdapter();
 
-      await messageChannelAdapter.publishMessage(aggregateExistsMessage);
+      await messageChannelAdapter.publishMessage(aggregateExistsMessage, {
+        replay,
+      });
     };
 
-    this.publishMessages = async aggregateExistsMessages => {
+    this.publishMessages = async (
+      aggregateExistsMessages,
+      { replay = false } = {},
+    ) => {
       for (const aggregateExistsMessage of aggregateExistsMessages) {
         const { eventStoreId } = aggregateExistsMessage;
         this.getEventStore(eventStoreId);
       }
       const messageChannelAdapter = this.getMessageChannelAdapter();
 
-      await messageChannelAdapter.publishMessages(aggregateExistsMessages);
+      await messageChannelAdapter.publishMessages(aggregateExistsMessages, {
+        replay,
+      });
     };
   }
 }

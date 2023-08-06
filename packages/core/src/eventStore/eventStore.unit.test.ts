@@ -148,6 +148,7 @@ describe('event store', () => {
       expect(pushEventMock).toHaveBeenCalledTimes(1);
       expect(pushEventMock).toHaveBeenCalledWith(pikachuLeveledUpEvent, {
         eventStoreId: pokemonsEventStore.eventStoreId,
+        force: false,
       });
       expect(response).toStrictEqual({ event: pikachuLeveledUpEvent });
     });

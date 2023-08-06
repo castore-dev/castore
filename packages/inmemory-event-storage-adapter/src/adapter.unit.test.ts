@@ -41,7 +41,7 @@ describe('in-memory storage adapter', () => {
   });
 
   describe('methods', () => {
-    describe('getEvents', () => {
+    describe('getEvents / pushEvent', () => {
       const storageAdapter = new InMemoryStorageAdapter();
 
       it('gets an empty array if there is no event for aggregateId', async () => {
@@ -57,6 +57,15 @@ describe('in-memory storage adapter', () => {
         await expect(() =>
           storageAdapter.pushEvent(eventMock1, { eventStoreId }),
         ).rejects.toThrow(InMemoryEventAlreadyExistsError);
+      });
+
+      it('overrides event is force option is set to true', async () => {
+        const { event } = await storageAdapter.pushEvent(eventMock1, {
+          eventStoreId,
+          force: true,
+        });
+
+        expect(event).toStrictEqual(eventMock1);
       });
 
       it('pushes and gets events correctly', async () => {

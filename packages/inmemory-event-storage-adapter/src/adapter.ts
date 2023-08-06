@@ -1,11 +1,11 @@
 /* eslint-disable max-lines */
-import {
+import type {
   Aggregate,
   EventDetail,
-  GroupedEvent,
-  EventStoreContext,
+  PushEventOptions,
   StorageAdapter,
 } from '@castore/core';
+import { GroupedEvent } from '@castore/core';
 
 import { InMemoryEventAlreadyExistsError } from './error';
 import {
@@ -113,7 +113,7 @@ export class InMemoryStorageAdapter implements StorageAdapter {
   getEvents: StorageAdapter['getEvents'];
   pushEventSync: (
     eventDetail: EventDetail,
-    context: EventStoreContext,
+    options: PushEventOptions,
   ) => Awaited<ReturnType<StorageAdapter['pushEvent']>>;
   pushEvent: StorageAdapter['pushEvent'];
   pushEventGroup: StorageAdapter['pushEventGroup'];
@@ -137,8 +137,10 @@ export class InMemoryStorageAdapter implements StorageAdapter {
       }
     });
 
-    this.pushEventSync = (event, context) => {
+    this.pushEventSync = (event, options) => {
       const { aggregateId, version } = event;
+      const { eventStoreId, force = false } = options;
+
       const events = this.eventStore[aggregateId];
 
       if (events === undefined) {
@@ -147,18 +149,22 @@ export class InMemoryStorageAdapter implements StorageAdapter {
         return { event };
       }
 
-      if (
-        events.some(
-          ({ version: existingVersion }) => existingVersion === version,
-        )
-      ) {
-        const { eventStoreId } = context;
+      const existingEventIndex = events.findIndex(
+        ({ version: existingVersion }) => existingVersion === version,
+      );
 
-        throw new InMemoryEventAlreadyExistsError({
-          eventStoreId,
-          aggregateId,
-          version,
-        });
+      if (existingEventIndex !== -1) {
+        if (force) {
+          events[existingEventIndex] = event;
+
+          return { event };
+        } else {
+          throw new InMemoryEventAlreadyExistsError({
+            eventStoreId,
+            aggregateId,
+            version,
+          });
+        }
       }
 
       events.push(event);
@@ -166,10 +172,10 @@ export class InMemoryStorageAdapter implements StorageAdapter {
       return { event };
     };
 
-    this.pushEvent = async (event, context) =>
+    this.pushEvent = async (event, options) =>
       new Promise(resolve => {
         const timestamp = new Date().toISOString();
-        resolve(this.pushEventSync({ timestamp, ...event }, context));
+        resolve(this.pushEventSync({ timestamp, ...event }, options));
       });
 
     this.pushEventGroup = async (...groupedEventsInput) =>

@@ -60,7 +60,7 @@ appMessageBus.messageBusAdapter = messageBusAdapter;
 
 Similarly to event emitters, the `inMemoryMessageBusAdapter` exposes an `on` method that takes two arguments:
 
-- A filter patterns to optionally specify an `eventStoreId` and an event `type` to listen to (`NotificationEventBus` and `StateCarryingEventBus` only)
+- A filter patterns to optionally specify an `eventStoreId` and an event `type` to listen to (`NotificationEventBus` and `StateCarryingEventBus` only), and wether replayed events should be included
 - An async callback to execute if the message matches the filter pattern
 
 ```ts
@@ -82,6 +82,33 @@ messageBusAdapter.on(
   async message => {
     // 🙌 Correctly typed!
     const { eventStoreId, event } = message;
+  },
+);
+
+// 👇 Include replayed events
+messageBusAdapter.on(
+  { eventStoreId: 'POKEMONS', eventType: 'POKEMON_APPEARED', onReplay: true },
+  async message => {
+    // 🙌 Correctly typed!
+    const { eventStoreId, event } = message;
+  },
+);
+```
+
+For more control, the callback has access to more context through its second argument:
+
+```ts
+messageBusAdapter.on(
+  ...,
+  async (message, context) => {
+    const { eventStoreId, event } = message;
+    const {
+      // 👇 See "Retry policy" section below
+      attempt,
+      retryAttemptsLeft,
+      // 👇 If event is replayed
+      replay,
+    } = context;
   },
 );
 ```

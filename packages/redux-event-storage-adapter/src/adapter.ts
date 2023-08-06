@@ -5,7 +5,7 @@ import {
   GroupedEvent,
   StorageAdapter,
   EventDetail,
-  EventStoreContext,
+  PushEventOptions,
   Aggregate,
 } from '@castore/core';
 
@@ -106,7 +106,7 @@ export class ReduxEventStorageAdapter implements StorageAdapter {
   getEvents: StorageAdapter['getEvents'];
   pushEventSync: (
     eventDetail: EventDetail,
-    context: EventStoreContext,
+    options: PushEventOptions,
   ) => Awaited<ReturnType<StorageAdapter['pushEvent']>>;
   pushEvent: StorageAdapter['pushEvent'];
   pushEventGroup: StorageAdapter['pushEventGroup'];
@@ -145,14 +145,15 @@ export class ReduxEventStorageAdapter implements StorageAdapter {
       return eventStoreState;
     };
 
-    this.pushEventSync = event => {
+    this.pushEventSync = (event, options) => {
       const { aggregateId } = event;
+      const force = options.force ?? false;
 
       const eventStoreState = this.getEventStoreState();
 
       const events = eventStoreState.eventsByAggregateId[aggregateId] ?? [];
 
-      if (events.some(({ version }) => version === event.version)) {
+      if (!force && events.some(({ version }) => version === event.version)) {
         throw new ReduxStoreEventAlreadyExistsError({
           eventStoreId: this.eventStoreId,
           aggregateId: event.aggregateId,

@@ -398,7 +398,7 @@ const pokemonsEventStore = new EventStore({
 > // => pokemonsReducer
 > ```
 >
-> - <code>onEventPushed <i>(?(pushEventResponse: PushEventResponse) => Promise\<void\>)</i></code>: The callback to run after events are pushed
+> - <code>onEventPushed <i>(?(pushEventResponse: PushEventResponse) => Promise\<void\>)</i></code>: Callback to run after events are pushed
 >
 > ```ts
 > const onEventPushed = pokemonsEventStore.onEventPushed;
@@ -522,11 +522,12 @@ const pokemonsEventStore = new EventStore({
 > // => 'aggregate' and 'lastEvent' are always defined 🙌
 > ```
 >
-> - <code>pushEvent <i>((eventDetail: EventDetail, opt?: OptionsObj = {}) => Promise\<ResponseObj\>)</i></code>: Pushes a new event to the event store. The `timestamp` is optional (we keep it available as it can be useful in tests & migrations). If not provided, it is automatically set as `new Date().toISOString()`. Throws an `EventAlreadyExistsError` if an event already exists for the corresponding `aggregateId` and `version`.
+> - <code>pushEvent <i>((eventDetail: EventDetail, opt?: OptionsObj = {}) => Promise\<ResponseObj\>)</i></code>: Pushes a new event to the event store. The `timestamp` is optional (we keep it available as it can be useful in tests & migrations). If not provided, it is automatically set as `new Date().toISOString()`. Throws an `EventAlreadyExistsError` if an event already exists for the corresponding `aggregateId` and `version` (see section below on race conditions).
 >
 >   `OptionsObj` contains the following properties:
 >
 >   - <code>prevAggregate <i>(?Aggregate)</i></code>: The aggregate at the current version, i.e. before having pushed the event. Can be useful in some cases like when using the [`ConnectedEventStore` class](#--connectedeventstore)
+>   - <code>force <i>(?boolean)</i></code>: To force push the event even if one already exists for the corresponding `aggregateId` and `version`. Any existing event will be overridden, so use with extra care, mainly in [data migrations](#--dam).
 >
 >   `ResponseObj` contains the following properties:
 >
@@ -971,9 +972,13 @@ await appMessageQueue.publishMessage({
 >
 > The following methods interact with the messaging solution of your application through a `MessageQueueAdapter`. They will throw an `UndefinedMessageChannelAdapterError` if you did not provide one.
 >
-> - <code>publishMessage <i>((message: NotificationMessage | StateCarryingMessage) => Promise\<void\>)</i></code>: Publish a `NotificationMessage` (for `NotificationMessageQueues`) or a `StateCarryingMessage` (for `StateCarryingMessageQueues`) to the message queue.
+> - <code>publishMessage <i>((message: Message, opt?: OptionsObj = {}) => Promise\<void\>)</i></code>: Publish a `Message` (of the appropriate type) to the message queue.
 >
-> - <code>publishMessages <i>((messages: NotificationMessage[] | StateCarryingMessage[]) => Promise\<void\>)</i></code>: Publish several `NotificationMessage` (for `NotificationMessageQueues`) or several `StateCarryingMessage` (for `StateCarryingMessageQueues`) to the message queue.
+>   `OptionsObj` contains the following properties:
+>
+>   - <code>replay <i>(?boolean)</i></code>: Signals that the event is not happening in real-time, e.g. in maintenance or migration operations. This information can be used downstream to react appropriately (e.g. prevent sending notification emails). Check the implementation of you adapter for more details.
+>
+> - <code>publishMessages <i>(messages: Message[], opt?: OptionsObj) => Promise\<void\>)</i></code>: Publish several `Messages` (of the appropriate type) to the message queue. Options are similar to the `publishMessage` options.
 >
 > - <code>getAggregateAndPublishMessage <i>((message: NotificationMessage) => Promise\<void\>)</i></code>: _(StateCarryingMessageQueues only)_ Append the matching aggregate (with correct version) to a `NotificationMessage` and turn it into a `StateCarryingMessage` before publishing it to the message queue. Uses the message queue event stores: Make sure that they have correct adapters set up.
 >
@@ -1103,9 +1108,13 @@ await appMessageBus.publishMessage({
 >
 > The following methods interact with the messaging solution of your application through a `MessageBusAdapter`. They will throw an `UndefinedMessageChannelAdapterError` if you did not provide one.
 >
-> - <code>publishMessage <i>((message: NotificationMessage | StateCarryingMessage) => Promise\<void\>)</i></code>: Publish a `NotificationMessage` (for `NotificationMessageBuses`) or a `StateCarryingMessage` (for `StateCarryingMessageBuses`) to the message bus.
+> - <code>publishMessage <i>((message: Message, opt?: OptionsObj = {}) => Promise\<void\>)</i></code>: Publish a `Message` (of the appropriate type) to the message bus.
 >
-> - <code>publishMessages <i>((messages: NotificationMessage[] | StateCarryingMessage[]) => Promise\<void\>)</i></code>: Publish several `NotificationMessage` (for `NotificationMessageBuses`) or several `StateCarryingMessage` (for `StateCarryingMessageBuses`) to the message bus.
+>   `OptionsObj` contains the following properties:
+>
+>   - <code>replay <i>(?boolean)</i></code>: Signals that the event is not happening in real-time, e.g. in maintenance or migration operations. This information can be used downstream to react appropriately (e.g. prevent sending notification emails). Check the implementation of you adapter for more details.
+>
+> - <code>publishMessages <i>(messages: Message[], opt?: OptionsObj) => Promise\<void\>)</i></code>: Publish several `Messages` (of the appropriate type) to the message bus. Options are similar to the `publishMessage` options.
 >
 > - <code>getAggregateAndPublishMessage <i>((message: NotificationMessage) => Promise\<void\>)</i></code>: _(StateCarryingMessageBuses only)_ Append the matching aggregate (with correct version) to a `NotificationMessage` and turn it into a `StateCarryingMessage` before publishing it to the message bus. Uses the message bus event stores: Make sure that they have correct adapters set up.
 >

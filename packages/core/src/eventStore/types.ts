@@ -37,7 +37,7 @@ export type EventPusher<
   event: $EVENT_DETAILS extends EventDetail
     ? OptionalTimestamp<$EVENT_DETAILS>
     : $EVENT_DETAILS,
-  options?: { prevAggregate?: $AGGREGATE },
+  options?: { prevAggregate?: $AGGREGATE; force?: boolean },
 ) => Promise<{ event: EVENT_DETAILS; nextAggregate?: AGGREGATE }>;
 
 export type AggregateIdsLister = (
@@ -62,6 +62,9 @@ export type EventGroupPusher = <
     ...GroupedEvent[],
   ],
 >(
+  /**
+   * @debt v2 "use an array and enable options in 2nd arg (useful for 'force' opt for instance)"
+   */
   ...groupedEvents: GROUPED_EVENTS
 ) => Promise<{ eventGroup: EventGroupPusherResponse<GROUPED_EVENTS> }>;
 

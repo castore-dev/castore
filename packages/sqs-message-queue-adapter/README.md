@@ -66,19 +66,19 @@ When publishing a message, it is JSON stringified and passed as the record body.
 
 ```ts
 // 👇 Aggregate exists
-{
-  "body": "{
+const message = {
+  body: '{
     \"eventStoreId\": \"POKEMONS\",
     \"aggregateId\": \"123\",
-  }",
+  }',
   ... // <= Other technical SQS properties
 }
 ```
 
 ```ts
 // 👇 Notification
-{
-  "body": "{
+const message = {
+  body: '{
     \"eventStoreId\": \"POKEMONS\",
     \"event\": {
       \"aggregateId\": \"123\",
@@ -87,35 +87,59 @@ When publishing a message, it is JSON stringified and passed as the record body.
       \"timestamp\": ...
       ...
     },
-  }",
+  }',
   ...
 }
 ```
 
 ```ts
 // 👇 State-carrying
-{
-  "body": "{
+const message = {
+  body: '{
     \"eventStoreId\": \"POKEMONS\",
     \"event\": {
       \"aggregateId\": \"123\",
       ...
     },
-    \"aggregate\": ...
-  }",
+    \"aggregate\": ...,
+  }',
   ...
-}
+};
 ```
 
-If your queue is of type FIFO, the `MessageGroupId` and `MessageDeduplicationId` will be derived from a combination of the `eventStoreId`, `aggregateId` and `version`:
+If your queue is of type FIFO, the `messageGroupId` and `messageDeduplicationId` will be derived from a combination of the `eventStoreId`, `aggregateId` and `version`:
 
 ```ts
-// 👇 Entry example
-const Entry = {
-  MessageBody: JSON.stringify({ ... }),
-  MessageGroupId: "POKEMONS#123",
-  MessageDeduplicationId: "POKEMONS#123#1", // <= Or "POKEMONS#123" for AggregateExistsMessageQueues
+// 👇 Fifo message
+const message = {
+  messageBody: ...,
+  messageGroupId: "POKEMONS#123",
+  messageDeduplicationId: "POKEMONS#123#1", // <= Or "POKEMONS#123" for AggregateExistsMessageQueues
   ... // <= Other technical SQS properties
+};
+```
+
+If the `replay` option is set to `true`, a `replay` metadata attribute is included in the message:
+
+```ts
+// 👇 Replayed notification message
+const message = {
+  body:  '{
+    \"eventStoreId\": \"POKEMONS\",
+    \"event\": {
+      \"aggregateId\": \"123\",
+      ...
+    },
+  }',
+  messageAttributes: {
+    replay: {
+      // 👇 boolean type is not available in SQS 🤷‍♂️
+      dataType: 'Number',
+      // 👇 numberValue is not available in SQS 🤷‍♂️
+      stringValue: '1',
+    },
+  },
+  ...
 };
 ```
 

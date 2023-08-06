@@ -3,7 +3,10 @@ import {
   NotificationMessageQueue,
   EventStoreId,
 } from '@castore/core';
-import { InMemoryMessageQueueAdapter } from '@castore/in-memory-message-queue-adapter';
+import {
+  InMemoryMessageQueueAdapter,
+  TaskContext,
+} from '@castore/in-memory-message-queue-adapter';
 
 import {
   pokemonEventStore,
@@ -33,12 +36,13 @@ let receivedMessages: {
   message: NotificationMessage<
     EventStoreId<typeof pokemonEventStore | typeof trainerEventStore>
   >;
+  context: TaskContext;
 }[] = [];
 
 InMemoryMessageQueueAdapter.attachTo(messageQueue, {
-  worker: message =>
+  worker: (message, context) =>
     new Promise(resolve => {
-      receivedMessages.push({ date: new Date(), message });
+      receivedMessages.push({ date: new Date(), message, context });
       resolve();
     }),
 });
@@ -77,6 +81,10 @@ describe('pourEventStoreEvents', () => {
       // 2020-12-01T00:00:00.000Z
       event: ashKetchumEvents[0],
     });
+    expect(receivedMessages[0]?.context).toMatchObject({
+      replay: true,
+    });
+
     expect(receivedMessages[1]?.message).toStrictEqual({
       eventStoreId: pokemonEvtStoreId,
       // 2021-01-01T00:00:00.000Z

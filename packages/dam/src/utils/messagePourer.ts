@@ -1,4 +1,8 @@
-import type { EventStore, EventStoreNotificationMessage } from '@castore/core';
+import {
+  EventStore,
+  EventStoreNotificationMessage,
+  PublishMessageOptions,
+} from '@castore/core';
 
 import { getThrottle } from '~/utils/getThrottle';
 
@@ -8,6 +12,7 @@ export class MessagePourer<EVENT_STORE extends EventStore> {
   messageChannel: {
     publishMessage: (
       message: EventStoreNotificationMessage<EVENT_STORE>,
+      options?: PublishMessageOptions,
     ) => Promise<void>;
   };
   pouredEventCount: number;
@@ -19,6 +24,7 @@ export class MessagePourer<EVENT_STORE extends EventStore> {
     messageChannel: {
       publishMessage: (
         message: EventStoreNotificationMessage<EVENT_STORE>,
+        options?: PublishMessageOptions,
       ) => Promise<void>;
     },
     rateLimit = Infinity,
@@ -28,11 +34,14 @@ export class MessagePourer<EVENT_STORE extends EventStore> {
     this.throttle = getThrottle(rateLimit);
   }
 
-  pourMessageBatch = async ({
-    messages,
-  }: MessageBatch<EVENT_STORE>): Promise<void> => {
+  pourMessageBatch = async (
+    { messages }: MessageBatch<EVENT_STORE>,
+    options: PublishMessageOptions = {},
+  ): Promise<void> => {
     for (const message of messages) {
-      await this.throttle(() => this.messageChannel.publishMessage(message));
+      await this.throttle(() =>
+        this.messageChannel.publishMessage(message, options),
+      );
 
       this.pouredEventCount += 1;
     }

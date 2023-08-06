@@ -103,6 +103,25 @@ When publishing a message, its `eventStoreId` is used as the message `source` an
 }
 ```
 
+If the `replay` option is set to `true` when publishing a notification or state-carrying message, the `"detail-type"` will be set to `"__REPLAYED__"`. This makes sure that any subscription to replayed events is **opt-in**:
+
+```ts
+// 👇 Replayed notification message
+{
+  "source": "POKEMONS",
+  "detail-type": "__REPLAYED__",
+  "detail": {
+    "eventStoreId": "POKEMONS",
+    "event": {
+      "aggregateId": "123",
+      "type": "POKEMON_APPEARED", // <= event type still available
+      ...
+    },
+  },
+  ...
+}
+```
+
 On the listeners side, you can use the `EventBridgeMessageBusMessage` TS type to type your argument:
 
 ```ts

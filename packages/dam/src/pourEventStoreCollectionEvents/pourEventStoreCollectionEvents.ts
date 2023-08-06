@@ -3,6 +3,7 @@ import type {
   EventStore,
   EventStoreId,
   EventStoreNotificationMessage,
+  PublishMessageOptions,
 } from '@castore/core';
 
 import type { ScanInfos } from '~/types';
@@ -16,6 +17,7 @@ interface Props<EVENT_STORES extends EventStore> {
   messageChannel: {
     publishMessage: (
       message: EventStoreNotificationMessage<EVENT_STORES>,
+      options?: PublishMessageOptions,
     ) => Promise<void>;
   };
   filters?: { from?: string; to?: string };
@@ -146,7 +148,7 @@ export const pourEventStoreCollectionEvents = async <
     messagesToPour.filterByTimestamp({ from, to });
     messagesToPour.sortByTimestamp();
 
-    await messagePourer.pourMessageBatch(messagesToPour);
+    await messagePourer.pourMessageBatch(messagesToPour, { replay: true });
   } while (!areAllCollectionAggregatesScanned);
 
   return {
