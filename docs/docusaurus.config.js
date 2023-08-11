@@ -22,8 +22,8 @@ const config = {
   organizationName: 'castore-dev', // Usually your GitHub org/user name.
   projectName: 'castore', // Usually your repo name.
 
-  onBrokenLinks: 'warn',
-  onBrokenMarkdownLinks: 'warn',
+  // onBrokenLinks: 'warn',
+  // onBrokenMarkdownLinks: 'warn',
 
   // Even if you don't use internalization, you can use this field to set useful
   // metadata like html lang. For example, if your site is Chinese, you may want
@@ -75,9 +75,8 @@ const config = {
             type: 'docSidebar',
             sidebarId: 'tutorialSidebar',
             position: 'left',
-            label: 'Tutorial',
+            label: 'Docs',
           },
-          { to: '/blog', label: 'Blog', position: 'left' },
           { to: '/visualizer', label: 'Visualizer', position: 'left' },
           {
             href: 'https://github.com/castore-dev/castore',
@@ -88,31 +87,7 @@ const config = {
       },
       footer: {
         style: 'dark',
-        links: [
-          {
-            title: 'Docs',
-            items: [
-              {
-                label: 'Tutorial',
-                to: '/docs/intro',
-              },
-            ],
-          },
-          {
-            title: 'Community',
-            items: [],
-          },
-          {
-            title: 'More',
-            items: [
-              {
-                label: 'GitHub',
-                href: 'https://github.com/castore-dev/castore',
-              },
-            ],
-          },
-        ],
-        copyright: `Copyright © ${new Date().getFullYear()} Castore, Inc. Built with Docusaurus.`,
+        copyright: `Copyright © ${new Date().getFullYear()} Castore.`,
       },
       prism: {
         theme: lightCodeTheme,
