@@ -55,7 +55,7 @@ const pokemonAppearedEventType = new EventType<
 >({ type: 'POKEMON_APPEARED' });
 ```
 
-Note that we only provided TS types for `payload` and `metadata` properties. That is because, as stated in the [core design](./1-introduction#-core-design), **Castore is meant to be as flexible as possible**, and that includes the validation library you want to use (if any): The `EventType` class can be used directly if no validation is required, or implemented by other classes which will add run-time validation methods to it 👍
+Note that we only provided TS types for `payload` and `metadata` properties. That is because, as stated in the [core design](/docs/introduction#-core-design), **Castore is meant to be as flexible as possible**, and that includes the validation library you want to use (if any): The `EventType` class can be used directly if no validation is required, or implemented by other classes which will add run-time validation methods to it 👍
 
 See the following packages for examples:
 
@@ -87,7 +87,7 @@ See the following packages for examples:
 >
 > **Type Helpers:**
 >
-> - <code>EventTypeDetail</code>: Returns the event detail TS type of an `EventType`
+> - <code>EventTypeDetail</code>: Returns the event detail TS type of an <code>EventType</code>
 >
 > ```ts
 > import type { EventTypeDetail } from '@castore/core';
@@ -107,7 +107,7 @@ See the following packages for examples:
 > };
 > ```
 >
-> - <code>EventTypesDetails</code>: Return the events details of a list of `EventType`
+> - <code>EventTypesDetails</code>: Return the events details of a list of <code>EventType</code>
 >
 > ```ts
 > import type { EventTypesDetails } from '@castore/core';
@@ -237,9 +237,9 @@ const pokemonsEventStore = new EventStore({
 >
 > - <code>eventStoreId <i>(string)</i></code>: A string identifying the event store
 > - <code>eventStoreEvents <i>(EventType[])</i></code>: The list of event types in the event store
-> - <code>reduce <i>(EventType[])</i></code>: A [reducer function](#reducer) that can be applied to the store event types
-> - <code>onEventPushed <i>(?(pushEventResponse: PushEventResponse => Promise\<void\>))</i></code>: To run a callback after events are pushed (input is exactly the return value of the `pushEvent` method)
-> - <code>storageAdapter <i>(?EventStorageAdapter)</i></code>: See [`EventStorageAdapter`](#eventstorageadapter)
+> - <code>reduce <i>(EventType[])</i></code>: A <a href="#reducer">reducer function</a> that can be applied to the store event types
+> - <code>onEventPushed <i>?(pushEventResponse: PushEventResponse => Promise(void))</i></code>: To run a callback after events are pushed (input is exactly the return value of the <code>pushEvent</code> method)
+> - <code>storageAdapter <i>(?EventStorageAdapter)</i></code>: See <a href="#eventstorageadapter">EventStorageAdapter</a>
 >
 > ☝️ The return type of the `reducer` is used to infer the `Aggregate` type of the `EventStore`, so it is important to type it explicitely.
 >
@@ -266,14 +266,14 @@ const pokemonsEventStore = new EventStore({
 > // => pokemonsReducer
 > ```
 >
-> - <code>onEventPushed <i>(?(pushEventResponse: PushEventResponse) => Promise\<void\>)</i></code>: Callback to run after events are pushed
+> - <code>onEventPushed <i>(?(pushEventResponse: PushEventResponse) => Promise(void))</i></code>: Callback to run after events are pushed
 >
 > ```ts
 > const onEventPushed = pokemonsEventStore.onEventPushed;
 > // => undefined (we did not provide one in this example)
 > ```
 >
-> - <code>storageAdapter <i>?EventStorageAdapter</i></code>: See [`EventStorageAdapter`](#eventstorageadapter)
+> - <code>storageAdapter <i>?EventStorageAdapter</i></code>: See <a href="#eventstorageadapter">EventStorageAdapter</a>
 >
 > ```ts
 > const storageAdapter = pokemonsEventStore.storageAdapter;
@@ -284,7 +284,7 @@ const pokemonsEventStore = new EventStore({
 >
 > **Sync Methods:**
 >
-> - <code>getStorageAdapter <i>(() => EventStorageAdapter)</i></code>: Returns the event store event storage adapter if it exists. Throws an `UndefinedStorageAdapterError` if it doesn't.
+> - <code>getStorageAdapter <i>(() => EventStorageAdapter)</i></code>: Returns the event store event storage adapter if it exists. Throws an <code>UndefinedStorageAdapterError</code> if it doesn't.
 >
 > ```ts
 > import { UndefinedStorageAdapterError } from '@castore/core';
@@ -301,20 +301,20 @@ const pokemonsEventStore = new EventStore({
 > const myPikachuAggregate = pokemonsEventStore.buildAggregate(myPikachuEvents);
 > ```
 >
-> - <code>groupEvent <i>((eventDetail: EventDetail, opt?: OptionsObj = {}) => GroupedEvent)</i></code>: See [Event Groups](#event-groups).
+> - <code>groupEvent <i>((eventDetail: EventDetail, opt?: OptionsObj = {}) => GroupedEvent)</i></code>: See <a href="#event-groups">Event Groups</a>.
 >
 > **Async Methods:**
 >
 > The following methods interact with the data layer of your event store through its [`EventStorageAdapter`](#eventstorageadapter). They will throw an `UndefinedStorageAdapterError` if you did not provide one.
 >
-> - <code>getEvents <i>((aggregateId: string, opt?: OptionsObj = {}) => Promise\<ResponseObj\>)</i></code>: Retrieves the events of an aggregate, ordered by `version`. Returns an empty array if no event is found for this `aggregateId`.
+> - <code>getEvents <i>((aggregateId: string, opt?: OptionsObj = {}) => Promise(ResponseObj))</i></code>: Retrieves the events of an aggregate, ordered by <code>version</code>. Returns an empty array if no event is found for this <code>aggregateId</code>.
 >
 >   `OptionsObj` contains the following properties:
 >
 >   - <code>minVersion <i>(?number)</i></code>: To retrieve events above a certain version
 >   - <code>maxVersion <i>(?number)</i></code>: To retrieve events below a certain version
 >   - <code>limit <i>(?number)</i></code>: Maximum number of events to retrieve
->   - <code>reverse <i>(?boolean = false)</i></code>: To retrieve events in reverse order (does not require to swap `minVersion` and `maxVersion`)
+>   - <code>reverse <i>(?boolean = false)</i></code>: To retrieve events in reverse order (does not require to swap <code>minVersion</code> and <code>maxVersion</code>)
 >
 >   `ResponseObj` contains the following properties:
 >
@@ -343,7 +343,7 @@ const pokemonsEventStore = new EventStore({
 > );
 > ```
 >
-> - <code>getAggregate <i>((aggregateId: string, opt?: OptionsObj = {}) => Promise\<ResponseObj\>)</i></code>: Retrieves the events of an aggregate and build it.
+> - <code>getAggregate <i>((aggregateId: string, opt?: OptionsObj = {}) => Promise(ResponseObj))</i></code>: Retrieves the events of an aggregate and build it.
 >
 >   `OptionsObj` contains the following properties:
 >
@@ -351,9 +351,9 @@ const pokemonsEventStore = new EventStore({
 >
 >   `ResponseObj` contains the following properties:
 >
->   - <code>aggregate <i>(?Aggregate)</i></code>: The aggregate (possibly `undefined`)
+>   - <code>aggregate <i>(?Aggregate)</i></code>: The aggregate (possibly <code>undefined</code>)
 >   - <code>events <i>(EventDetail[])</i></code>: The aggregate events (possibly empty)
->   - <code>lastEvent <i>(?EventDetail)</i></code>: The last event (possibly `undefined`)
+>   - <code>lastEvent <i>(?EventDetail)</i></code>: The last event (possibly <code>undefined</code>)
 >
 > ```ts
 > const { aggregate: myPikachu } = await pokemonsEventStore.getAggregate(
@@ -371,7 +371,7 @@ const pokemonsEventStore = new EventStore({
 > );
 > ```
 >
-> - <code>getExistingAggregate <i>((aggregateId: string, opt?: OptionsObj = {}) => Promise\<ResponseObj\>)</i></code>: Same as `getAggregate` method, but ensures that the aggregate exists. Throws an `AggregateNotFoundError` if no event is found for this `aggregateId`.
+> - <code>getExistingAggregate <i>((aggregateId: string, opt?: OptionsObj = {}) => Promise(ResponseObj))</i></code>: Same as <code>getAggregate</code> method, but ensures that the aggregate exists. Throws an <code>AggregateNotFoundError</code> if no event is found for this <code>aggregateId</code>.
 >
 > ```ts
 > import { AggregateNotFoundError } from '@castore/core';
@@ -390,17 +390,17 @@ const pokemonsEventStore = new EventStore({
 > // => 'aggregate' and 'lastEvent' are always defined 🙌
 > ```
 >
-> - <code>pushEvent <i>((eventDetail: EventDetail, opt?: OptionsObj = {}) => Promise\<ResponseObj\>)</i></code>: Pushes a new event to the event store. The `timestamp` is optional (we keep it available as it can be useful in tests & migrations). If not provided, it is automatically set as `new Date().toISOString()`. Throws an `EventAlreadyExistsError` if an event already exists for the corresponding `aggregateId` and `version` (see section below on race conditions).
+> - <code>pushEvent <i>((eventDetail: EventDetail, opt?: OptionsObj = {}) => Promise(ResponseObj))</i></code>: Pushes a new event to the event store. The <code>timestamp</code> is optional (we keep it available as it can be useful in tests & migrations). If not provided, it is automatically set as <code>new Date().toISOString()</code>. Throws an <code>EventAlreadyExistsError</code> if an event already exists for the corresponding <code>aggregateId</code> and <code>version</code> (see section below on race conditions).
 >
 >   `OptionsObj` contains the following properties:
 >
->   - <code>prevAggregate <i>(?Aggregate)</i></code>: The aggregate at the current version, i.e. before having pushed the event. Can be useful in some cases like when using the [`ConnectedEventStore` class](./4-advanced-usage#connectedeventstore)
->   - <code>force <i>(?boolean)</i></code>: To force push the event even if one already exists for the corresponding `aggregateId` and `version`. Any existing event will be overridden, so use with extra care, mainly in [data migrations](https://www.npmjs.com/package/@castore/dam).
+>   - <code>prevAggregate <i>(?Aggregate)</i></code>: The aggregate at the current version, i.e. before having pushed the event. Can be useful in some cases like when using the <a href="/docs/advanced-usage#connectedeventstore">ConnectedEventStore class</a>
+>   - <code>force <i>(?boolean)</i></code>: To force push the event even if one already exists for the corresponding <code>aggregateId</code> and <code>version</code>. Any existing event will be overridden, so use with extra care, mainly in <a href="https://www.npmjs.com/package/@castore/dam">data migrations</a>.
 >
 >   `ResponseObj` contains the following properties:
 >
->   - <code>event <i>(EventDetail)</i></code>: The complete event (includes the `timestamp`)
->   - <code>nextAggregate <i>(?Aggregate)</i></code>: The aggregate at the new version, i.e. after having pushed the event. Returned only if the event is an initial event, if the `prevAggregate` option was provided, or when using a [`ConnectedEventStore` class](./4-advanced-usage#connectedeventstore) connected to a [state-carrying message bus or queue](./4-advanced-usage#event-driven-architecture)
+>   - <code>event <i>(EventDetail)</i></code>: The complete event (includes the <code>timestamp</code>)
+>   - <code>nextAggregate <i>(?Aggregate)</i></code>: The aggregate at the new version, i.e. after having pushed the event. Returned only if the event is an initial event, if the <code>prevAggregate</code> option was provided, or when using a <a href="/docs/advanced-usage#connectedeventstore">ConnectedEventStore class</a> connected to a <a href="/docs/advanced-usage#event-driven-architecture">state-carrying message bus or queue</a>
 >
 > ```ts
 > const { event: completeEvent, nextAggregate } =
@@ -418,7 +418,7 @@ const pokemonsEventStore = new EventStore({
 >   );
 > ```
 >
-> - <code>listAggregateIds <i>((opt?: OptionsObj = {}) => Promise\<ResponseObj\>)</i></code>: Retrieves the list of `aggregateId` of an event store, ordered by the `timestamp` of their initial event. Returns an empty array if no aggregate is found.
+> - <code>listAggregateIds <i>((opt?: OptionsObj = {}) => Promise(ResponseObj))</i></code>: Retrieves the list of <code>aggregateId</code> of an event store, ordered by the <code>timestamp</code> of their initial event. Returns an empty array if no aggregate is found.
 >
 >   `OptionsObj` contains the following properties:
 >
@@ -452,7 +452,7 @@ const pokemonsEventStore = new EventStore({
 >
 > **Type Helpers:**
 >
-> - <code>EventStoreId</code>: Returns the `EventStore` id
+> - <code>EventStoreId</code>: Returns the <code>EventStore</code> id
 >
 > ```ts
 > import type { EventStoreId } from '@castore/core';
@@ -461,7 +461,7 @@ const pokemonsEventStore = new EventStore({
 > // => 'POKEMONS'
 > ```
 >
-> - <code>EventStoreEventsTypes</code>: Returns the `EventStore` list of events types
+> - <code>EventStoreEventsTypes</code>: Returns the <code>EventStore</code> list of events types
 >
 > ```ts
 > import type { EventStoreEventsTypes } from '@castore/core';
@@ -470,7 +470,7 @@ const pokemonsEventStore = new EventStore({
 > // => [typeof pokemonAppearedEventType, typeof pokemonCaughtEventType...]
 > ```
 >
-> - <code>EventStoreEventsDetails</code>: Returns the union of all the `EventStore` possible events details
+> - <code>EventStoreEventsDetails</code>: Returns the union of all the <code>EventStore</code> possible events details
 >
 > ```ts
 > import type { EventStoreEventsDetails } from '@castore/core';
@@ -481,7 +481,7 @@ const pokemonsEventStore = new EventStore({
 > // | ...
 > ```
 >
-> - <code>EventStoreReducer</code>: Returns the `EventStore` reducer
+> - <code>EventStoreReducer</code>: Returns the <code>EventStore</code> reducer
 >
 > ```ts
 > import type { EventStoreReducer } from '@castore/core';
@@ -490,7 +490,7 @@ const pokemonsEventStore = new EventStore({
 > // => Reducer<PokemonAggregate, PokemonEventDetails>
 > ```
 >
-> - <code>EventStoreAggregate</code>: Returns the `EventStore` aggregate
+> - <code>EventStoreAggregate</code>: Returns the <code>EventStore</code> aggregate
 >
 > ```ts
 > import type { EventStoreAggregate } from '@castore/core';
@@ -571,7 +571,7 @@ const catchPokemonCommand = new Command({
 });
 ```
 
-Note that we only provided TS types for `Input` and `Output` properties. That is because, as stated in the [core design](./1-introduction#-core-design), **Castore is meant to be as flexible as possible**, and that includes the validation library you want to use (if any): The `Command` class can be used directly if no validation is required, or implemented by other classes which will add run-time validation methods to it 👍
+Note that we only provided TS types for `Input` and `Output` properties. That is because, as stated in the [core design](/docs/introduction#-core-design), **Castore is meant to be as flexible as possible**, and that includes the validation library you want to use (if any): The `Command` class can be used directly if no validation is required, or implemented by other classes which will add run-time validation methods to it 👍
 
 See the following packages for examples:
 
@@ -584,16 +584,16 @@ See the following packages for examples:
 > **Constructor:**
 >
 > - <code>commandId <i>(string)</i></code>: A string identifying the command
-> - <code>handler <i>((input: Input, requiredEventsStores: EventStore[]) => Promise\<Output\>)</i></code>: The code to execute
-> - <code>requiredEventStores <i>(EventStore[])</i></code>: A tuple of `EventStores` that are required by the command for read/write purposes. In TS, you should use the `tuple` util to preserve tuple ordering in the handler (`tuple` doesn't mute its input, it simply returns them)
+> - <code>handler <i>((input: Input, requiredEventsStores: EventStore[]) => Promise(Output))</i></code>: The code to execute
+> - <code>requiredEventStores <i>(EventStore[])</i></code>: A tuple of <code>EventStores</code> that are required by the command for read/write purposes. In TS, you should use the <code>tuple</code> util to preserve tuple ordering in the handler (<code>tuple</code> doesn't mute its inputs, it simply returns them)
 > - <code>eventAlreadyExistsRetries <i>(?number = 2)</i></code>: Number of handler execution retries before breaking out of the retry loop (See section below on race conditions)
-> - <code>onEventAlreadyExists <i>(?(error: EventAlreadyExistsError, context: ContextObj) => Promise\<void\>)</i></code>: Optional callback to execute when an `EventAlreadyExistsError` is raised.
+> - <code>onEventAlreadyExists <i>(?(error: EventAlreadyExistsError, context: ContextObj) => Promise(void))</i></code>: Optional callback to execute when an <code>EventAlreadyExistsError</code> is raised.
 >
 >   The `EventAlreadyExistsError` class contains the following properties:
 >
->   - <code>eventStoreId <i>(?string)</i></code>: The `eventStoreId` of the aggregate on which the `pushEvent` attempt failed
->   - <code>aggregateId <i>(string)</i></code>: The `aggregateId` of the aggregate
->   - <code>version <i>(number)</i></code>: The `version` of the aggregate
+>   - <code>eventStoreId <i>(?string)</i></code>: The <code>eventStoreId</code> of the aggregate on which the <code>pushEvent</code> attempt failed
+>   - <code>aggregateId <i>(string)</i></code>: The <code>aggregateId</code> of the aggregate
+>   - <code>version <i>(number)</i></code>: The <code>version</code> of the aggregate
 >
 >   The `ContextObj` contains the following properties:
 >
@@ -628,7 +628,7 @@ See the following packages for examples:
 > // => [eventStore1, eventStore2]
 > ```
 >
-> - <code>handler <i>((input: Input, requiredEventsStores: EventStore[]) => Promise\<Output\>)</i></code>: Function to invoke the command
+> - <code>handler <i>((input: Input, requiredEventsStores: EventStore[]) => Promise(Output))</i></code>: Function to invoke the command
 >
 > ```ts
 > const output = await doSomethingCommand.handler(input, [
@@ -641,7 +641,7 @@ See the following packages for examples:
 
 A few notes on commands handlers:
 
-- `Commands` handlers should NOT use [read models](./4-advanced-usage#read-models) when validating that a modification is acceptable. Read models are like cache: They are not the source of truth, and may not represent the freshest state.
+- `Commands` handlers should NOT use [read models](/docs/advanced-usage#read-models) when validating that a modification is acceptable. Read models are like cache: They are not the source of truth, and may not represent the freshest state.
 
 - Fetching and pushing events non-simultaneously exposes your application to [race conditions](https://en.wikipedia.org/wiki/Race_condition). To counter that, commands are designed to be retried when an `EventAlreadyExistsError` is triggered (which is part of the `EventStorageAdapter` interface).
 

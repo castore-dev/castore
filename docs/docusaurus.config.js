@@ -93,6 +93,14 @@ const config = {
         theme: lightCodeTheme,
         darkTheme: darkCodeTheme,
       },
+      algolia: {
+        // The application ID provided by Algolia
+        appId: 'CE0UH5LP81',
+        // Public API key: it is safe to commit it
+        apiKey: 'e648978d7a32ef5fa288a4e50ea4bf11',
+        indexName: 'castore',
+        searchPagePath: 'search',
+      },
     }),
 };
 
