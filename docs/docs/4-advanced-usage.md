@@ -127,7 +127,7 @@ await appMessageQueue.publishMessage({
 >
 > - <code>messageQueueId <i>(string)</i></code>: A string identifying the message queue
 > - <code>sourceEventStores <i>(EventStore[])</i></code>: List of event stores that the message queue will broadcast events from
-> - <code>messageQueueAdapter <i>(?MessageChannelAdapter)</i></code>: See section on [`MessageQueueAdapters`](#messagequeueadapter)
+> - <code>messageQueueAdapter <i>(?MessageChannelAdapter)</i></code>: See section on <a href="#messagequeueadapter">MessageQueueAdapters</a>
 >
 > **Properties:**
 >
@@ -145,7 +145,7 @@ await appMessageQueue.publishMessage({
 > // => [pokemonsEventStore, trainersEventStore...]
 > ```
 >
-> - <code>messageChannelAdapter <i>?MessageChannelAdapter</i></code>: See section on [`MessageQueueAdapters`](#messagequeueadapter)
+> - <code>messageChannelAdapter <i>?MessageChannelAdapter</i></code>: See section on <a href="#messagequeueadapter">MessageQueueAdapters</a>
 >
 > ```ts
 > const appMessageQueueAdapter = appMessageQueue.messageChannelAdapter;
@@ -158,19 +158,19 @@ await appMessageQueue.publishMessage({
 >
 > The following methods interact with the messaging solution of your application through a `MessageQueueAdapter`. They will throw an `UndefinedMessageChannelAdapterError` if you did not provide one.
 >
-> - <code>publishMessage <i>(message: Message, opt?: OptionsObj = {}) => Promise\<void\>)</i></code>: Publish a `Message` (of the appropriate type) to the message queue.
+> - <code>publishMessage <i>(message: Message, opt?: OptionsObj = {}) => Promise(void))</i></code>: Publish a <code>Message</code> (of the appropriate type) to the message queue.
 >
 >   `OptionsObj` contains the following properties:
 >
 >   - <code>replay <i>(?boolean = false)</i></code>: Signals that the event is not happening in real-time, e.g. in maintenance or migration operations. This information can be used downstream to react appropriately. Check the implementation of you adapter for more details.
 >
-> - <code>publishMessages <i>(messages: Message[], opt?: OptionsObj) => Promise\<void\>)</i></code>: Publish several `Messages` (of the appropriate type) to the message queue. Options are similar to the `publishMessage` options.
+> - <code>publishMessages <i>(messages: Message[], opt?: OptionsObj) => Promise(void))</i></code>: Publish several <code>Messages</code> (of the appropriate type) to the message queue. Options are similar to the <code>publishMessage</code> options.
 >
-> - <code>getAggregateAndPublishMessage <i>((message: NotificationMessage) => Promise\<void\>)</i></code>: _(StateCarryingMessageQueues only)_ Append the matching aggregate (with correct version) to a `NotificationMessage` and turn it into a `StateCarryingMessage` before publishing it to the message queue. Uses the message queue event stores: Make sure that they have correct adapters set up.
+> - <code>getAggregateAndPublishMessage <i>((message: NotificationMessage) => Promise(void))</i></code>: <i>(StateCarryingMessageQueues only)</i> Append the matching aggregate (with correct version) to a <code>NotificationMessage</code> and turn it into a <code>StateCarryingMessage</code> before publishing it to the message queue. Uses the message queue event stores: Make sure that they have correct adapters set up.
 >
 > **Type Helpers:**
 >
-> - <code>MessageChannelMessage</code>: Given a `MessageQueue`, returns the TS type of its messages
+> - <code>MessageChannelMessage</code>: Given a <code>MessageQueue</code>, returns the TS type of its messages
 >
 > ```ts
 > import type { MessageChannelMessage } from '@castore/core';
@@ -263,7 +263,7 @@ await appMessageBus.publishMessage({
 >
 > - <code>messageBusId <i>(string)</i></code>: A string identifying the message bus
 > - <code>sourceEventStores <i>(EventStore[])</i></code>: List of event stores that the message bus will broadcast events from
-> - <code>messageBusAdapter <i>(?MessageChannelAdapter)</i></code>: See section on [`MessageBusAdapters`](#messagebusadapter)
+> - <code>messageBusAdapter <i>(?MessageChannelAdapter)</i></code>: See section on <a href="#messagebusadapter">MessageBusAdapters</a>
 >
 > **Properties:**
 >
@@ -281,7 +281,7 @@ await appMessageBus.publishMessage({
 > // => [pokemonsEventStore, trainersEventStore...]
 > ```
 >
-> - <code>messageChannelAdapter <i>?MessageChannelAdapter</i></code>: See section on [`MessageBusAdapters`](#messagebusadapter)
+> - <code>messageChannelAdapter <i>?MessageChannelAdapter</i></code>: See section on <a href="#messagebusadapter">MessageBusAdapters</a>
 >
 > ```ts
 > const appMessageBusAdapter = appMessageBus.messageChannelAdapter;
@@ -294,19 +294,19 @@ await appMessageBus.publishMessage({
 >
 > The following methods interact with the messaging solution of your application through a `MessageBusAdapter`. They will throw an `UndefinedMessageChannelAdapterError` if you did not provide one.
 >
-> - <code>publishMessage <i>(message: Message, opt?: OptionsObj = {}) => Promise\<void\>)</i></code>: Publish a `Message` (of the appropriate type) to the message bus.
+> - <code>publishMessage <i>(message: Message, opt?: OptionsObj = {}) => Promise(void))</i></code>: Publish a <code>Message</code> (of the appropriate type) to the message bus.
 >
 >   `OptionsObj` contains the following properties:
 >
 >   - <code>replay <i>(?boolean = false)</i></code>: Signals that the event is not happening in real-time, e.g. in maintenance or migration operations. This information can be used downstream to react appropriately. Check the implementation of you adapter for more details.
 >
-> - <code>publishMessages <i>(messages: Message[], opt?: OptionsObj) => Promise\<void\>)</i></code>: Publish several `Messages` (of the appropriate type) to the message bus. Options are similar to the `publishMessage` options.
+> - <code>publishMessages <i>(messages: Message[], opt?: OptionsObj) => Promise(void))</i></code>: Publish several <code>Messages</code> (of the appropriate type) to the message bus. Options are similar to the <code>publishMessage</code> options.
 >
-> - <code>getAggregateAndPublishMessage <i>((message: NotificationMessage) => Promise\<void\>)</i></code>: _(StateCarryingMessageBuses only)_ Append the matching aggregate (with correct version) to a `NotificationMessage` and turn it into a `StateCarryingMessage` before publishing it to the message bus. Uses the message bus event stores: Make sure that they have correct adapters set up.
+> - <code>getAggregateAndPublishMessage <i>((message: NotificationMessage) => Promise(void))</i></code>: _(StateCarryingMessageBuses only)_ Append the matching aggregate (with correct version) to a <code>NotificationMessage</code> and turn it into a <code>StateCarryingMessage</code> before publishing it to the message bus. Uses the message bus event stores: Make sure that they have correct adapters set up.
 >
 > **Type Helpers:**
 >
-> - <code>MessageChannelMessage</code>: Given a `MessageBus`, returns the TS type of its messages
+> - <code>MessageChannelMessage</code>: Given a <code>MessageBus</code>, returns the TS type of its messages
 >
 > ```ts
 > import type { MessageChannelMessage } from '@castore/core';
