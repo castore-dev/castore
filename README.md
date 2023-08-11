@@ -22,7 +22,7 @@ It is powerful as it enables **rewinding to a previous state** and **exploring a
 
 However, it is **tricky to implement** 😅
 
-After years of using it at [Kumo](https://dev.to/kumo), we have grown to love it, but also experienced first-hand the lack of consensus and tooling around it. That's where Castore comes from!
+After years of using it at [Theodo](https://dev.to/slsbytheodo), we have grown to love it, but also experienced first-hand the lack of consensus and tooling around it. That's where Castore comes from!
 
 ---
 
