@@ -87,31 +87,7 @@ const config = {
       },
       footer: {
         style: 'dark',
-        links: [
-          {
-            title: 'Docs',
-            items: [
-              {
-                label: 'Tutorial',
-                to: '/docs/intro',
-              },
-            ],
-          },
-          {
-            title: 'Community',
-            items: [],
-          },
-          {
-            title: 'More',
-            items: [
-              {
-                label: 'GitHub',
-                href: 'https://github.com/castore-dev/castore',
-              },
-            ],
-          },
-        ],
-        copyright: `Copyright © ${new Date().getFullYear()} Castore, Inc. Built with Docusaurus.`,
+        copyright: `Copyright © ${new Date().getFullYear()} Castore.`,
       },
       prism: {
         theme: lightCodeTheme,
