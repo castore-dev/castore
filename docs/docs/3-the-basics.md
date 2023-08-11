@@ -55,7 +55,7 @@ const pokemonAppearedEventType = new EventType<
 >({ type: 'POKEMON_APPEARED' });
 ```
 
-Note that we only provided TS types for `payload` and `metadata` properties. That is because, as stated in the [core design](./1-introduction#-core-design), **Castore is meant to be as flexible as possible**, and that includes the validation library you want to use (if any): The `EventType` class can be used directly if no validation is required, or implemented by other classes which will add run-time validation methods to it 👍
+Note that we only provided TS types for `payload` and `metadata` properties. That is because, as stated in the [core design](/docs/introduction#-core-design), **Castore is meant to be as flexible as possible**, and that includes the validation library you want to use (if any): The `EventType` class can be used directly if no validation is required, or implemented by other classes which will add run-time validation methods to it 👍
 
 See the following packages for examples:
 
@@ -394,13 +394,13 @@ const pokemonsEventStore = new EventStore({
 >
 >   `OptionsObj` contains the following properties:
 >
->   - <code>prevAggregate <i>(?Aggregate)</i></code>: The aggregate at the current version, i.e. before having pushed the event. Can be useful in some cases like when using the [`ConnectedEventStore` class](./4-advanced-usage#connectedeventstore)
+>   - <code>prevAggregate <i>(?Aggregate)</i></code>: The aggregate at the current version, i.e. before having pushed the event. Can be useful in some cases like when using the [`ConnectedEventStore` class](/docs/advanced-usage#connectedeventstore)
 >   - <code>force <i>(?boolean)</i></code>: To force push the event even if one already exists for the corresponding `aggregateId` and `version`. Any existing event will be overridden, so use with extra care, mainly in [data migrations](https://www.npmjs.com/package/@castore/dam).
 >
 >   `ResponseObj` contains the following properties:
 >
 >   - <code>event <i>(EventDetail)</i></code>: The complete event (includes the `timestamp`)
->   - <code>nextAggregate <i>(?Aggregate)</i></code>: The aggregate at the new version, i.e. after having pushed the event. Returned only if the event is an initial event, if the `prevAggregate` option was provided, or when using a [`ConnectedEventStore` class](./4-advanced-usage#connectedeventstore) connected to a [state-carrying message bus or queue](./4-advanced-usage#event-driven-architecture)
+>   - <code>nextAggregate <i>(?Aggregate)</i></code>: The aggregate at the new version, i.e. after having pushed the event. Returned only if the event is an initial event, if the `prevAggregate` option was provided, or when using a [`ConnectedEventStore` class](/docs/advanced-usage#connectedeventstore) connected to a [state-carrying message bus or queue](/docs/advanced-usage#event-driven-architecture)
 >
 > ```ts
 > const { event: completeEvent, nextAggregate } =
@@ -571,7 +571,7 @@ const catchPokemonCommand = new Command({
 });
 ```
 
-Note that we only provided TS types for `Input` and `Output` properties. That is because, as stated in the [core design](./1-introduction#-core-design), **Castore is meant to be as flexible as possible**, and that includes the validation library you want to use (if any): The `Command` class can be used directly if no validation is required, or implemented by other classes which will add run-time validation methods to it 👍
+Note that we only provided TS types for `Input` and `Output` properties. That is because, as stated in the [core design](/docs/introduction#-core-design), **Castore is meant to be as flexible as possible**, and that includes the validation library you want to use (if any): The `Command` class can be used directly if no validation is required, or implemented by other classes which will add run-time validation methods to it 👍
 
 See the following packages for examples:
 
@@ -585,7 +585,7 @@ See the following packages for examples:
 >
 > - <code>commandId <i>(string)</i></code>: A string identifying the command
 > - <code>handler <i>((input: Input, requiredEventsStores: EventStore[]) => Promise\<Output\>)</i></code>: The code to execute
-> - <code>requiredEventStores <i>(EventStore[])</i></code>: A tuple of `EventStores` that are required by the command for read/write purposes. In TS, you should use the `tuple` util to preserve tuple ordering in the handler (`tuple` doesn't mute its input, it simply returns them)
+> - <code>requiredEventStores <i>(EventStore[])</i></code>: A tuple of `EventStores` that are required by the command for read/write purposes. In TS, you should use the `tuple` util to preserve tuple ordering in the handler (`tuple` doesn't mute its inputs, it simply returns them)
 > - <code>eventAlreadyExistsRetries <i>(?number = 2)</i></code>: Number of handler execution retries before breaking out of the retry loop (See section below on race conditions)
 > - <code>onEventAlreadyExists <i>(?(error: EventAlreadyExistsError, context: ContextObj) => Promise\<void\>)</i></code>: Optional callback to execute when an `EventAlreadyExistsError` is raised.
 >
@@ -641,7 +641,7 @@ See the following packages for examples:
 
 A few notes on commands handlers:
 
-- `Commands` handlers should NOT use [read models](./4-advanced-usage#read-models) when validating that a modification is acceptable. Read models are like cache: They are not the source of truth, and may not represent the freshest state.
+- `Commands` handlers should NOT use [read models](/docs/advanced-usage#read-models) when validating that a modification is acceptable. Read models are like cache: They are not the source of truth, and may not represent the freshest state.
 
 - Fetching and pushing events non-simultaneously exposes your application to [race conditions](https://en.wikipedia.org/wiki/Race_condition). To counter that, commands are designed to be retried when an `EventAlreadyExistsError` is triggered (which is part of the `EventStorageAdapter` interface).
 
