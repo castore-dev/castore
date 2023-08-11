@@ -75,9 +75,8 @@ const config = {
             type: 'docSidebar',
             sidebarId: 'tutorialSidebar',
             position: 'left',
-            label: 'Tutorial',
+            label: 'Docs',
           },
-          { to: '/blog', label: 'Blog', position: 'left' },
           { to: '/visualizer', label: 'Visualizer', position: 'left' },
           {
             href: 'https://github.com/castore-dev/castore',
