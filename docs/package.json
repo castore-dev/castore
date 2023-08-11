@@ -14,10 +14,11 @@
     "serve": "docusaurus serve",
     "start": "docusaurus start",
     "swizzle": "docusaurus swizzle",
-    "test": "yarn test-type && yarn test-circular && yarn test-linter && yarn build",
+    "test": "yarn test-type && yarn test-unit && yarn test-circular && yarn test-linter",
     "test-circular": "yarn depcruise --validate dependency-cruiser.js .",
     "test-linter": "yarn linter-base-config .",
     "test-type": "tsc --noEmit --emitDeclarationOnly false --moduleResolution node",
+    "test-unit": "docusaurus build",
     "write-heading-ids": "docusaurus write-heading-ids",
     "write-translations": "docusaurus write-translations"
   },
