@@ -14,7 +14,7 @@ In Castore, we distinguish three types of message:
 - **Notification messages** which also carry event details
 - **State-carrying messages** which also carry their corresponding aggregates
 
-![Messages Types](./assets/docsImg/messageTypes.png)
+![Messages Types](../assets/docSchemas/messageTypes.png)
 
 In Castore, they are implemented by the `AggregateExistsMessage`, `NotificationMessage` and `StateCarryingMessage` TS types:
 
@@ -89,13 +89,13 @@ type PokemonEventStateCarryingMessage = EventStoreStateCarryingMessage<
 >;
 ```
 
-All types of message can be published through message channels, i.e. [Message Queues](#--messagequeue) or [Message Buses](#--messagebus).
+All types of message can be published through message channels, i.e. [Message Queues](#messagequeue) or [Message Buses](#messagebus).
 
 ## `MessageQueue`
 
 [Message Queues](https://en.wikipedia.org/wiki/Message_queue) store the published messages until they are handled by a **worker**. The worker is unique and predictible. It consumes all messages indifferently of their content.
 
-![Message Queue](./assets/docsImg/messageQueue.png)
+![Message Queue](../assets/docSchemas/messageQueue.png)
 
 You can use the `AggregateExistsMessageQueue`, `NotificationMessageQueue` or `StateCarryingMessageQueue` classes to implement message queues:
 
@@ -127,7 +127,7 @@ await appMessageQueue.publishMessage({
 >
 > - <code>messageQueueId <i>(string)</i></code>: A string identifying the message queue
 > - <code>sourceEventStores <i>(EventStore[])</i></code>: List of event stores that the message queue will broadcast events from
-> - <code>messageQueueAdapter <i>(?MessageChannelAdapter)</i></code>: See section on [`MessageQueueAdapters`](#--messagequeueadapter)
+> - <code>messageQueueAdapter <i>(?MessageChannelAdapter)</i></code>: See section on [`MessageQueueAdapters`](#messagequeueadapter)
 >
 > **Properties:**
 >
@@ -145,7 +145,7 @@ await appMessageQueue.publishMessage({
 > // => [pokemonsEventStore, trainersEventStore...]
 > ```
 >
-> - <code>messageChannelAdapter <i>?MessageChannelAdapter</i></code>: See section on [`MessageQueueAdapters`](#--messagequeueadapter)
+> - <code>messageChannelAdapter <i>?MessageChannelAdapter</i></code>: See section on [`MessageQueueAdapters`](#messagequeueadapter)
 >
 > ```ts
 > const appMessageQueueAdapter = appMessageQueue.messageChannelAdapter;
@@ -205,8 +205,8 @@ messageQueue.messageChannelAdapter = mySuperMessageQueueAdapter;
 
 You can code your own `MessageQueueAdapter` (simply implement the `MessageChannelAdapter` interface), but we highly recommend using an off-the-shelf adapter:
 
-- [SQS Message Queue Adapter](./packages/sqs-message-queue-adapter/README.md)
-- [In-Memory Message Queue Adapter](./packages/in-memory-message-queue-adapter/README.md)
+- [SQS Message Queue Adapter](https://www.npmjs.com/package/@castore/sqs-message-queue-adapter)
+- [In-Memory Message Queue Adapter](https://www.npmjs.com/package/@castore/in-memory-message-queue-adapter)
 
 If the messaging solution that you use is missing, feel free to create/upvote an issue, or contribute 🤗
 
@@ -231,7 +231,7 @@ const appMessagesWorker = async ({ Records }: SQSMessageQueueMessage) => {
 
 [Message Buses](https://en.wikipedia.org/wiki/Publish%E2%80%93subscribe_pattern) are used to spread messages to multiple **listeners**. Contrary to message queues, they do not store the message or wait for the listeners to respond. Often, **filter patterns** can also be used to trigger listeners or not based on the message content.
 
-![Message Bus](./assets/docsImg/messageBus.png)
+![Message Bus](../assets/docSchemas/messageBus.png)
 
 You can use the `AggregateExistsMessageBus`, `NotificationMessageBus` or `StateCarryingMessageBus` classes to implement message buses:
 
@@ -263,7 +263,7 @@ await appMessageBus.publishMessage({
 >
 > - <code>messageBusId <i>(string)</i></code>: A string identifying the message bus
 > - <code>sourceEventStores <i>(EventStore[])</i></code>: List of event stores that the message bus will broadcast events from
-> - <code>messageBusAdapter <i>(?MessageChannelAdapter)</i></code>: See section on [`MessageBusAdapters`](#--messagebusadapter)
+> - <code>messageBusAdapter <i>(?MessageChannelAdapter)</i></code>: See section on [`MessageBusAdapters`](#messagebusadapter)
 >
 > **Properties:**
 >
@@ -281,7 +281,7 @@ await appMessageBus.publishMessage({
 > // => [pokemonsEventStore, trainersEventStore...]
 > ```
 >
-> - <code>messageChannelAdapter <i>?MessageChannelAdapter</i></code>: See section on [`MessageBusAdapters`](#--messagebusadapter)
+> - <code>messageChannelAdapter <i>?MessageChannelAdapter</i></code>: See section on [`MessageBusAdapters`](#messagebusadapter)
 >
 > ```ts
 > const appMessageBusAdapter = appMessageBus.messageChannelAdapter;
@@ -341,8 +341,8 @@ messageBus.messageChannelAdapter = mySuperMessageBusAdapter;
 
 You can code your own `MessageBusAdapter` (simply implement the `MessageChannelAdapter` interface), but we highly recommend using an off-the-shelf adapter:
 
-- [EventBridge Message Bus Adapter](./packages/event-bridge-message-bus-adapter/README.md)
-- [In-Memory Message Bus Adapter](./packages/in-memory-message-bus-adapter/README.md)
+- [EventBridge Message Bus Adapter](https://www.npmjs.com/package/@castore/event-bridge-message-bus-adapter)
+- [In-Memory Message Bus Adapter](https://www.npmjs.com/package/@castore/in-memory-message-bus-adapter)
 
 If the messaging solution that you use is missing, feel free to create/upvote an issue, or contribute 🤗
 
@@ -406,7 +406,7 @@ await connectedPokemonsEventStore.pushEvent(
 );
 ```
 
-![Connected Event Store](./assets/docsImg/connectedEventStore.png)
+![Connected Event Store](../assets/docSchemas/connectedEventStore.png)
 
 Compared to data streams, connected event stores have the advantage of simplicity, performances and costs. However, they **strongly decouple your storage and messaging solutions**: Make sure to anticipate any issue that might arise (consistency, non-caught errors etc.).
 

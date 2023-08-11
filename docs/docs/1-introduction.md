@@ -10,7 +10,7 @@ It is powerful as it enables **rewinding to a previous state** and **exploring a
 
 However, it is **tricky to implement** 😅
 
-After years of using it at [Kumo](https://dev.to/kumo), we have grown to love it, but also experienced first-hand the lack of consensus and tooling around it. That's where Castore comes from!
+After years of using it at [Theodo](https://dev.to/slsbytheodo), we have grown to love it, but also experienced first-hand the lack of consensus and tooling around it. That's where Castore comes from!
 
 ---
 
@@ -22,9 +22,9 @@ After years of using it at [Kumo](https://dev.to/kumo), we have grown to love it
 
 With Castore, you'll be able to:
 
-- Define your [event stores](#--eventstore)
-- Fetch and push new [events](#--events) seamlessly
-- Implement and test your [commands](#--command)
+- Define your [event stores](./3-the-basics#eventstore)
+- Fetch and push new [events](./3-the-basics#events) seamlessly
+- Implement and test your [commands](./3-the-basics#command)
 - ...and much more!
 
 All that with first-class developer experience and minimal boilerplate ✨
@@ -37,7 +37,7 @@ Some important decisions that we've made early on:
 
 Castore has been designed with **flexibility** in mind. It gives you abstractions that are meant to be used **anywhere**: React apps, containers, Lambdas... you name it!
 
-For instance, `EventStore` classes are **stack agnostic**: They need an `EventStorageAdapter` class to interact with actual data. You can code your own `EventStorageAdapter` (simply implement the interface), but it's much simpler to use an off-the-shelf adapter like [`DynamoDBEventStorageAdapter`](./packages/dynamodb-event-storage-adapter/README.md).
+For instance, `EventStore` classes are **stack agnostic**: They need an `EventStorageAdapter` class to interact with actual data. You can code your own `EventStorageAdapter` (simply implement the interface), but it's much simpler to use an off-the-shelf adapter like [`DynamoDBEventStorageAdapter`](https://www.npmjs.com/package/@castore/dynamodb-event-storage-adapter).
 
 ### 🙅‍♂️ **We do NOT deploy resources**
 

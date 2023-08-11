@@ -10,7 +10,7 @@ Event Sourcing is all about **saving changes in your application state**. Such c
 
 Events that concern the same entity (like a `Pokemon`) are aggregated through a common id called `aggregateId` (and vice versa, events that have the same `aggregateId` represent changes of the same business entity). The index of an event in such a serie of events is called its `version`.
 
-![Events](./assets/docsImg/events.png)
+![Events](../assets/docSchemas/events.png)
 
 In Castore, stored events (also called **event details**) always have exactly the following properties:
 
@@ -55,12 +55,12 @@ const pokemonAppearedEventType = new EventType<
 >({ type: 'POKEMON_APPEARED' });
 ```
 
-Note that we only provided TS types for `payload` and `metadata` properties. That is because, as stated in the [core design](#-core-design), **Castore is meant to be as flexible as possible**, and that includes the validation library you want to use (if any): The `EventType` class can be used directly if no validation is required, or implemented by other classes which will add run-time validation methods to it 👍
+Note that we only provided TS types for `payload` and `metadata` properties. That is because, as stated in the [core design](./1-introduction#-core-design), **Castore is meant to be as flexible as possible**, and that includes the validation library you want to use (if any): The `EventType` class can be used directly if no validation is required, or implemented by other classes which will add run-time validation methods to it 👍
 
 See the following packages for examples:
 
-- [JSON Schema Event Type](./packages/json-schema-event/README.md)
-- [Zod Event Type](./packages/zod-event/README.md)
+- [JSON Schema Event Type](https://www.npmjs.com/package/@castore/json-schema-event)
+- [Zod Event Type](https://www.npmjs.com/package/@castore/zod-event)
 
 > <details>
 > <summary><b>🔧 Technical description</b></summary>
@@ -155,7 +155,7 @@ interface PokemonAggregate {
 
 Aggregates are derived from their events by [reducing them](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/Reduce) through a `reducer` function. It defines **how to update the aggregate when a new event is pushed**:
 
-![Aggregate](./assets/docsImg/aggregate.png)
+![Aggregate](../assets/docSchemas/aggregate.png)
 
 ```ts
 import type { Reducer } from '@castore/core';
@@ -198,13 +198,13 @@ const myPikachuAggregate: PokemonAggregate =
 
 ## `EventStore`
 
-Once you've defined your [event types](#--eventtype) and how to [aggregate](#--reducer) them, you can bundle them together in an `EventStore` class.
+Once you've defined your [event types](#eventtype) and how to [aggregate](#reducer) them, you can bundle them together in an `EventStore` class.
 
 Each event store in your application represents a business entity. Think of event stores as _"what tables would be in CRUD"_, except that instead of directly updating data, you just append new events to it!
 
-![Event Store](./assets/docsImg/eventStore.png)
+![Event Store](../assets/docSchemas/eventStore.png)
 
-In Castore, `EventStore` classes are NOT responsible for actually storing data (this will come with [event storage adapters](#--eventstorageadapter)). But rather to provide a boilerplate-free and type-safe interface to perform many actions such as:
+In Castore, `EventStore` classes are NOT responsible for actually storing data (this will come with [event storage adapters](#eventstorageadapter)). But rather to provide a boilerplate-free and type-safe interface to perform many actions such as:
 
 - Listing aggregate ids
 - Accessing events of an aggregate
@@ -237,9 +237,9 @@ const pokemonsEventStore = new EventStore({
 >
 > - <code>eventStoreId <i>(string)</i></code>: A string identifying the event store
 > - <code>eventStoreEvents <i>(EventType[])</i></code>: The list of event types in the event store
-> - <code>reduce <i>(EventType[])</i></code>: A [reducer function](#--reducer) that can be applied to the store event types
+> - <code>reduce <i>(EventType[])</i></code>: A [reducer function](#reducer) that can be applied to the store event types
 > - <code>onEventPushed <i>(?(pushEventResponse: PushEventResponse => Promise\<void\>))</i></code>: To run a callback after events are pushed (input is exactly the return value of the `pushEvent` method)
-> - <code>storageAdapter <i>(?EventStorageAdapter)</i></code>: See [`EventStorageAdapter`](#--eventstorageadapter)
+> - <code>storageAdapter <i>(?EventStorageAdapter)</i></code>: See [`EventStorageAdapter`](#eventstorageadapter)
 >
 > ☝️ The return type of the `reducer` is used to infer the `Aggregate` type of the `EventStore`, so it is important to type it explicitely.
 >
@@ -273,7 +273,7 @@ const pokemonsEventStore = new EventStore({
 > // => undefined (we did not provide one in this example)
 > ```
 >
-> - <code>storageAdapter <i>?EventStorageAdapter</i></code>: See [`EventStorageAdapter`](#--eventstorageadapter)
+> - <code>storageAdapter <i>?EventStorageAdapter</i></code>: See [`EventStorageAdapter`](#eventstorageadapter)
 >
 > ```ts
 > const storageAdapter = pokemonsEventStore.storageAdapter;
@@ -305,7 +305,7 @@ const pokemonsEventStore = new EventStore({
 >
 > **Async Methods:**
 >
-> The following methods interact with the data layer of your event store through its [`EventStorageAdapter`](#--eventstorageadapter). They will throw an `UndefinedStorageAdapterError` if you did not provide one.
+> The following methods interact with the data layer of your event store through its [`EventStorageAdapter`](#eventstorageadapter). They will throw an `UndefinedStorageAdapterError` if you did not provide one.
 >
 > - <code>getEvents <i>((aggregateId: string, opt?: OptionsObj = {}) => Promise\<ResponseObj\>)</i></code>: Retrieves the events of an aggregate, ordered by `version`. Returns an empty array if no event is found for this `aggregateId`.
 >
@@ -394,13 +394,13 @@ const pokemonsEventStore = new EventStore({
 >
 >   `OptionsObj` contains the following properties:
 >
->   - <code>prevAggregate <i>(?Aggregate)</i></code>: The aggregate at the current version, i.e. before having pushed the event. Can be useful in some cases like when using the [`ConnectedEventStore` class](#--connectedeventstore)
->   - <code>force <i>(?boolean)</i></code>: To force push the event even if one already exists for the corresponding `aggregateId` and `version`. Any existing event will be overridden, so use with extra care, mainly in [data migrations](#--dam).
+>   - <code>prevAggregate <i>(?Aggregate)</i></code>: The aggregate at the current version, i.e. before having pushed the event. Can be useful in some cases like when using the [`ConnectedEventStore` class](./4-advanced-usage#connectedeventstore)
+>   - <code>force <i>(?boolean)</i></code>: To force push the event even if one already exists for the corresponding `aggregateId` and `version`. Any existing event will be overridden, so use with extra care, mainly in [data migrations](https://www.npmjs.com/package/@castore/dam).
 >
 >   `ResponseObj` contains the following properties:
 >
 >   - <code>event <i>(EventDetail)</i></code>: The complete event (includes the `timestamp`)
->   - <code>nextAggregate <i>(?Aggregate)</i></code>: The aggregate at the new version, i.e. after having pushed the event. Returned only if the event is an initial event, if the `prevAggregate` option was provided, or when using a [`ConnectedEventStore` class](#--connectedeventstore) connected to a [state-carrying message bus or queue](#--event-driven-architecture)
+>   - <code>nextAggregate <i>(?Aggregate)</i></code>: The aggregate at the new version, i.e. after having pushed the event. Returned only if the event is an initial event, if the `prevAggregate` option was provided, or when using a [`ConnectedEventStore` class](./4-advanced-usage#connectedeventstore) connected to a [state-carrying message bus or queue](./4-advanced-usage#event-driven-architecture)
 >
 > ```ts
 > const { event: completeEvent, nextAggregate } =
@@ -520,11 +520,11 @@ const pokemonsEventStore = new EventStore({
 pokemonsEventStore.storageAdapter = mySuperStorageAdapter;
 ```
 
-You can choose to [build an event storage adapter](./docs/building-your-own-event-storage-adapter.md) that suits your usage. However, we highly recommend using an off-the-shelf adapter:
+You can choose to build an event storage adapter that suits your usage. However, we highly recommend using an off-the-shelf adapter:
 
-- [DynamoDB Event Storage Adapter](./packages/dynamodb-event-storage-adapter/README.md)
-- [Redux Event Storage Adapter](./packages/redux-event-storage-adapter/README.md)
-- [In-Memory Event Storage Adapter](./packages/inmemory-event-storage-adapter/README.md)
+- [DynamoDB Event Storage Adapter](https://www.npmjs.com/package/@castore/dynamodb-event-storage-adapter)
+- [Redux Event Storage Adapter](https://www.npmjs.com/package/@castore/redux-event-storage-adapter)
+- [In-Memory Event Storage Adapter](https://www.npmjs.com/package/@castore/inmemory-event-storage-adapter)
 
 If the storage solution that you use is missing, feel free to create/upvote an issue, or contribute 🤗
 
@@ -536,7 +536,7 @@ Modifying the state of your application (i.e. pushing new events to your event s
 - Validating that the modification is acceptable
 - Pushing new events with incremented versions
 
-![Command](./assets/docsImg/command.png)
+![Command](../assets/docSchemas/command.png)
 
 ```ts
 import { Command, tuple } from '@castore/core';
@@ -571,11 +571,11 @@ const catchPokemonCommand = new Command({
 });
 ```
 
-Note that we only provided TS types for `Input` and `Output` properties. That is because, as stated in the [core design](#-core-design), **Castore is meant to be as flexible as possible**, and that includes the validation library you want to use (if any): The `Command` class can be used directly if no validation is required, or implemented by other classes which will add run-time validation methods to it 👍
+Note that we only provided TS types for `Input` and `Output` properties. That is because, as stated in the [core design](./1-introduction#-core-design), **Castore is meant to be as flexible as possible**, and that includes the validation library you want to use (if any): The `Command` class can be used directly if no validation is required, or implemented by other classes which will add run-time validation methods to it 👍
 
 See the following packages for examples:
 
-- [JSON Schema Event Type](./packages/json-schema-command/README.md)
+- [JSON Schema Event Type](https://www.npmjs.com/package/@castore/json-schema-command)
 
 > <details>
 > <summary><b>🔧 Technical description</b></summary>
@@ -641,19 +641,19 @@ See the following packages for examples:
 
 A few notes on commands handlers:
 
-- `Commands` handlers should NOT use [read models](#--read-models) when validating that a modification is acceptable. Read models are like cache: They are not the source of truth, and may not represent the freshest state.
+- `Commands` handlers should NOT use [read models](./4-advanced-usage#read-models) when validating that a modification is acceptable. Read models are like cache: They are not the source of truth, and may not represent the freshest state.
 
 - Fetching and pushing events non-simultaneously exposes your application to [race conditions](https://en.wikipedia.org/wiki/Race_condition). To counter that, commands are designed to be retried when an `EventAlreadyExistsError` is triggered (which is part of the `EventStorageAdapter` interface).
 
-![Command Retry](./assets/docsImg/commandRetry.png)
+![Command Retry](../assets/docSchemas/commandRetry.png)
 
-- Finally, Command handlers should be, as much as possible, [pure functions](https://en.wikipedia.org/wiki/Pure_function). If it depends on impure functions like functions with unpredictable outputs (like id generation), mutating effects, side effects or state dependency (like external data fetching), you should pass them through the additional context arguments rather than directly importing and using them. This will make them easier to test and to re-use in different contexts, such as in the [React Visualizer](./packages/react-visualizer/README.md).
+- Finally, Command handlers should be, as much as possible, [pure functions](https://en.wikipedia.org/wiki/Pure_function). If it depends on impure functions like functions with unpredictable outputs (like id generation), mutating effects, side effects or state dependency (like external data fetching), you should pass them through the additional context arguments rather than directly importing and using them. This will make them easier to test and to re-use in different contexts, such as in the [React Visualizer](https://www.npmjs.com/package/@castore/react-visualizer).
 
 ## Event Groups
 
 Some commands can have an effect on several event stores, or on several aggregates of the same event store. For instance, the `CATCH_POKEMON` command could write both a `CAUGHT_BY_TRAINER` event on a pokemon aggregate (changing its `status` to `'caught'`) and a `POKEMON_CAUGHT` event on a trainer aggregate (appending the `pokemonId` to its `pokedex`).
 
-![Event Group](./assets/docsImg/eventGroup.png)
+![Event Group](../assets/docSchemas/eventGroup.png)
 
 To not have your application in a corrupt state, it's important to make sure that **all those events are pushed or none**. In Castore, this can be done through the **event groups** API:
 
@@ -682,4 +682,4 @@ Like the `pushEvent` API, event groups are designed to throw an `EventAlreadyExi
 
 > ☝️ When pushing event groups on several event stores, they must use the same type of event storage adapters.
 >
-> ☝️ Also, be aware of technical constraints of your event storage solution. For instance, the [`DynamoDBEventStorageAdapter`](./packages/dynamodb-event-storage-adapter/README.md)'s implementation is based on [DynamoDB transactions](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/transaction-apis.html), which means that the event stores tables must be in the same region, and that a groups cannot contain more than 100 events.
+> ☝️ Also, be aware of technical constraints of your event storage solution. For instance, the [`DynamoDBEventStorageAdapter`](https://www.npmjs.com/package/@castore/dynamodb-event-storage-adapter)'s implementation is based on [DynamoDB transactions](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/transaction-apis.html), which means that the event stores tables must be in the same region, and that a groups cannot contain more than 100 events.
