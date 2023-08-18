@@ -1,1 +1,2 @@
-export const yo = 'yo';
+export { EventBridgeS3MessageBusAdapter } from './adapter';
+export type { EventBridgeS3MessageBusMessage } from './message';
