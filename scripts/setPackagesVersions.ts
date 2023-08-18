@@ -38,20 +38,23 @@ packagesNames.forEach(packageName => {
 
   packageJson.version = NEW_VERSION;
 
-  Object.keys(packageJson.dependencies ?? {}).forEach(dependencyName => {
-    if (dependencyName.startsWith('@castore/')) {
-      (packageJson.dependencies as Record<string, string>)[dependencyName] =
-        NEW_VERSION;
-    }
-  });
+  const dependencies = packageJson.dependencies;
+  if (dependencies !== undefined) {
+    Object.keys(dependencies).forEach(dependencyName => {
+      if (dependencyName.startsWith('@castore/')) {
+        dependencies[dependencyName] = NEW_VERSION;
+      }
+    });
+  }
 
-  Object.keys(packageJson.peerDependencies ?? {}).forEach(dependencyName => {
-    if (dependencyName.startsWith('@castore/')) {
-      (packageJson.peerDependencies as Record<string, string>)[
-        dependencyName
-      ] = `^${VERSION_MAJOR}.0.0`;
-    }
-  });
+  const peerDependencies = packageJson.peerDependencies;
+  if (peerDependencies !== undefined) {
+    Object.keys(peerDependencies).forEach(dependencyName => {
+      if (dependencyName.startsWith('@castore/')) {
+        peerDependencies[dependencyName] = `^${VERSION_MAJOR}.0.0`;
+      }
+    });
+  }
 
   writeFileSync(packageJsonPath, JSON.stringify(packageJson, null, 2));
 });
