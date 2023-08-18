@@ -66,6 +66,10 @@
       "name": "🚌  EventBridge"
     },
     {
+      "path": "packages/event-bridge-s3-message-bus-adapter",
+      "name": "🚌  EventBridge + S3"
+    },
+    {
       "path": "packages/in-memory-message-bus-adapter",
       "name": "🚌  InMemory"
     },
