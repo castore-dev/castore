@@ -1,4 +1,4 @@
-import type { A, O } from 'ts-toolbelt';
+import type { EventBridgeEvent } from 'aws-lambda';
 
 import type {
   AggregateExistsMessageBus,
@@ -31,7 +31,11 @@ export type EventBridgeS3MessageBusMessage<
   EVENT_STORE_IDS,
   EVENT_TYPES
 > extends infer MESSAGE
-  ? MESSAGE extends object
-    ? O.Update<MESSAGE, 'Detail', A.x | OversizedEntryDetail>
+  ? MESSAGE extends EventBridgeEvent<string, unknown>
+    ? {
+        [KEY in keyof MESSAGE]: KEY extends 'detail'
+          ? MESSAGE[KEY] | OversizedEntryDetail
+          : MESSAGE[KEY];
+      }
     : never
   : never;

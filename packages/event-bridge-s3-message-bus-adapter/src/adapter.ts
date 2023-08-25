@@ -179,4 +179,20 @@ export class EventBridgeS3MessageBusAdapter implements MessageChannelAdapter {
       await this.eventBridgeMessageBusAdapter.publishEntries(entries);
     };
   }
+
+  set eventBusName(eventBusName: string | (() => string)) {
+    this.eventBridgeMessageBusAdapter.eventBusName = eventBusName;
+  }
+
+  get eventBusName(): string {
+    return this.eventBridgeMessageBusAdapter.getEventBusName();
+  }
+
+  set eventBridgeClient(eventBridgeClient: EventBridgeClient) {
+    this.eventBridgeMessageBusAdapter.eventBridgeClient = eventBridgeClient;
+  }
+
+  get eventBridgeClient(): EventBridgeClient {
+    return this.eventBridgeMessageBusAdapter.eventBridgeClient;
+  }
 }

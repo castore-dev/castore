@@ -80,16 +80,36 @@ If the event is a notification or state-carrying event, the `version` is also ad
 const key = 'temporary-storage/POKEMONS/pikachu1/2020-01-01T00:00:00.000Z#3';
 ```
 
-On the listeners side, you can use the `EventBridgeS3MessageBusMessage` TS type to type your argument:
+On the listeners side, you can use the `EventBridgeS3MessageBusMessage` TS type to type your argument, and the `parseMessage` util to fetch the message if it has been uploaded to S3 (it passes it through otherwise):
 
 ```ts
-import type { EventBridgeS3MessageBusMessage } from '@castore/event-bridge-s3-message-bus-adapter';
+import {
+  EventBridgeS3MessageBusMessage,
+  parseMessage,
+} from '@castore/event-bridge-s3-message-bus-adapter';
 
 const listener = async (
   message: EventBridgeS3MessageBusMessage<typeof appMessageBus>,
 ) => {
   // 🙌 Correctly typed!
-  const { eventStoreId, event } = message.detail;
+  const { eventStoreId, event } = await parseMessage(message);
+};
+```
+
+Note that `parseMessage` uses `fetch` under the hood, so you will have to provide it if your version of node doesn't:
+
+```ts
+import fetch from 'node-fetch';
+
+import {
+  EventBridgeS3MessageBusMessage,
+  parseMessage,
+} from '@castore/event-bridge-s3-message-bus-adapter';
+
+const listener = async (
+  message: EventBridgeS3MessageBusMessage<typeof appMessageBus>,
+) => {
+  const { eventStoreId, event } = await parseMessage(message, { fetch });
 };
 ```
 
@@ -106,10 +126,12 @@ const listener = async (
   >,
 ) => {
   // 🙌 Correctly typed!
-  const { eventStoreId, event } = message.detail;
+  const { eventStoreId, event } = await parseMessage(message);
 };
 ```
 
 ## 🔑 IAM
 
-The `publishMessage` method requires the `events:PutEvents` IAM permission on the provided event bus, as well as the `s3:putObject` and `s3:getObject` IAM permissions on the provided s3 bucket for the desired keys (e.g. `my-bucket-name/temporary-storage/*`).
+The `publishMessage` method requires the `events:PutEvents` IAM permission on the provided event bus, as well as the `s3:putObject` and `s3:getObject` IAM permissions on the provided s3 bucket at the desired keys (e.g. `my-bucket-name/temporary-storage/*`).
+
+The `parseMessage` doesn't require any permission as the messageURL is pre-signed.

@@ -41,7 +41,8 @@
     "@castore/event-bridge-message-bus-adapter": "workspace:",
     "@types/aws-lambda": "^8.10.111",
     "lodash.chunk": "^4.2.0",
-    "ts-toolbelt": "^9.6.0"
+    "ts-toolbelt": "^9.6.0",
+    "undici": "^5.23.0"
   },
   "devDependencies": {
     "@aws-sdk/client-eventbridge": "^3.2.0",
