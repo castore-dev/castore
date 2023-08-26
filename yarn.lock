@@ -6012,7 +6012,6 @@ __metadata:
     "@babel/preset-typescript": ^7.16.7
     "@babel/runtime": ^7.18.3
     "@types/node": ^17.0.29
-    "@zerollup/ts-transform-paths": ^1.7.18
     babel-plugin-module-resolver: ^4.1.0
     concurrently: ^7.1.0
     dependency-cruiser: ^11.7.0
@@ -6020,7 +6019,7 @@ __metadata:
     prettier: ^2.6.2
     ts-node: ^10.7.0
     ts-toolbelt: ^9.6.0
-    ttypescript: ^1.5.13
+    tsc-alias: ^1.8.7
     typescript: ^4.6.3
     vite-tsconfig-paths: ^4.0.3
     vitest: ^0.26.2
@@ -6041,7 +6040,6 @@ __metadata:
     "@castore/in-memory-message-queue-adapter": "workspace:"
     "@castore/test-tools": "workspace:"
     "@types/node": ^17.0.29
-    "@zerollup/ts-transform-paths": ^1.7.18
     babel-plugin-module-resolver: ^4.1.0
     concurrently: ^7.1.0
     dependency-cruiser: ^11.7.0
@@ -6049,7 +6047,7 @@ __metadata:
     prettier: ^2.6.2
     throttled-queue: ^2.1.4
     ts-node: ^10.7.0
-    ttypescript: ^1.5.13
+    tsc-alias: ^1.8.7
     typescript: ^4.6.3
     vite-tsconfig-paths: ^4.0.3
     vitest: ^0.26.2
@@ -6072,7 +6070,6 @@ __metadata:
     "@castore/json-schema-command": "workspace:"
     "@castore/json-schema-event": "workspace:"
     "@types/node": ^17.0.29
-    "@zerollup/ts-transform-paths": ^1.7.18
     babel-plugin-module-resolver: ^4.1.0
     concurrently: ^7.1.0
     dependency-cruiser: ^11.7.0
@@ -6081,7 +6078,7 @@ __metadata:
     prettier: ^2.6.2
     ts-node: ^10.7.0
     ts-toolbelt: ^9.6.0
-    ttypescript: ^1.5.13
+    tsc-alias: ^1.8.7
     typescript: ^4.6.3
   peerDependencies:
     "@castore/core": "*"
@@ -6195,7 +6192,6 @@ __metadata:
     "@serverless/typescript": ^3.15.2
     "@types/lodash.omit": ^4.5.7
     "@types/node": ^17.0.29
-    "@zerollup/ts-transform-paths": ^1.7.18
     aws-sdk-client-mock: ^2.1.1
     babel-plugin-module-resolver: ^4.1.0
     concurrently: ^7.1.0
@@ -6205,7 +6201,7 @@ __metadata:
     mockdate: ^3.0.5
     prettier: ^2.6.2
     ts-node: ^10.7.0
-    ttypescript: ^1.5.13
+    tsc-alias: ^1.8.7
     typescript: ^4.6.3
     vitest: ^0.26.2
   peerDependencies:
@@ -6228,7 +6224,6 @@ __metadata:
     "@types/aws-lambda": ^8.10.111
     "@types/lodash.chunk": ^4.2.7
     "@types/node": ^17.0.29
-    "@zerollup/ts-transform-paths": ^1.7.18
     aws-sdk-client-mock: ^2.1.0
     babel-plugin-module-resolver: ^4.1.0
     concurrently: ^7.1.0
@@ -6238,7 +6233,7 @@ __metadata:
     prettier: ^2.6.2
     ts-node: ^10.7.0
     ts-toolbelt: ^9.6.0
-    ttypescript: ^1.5.13
+    tsc-alias: ^1.8.7
     typescript: ^4.6.3
     vitest: ^0.26.2
   peerDependencies:
@@ -6264,7 +6259,6 @@ __metadata:
     "@types/aws-lambda": ^8.10.111
     "@types/lodash.chunk": ^4.2.7
     "@types/node": ^17.0.29
-    "@zerollup/ts-transform-paths": ^1.7.18
     aws-sdk-client-mock: ^2.1.0
     babel-plugin-module-resolver: ^4.1.0
     concurrently: ^7.1.0
@@ -6274,7 +6268,7 @@ __metadata:
     prettier: ^2.6.2
     ts-node: ^10.7.0
     ts-toolbelt: ^9.6.0
-    ttypescript: ^1.5.13
+    tsc-alias: ^1.8.7
     typescript: ^4.6.3
     undici: ^5.23.0
     vitest: ^0.26.2
@@ -6298,14 +6292,13 @@ __metadata:
     "@castore/core": "workspace:"
     "@castore/demo-blueprint": "workspace:"
     "@types/node": ^17.0.29
-    "@zerollup/ts-transform-paths": ^1.7.18
     babel-plugin-module-resolver: ^4.1.0
     concurrently: ^7.1.0
     dependency-cruiser: ^11.7.0
     eslint: ^8.14.0
     prettier: ^2.6.2
     ts-node: ^10.7.0
-    ttypescript: ^1.5.13
+    tsc-alias: ^1.8.7
     typescript: ^4.6.3
     vitest: ^0.26.2
   peerDependencies:
@@ -6325,7 +6318,6 @@ __metadata:
     "@castore/core": "workspace:"
     "@castore/demo-blueprint": "workspace:"
     "@types/node": ^17.0.29
-    "@zerollup/ts-transform-paths": ^1.7.18
     babel-plugin-module-resolver: ^4.1.0
     concurrently: ^7.1.0
     dependency-cruiser: ^11.7.0
@@ -6334,7 +6326,7 @@ __metadata:
     prettier: ^2.6.2
     ts-node: ^10.7.0
     ts-toolbelt: ^9.6.0
-    ttypescript: ^1.5.13
+    tsc-alias: ^1.8.7
     typescript: ^4.6.3
     vitest: ^0.26.2
   peerDependencies:
@@ -6354,7 +6346,6 @@ __metadata:
     "@castore/core": "workspace:"
     "@types/lodash.omit": ^4.5.7
     "@types/node": ^17.0.29
-    "@zerollup/ts-transform-paths": ^1.7.18
     babel-plugin-module-resolver: ^4.1.0
     concurrently: ^7.1.0
     dependency-cruiser: ^11.7.0
@@ -6363,7 +6354,7 @@ __metadata:
     mockdate: ^3.0.5
     prettier: ^2.6.2
     ts-node: ^10.7.0
-    ttypescript: ^1.5.13
+    tsc-alias: ^1.8.7
     typescript: ^4.6.3
     vitest: ^0.26.2
   peerDependencies:
@@ -6382,7 +6373,6 @@ __metadata:
     "@babel/preset-typescript": ^7.16.7
     "@castore/core": "workspace:"
     "@types/node": ^17.0.29
-    "@zerollup/ts-transform-paths": ^1.7.18
     babel-plugin-module-resolver: ^4.1.0
     concurrently: ^7.1.0
     dependency-cruiser: ^11.7.0
@@ -6391,7 +6381,7 @@ __metadata:
     prettier: ^2.6.2
     ts-node: ^10.7.0
     ts-toolbelt: ^9.6.0
-    ttypescript: ^1.5.13
+    tsc-alias: ^1.8.7
     typescript: ^4.6.3
     vitest: ^0.26.2
   peerDependencies:
@@ -6411,7 +6401,6 @@ __metadata:
     "@babel/preset-typescript": ^7.16.7
     "@castore/core": "workspace:"
     "@types/node": ^17.0.29
-    "@zerollup/ts-transform-paths": ^1.7.18
     babel-plugin-module-resolver: ^4.1.0
     concurrently: ^7.1.0
     dependency-cruiser: ^11.7.0
@@ -6420,7 +6409,7 @@ __metadata:
     prettier: ^2.6.2
     ts-node: ^10.7.0
     ts-toolbelt: ^9.6.0
-    ttypescript: ^1.5.13
+    tsc-alias: ^1.8.7
     typescript: ^4.6.3
     vitest: ^0.26.2
   peerDependencies:
@@ -6454,7 +6443,6 @@ __metadata:
     "@rjsf/utils": ^5.0.0-beta.15
     "@rjsf/validator-ajv8": ^5.0.0-beta.15
     "@types/node": ^17.0.29
-    "@zerollup/ts-transform-paths": ^1.7.18
     babel-plugin-module-resolver: ^4.1.0
     babel-plugin-optimize-clsx: ^2.6.2
     babel-plugin-transform-react-remove-prop-types: ^0.4.24
@@ -6467,7 +6455,7 @@ __metadata:
     react-json-view: ^1.21.3
     react-redux: ^8.0.5
     ts-node: ^10.7.0
-    ttypescript: ^1.5.13
+    tsc-alias: ^1.8.7
     typescript: ^4.6.3
     vitest: ^0.26.2
   peerDependencies:
@@ -6489,7 +6477,6 @@ __metadata:
     "@castore/core": "workspace:"
     "@reduxjs/toolkit": ^1.9.1
     "@types/node": ^17.0.29
-    "@zerollup/ts-transform-paths": ^1.7.18
     babel-plugin-module-resolver: ^4.1.0
     concurrently: ^7.1.0
     dependency-cruiser: ^11.7.0
@@ -6497,7 +6484,7 @@ __metadata:
     prettier: ^2.6.2
     react-redux: ^8.0.5
     ts-node: ^10.7.0
-    ttypescript: ^1.5.13
+    tsc-alias: ^1.8.7
     typescript: ^4.6.3
     vitest: ^0.26.2
   peerDependencies:
@@ -6521,7 +6508,6 @@ __metadata:
     "@types/aws-lambda": ^8.10.111
     "@types/lodash.chunk": ^4.2.7
     "@types/node": ^17.0.29
-    "@zerollup/ts-transform-paths": ^1.7.18
     aws-sdk-client-mock: ^2.1.0
     babel-plugin-module-resolver: ^4.1.0
     concurrently: ^7.1.0
@@ -6531,7 +6517,7 @@ __metadata:
     prettier: ^2.6.2
     ts-node: ^10.7.0
     ts-toolbelt: ^9.6.0
-    ttypescript: ^1.5.13
+    tsc-alias: ^1.8.7
     typescript: ^4.6.3
     vitest: ^0.26.2
   peerDependencies:
@@ -6553,14 +6539,13 @@ __metadata:
     "@castore/demo-blueprint": "workspace:"
     "@castore/inmemory-event-storage-adapter": "workspace:"
     "@types/node": ^17.0.29
-    "@zerollup/ts-transform-paths": ^1.7.18
     babel-plugin-module-resolver: ^4.1.0
     concurrently: ^7.1.0
     dependency-cruiser: ^11.7.0
     eslint: ^8.14.0
     prettier: ^2.6.2
     ts-node: ^10.7.0
-    ttypescript: ^1.5.13
+    tsc-alias: ^1.8.7
     typescript: ^4.6.3
     vitest: ^0.26.2
   peerDependencies:
@@ -6579,7 +6564,6 @@ __metadata:
     "@babel/preset-typescript": ^7.16.7
     "@castore/core": "workspace:"
     "@types/node": ^17.0.29
-    "@zerollup/ts-transform-paths": ^1.7.18
     babel-plugin-module-resolver: ^4.1.0
     concurrently: ^7.1.0
     dependency-cruiser: ^11.7.0
@@ -6587,7 +6571,7 @@ __metadata:
     prettier: ^2.6.2
     ts-node: ^10.7.0
     ts-toolbelt: ^9.6.0
-    ttypescript: ^1.5.13
+    tsc-alias: ^1.8.7
     typescript: ^4.6.3
     vitest: ^0.26.2
     zod: ^3.15.1
@@ -11156,28 +11140,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@zerollup/ts-helpers@npm:^1.7.18":
-  version: 1.7.18
-  resolution: "@zerollup/ts-helpers@npm:1.7.18"
-  dependencies:
-    resolve: ^1.12.0
-  peerDependencies:
-    typescript: ">=3.7.2"
-  checksum: 6ad5cc350139e28866ecff6138b38771a385b8f6c66af07bfff5f7a6d54a9071c06cdd43e0ae0e71157cce2815e6207c0ce15a28ef862d87fe2ad8381b0465dd
-  languageName: node
-  linkType: hard
-
-"@zerollup/ts-transform-paths@npm:^1.7.18":
-  version: 1.7.18
-  resolution: "@zerollup/ts-transform-paths@npm:1.7.18"
-  dependencies:
-    "@zerollup/ts-helpers": ^1.7.18
-  peerDependencies:
-    typescript: ">=3.7.2"
-  checksum: 2a3b258222c954e6cbcb85fdbb8fe0a8781128015951d352a42fe4b59379b7051397592c9be0dd96d15fc8c6f2916b2805cd85adff93aaa3b9346beaf144a0dd
-  languageName: node
-  linkType: hard
-
 "JSONStream@npm:^1.0.4":
   version: 1.3.5
   resolution: "JSONStream@npm:1.3.5"
@@ -13190,6 +13152,13 @@ __metadata:
   version: 8.3.0
   resolution: "commander@npm:8.3.0"
   checksum: 0f82321821fc27b83bd409510bb9deeebcfa799ff0bf5d102128b500b7af22872c0c92cb6a0ebc5a4cf19c6b550fba9cedfa7329d18c6442a625f851377bacf0
+  languageName: node
+  linkType: hard
+
+"commander@npm:^9.0.0":
+  version: 9.5.0
+  resolution: "commander@npm:9.5.0"
+  checksum: c7a3e27aa59e913b54a1bafd366b88650bc41d6651f0cbe258d4ff09d43d6a7394232a4dadd0bf518b3e696fdf595db1028a0d82c785b88bd61f8a440cecfade
   languageName: node
   linkType: hard
 
@@ -19985,6 +19954,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"mylas@npm:^2.1.9":
+  version: 2.1.13
+  resolution: "mylas@npm:2.1.13"
+  checksum: f861d092137a9ac268cba88042392a5dc2a290eed5c8543954eae849d85e5961332211161d2c08c3644ad893f20dbe9de89b07f5dc027f1f92f13f2d38f4b81f
+  languageName: node
+  linkType: hard
+
 "nanoid@npm:^3.1.32, nanoid@npm:^3.3.4":
   version: 3.3.4
   resolution: "nanoid@npm:3.3.4"
@@ -21070,6 +21046,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"plimit-lit@npm:^1.2.6":
+  version: 1.5.0
+  resolution: "plimit-lit@npm:1.5.0"
+  dependencies:
+    queue-lit: ^1.5.0
+  checksum: a956e4e5e515a980403ca840b00c9e2381710a3a30e60e0e38f76b7842b24a345c9e59ef03568cb5925b4e9cdf67c088008148febec59e55bd47d1cb4003b024
+  languageName: node
+  linkType: hard
+
 "postcss-calc@npm:^8.2.3":
   version: 8.2.4
   resolution: "postcss-calc@npm:8.2.4"
@@ -21802,6 +21787,13 @@ __metadata:
   version: 0.2.1
   resolution: "querystring@npm:0.2.1"
   checksum: 7b83b45d641e75fd39cd6625ddfd44e7618e741c61e95281b57bbae8fde0afcc12cf851924559e5cc1ef9baa3b1e06e22b164ea1397d65dd94b801f678d9c8ce
+  languageName: node
+  linkType: hard
+
+"queue-lit@npm:^1.5.0":
+  version: 1.5.0
+  resolution: "queue-lit@npm:1.5.0"
+  checksum: 2e714b74072e1be9bd76356710af1d3b03763859f466a10ed74f36b5ccc524dbd0d299239adfc5cbd3a4a416c5fc69cf4af34f13ef4f95f6da70cad12cb79771
   languageName: node
   linkType: hard
 
@@ -22736,19 +22728,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"resolve@npm:>=1.9.0, resolve@npm:^1.10.0, resolve@npm:^1.12.0, resolve@npm:^1.13.1, resolve@npm:^1.14.2, resolve@npm:^1.20.0, resolve@npm:^1.22.0":
-  version: 1.22.0
-  resolution: "resolve@npm:1.22.0"
-  dependencies:
-    is-core-module: ^2.8.1
-    path-parse: ^1.0.7
-    supports-preserve-symlinks-flag: ^1.0.0
-  bin:
-    resolve: bin/resolve
-  checksum: a2d14cc437b3a23996f8c7367eee5c7cf8149c586b07ca2ae00e96581ce59455555a1190be9aa92154785cf9f2042646c200d0e00e0bbd2b8a995a93a0ed3e4e
-  languageName: node
-  linkType: hard
-
 "resolve@npm:^1.1.6, resolve@npm:^1.3.2":
   version: 1.22.3
   resolution: "resolve@npm:1.22.3"
@@ -22759,6 +22738,19 @@ __metadata:
   bin:
     resolve: bin/resolve
   checksum: fb834b81348428cb545ff1b828a72ea28feb5a97c026a1cf40aa1008352c72811ff4d4e71f2035273dc536dcfcae20c13604ba6283c612d70fa0b6e44519c374
+  languageName: node
+  linkType: hard
+
+"resolve@npm:^1.10.0, resolve@npm:^1.13.1, resolve@npm:^1.14.2, resolve@npm:^1.20.0, resolve@npm:^1.22.0":
+  version: 1.22.0
+  resolution: "resolve@npm:1.22.0"
+  dependencies:
+    is-core-module: ^2.8.1
+    path-parse: ^1.0.7
+    supports-preserve-symlinks-flag: ^1.0.0
+  bin:
+    resolve: bin/resolve
+  checksum: a2d14cc437b3a23996f8c7367eee5c7cf8149c586b07ca2ae00e96581ce59455555a1190be9aa92154785cf9f2042646c200d0e00e0bbd2b8a995a93a0ed3e4e
   languageName: node
   linkType: hard
 
@@ -22775,19 +22767,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"resolve@patch:resolve@>=1.9.0#~builtin<compat/resolve>, resolve@patch:resolve@^1.10.0#~builtin<compat/resolve>, resolve@patch:resolve@^1.12.0#~builtin<compat/resolve>, resolve@patch:resolve@^1.13.1#~builtin<compat/resolve>, resolve@patch:resolve@^1.14.2#~builtin<compat/resolve>, resolve@patch:resolve@^1.20.0#~builtin<compat/resolve>, resolve@patch:resolve@^1.22.0#~builtin<compat/resolve>":
-  version: 1.22.0
-  resolution: "resolve@patch:resolve@npm%3A1.22.0#~builtin<compat/resolve>::version=1.22.0&hash=07638b"
-  dependencies:
-    is-core-module: ^2.8.1
-    path-parse: ^1.0.7
-    supports-preserve-symlinks-flag: ^1.0.0
-  bin:
-    resolve: bin/resolve
-  checksum: c79ecaea36c872ee4a79e3db0d3d4160b593f2ca16e031d8283735acd01715a203607e9ded3f91f68899c2937fa0d49390cddbe0fb2852629212f3cda283f4a7
-  languageName: node
-  linkType: hard
-
 "resolve@patch:resolve@^1.1.6#~builtin<compat/resolve>, resolve@patch:resolve@^1.3.2#~builtin<compat/resolve>":
   version: 1.22.3
   resolution: "resolve@patch:resolve@npm%3A1.22.3#~builtin<compat/resolve>::version=1.22.3&hash=07638b"
@@ -22798,6 +22777,19 @@ __metadata:
   bin:
     resolve: bin/resolve
   checksum: ad59734723b596d0891321c951592ed9015a77ce84907f89c9d9307dd0c06e11a67906a3e628c4cae143d3e44898603478af0ddeb2bba3f229a9373efe342665
+  languageName: node
+  linkType: hard
+
+"resolve@patch:resolve@^1.10.0#~builtin<compat/resolve>, resolve@patch:resolve@^1.13.1#~builtin<compat/resolve>, resolve@patch:resolve@^1.14.2#~builtin<compat/resolve>, resolve@patch:resolve@^1.20.0#~builtin<compat/resolve>, resolve@patch:resolve@^1.22.0#~builtin<compat/resolve>":
+  version: 1.22.0
+  resolution: "resolve@patch:resolve@npm%3A1.22.0#~builtin<compat/resolve>::version=1.22.0&hash=07638b"
+  dependencies:
+    is-core-module: ^2.8.1
+    path-parse: ^1.0.7
+    supports-preserve-symlinks-flag: ^1.0.0
+  bin:
+    resolve: bin/resolve
+  checksum: c79ecaea36c872ee4a79e3db0d3d4160b593f2ca16e031d8283735acd01715a203607e9ded3f91f68899c2937fa0d49390cddbe0fb2852629212f3cda283f4a7
   languageName: node
   linkType: hard
 
@@ -24800,6 +24792,22 @@ __metadata:
   languageName: node
   linkType: hard
 
+"tsc-alias@npm:^1.8.7":
+  version: 1.8.7
+  resolution: "tsc-alias@npm:1.8.7"
+  dependencies:
+    chokidar: ^3.5.3
+    commander: ^9.0.0
+    globby: ^11.0.4
+    mylas: ^2.1.9
+    normalize-path: ^3.0.0
+    plimit-lit: ^1.2.6
+  bin:
+    tsc-alias: dist/bin/index.js
+  checksum: 77f721ea797a62a7cc74acda0baf928bb654bccb210471b63fef1e70a27a823c60f5832f51aa5976d573412bc90731e90774abf9127f3b6b13f284839f988d47
+  languageName: node
+  linkType: hard
+
 "tsconfck@npm:^2.0.1":
   version: 2.0.2
   resolution: "tsconfck@npm:2.0.2"
@@ -24884,21 +24892,6 @@ __metadata:
   peerDependencies:
     typescript: ">=2.8.0 || >= 3.2.0-dev || >= 3.3.0-dev || >= 3.4.0-dev || >= 3.5.0-dev || >= 3.6.0-dev || >= 3.6.0-beta || >= 3.7.0-dev || >= 3.7.0-beta"
   checksum: 1843f4c1b2e0f975e08c4c21caa4af4f7f65a12ac1b81b3b8489366826259323feb3fc7a243123453d2d1a02314205a7634e048d4a8009921da19f99755cdc48
-  languageName: node
-  linkType: hard
-
-"ttypescript@npm:^1.5.13":
-  version: 1.5.13
-  resolution: "ttypescript@npm:1.5.13"
-  dependencies:
-    resolve: ">=1.9.0"
-  peerDependencies:
-    ts-node: ">=8.0.2"
-    typescript: ">=3.2.2"
-  bin:
-    ttsc: bin/tsc
-    ttsserver: bin/tsserver
-  checksum: bd97f058520ebd6183446b2100bfc714c400455e2195c3711d00c3407521d99098a4a204f16200c14a115cd78a5005d4a790bf7fb73a1b21a513573291a9c1d0
   languageName: node
   linkType: hard
 
