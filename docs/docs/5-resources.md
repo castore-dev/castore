@@ -41,4 +41,5 @@ Castore also comes with a handy [React Visualizer](https://www.npmjs.com/package
 ### Message Buses Adapters
 
 - [EventBridge Message Bus Adapter](https://www.npmjs.com/package/@castore/event-bridge-message-bus-adapter): Implementation of the `MessageBusAdapter` interface based on AWS EventBridge.
+- [EventBridge + S3 Message Bus Adapter](https://www.npmjs.com/package/@castore/event-bridge-s3-message-bus-adapter/README.md): Implementation of the `MessageBusAdapter` interface based on AWS EventBridge and S3.
 - [In-Memory Message Bus Adapter](https://www.npmjs.com/package/@castore/in-memory-message-bus-adapter): Implementation of the `MessageBusAdapter` interface using a local Node/JS event emitter. To be used in manual or unit tests.

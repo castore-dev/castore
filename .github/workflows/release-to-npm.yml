@@ -61,6 +61,10 @@ jobs:
       - uses: JS-DevTools/npm-publish@v2
         with:
           token: ${{ secrets.NPM_TOKEN }}
+          package: ./packages/event-bridge-s3-message-bus-adapter/package.json
+      - uses: JS-DevTools/npm-publish@v2
+        with:
+          token: ${{ secrets.NPM_TOKEN }}
           package: ./packages/in-memory-message-bus-adapter/package.json
       - uses: JS-DevTools/npm-publish@v2
         with:

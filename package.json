@@ -69,8 +69,5 @@
     "Valentin Beggi",
     "Stanislas Hannebelle"
   ],
-  "packageManager": "yarn@3.2.1",
-  "peerDependencies": {
-    "dynamodb-toolbox": "0.4.0-alpha.2"
-  }
+  "packageManager": "yarn@3.2.1"
 }

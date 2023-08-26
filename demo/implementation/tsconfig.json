@@ -6,7 +6,6 @@
     "allowSyntheticDefaultImports": true,
     "composite": true,
     "preserveSymlinks": true,
-    "plugins": [{ "transform": "@zerollup/ts-transform-paths" }],
     "baseUrl": "."
   },
   "include": ["./**/*.ts"],

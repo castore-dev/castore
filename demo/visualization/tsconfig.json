@@ -20,7 +20,6 @@
     "baseUrl": "src",
     "composite": true,
     "preserveSymlinks": true,
-    "plugins": [{ "transform": "@zerollup/ts-transform-paths" }],
     "emitDeclarationOnly": true,
     "isolatedModules": true,
     "jsx": "react",

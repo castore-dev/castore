@@ -1,9 +1,19 @@
 {
-  "name": "@castore/demo-blueprint",
+  "name": "@castore/event-bridge-s3-message-bus-adapter",
+  "description": "DRY Castore MessageBus definition using AWS EventBridge and S3",
   "license": "MIT",
-  "homepage": "https://github.com/castore-dev/castore#readme",
-  "bugs": "https://github.com/castore-dev/castore/issues",
-  "repository": "castore-dev/castore.git",
+  "homepage": "https://github.com/theodo/castore#readme",
+  "bugs": "https://github.com/theodo/castore/issues",
+  "repository": "theodo/castore.git",
+  "keywords": [
+    "event",
+    "source",
+    "store",
+    "typescript"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
   "sideEffects": false,
   "files": [
     "dist"
@@ -19,36 +29,43 @@
     "package-cjs": "NODE_ENV=cjs yarn transpile --out-dir dist/cjs --source-maps",
     "package-esm": "NODE_ENV=esm yarn transpile --out-dir dist/esm --source-maps",
     "package-types": "tsc -p tsconfig.build.json && tsc-alias -p tsconfig.build.json",
-    "test": "yarn test-type && yarn test-circular && yarn test-linter",
+    "test": "yarn test-type && yarn test-unit && yarn test-circular && yarn test-linter",
     "test-circular": "yarn depcruise --validate dependency-cruiser.js .",
     "test-linter": "yarn linter-base-config .",
     "test-type": "tsc --noEmit --emitDeclarationOnly false",
+    "test-unit": "yarn vitest run --passWithNoTests",
     "transpile": "babel src --extensions .ts --quiet",
     "watch": "rm -rf dist && concurrently 'yarn:package-* --watch'"
   },
   "dependencies": {
-    "@babel/runtime": "^7.18.3",
-    "@castore/json-schema-command": "workspace:"
+    "@castore/event-bridge-message-bus-adapter": "workspace:",
+    "@types/aws-lambda": "^8.10.111",
+    "lodash.chunk": "^4.2.0",
+    "ts-toolbelt": "^9.6.0",
+    "undici": "^5.23.0"
   },
   "devDependencies": {
+    "@aws-sdk/client-eventbridge": "^3.2.0",
+    "@aws-sdk/client-s3": "^3.2.0",
+    "@aws-sdk/s3-request-presigner": "^3.2.0",
     "@babel/cli": "^7.17.6",
     "@babel/core": "^7.17.9",
     "@babel/plugin-transform-runtime": "^7.17.0",
     "@babel/preset-env": "^7.16.11",
     "@babel/preset-typescript": "^7.16.7",
     "@castore/core": "workspace:",
-    "@castore/json-schema-event": "workspace:",
+    "@types/lodash.chunk": "^4.2.7",
     "@types/node": "^17.0.29",
+    "aws-sdk-client-mock": "^2.1.0",
     "babel-plugin-module-resolver": "^4.1.0",
     "concurrently": "^7.1.0",
     "dependency-cruiser": "^11.7.0",
     "eslint": "^8.14.0",
-    "json-schema-to-ts": "^2.5.4",
     "prettier": "^2.6.2",
     "ts-node": "^10.7.0",
-    "ts-toolbelt": "^9.6.0",
     "tsc-alias": "^1.8.7",
-    "typescript": "^4.6.3"
+    "typescript": "^4.6.3",
+    "vitest": "^0.26.2"
   },
   "maintainers": [
     "Thomas Aribart",
@@ -61,14 +78,15 @@
     "targets": {
       "package": {
         "outputs": [
-          "demo/blueprint/dist"
+          "packages/event-bridge-s3-message-bus-adapter/dist"
         ]
       }
     }
   },
   "peerDependencies": {
-    "@castore/core": "*",
-    "@castore/json-schema-event": "*",
-    "json-schema-to-ts": "^2.0.0"
+    "@aws-sdk/client-eventbridge": "^3.0.0",
+    "@aws-sdk/client-s3": "^3.0.0",
+    "@aws-sdk/s3-request-presigner": "^3.0.0",
+    "@castore/core": "*"
   }
 }

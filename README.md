@@ -1320,6 +1320,7 @@ Castore also comes with a handy [React Visualizer](./packages/react-visualizer/R
 #### Message Buses Adapters
 
 - [EventBridge Message Bus Adapter](./packages/event-bridge-message-bus-adapter/README.md): Implementation of the `MessageBusAdapter` interface based on AWS EventBridge.
+- [EventBridge + S3 Message Bus Adapter](./packages/event-bridge-s3-message-bus-adapter/README.md): Implementation of the `MessageBusAdapter` interface based on AWS EventBridge and S3.
 - [In-Memory Message Bus Adapter](./packages/in-memory-message-bus-adapter/README.md): Implementation of the `MessageBusAdapter` interface using a local Node/JS event emitter. To be used in manual or unit tests.
 
 ### - Common Patterns
