@@ -89,7 +89,7 @@ export class EventBridgeS3MessageBusAdapter implements MessageChannelAdapter {
       }
 
       const bucketName = this.getS3BucketName();
-      const fileKey = [this.s3Prefix, ...filePath].join('/');
+      const fileKey = [this.s3Prefix, filePath.join('/')].join('');
 
       await this.s3Client.send(
         new PutObjectCommand({
