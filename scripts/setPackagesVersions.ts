@@ -3,21 +3,33 @@ import { join } from 'path';
 
 const newVersionTag = process.argv[2];
 
-const semanticVersioningRegex =
-  /^v(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?:-((?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\.(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\+([0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?$/;
-
-if (
-  newVersionTag === undefined ||
-  !semanticVersioningRegex.test(newVersionTag)
-) {
-  throw new Error('Invalid version');
+if (newVersionTag === undefined) {
+  throw new Error('Please provide a version tag');
 }
 
-const NEW_VERSION = newVersionTag.slice(1);
+const PREFIXED_SEM_VER_REGEX =
+  /^v(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?:-((?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\.(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\+([0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?$/;
 
-const [VERSION_MAJOR] = newVersionTag.match(semanticVersioningRegex) as [
-  string,
-];
+const prefixedSemVerMatches = newVersionTag.match(PREFIXED_SEM_VER_REGEX);
+
+if (
+  !PREFIXED_SEM_VER_REGEX.test(newVersionTag) ||
+  prefixedSemVerMatches === null
+) {
+  throw new Error(
+    'Please provide a version tag that follows semantic versioning prefixed with v (e.g. "v1.2.3")',
+  );
+}
+
+const [, NEW_SEM_VER_MAJOR, NEW_SEM_VER_MINOR, NEW_SEM_VER_PATCH] = [
+  ...prefixedSemVerMatches,
+] as [string, string, string, string];
+
+const NEW_SEM_VER = [
+  NEW_SEM_VER_MAJOR,
+  NEW_SEM_VER_MINOR,
+  NEW_SEM_VER_PATCH,
+].join('.');
 
 type PackageJson = {
   version?: string;
@@ -36,13 +48,13 @@ packagesNames.forEach(packageName => {
     readFileSync(packageJsonPath).toString(),
   ) as PackageJson;
 
-  packageJson.version = NEW_VERSION;
+  packageJson.version = NEW_SEM_VER;
 
   const dependencies = packageJson.dependencies;
   if (dependencies !== undefined) {
     Object.keys(dependencies).forEach(dependencyName => {
       if (dependencyName.startsWith('@castore/')) {
-        dependencies[dependencyName] = NEW_VERSION;
+        dependencies[dependencyName] = NEW_SEM_VER;
       }
     });
   }
@@ -51,7 +63,7 @@ packagesNames.forEach(packageName => {
   if (peerDependencies !== undefined) {
     Object.keys(peerDependencies).forEach(dependencyName => {
       if (dependencyName.startsWith('@castore/')) {
-        peerDependencies[dependencyName] = `^${VERSION_MAJOR}.0.0`;
+        peerDependencies[dependencyName] = `^${NEW_SEM_VER_MAJOR}.0.0`;
       }
     });
   }
