@@ -4,7 +4,6 @@ import Layout from '@theme/Layout';
 import clsx from 'clsx';
 import React from 'react';
 
-import HomepageFeatures from '../components/HomepageFeatures';
 import styles from './index.module.css';
 
 const HomepageHeader = (): JSX.Element => {
@@ -28,20 +27,13 @@ const HomepageHeader = (): JSX.Element => {
   );
 };
 
-const Home = (): JSX.Element => {
-  const { siteConfig } = useDocusaurusContext();
-
-  return (
-    <Layout
-      title={`Hello from ${siteConfig.title}`}
-      description="Description will go into a meta tag in <head />"
-    >
-      <HomepageHeader />
-      <main>
-        <HomepageFeatures />
-      </main>
-    </Layout>
-  );
-};
+const Home = (): JSX.Element => (
+  <Layout
+    title="Castore | Event sourcing made easy"
+    description="Description will go into a meta tag in <head />"
+  >
+    <HomepageHeader />
+  </Layout>
+);
 
 export default Home;

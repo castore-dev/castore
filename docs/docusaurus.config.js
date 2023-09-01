@@ -1,8 +1,6 @@
+/* eslint-disable max-lines */
 // @ts-check
 // Note: type annotations allow type checking and IDEs autocompletion
-
-const lightCodeTheme = require('prism-react-renderer/themes/github');
-const darkCodeTheme = require('prism-react-renderer/themes/dracula');
 
 /** @type {import('@docusaurus/types').Config} */
 const config = {
@@ -12,6 +10,7 @@ const config = {
 
   // Set the production url of your site here
   url: 'https://castore-dev.github.io/',
+
   // Set the /<baseUrl>/ pathname under which your site is served
   // For GitHub pages deployment, it is often '/<projectName>/'
   baseUrl: '/castore/',
@@ -22,8 +21,8 @@ const config = {
   organizationName: 'castore-dev', // Usually your GitHub org/user name.
   projectName: 'castore', // Usually your repo name.
 
-  // onBrokenLinks: 'warn',
-  // onBrokenMarkdownLinks: 'warn',
+  onBrokenLinks: 'warn',
+  onBrokenMarkdownLinks: 'warn',
 
   // Even if you don't use internalization, you can use this field to set useful
   // metadata like html lang. For example, if your site is Chinese, you may want
@@ -40,17 +39,6 @@ const config = {
       ({
         docs: {
           sidebarPath: require.resolve('./sidebars.js'),
-          // Please change this to your repo.
-          // Remove this to remove the "edit this page" links.
-          editUrl:
-            'https://github.com/castor-dev/docusaurus/tree/main/packages/create-docusaurus/templates/shared/',
-        },
-        blog: {
-          showReadingTime: true,
-          // Please change this to your repo.
-          // Remove this to remove the "edit this page" links.
-          editUrl:
-            'https://github.com/castor-dev/docusaurus/tree/main/packages/create-docusaurus/templates/shared/',
         },
         theme: {
           customCss: require.resolve('./src/css/custom.css'),
@@ -63,8 +51,10 @@ const config = {
     /** @type {import('@docusaurus/preset-classic').ThemeConfig} */
     ({
       // Replace with your project's social card
-      image: 'img/docusaurus-social-card.jpg',
+      image: 'img/castore-social-card.jpg',
       navbar: {
+        hideOnScroll: true,
+        style: 'dark',
         title: 'Castore',
         logo: {
           alt: 'Castore Logo',
@@ -85,13 +75,144 @@ const config = {
           },
         ],
       },
-      footer: {
-        style: 'dark',
-        copyright: `Copyright © ${new Date().getFullYear()} Castore.`,
-      },
       prism: {
-        theme: lightCodeTheme,
-        darkTheme: darkCodeTheme,
+        theme: {
+          plain: {
+            color: '#393A34',
+            backgroundColor: '#f6f8fa',
+          },
+          styles: [
+            {
+              types: ['comment', 'prolog', 'doctype', 'cdata'],
+              style: {
+                color: '#999988',
+                fontStyle: 'italic',
+              },
+            },
+            {
+              types: ['namespace'],
+              style: {
+                opacity: 0.7,
+              },
+            },
+            {
+              types: ['string', 'attr-value'],
+              style: {
+                color: '#e3116c',
+              },
+            },
+            {
+              types: ['punctuation', 'operator'],
+              style: {
+                color: '#393A34',
+              },
+            },
+            {
+              types: [
+                'entity',
+                'url',
+                'symbol',
+                'number',
+                'boolean',
+                'variable',
+                'constant',
+                'property',
+                'regex',
+                'inserted',
+              ],
+              style: {
+                color: '#36acaa',
+              },
+            },
+            {
+              types: ['atrule', 'keyword', 'attr-name', 'selector'],
+              style: {
+                color: '#00a4db',
+              },
+            },
+            {
+              types: ['function', 'deleted', 'tag'],
+              style: {
+                color: '#d73a49',
+              },
+            },
+            {
+              types: ['function-variable'],
+              style: {
+                color: '#6f42c1',
+              },
+            },
+            {
+              types: ['tag', 'selector', 'keyword'],
+              style: {
+                color: '#00009f',
+              },
+            },
+          ],
+        },
+        darkTheme: {
+          plain: {
+            color: '#F8F8F2',
+            backgroundColor: '#282A36',
+          },
+          styles: [
+            {
+              types: ['prolog', 'constant', 'builtin'],
+              style: {
+                color: 'rgb(189, 147, 249)',
+              },
+            },
+            {
+              types: ['inserted', 'function'],
+              style: {
+                color: 'rgb(80, 250, 123)',
+              },
+            },
+            {
+              types: ['deleted'],
+              style: {
+                color: 'rgb(255, 85, 85)',
+              },
+            },
+            {
+              types: ['changed'],
+              style: {
+                color: 'rgb(255, 184, 108)',
+              },
+            },
+            {
+              types: ['punctuation', 'symbol'],
+              style: {
+                color: 'rgb(248, 248, 242)',
+              },
+            },
+            {
+              types: ['string', 'char', 'tag', 'selector'],
+              style: {
+                color: 'rgb(255, 121, 198)',
+              },
+            },
+            {
+              types: ['keyword', 'variable'],
+              style: {
+                color: 'rgb(189, 147, 249)',
+                fontStyle: 'italic',
+              },
+            },
+            {
+              types: ['comment'],
+              style: {
+                color: 'rgb(98, 114, 164)',
+              },
+            },
+            {
+              types: ['attr-name'],
+              style: {
+                color: 'rgb(241, 250, 140)',
+              },
+            },
+          ],
+        },
       },
       algolia: {
         // The application ID provided by Algolia
