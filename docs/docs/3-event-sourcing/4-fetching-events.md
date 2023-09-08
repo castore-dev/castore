@@ -27,4 +27,8 @@ const { events } = await pokemonsEventStore.getEvents('pikachu1');
 // 🙌 Will work!
 ```
 
-You can choose to build an event storage adapter that suits your usage. However, we highly recommend using an [off-the-shelf adapter](../5-resources.md) (If the storage solution that you use does not have an adapter yet, feel free to create/upvote an issue, or contribute 🤗).
+:::info
+
+You can choose to build an event storage adapter that suits your usage. However, we highly recommend using an [off-the-shelf adapter](../5-resources.md) (if the storage solution that you use does not have an adapter yet, feel free to create/upvote an issue, or contribute 🤗).
+
+:::

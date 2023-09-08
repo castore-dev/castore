@@ -19,7 +19,7 @@ In Castore, `EventStore` classes are NOT responsible for actually storing data (
 - Listing aggregate ids
 - Accessing events of an aggregate
 - Building an aggregate with the reducer
-- Pushing new events etc...
+- Pushing new events etc.
 
 ```ts
 import { EventStore } from '@castore/core';
