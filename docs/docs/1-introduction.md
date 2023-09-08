@@ -2,7 +2,7 @@
 sidebar_position: 1
 ---
 
-# Making Event Sourcing easy 😎
+# Introduction
 
 [Event Sourcing](https://learn.microsoft.com/en-us/azure/architecture/patterns/event-sourcing) is a data storage paradigm that saves **changes in your application state** rather than the state itself.
 
