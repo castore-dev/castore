@@ -53,7 +53,7 @@ await messageQueue.publishMessage(...);
 
 :::info
 
-You can code your own `MessageQueueAdapter` (simply implement the `MessageChannelAdapter` interface), but we highly recommend using an [off-the-shelf adapter](../5-resources.md) (if the messaging solution that you use does not have an adapter yet, feel free to create/upvote an issue, or contribute 🤗).
+You can code your own `MessageQueueAdapter` (simply implement the `MessageChannelAdapter` interface), but we highly recommend using an [off-the-shelf adapter](../5-packages.md#-message-queue-adapters) (if the messaging solution that you use does not have an adapter yet, feel free to create/upvote an issue, or contribute 🤗).
 
 :::
 
@@ -82,7 +82,7 @@ const appMessagesWorker = async ({ Records }: SQSMessageQueueMessage) => {
 >
 > - <code>messageQueueId <i>(string)</i></code>: A string identifying the message queue
 > - <code>sourceEventStores <i>(EventStore[])</i></code>: List of event stores that the message queue will broadcast events from
-> - <code>messageQueueAdapter <i>(?MessageChannelAdapter)</i></code>: See section on <a href="#messagequeueadapter">MessageQueueAdapters</a>
+> - <code>messageQueueAdapter <i>(?MessageChannelAdapter)</i></code>: Message queue adapter
 >
 > **Properties:**
 >
@@ -100,7 +100,7 @@ const appMessagesWorker = async ({ Records }: SQSMessageQueueMessage) => {
 > // => [pokemonsEventStore, trainersEventStore...]
 > ```
 >
-> - <code>messageChannelAdapter <i>?MessageChannelAdapter</i></code>: See section on <a href="#messagequeueadapter">MessageQueueAdapters</a>
+> - <code>messageChannelAdapter <i>?MessageChannelAdapter</i></code>: Returns the associated message queue adapter (potentially undefined)
 >
 > ```ts
 > const appMessageQueueAdapter = appMessageQueue.messageChannelAdapter;

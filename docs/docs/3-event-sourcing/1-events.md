@@ -53,7 +53,7 @@ const pokemonAppearedEventType = new EventType<
 
 :::info
 
-Note that we only provided TS types for `payload` and `metadata` properties. That is because, as stated in the [core design](/docs/introduction#-core-design), **Castore is meant to be as flexible as possible**, and that includes the validation library you want to use (if any): The `EventType` class can be used directly if no validation is required, or implemented by [other classes](../5-resources.md) which will add run-time validation methods to it 👍
+Note that we only provided TS types for `payload` and `metadata` properties. That is because, as stated in the [core design](../1-introduction.md#-core-design), **Castore is meant to be as flexible as possible**, and that includes the validation library you want to use (if any): The `EventType` class can be used directly if no validation is required, or implemented by [other classes](../5-packages.md#-event-types) which will add run-time validation methods to it 👍
 
 :::
 

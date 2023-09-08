@@ -87,4 +87,4 @@ type PokemonEventStateCarryingMessage = EventStoreStateCarryingMessage<
 >;
 ```
 
-All types of message can be published through message channels, i.e. [Message Queues](#messagequeue) or [Message Buses](#messagebus).
+All types of message can be published through message channels, i.e. [Message Queues](./2-message-queues.md) or [Message Buses](./3-message-buses.md).

@@ -22,9 +22,9 @@ After years of using it at [Theodo](https://dev.to/slsbytheodo), we have grown t
 
 With Castore, you'll be able to:
 
-- Define your [event stores](/docs/the-basics#eventstore)
-- Fetch and push new [events](/docs/the-basics#events) seamlessly
-- Implement and test your [commands](/docs/the-basics#command)
+- Define your [event stores](./3-event-sourcing/3-event-stores.md)
+- Fetch and push new [events](./3-event-sourcing/1-events.md) seamlessly
+- Implement and test your [commands](./3-event-sourcing/5-pushing-events.md)
 - ...and much more!
 
 All that with first-class developer experience and minimal boilerplate ✨

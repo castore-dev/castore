@@ -4,7 +4,7 @@ sidebar_position: 3
 
 # 📙 Event Store
 
-Once you've defined your [event types](#eventtype) and how to [aggregate](#reducer) them, you can bundle them together in an `EventStore` class. Each event store in your application represents a business entity.
+Once you've defined your [event types](./1-events.md) and how to [aggregate](./2-aggregates-reducers.md) them, you can bundle them together in an `EventStore` class. Each event store in your application represents a business entity.
 
 :::note
 
@@ -14,7 +14,7 @@ Think of event stores as _"what tables would be in CRUD"_, except that instead o
 
 ![Event Store](../../assets/docSchemas/eventStore.png)
 
-In Castore, `EventStore` classes are NOT responsible for actually storing data (this will come with [event storage adapters](#eventstorageadapter)). But rather to provide a boilerplate-free and type-safe interface to perform many actions such as:
+In Castore, `EventStore` classes are NOT responsible for actually storing data (this will come with [event storage adapters](./4-fetching-events.md)). But rather to provide a boilerplate-free and type-safe interface to perform many actions such as:
 
 - Listing aggregate ids
 - Accessing events of an aggregate
@@ -39,7 +39,7 @@ const pokemonsEventStore = new EventStore({
 
 :::info
 
-> ☝️ The `EventStore` class is the heart of Castore, it even gave it its name!
+☝️ The `EventStore` class is the heart of Castore, it even gave it its name!
 
 :::
 
@@ -51,9 +51,9 @@ const pokemonsEventStore = new EventStore({
 >
 > - <code>eventStoreId <i>(string)</i></code>: A string identifying the event store
 > - <code>eventStoreEvents <i>(EventType[])</i></code>: The list of event types in the event store
-> - <code>reduce <i>(EventType[])</i></code>: A <a href="#reducer">reducer function</a> that can be applied to the store event types
+> - <code>reduce <i>(EventType[])</i></code>: A <a href="../aggregates-reducers">reducer function</a> that can be applied to the store event types
 > - <code>onEventPushed <i>?(pushEventResponse: PushEventResponse => Promise(void))</i></code>: To run a callback after events are pushed (input is exactly the return value of the <code>pushEvent</code> method)
-> - <code>storageAdapter <i>(?EventStorageAdapter)</i></code>: See <a href="#eventstorageadapter">EventStorageAdapter</a>
+> - <code>storageAdapter <i>(?EventStorageAdapter)</i></code>: See <a href="../fetching-events">EventStorageAdapter</a>
 >
 > ☝️ The return type of the `reducer` is used to infer the `Aggregate` type of the `EventStore`, so it is important to type it explicitely.
 >
@@ -87,7 +87,7 @@ const pokemonsEventStore = new EventStore({
 > // => undefined (we did not provide one in this example)
 > ```
 >
-> - <code>storageAdapter <i>?EventStorageAdapter</i></code>: See <a href="#eventstorageadapter">EventStorageAdapter</a>
+> - <code>storageAdapter <i>?EventStorageAdapter</i></code>: See <a href="../fetching-events">EventStorageAdapter</a>
 >
 > ```ts
 > const storageAdapter = pokemonsEventStore.storageAdapter;
@@ -115,11 +115,11 @@ const pokemonsEventStore = new EventStore({
 > const myPikachuAggregate = pokemonsEventStore.buildAggregate(myPikachuEvents);
 > ```
 >
-> - <code>groupEvent <i>((eventDetail: EventDetail, opt?: OptionsObj = {}) => GroupedEvent)</i></code>: See <a href="#event-groups">Event Groups</a>.
+> - <code>groupEvent <i>((eventDetail: EventDetail, opt?: OptionsObj = {}) => GroupedEvent)</i></code>: See <a href="../joining-data">Event Groups</a>.
 >
 > **Async Methods:**
 >
-> The following methods interact with the data layer of your event store through its [`EventStorageAdapter`](#eventstorageadapter). They will throw an `UndefinedStorageAdapterError` if you did not provide one.
+> The following methods interact with the data layer of your event store through its [`EventStorageAdapter`](./4-fetching-events.md). They will throw an `UndefinedStorageAdapterError` if you did not provide one.
 >
 > - <code>getEvents <i>((aggregateId: string, opt?: OptionsObj = {}) => Promise(ResponseObj))</i></code>: Retrieves the events of an aggregate, ordered by <code>version</code>. Returns an empty array if no event is found for this <code>aggregateId</code>.
 >
@@ -208,13 +208,13 @@ const pokemonsEventStore = new EventStore({
 >
 >   `OptionsObj` contains the following properties:
 >
->   - <code>prevAggregate <i>(?Aggregate)</i></code>: The aggregate at the current version, i.e. before having pushed the event. Can be useful in some cases like when using the <a href="/docs/advanced-usage#connectedeventstore">ConnectedEventStore class</a>
+>   - <code>prevAggregate <i>(?Aggregate)</i></code>: The aggregate at the current version, i.e. before having pushed the event. Can be useful in some cases like when using the <a href="../../reacting-to-events/connected-event-store">ConnectedEventStore class</a>
 >   - <code>force <i>(?boolean)</i></code>: To force push the event even if one already exists for the corresponding <code>aggregateId</code> and <code>version</code>. Any existing event will be overridden, so use with extra care, mainly in <a href="https://www.npmjs.com/package/@castore/dam">data migrations</a>.
 >
 >   `ResponseObj` contains the following properties:
 >
 >   - <code>event <i>(EventDetail)</i></code>: The complete event (includes the <code>timestamp</code>)
->   - <code>nextAggregate <i>(?Aggregate)</i></code>: The aggregate at the new version, i.e. after having pushed the event. Returned only if the event is an initial event, if the <code>prevAggregate</code> option was provided, or when using a <a href="/docs/advanced-usage#connectedeventstore">ConnectedEventStore class</a> connected to a <a href="/docs/advanced-usage#event-driven-architecture">state-carrying message bus or queue</a>
+>   - <code>nextAggregate <i>(?Aggregate)</i></code>: The aggregate at the new version, i.e. after having pushed the event. Returned only if the event is an initial event, if the <code>prevAggregate</code> option was provided, or when using a <a href="../../reacting-to-events/connected-event-store">ConnectedEventStore class</a> connected to a <a href="../../reacting-to-events/messages">state-carrying message bus or queue</a>
 >
 > ```ts
 > const { event: completeEvent, nextAggregate } =
