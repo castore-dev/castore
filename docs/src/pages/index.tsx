@@ -30,7 +30,7 @@ const HomepageHeader = (): JSX.Element => {
 const Home = (): JSX.Element => (
   <Layout
     title="Castore | Event sourcing made easy"
-    description="Description will go into a meta tag in <head />"
+    description="Castore is a TypeScript library that makes Event Sourcing easy, a paradigm which saves changes to your application state rather than the state itself."
   >
     <HomepageHeader />
   </Layout>
