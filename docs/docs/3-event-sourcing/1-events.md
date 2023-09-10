@@ -57,61 +57,68 @@ Note that we only provided TS types for `payload` and `metadata` properties. Tha
 
 :::
 
-> <details>
-> <summary><b>🔧 Reference</b></summary>
-> <p></p>
->
-> **Constructor:**
->
-> - <code>type <i>(string)</i></code>: The event type
->
-> ```ts
-> import { EventType } from '@castore/core';
->
-> const pokemonAppearedEventType = new EventType({ type: 'POKEMON_APPEARED' });
-> ```
->
-> **Properties:**
->
-> - <code>type <i>(string)</i></code>: The event type
->
-> ```ts
-> const eventType = pokemonAppearedEventType.type;
-> // => 'POKEMON_APPEARED'
-> ```
->
-> **Type Helpers:**
->
-> - <code>EventTypeDetail</code>: Returns the event detail TS type of an <code>EventType</code>
->
-> ```ts
-> import type { EventTypeDetail } from '@castore/core';
->
-> type PokemonAppearedEventTypeDetail = EventTypeDetail<
->   typeof pokemonAppearedEventType
-> >;
->
-> // 👇 Equivalent to:
-> type PokemonCaughtEventTypeDetail = {
->   aggregateId: string;
->   version: number;
->   timestamp: string;
->   type: 'POKEMON_APPEARED';
->   payload: { name: string; level: number };
->   metadata: { trigger?: 'random' | 'scripted' };
-> };
-> ```
->
-> - <code>EventTypesDetails</code>: Return the events details of a list of <code>EventType</code>
->
-> ```ts
-> import type { EventTypesDetails } from '@castore/core';
->
-> type PokemonEventTypeDetails = EventTypesDetails<
->   [typeof pokemonAppearedEventType, typeof pokemonCaughtEventType]
-> >;
-> // => EventTypeDetail<typeof pokemonAppearedEventType>
-> // | EventTypeDetail<typeof pokemonCaughtEventType>
-> ```
->
-> </details>
+<details>
+<summary>
+  <b>🔧 Reference</b>
+</summary>
+
+**Constructor:**
+
+- <code>type <i>(string)</i></code>: The event type
+
+```ts
+import { EventType } from '@castore/core';
+
+const pokemonAppearedEventType = new EventType({
+  type: 'POKEMON_APPEARED',
+});
+```
+
+---
+
+**Properties:**
+
+- <code>type <i>(string)</i></code>: The event type
+
+```ts
+const eventType = pokemonAppearedEventType.type;
+// => 'POKEMON_APPEARED'
+```
+
+---
+
+**Type Helpers:**
+
+- `EventTypeDetail`: Returns the event detail TS type of an `EventType`
+
+```ts
+import type { EventTypeDetail } from '@castore/core';
+
+type PokemonAppearedEventTypeDetail = EventTypeDetail<
+  typeof pokemonAppearedEventType
+>;
+
+// 👇 Equivalent to:
+type PokemonCaughtEventTypeDetail = {
+  aggregateId: string;
+  version: number;
+  timestamp: string;
+  type: 'POKEMON_APPEARED';
+  payload: { name: string; level: number };
+  metadata: { trigger?: 'random' | 'scripted' };
+};
+```
+
+- `EventTypesDetails`: Returns the events details of a list of `EventType`
+
+```ts
+import type { EventTypesDetails } from '@castore/core';
+
+type PokemonEventTypeDetails = EventTypesDetails<
+  [typeof pokemonAppearedEventType, typeof pokemonCaughtEventType]
+>;
+// => EventTypeDetail<typeof pokemonAppearedEventType>
+// | EventTypeDetail<typeof pokemonCaughtEventType>
+```
+
+</details>

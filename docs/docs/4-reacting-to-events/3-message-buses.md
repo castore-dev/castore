@@ -74,68 +74,68 @@ const pokemonMessagesListener = async (
 };
 ```
 
-> <details>
-> <summary><b>🔧 Reference</b></summary>
-> <p></p>
->
-> **Constructor:**
->
-> - <code>messageBusId <i>(string)</i></code>: A string identifying the message bus
-> - <code>sourceEventStores <i>(EventStore[])</i></code>: List of event stores that the message bus will broadcast events from
-> - <code>messageBusAdapter <i>(?MessageChannelAdapter)</i></code>: Message bus adapter
->
-> **Properties:**
->
-> - <code>messageBusId <i>(string)</i></code>
->
-> ```ts
-> const appMessageBusId = appMessageBus.messageBusId;
-> // => 'APP_MESSAGE_BUS'
-> ```
->
-> - <code>sourceEventStores <i>(EventStore[])</i></code>
->
-> ```ts
-> const appMessageBusSourceEventStores = appMessageBus.sourceEventStores;
-> // => [pokemonsEventStore, trainersEventStore...]
-> ```
->
-> - <code>messageChannelAdapter <i>?MessageChannelAdapter</i></code>: Returns the associated message bus adapter (potentially undefined)
->
-> ```ts
-> const appMessageBusAdapter = appMessageBus.messageChannelAdapter;
-> // => undefined (we did not provide one in this example)
-> ```
->
+<details>
+<summary>
+  <b>🔧 Reference</b>
+</summary>
+
+**Constructor:**
+
+- <code>messageBusId <i>(string)</i></code>: A string identifying the message bus
+- <code>sourceEventStores <i>(EventStore[])</i></code>: List of event stores that the message bus will broadcast events from
+- <code>messageBusAdapter <i>(?MessageChannelAdapter)</i></code>: Message bus adapter
+
+**Properties:**
+
+- <code>messageBusId <i>(string)</i></code>
+
+```ts
+const appMessageBusId = appMessageBus.messageBusId;
+// => 'APP_MESSAGE_BUS'
+```
+
+- <code>sourceEventStores <i>(EventStore[])</i></code>
+
+```ts
+const appMessageBusSourceEventStores = appMessageBus.sourceEventStores;
+// => [pokemonsEventStore, trainersEventStore...]
+```
+
+- <code>messageChannelAdapter <i>?MessageChannelAdapter</i></code>: Returns the associated message bus adapter (potentially undefined)
+
+```ts
+const appMessageBusAdapter = appMessageBus.messageChannelAdapter;
+// => undefined (we did not provide one in this example)
+```
+
 > ☝️ The `messageChannelAdapter` is not read-only so you do not have to provide it right away.
->
-> **Async Methods:**
->
-> The following methods interact with the messaging solution of your application through a `MessageBusAdapter`. They will throw an `UndefinedMessageChannelAdapterError` if you did not provide one.
->
-> - <code>publishMessage <i>(message: Message, opt?: OptionsObj = {}) => Promise(void))</i></code>: Publish a <code>Message</code> (of the appropriate type) to the message bus.
->
->   `OptionsObj` contains the following properties:
->
->   - <code>replay <i>(?boolean = false)</i></code>: Signals that the event is not happening in real-time, e.g. in maintenance or migration operations. This information can be used downstream to react appropriately. Check the implementation of you adapter for more details.
->
-> - <code>publishMessages <i>(messages: Message[], opt?: OptionsObj) => Promise(void))</i></code>: Publish several <code>Messages</code> (of the appropriate type) to the message bus. Options are similar to the <code>publishMessage</code> options.
->
-> - <code>getAggregateAndPublishMessage <i>((message: NotificationMessage) => Promise(void))</i></code>: _(StateCarryingMessageBuses only)_ Append the matching aggregate (with correct version) to a <code>NotificationMessage</code> and turn it into a <code>StateCarryingMessage</code> before publishing it to the message bus. Uses the message bus event stores: Make sure that they have correct adapters set up.
->
-> **Type Helpers:**
->
-> - <code>MessageChannelMessage</code>: Given a <code>MessageBus</code>, returns the TS type of its messages
->
-> ```ts
-> import type { MessageChannelMessage } from '@castore/core';
->
-> type AppMessage = MessageChannelMessage<typeof appMessageBus>;
->
-> // 👇 Equivalent to:
-> type AppMessage = EventStoreNotificationMessage<
->   typeof pokemonsEventStore | typeof trainersEventStore...
-> >;
-> ```
->
-> </details>
+
+**Async Methods:**
+
+The following methods interact with the messaging solution of your application through a `MessageBusAdapter`. They will throw an `UndefinedMessageChannelAdapterError` if you did not provide one.
+
+- <code>publishMessage <i>((message: Message, opt?: OptionsObj) => Promise&lt;void&gt;)</i></code>: Publish a <code>Message</code> (of the appropriate type) to the message bus.
+
+  `OptionsObj` contains the following properties:
+
+  - <code>replay <i>(?boolean = false)</i></code>: Signals that the event is not happening in real-time, e.g. in maintenance or migration operations. This information can be used downstream to react appropriately. Check the implementation of you adapter for more details.
+
+- <code>publishMessages <i>((messages: Message[], opt?: OptionsObj) => Promise&lt;void&gt;)</i></code>: Publish several <code>Messages</code> (of the appropriate type) to the message bus. Options are similar to the <code>publishMessage</code> options.
+- <code>getAggregateAndPublishMessage <i>((message: NotificationMessage) => Promise&lt;void&gt;)</i></code>: <i>(StateCarryingMessageBuses only)</i> Append the matching aggregate (with correct version) to a <code>NotificationMessage</code> and turn it into a <code>StateCarryingMessage</code> before publishing it to the message bus. Uses the message bus event stores: Make sure that they have correct adapters set up.
+
+**Type Helpers:**
+
+- <code>MessageChannelMessage</code>: Given a <code>MessageBus</code>, returns the TS type of its messages
+
+```ts
+import type { MessageChannelMessage } from '@castore/core';
+
+type AppMessage = MessageChannelMessage<typeof appMessageBus>;
+
+// 👇 Equivalent to:
+type AppMessage = EventStoreNotificationMessage<
+  typeof pokemonsEventStore | typeof trainersEventStore...
+>;
+```
+
+</details>

@@ -53,34 +53,35 @@ Compared to data streams, connected event stores have the advantage of simplicit
 
 ![Connected Event Store](../../assets/docSchemas/connectedEventStore.png)
 
-> <details>
-> <summary><b>🔧 Reference</b></summary>
-> <p></p>
->
-> **Constructor:**
->
-> - <code>eventStore <i>(EventStore)</i></code>: The event store to connect
-> - <code>messageChannel <i>(MessageBus | MessageQueue)</i></code>: A message bus or queue to forward events to
->
-> **Properties:**
->
-> A `ConnectedEventStore` will implement the interface of its original `EventStore`, and extend it with two additional properties:
->
-> - <code>eventStore <i>(EventStore)</i></code>: The original event store
->
-> ```ts
-> const eventStore = connectedPokemonsEventStore.eventStore;
-> // => pokemonsEventStore
-> ```
->
-> - <code>messageChannel <i>(MessageBus | MessageQueue)</i></code>: The provided message bus or queue
->
-> ```ts
-> const messageChannel = connectedPokemonsEventStore.messageChannel;
-> // => appMessageBus
-> ```
->
-> Note that the `storageAdapter` property will act as a pointer toward the original event store `storageAdapter`:
+<details>
+<summary>
+  <b>🔧 Reference</b>
+</summary>
+
+**Constructor:**
+
+- <code>eventStore <i>(EventStore)</i></code>: The event store to connect
+- <code>messageChannel <i>(MessageBus | MessageQueue)</i></code>: A message bus or queue to forward events to
+
+**Properties:**
+
+A `ConnectedEventStore` will implement the interface of its original `EventStore`, and extend it with two additional properties:
+
+- <code>eventStore <i>(EventStore)</i></code>: The original event store
+
+```ts
+const eventStore = connectedPokemonsEventStore.eventStore;
+// => pokemonsEventStore
+```
+
+- <code>messageChannel <i>(MessageBus | MessageQueue)</i></code>: The provided message bus or queue
+
+```ts
+const messageChannel = connectedPokemonsEventStore.messageChannel;
+// => appMessageBus
+```
+
+> ☝️ Note that the `storageAdapter` property will act as a pointer toward the original event store `storageAdapter`:
 >
 > ```ts
 > originalEventStore.storageAdapter = myStorageAdapter;
@@ -89,5 +90,5 @@ Compared to data streams, connected event stores have the advantage of simplicit
 > connectedEventStore.storageAdapter = anotherStorageAdapter;
 > originalEventStore.storageAdapter; // => anotherStorageAdapter
 > ```
->
-> </details>
+
+</details>
