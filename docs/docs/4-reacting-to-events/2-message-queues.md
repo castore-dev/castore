@@ -74,68 +74,72 @@ const appMessagesWorker = async ({ Records }: SQSMessageQueueMessage) => {
 };
 ```
 
-> <details>
-> <summary><b>🔧 Reference</b></summary>
-> <p></p>
->
-> **Constructor:**
->
-> - <code>messageQueueId <i>(string)</i></code>: A string identifying the message queue
-> - <code>sourceEventStores <i>(EventStore[])</i></code>: List of event stores that the message queue will broadcast events from
-> - <code>messageQueueAdapter <i>(?MessageChannelAdapter)</i></code>: Message queue adapter
->
-> **Properties:**
->
-> - <code>messageChannelId <i>(string)</i></code>
->
-> ```ts
-> const appMessageQueueId = appMessageQueue.messageChannelId;
-> // => 'APP_MESSAGE_QUEUE'
-> ```
->
-> - <code>sourceEventStores <i>(EventStore[])</i></code>
->
-> ```ts
-> const appMessageQueueSourceEventStores = appMessageQueue.sourceEventStores;
-> // => [pokemonsEventStore, trainersEventStore...]
-> ```
->
-> - <code>messageChannelAdapter <i>?MessageChannelAdapter</i></code>: Returns the associated message queue adapter (potentially undefined)
->
-> ```ts
-> const appMessageQueueAdapter = appMessageQueue.messageChannelAdapter;
-> // => undefined (we did not provide one in this example)
-> ```
->
+<details>
+<summary>
+  <b>🔧 Reference</b>
+</summary>
+
+**Constructor:**
+
+- <code>messageQueueId <i>(string)</i></code>: A string identifying the message queue
+- <code>sourceEventStores <i>(EventStore[])</i></code>: List of event stores that the message queue will broadcast events from
+- <code>messageQueueAdapter <i>(?MessageChannelAdapter)</i></code>: Message queue adapter
+
+**Properties:**
+
+- <code>messageChannelId <i>(string)</i></code>
+
+```ts
+const appMessageQueueId = appMessageQueue.messageChannelId;
+// => 'APP_MESSAGE_QUEUE'
+```
+
+- <code>sourceEventStores <i>(EventStore[])</i></code>
+
+```ts
+const appMessageQueueSourceEventStores = appMessageQueue.sourceEventStores;
+// => [pokemonsEventStore, trainersEventStore...]
+```
+
+- <code>messageChannelAdapter <i>?MessageChannelAdapter</i></code>: Returns the associated message queue adapter (potentially undefined)
+
+```ts
+const appMessageQueueAdapter = appMessageQueue.messageChannelAdapter;
+// => undefined (we did not provide one in this example)
+```
+
 > ☝️ The `messageChannelAdapter` is not read-only so you do not have to provide it right away.
->
-> **Async Methods:**
->
-> The following methods interact with the messaging solution of your application through a `MessageQueueAdapter`. They will throw an `UndefinedMessageChannelAdapterError` if you did not provide one.
->
-> - <code>publishMessage <i>(message: Message, opt?: OptionsObj = {}) => Promise(void))</i></code>: Publish a <code>Message</code> (of the appropriate type) to the message queue.
->
->   `OptionsObj` contains the following properties:
->
->   - <code>replay <i>(?boolean = false)</i></code>: Signals that the event is not happening in real-time, e.g. in maintenance or migration operations. This information can be used downstream to react appropriately. Check the implementation of you adapter for more details.
->
-> - <code>publishMessages <i>(messages: Message[], opt?: OptionsObj) => Promise(void))</i></code>: Publish several <code>Messages</code> (of the appropriate type) to the message queue. Options are similar to the <code>publishMessage</code> options.
->
-> - <code>getAggregateAndPublishMessage <i>((message: NotificationMessage) => Promise(void))</i></code>: <i>(StateCarryingMessageQueues only)</i> Append the matching aggregate (with correct version) to a <code>NotificationMessage</code> and turn it into a <code>StateCarryingMessage</code> before publishing it to the message queue. Uses the message queue event stores: Make sure that they have correct adapters set up.
->
-> **Type Helpers:**
->
-> - <code>MessageChannelMessage</code>: Given a <code>MessageQueue</code>, returns the TS type of its messages
->
-> ```ts
-> import type { MessageChannelMessage } from '@castore/core';
->
-> type AppMessage = MessageChannelMessage<typeof appMessageQueue>;
->
-> // 👇 Equivalent to:
-> type AppMessage = EventStoreNotificationMessage<
->   typeof pokemonsEventStore | typeof trainersEventStore...
-> >;
-> ```
->
-> </details>
+
+---
+
+**Async Methods:**
+
+The following methods interact with the messaging solution of your application through a `MessageQueueAdapter`. They will throw an `UndefinedMessageChannelAdapterError` if you did not provide one.
+
+- <code>publishMessage <i>((message: Message, opt?: OptionsObj) => Promise&lt;void&gt;)</i></code>: Publish a <code>Message</code> (of the appropriate type) to the message queue.
+
+  `OptionsObj` contains the following properties:
+
+  - <code>replay <i>(?boolean = false)</i></code>: Signals that the event is not happening in real-time, e.g. in maintenance or migration operations. This information can be used downstream to react appropriately. Check the implementation of you adapter for more details.
+
+- <code>publishMessages <i>((messages: Message[], opt?: OptionsObj) => Promise&lt;void&gt;)</i></code>: Publish several <code>Messages</code> (of the appropriate type) to the message queue. Options are similar to the <code>publishMessage</code> options.
+- <code>getAggregateAndPublishMessage <i>((message: NotificationMessage) => Promise&lt;void&gt;)</i></code>: <i>(StateCarryingMessageQueues only)</i> Append the matching aggregate (with correct version) to a <code>NotificationMessage</code> and turn it into a <code>StateCarryingMessage</code> before publishing it to the message queue. Uses the message queue event stores: Make sure that they have correct adapters set up.
+
+---
+
+**Type Helpers:**
+
+- <code>MessageChannelMessage</code>: Given a <code>MessageQueue</code>, returns the TS type of its messages
+
+```ts
+import type { MessageChannelMessage } from '@castore/core';
+
+type AppMessage = MessageChannelMessage<typeof appMessageQueue>;
+
+// 👇 Equivalent to:
+type AppMessage = EventStoreNotificationMessage<
+  typeof pokemonsEventStore | typeof trainersEventStore...
+>;
+```
+
+</details>
