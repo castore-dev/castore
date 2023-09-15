@@ -1,0 +1,6 @@
+{
+  "root": "packages/http-event-storage-adapter",
+  "projectType": "library",
+  "tags": [],
+  "implicitDependencies": ["core"]
+}

@@ -3,6 +3,7 @@
   "projects": {
     "core": "packages/core",
     "event-storage-adapter-dynamodb": "packages/event-storage-adapter-dynamodb",
+    "event-storage-adapter-http": "packages/event-storage-adapter-http",
     "event-storage-adapter-in-memory": "packages/event-storage-adapter-in-memory",
     "event-storage-adapter-redux": "packages/event-storage-adapter-redux",
     "event-type-json-schema": "packages/event-type-json-schema",

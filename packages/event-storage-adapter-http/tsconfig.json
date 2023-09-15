@@ -1,0 +1,19 @@
+{
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "baseUrl": "src",
+    "composite": true,
+    "plugins": [{ "transform": "@zerollup/ts-transform-paths" }],
+    "emitDeclarationOnly": true,
+    "outDir": "./dist/types",
+    "esModuleInterop": true,
+    "noUncheckedIndexedAccess": true,
+    "resolveJsonModule": true
+  },
+  "ts-node": {
+    "files": true
+  },
+  "files": ["src/script.ts", "src/swaggerClient.d.ts"],
+  "exclude": ["./dist"],
+  "include": ["./**/*.ts", "./**/mockApiv2.json", "./**/mockApiv3.json"]
+}
