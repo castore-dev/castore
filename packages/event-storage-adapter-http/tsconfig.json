@@ -4,6 +4,7 @@
     "baseUrl": "src",
     "composite": true,
     "plugins": [{ "transform": "@zerollup/ts-transform-paths" }],
+    "allowSyntheticDefaultImports": true,
     "emitDeclarationOnly": true,
     "outDir": "./dist/types",
     "esModuleInterop": true,
@@ -13,7 +14,6 @@
   "ts-node": {
     "files": true
   },
-  "files": ["src/script.ts", "src/swaggerClient.d.ts"],
   "exclude": ["./dist"],
-  "include": ["./**/*.ts", "./**/mockApiv2.json", "./**/mockApiv3.json"]
+  "include": ["./**/*.ts"]
 }

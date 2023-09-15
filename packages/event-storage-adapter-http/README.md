@@ -8,10 +8,10 @@ This class is mainly useful for manual and unit tests. It is obviously not recom
 
 ```bash
 # npm
-npm install @castore/http-event-storage-adapter
+npm install @castore/event-storage-adapter-http
 
 # yarn
-yarn add @castore/http-event-storage-adapter
+yarn add @castore/event-storage-adapter-http
 ```
 
 This package has `@castore/core` as peer dependency, so you will have to install it as well:
