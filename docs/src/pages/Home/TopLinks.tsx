@@ -14,7 +14,7 @@ const links: Link[] = [
         <MdOutlineImportContacts className="text-lg" /> Docs
       </div>
     ),
-    to: './docs/introduction',
+    to: './docs/installation',
   },
   {
     id: 'github',

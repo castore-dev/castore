@@ -47,11 +47,11 @@ const catchPokemonCommand = new Command({
 
 :::info
 
-Note that we only provided TS types for `Input` and `Output` properties. That is because, as stated in the [core design](../1-introduction.md#-core-design), **Castore is meant to be as flexible as possible**, and that includes the validation library you want to use (if any): The `Command` class can be used directly if no validation is required, or implemented by [other classes](../5-packages.md#-commands) which will add run-time validation methods to it 👍
+Note that we only provided TS types for `Input` and `Output` properties. That is because, as stated in the [core design](../../../), **Castore is meant to be as flexible as possible**, and that includes the validation library you want to use (if any): The `Command` class can be used directly if no validation is required, or implemented by [other classes](../4-packages.md#-commands) which will add run-time validation methods to it 👍
 
 :::
 
-`Commands` handlers should NOT use [read models](../4-reacting-to-events/6-read-models.md) when validating that a modification is acceptable. Read models are like cache: They are not the source of truth, and may not represent the freshest state.
+`Commands` handlers should NOT use [read models](../3-reacting-to-events/6-read-models.md) when validating that a modification is acceptable. Read models are like cache: They are not the source of truth, and may not represent the freshest state.
 
 Fetching and pushing events non-simultaneously exposes your application to [race conditions](https://en.wikipedia.org/wiki/Race_condition). To counter that, commands are designed to be retried when an `EventAlreadyExistsError` is triggered (which is part of the `EventStorageAdapter` interface).
 

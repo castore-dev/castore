@@ -53,7 +53,7 @@ await messageQueue.publishMessage(...);
 
 :::info
 
-You can code your own `MessageQueueAdapter` (simply implement the `MessageChannelAdapter` interface), but we highly recommend using an [off-the-shelf adapter](../5-packages.md#-message-queue-adapters) (if the messaging solution that you use does not have an adapter yet, feel free to create/upvote an issue, or contribute 🤗).
+You can code your own `MessageQueueAdapter` (simply implement the `MessageChannelAdapter` interface), but we highly recommend using an [off-the-shelf adapter](../4-packages.md#-message-queue-adapters) (if the messaging solution that you use does not have an adapter yet, feel free to create/upvote an issue, or contribute 🤗).
 
 :::
 

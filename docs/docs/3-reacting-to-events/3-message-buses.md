@@ -53,7 +53,7 @@ await messageBus.publishMessage(...);
 
 :::info
 
-You can code your own `MessageBusAdapter` (simply implement the `MessageChannelAdapter` interface), but we highly recommend using an [off-the-shelf adapter](../5-packages.md#-message-buses-adapters) (if the messaging solution that you use is missing, feel free to create/upvote an issue, or contribute 🤗).
+You can code your own `MessageBusAdapter` (simply implement the `MessageChannelAdapter` interface), but we highly recommend using an [off-the-shelf adapter](../4-packages.md#-message-buses-adapters) (if the messaging solution that you use is missing, feel free to create/upvote an issue, or contribute 🤗).
 
 :::
 

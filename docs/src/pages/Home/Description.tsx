@@ -34,7 +34,7 @@ export const Description = (): JSX.Element => (
       ...well, <strong>not anymore</strong> 💪
     </p>
     <Link
-      to="./docs/introduction"
+      to="./docs/installation"
       className="py-2 px-4 bg-gradient-to-r bg-color-gradient rounded text-white uppercase font-extrabold"
     >
       👉 Get Started
