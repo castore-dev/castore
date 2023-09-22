@@ -53,7 +53,7 @@ await messageBus.publishMessage(...);
 
 :::info
 
-You can code your own `MessageBusAdapter` (simply implement the `MessageChannelAdapter` interface), but we highly recommend using an [off-the-shelf adapter](../5-packages.md#-message-buses-adapters) (if the messaging solution that you use is missing, feel free to create/upvote an issue, or contribute 🤗).
+You can code your own `MessageBusAdapter` (simply implement the `MessageChannelAdapter` interface), but we highly recommend using an [off-the-shelf adapter](../4-packages.md#-message-buses-adapters) (if the messaging solution that you use is missing, feel free to create/upvote an issue, or contribute 🤗).
 
 :::
 
@@ -125,7 +125,7 @@ The following methods interact with the messaging solution of your application t
 
 **Type Helpers:**
 
-- <code>MessageChannelMessage</code>: Given a <code>MessageBus</code>, returns the TS type of its messages
+- `MessageChannelMessage`: Given a `MessageBus`, returns the TS type of its messages
 
 ```ts
 import type { MessageChannelMessage } from '@castore/core';

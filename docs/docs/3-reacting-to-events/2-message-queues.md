@@ -53,7 +53,7 @@ await messageQueue.publishMessage(...);
 
 :::info
 
-You can code your own `MessageQueueAdapter` (simply implement the `MessageChannelAdapter` interface), but we highly recommend using an [off-the-shelf adapter](../5-packages.md#-message-queue-adapters) (if the messaging solution that you use does not have an adapter yet, feel free to create/upvote an issue, or contribute 🤗).
+You can code your own `MessageQueueAdapter` (simply implement the `MessageChannelAdapter` interface), but we highly recommend using an [off-the-shelf adapter](../4-packages.md#-message-queue-adapters) (if the messaging solution that you use does not have an adapter yet, feel free to create/upvote an issue, or contribute 🤗).
 
 :::
 
@@ -129,7 +129,7 @@ The following methods interact with the messaging solution of your application t
 
 **Type Helpers:**
 
-- <code>MessageChannelMessage</code>: Given a <code>MessageQueue</code>, returns the TS type of its messages
+- `MessageChannelMessage`: Given a `MessageQueue`, returns the TS type of its messages
 
 ```ts
 import type { MessageChannelMessage } from '@castore/core';
