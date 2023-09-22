@@ -125,7 +125,7 @@ The following methods interact with the messaging solution of your application t
 
 **Type Helpers:**
 
-- <code>MessageChannelMessage</code>: Given a <code>MessageBus</code>, returns the TS type of its messages
+- `MessageChannelMessage`: Given a `MessageBus`, returns the TS type of its messages
 
 ```ts
 import type { MessageChannelMessage } from '@castore/core';
