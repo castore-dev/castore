@@ -38,59 +38,59 @@
       "name": "🫀  Core"
     },
     {
-      "path": "packages/dynamodb-event-storage-adapter",
+      "path": "packages/event-storage-adapter-dynamodb",
       "name": "🔌  DynamoDB"
     },
     {
-      "path": "packages/redux-event-storage-adapter",
+      "path": "packages/event-storage-adapter-redux",
       "name": "🔌  Redux"
     },
     {
-      "path": "packages/inmemory-event-storage-adapter",
+      "path": "packages/event-storage-adapter-in-memory",
       "name": "🔌  InMemory"
     },
     {
-      "path": "packages/json-schema-event",
+      "path": "packages/event-type-json-schema",
       "name": "📆  Json Schema Event"
     },
     {
-      "path": "packages/zod-event",
+      "path": "packages/event-type-zod",
       "name": "📆  Zod Event"
     },
     {
-      "path": "packages/json-schema-command",
+      "path": "packages/command-json-schema",
       "name": "👮‍♀️  Json Schema Command"
     },
     {
-      "path": "packages/event-bridge-message-bus-adapter",
+      "path": "packages/message-bus-adapter-event-bridge",
       "name": "🚌  EventBridge"
     },
     {
-      "path": "packages/event-bridge-s3-message-bus-adapter",
+      "path": "packages/message-bus-adapter-event-bridge-s3",
       "name": "🚌  EventBridge + S3"
     },
     {
-      "path": "packages/in-memory-message-bus-adapter",
+      "path": "packages/message-bus-adapter-in-memory",
       "name": "🚌  InMemory"
     },
     {
-      "path": "packages/sqs-message-queue-adapter",
+      "path": "packages/message-queue-adapter-sqs",
       "name": "📨  SQS"
     },
     {
-      "path": "packages/in-memory-message-queue-adapter",
+      "path": "packages/message-queue-adapter-in-memory",
       "name": "📨  InMemory"
     },
     {
-      "path": "packages/test-tools",
+      "path": "packages/lib-test-tools",
       "name": "🔨  Test Tools"
     },
     {
-      "path": "packages/react-visualizer",
+      "path": "packages/lib-react-visualizer",
       "name": "🔨  React Visualizer"
     },
     {
-      "path": "packages/dam",
+      "path": "packages/lib-dam",
       "name": "🔨  Dam"
     },
     {

@@ -1,6 +1,0 @@
-{
-  "root": "packages/in-memory-message-queue-adapter",
-  "projectType": "library",
-  "tags": [],
-  "implicitDependencies": ["core"]
-}

@@ -1,0 +1,86 @@
+{
+  "name": "@castore/message-queue-adapter-sqs",
+  "description": "DRY Castore MessageQueue definition using AWS SQS",
+  "license": "MIT",
+  "homepage": "https://github.com/theodo/castore#readme",
+  "bugs": "https://github.com/theodo/castore/issues",
+  "repository": "theodo/castore.git",
+  "keywords": [
+    "event",
+    "source",
+    "store",
+    "typescript"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "sideEffects": false,
+  "files": [
+    "dist"
+  ],
+  "main": "dist/cjs/index.js",
+  "module": "dist/esm/index.js",
+  "types": "dist/types/index.d.ts",
+  "scripts": {
+    "lint-fix": "yarn linter-base-config --fix",
+    "lint-fix-all": "yarn lint-fix .",
+    "linter-base-config": "eslint --ext=js,ts",
+    "package": "rm -rf dist && yarn package-cjs && yarn package-esm && yarn package-types",
+    "package-cjs": "NODE_ENV=cjs yarn transpile --out-dir dist/cjs --source-maps",
+    "package-esm": "NODE_ENV=esm yarn transpile --out-dir dist/esm --source-maps",
+    "package-types": "tsc -p tsconfig.build.json && tsc-alias -p tsconfig.build.json",
+    "test": "yarn test-type && yarn test-unit && yarn test-circular && yarn test-linter",
+    "test-circular": "yarn depcruise --validate dependency-cruiser.js .",
+    "test-linter": "yarn linter-base-config .",
+    "test-type": "tsc --noEmit --emitDeclarationOnly false",
+    "test-unit": "yarn vitest run --passWithNoTests",
+    "transpile": "babel src --extensions .ts --quiet",
+    "watch": "rm -rf dist && concurrently 'yarn:package-* --watch'"
+  },
+  "dependencies": {
+    "@types/aws-lambda": "^8.10.111",
+    "lodash.chunk": "^4.2.0"
+  },
+  "devDependencies": {
+    "@aws-sdk/client-sqs": "^3.2.0",
+    "@babel/cli": "^7.17.6",
+    "@babel/core": "^7.17.9",
+    "@babel/plugin-transform-runtime": "^7.17.0",
+    "@babel/preset-env": "^7.16.11",
+    "@babel/preset-typescript": "^7.16.7",
+    "@castore/core": "workspace:",
+    "@types/lodash.chunk": "^4.2.7",
+    "@types/node": "^17.0.29",
+    "aws-sdk-client-mock": "^2.1.0",
+    "babel-plugin-module-resolver": "^4.1.0",
+    "concurrently": "^7.1.0",
+    "dependency-cruiser": "^11.7.0",
+    "eslint": "^8.14.0",
+    "prettier": "^2.6.2",
+    "ts-node": "^10.7.0",
+    "ts-toolbelt": "^9.6.0",
+    "tsc-alias": "^1.8.7",
+    "typescript": "^4.6.3",
+    "vitest": "^0.26.2"
+  },
+  "maintainers": [
+    "Thomas Aribart",
+    "Charles Géry",
+    "Juliette Fournier",
+    "Valentin Beggi",
+    "Stanislas Hannebelle"
+  ],
+  "nx": {
+    "targets": {
+      "package": {
+        "outputs": [
+          "packages/message-queue-adapter-sqs/dist"
+        ]
+      }
+    }
+  },
+  "peerDependencies": {
+    "@aws-sdk/client-sqs": "^3.0.0",
+    "@castore/core": "*"
+  }
+}

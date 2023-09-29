@@ -21,13 +21,13 @@
     "@aws-sdk/client-dynamodb": "^3.2.0",
     "@castore/core": "workspace:",
     "@castore/demo-blueprint": "workspace:",
-    "@castore/dynamodb-event-storage-adapter": "workspace:",
+    "@castore/event-storage-adapter-dynamodb": "workspace:",
     "@middy/core": "^3.0.4",
     "@middy/validator": "^3.0.4",
     "source-map-support": "^0.5.19"
   },
   "devDependencies": {
-    "@castore/test-tools": "workspace:",
+    "@castore/lib-test-tools": "workspace:",
     "@serverless/typescript": "^3.0.0",
     "@types/aws-lambda": "^8.10.82",
     "@types/http-errors": "^1.8.1",

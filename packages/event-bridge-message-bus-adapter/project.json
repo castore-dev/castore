@@ -1,6 +1,0 @@
-{
-  "root": "packages/event-bridge-message-bus-adapter",
-  "projectType": "library",
-  "tags": [],
-  "implicitDependencies": ["core"]
-}

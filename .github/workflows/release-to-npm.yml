@@ -33,56 +33,56 @@ jobs:
       - uses: JS-DevTools/npm-publish@v2
         with:
           token: ${{ secrets.NPM_TOKEN }}
-          package: ./packages/dynamodb-event-storage-adapter/package.json
+          package: ./packages/event-storage-adapter-dynamodb/package.json
       - uses: JS-DevTools/npm-publish@v2
         with:
           token: ${{ secrets.NPM_TOKEN }}
-          package: ./packages/inmemory-event-storage-adapter/package.json
+          package: ./packages/event-storage-adapter-in-memory/package.json
       - uses: JS-DevTools/npm-publish@v2
         with:
           token: ${{ secrets.NPM_TOKEN }}
-          package: ./packages/redux-event-storage-adapter/package.json
+          package: ./packages/event-storage-adapter-redux/package.json
       - uses: JS-DevTools/npm-publish@v2
         with:
           token: ${{ secrets.NPM_TOKEN }}
-          package: ./packages/json-schema-event/package.json
+          package: ./packages/event-type-json-schema/package.json
       - uses: JS-DevTools/npm-publish@v2
         with:
           token: ${{ secrets.NPM_TOKEN }}
-          package: ./packages/zod-event/package.json
+          package: ./packages/event-type-zod/package.json
       - uses: JS-DevTools/npm-publish@v2
         with:
           token: ${{ secrets.NPM_TOKEN }}
-          package: ./packages/json-schema-command/package.json
+          package: ./packages/command-json-schema/package.json
       - uses: JS-DevTools/npm-publish@v2
         with:
           token: ${{ secrets.NPM_TOKEN }}
-          package: ./packages/event-bridge-message-bus-adapter/package.json
+          package: ./packages/message-bus-adapter-event-bridge/package.json
       - uses: JS-DevTools/npm-publish@v2
         with:
           token: ${{ secrets.NPM_TOKEN }}
-          package: ./packages/event-bridge-s3-message-bus-adapter/package.json
+          package: ./packages/message-bus-adapter-event-bridge-s3/package.json
       - uses: JS-DevTools/npm-publish@v2
         with:
           token: ${{ secrets.NPM_TOKEN }}
-          package: ./packages/in-memory-message-bus-adapter/package.json
+          package: ./packages/message-bus-adapter-in-memory/package.json
       - uses: JS-DevTools/npm-publish@v2
         with:
           token: ${{ secrets.NPM_TOKEN }}
-          package: ./packages/sqs-message-queue-adapter/package.json
+          package: ./packages/message-queue-adapter-sqs/package.json
       - uses: JS-DevTools/npm-publish@v2
         with:
           token: ${{ secrets.NPM_TOKEN }}
-          package: ./packages/in-memory-message-queue-adapter/package.json
+          package: ./packages/message-queue-adapter-in-memory/package.json
       - uses: JS-DevTools/npm-publish@v2
         with:
           token: ${{ secrets.NPM_TOKEN }}
-          package: ./packages/test-tools/package.json
+          package: ./packages/lib-test-tools/package.json
       - uses: JS-DevTools/npm-publish@v2
         with:
           token: ${{ secrets.NPM_TOKEN }}
-          package: ./packages/react-visualizer/package.json
+          package: ./packages/lib-react-visualizer/package.json
       - uses: JS-DevTools/npm-publish@v2
         with:
           token: ${{ secrets.NPM_TOKEN }}
-          package: ./packages/dam/package.json
+          package: ./packages/lib-dam/package.json

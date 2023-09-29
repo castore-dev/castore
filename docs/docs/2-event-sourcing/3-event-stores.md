@@ -218,7 +218,7 @@ const { aggregate } = await pokemonsEventStore.getExistingAggregate(
   `OptionsObj` contains the following properties:
 
   - <code>prevAggregate <i>(?Aggregate)</i></code>: The aggregate at the current version, i.e. before having pushed the event. Can be useful in some cases like when using the <a href="../../reacting-to-events/connected-event-store">ConnectedEventStore class</a>
-  - <code>force <i>(?boolean)</i></code>: To force push the event even if one already exists for the corresponding <code>aggregateId</code> and <code>version</code>. Any existing event will be overridden, so use with extra care, mainly in <a href="https://www.npmjs.com/package/@castore/dam">data migrations</a>.
+  - <code>force <i>(?boolean)</i></code>: To force push the event even if one already exists for the corresponding <code>aggregateId</code> and <code>version</code>. Any existing event will be overridden, so use with extra care, mainly in <a href="https://www.npmjs.com/package/@castore/lib-dam">data migrations</a>.
 
   `ResponseObj` contains the following properties:
 

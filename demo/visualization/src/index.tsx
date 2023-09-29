@@ -11,7 +11,7 @@ import {
   catchPokemonCommand,
   levelUpPokemonCommand,
 } from '@castore/demo-blueprint';
-import { Visualizer } from '@castore/react-visualizer';
+import { Visualizer } from '@castore/lib-react-visualizer';
 
 import './index.css';
 

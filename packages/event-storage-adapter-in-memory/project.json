@@ -1,0 +1,6 @@
+{
+  "root": "packages/event-storage-adapter-in-memory",
+  "projectType": "library",
+  "tags": [],
+  "implicitDependencies": ["core"]
+}

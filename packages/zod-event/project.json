@@ -1,6 +1,0 @@
-{
-  "root": "packages/zod-event",
-  "projectType": "library",
-  "tags": [],
-  "implicitDependencies": ["core"]
-}

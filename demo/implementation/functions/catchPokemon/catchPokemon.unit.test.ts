@@ -2,7 +2,7 @@ import MockDate from 'mockdate';
 
 import { EventStoreEventDetails } from '@castore/core';
 import { catchPokemonCommand } from '@castore/demo-blueprint';
-import { mockEventStore } from '@castore/test-tools';
+import { mockEventStore } from '@castore/lib-test-tools';
 
 import { pokemonsEventStore } from '~/libs/eventStores/pokemons';
 import { trainersEventStore } from '~/libs/eventStores/trainers';

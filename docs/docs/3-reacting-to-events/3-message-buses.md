@@ -60,7 +60,7 @@ You can code your own `MessageBusAdapter` (simply implement the `MessageChannelA
 The adapter packages will also expose useful generics to type the arguments of your bus listeners. For instance:
 
 ```ts
-import type { EventBridgeMessageBusMessage } from '@castore/event-bridge-message-bus-adapter';
+import type { EventBridgeMessageBusMessage } from '@castore/message-bus-adapter-event-bridge';
 
 const pokemonMessagesListener = async (
   // 👇 Specify that you only listen to the pokemonsEventStore messages

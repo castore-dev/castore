@@ -35,10 +35,10 @@
     ]
   },
   "dependencies": {
+    "@castore/command-json-schema": "workspace:",
     "@castore/core": "workspace:",
     "@castore/demo-blueprint": "workspace:",
-    "@castore/json-schema-command": "workspace:",
-    "@castore/react-visualizer": "workspace:",
+    "@castore/lib-react-visualizer": "workspace:",
     "@docusaurus/core": "2.4.1",
     "@docusaurus/preset-classic": "2.4.1",
     "@mdx-js/react": "^1.6.22",

@@ -1,0 +1,6 @@
+{
+  "root": "packages/message-queue-adapter-sqs",
+  "projectType": "library",
+  "tags": [],
+  "implicitDependencies": ["core"]
+}

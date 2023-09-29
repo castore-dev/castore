@@ -6001,6 +6001,34 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@castore/command-json-schema@workspace:, @castore/command-json-schema@workspace:packages/command-json-schema":
+  version: 0.0.0-use.local
+  resolution: "@castore/command-json-schema@workspace:packages/command-json-schema"
+  dependencies:
+    "@babel/cli": ^7.17.6
+    "@babel/core": ^7.17.9
+    "@babel/plugin-transform-runtime": ^7.17.0
+    "@babel/preset-env": ^7.16.11
+    "@babel/preset-typescript": ^7.16.7
+    "@castore/core": "workspace:"
+    "@types/node": ^17.0.29
+    babel-plugin-module-resolver: ^4.1.0
+    concurrently: ^7.1.0
+    dependency-cruiser: ^11.7.0
+    eslint: ^8.14.0
+    json-schema-to-ts: ^2.5.4
+    prettier: ^2.6.2
+    ts-node: ^10.7.0
+    ts-toolbelt: ^9.6.0
+    tsc-alias: ^1.8.7
+    typescript: ^4.6.3
+    vitest: ^0.26.2
+  peerDependencies:
+    "@castore/core": "*"
+    json-schema-to-ts: ^2.0.0
+  languageName: unknown
+  linkType: soft
+
 "@castore/core@workspace:, @castore/core@workspace:packages/core":
   version: 0.0.0-use.local
   resolution: "@castore/core@workspace:packages/core"
@@ -6026,36 +6054,6 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@castore/dam@workspace:packages/dam":
-  version: 0.0.0-use.local
-  resolution: "@castore/dam@workspace:packages/dam"
-  dependencies:
-    "@babel/cli": ^7.17.6
-    "@babel/core": ^7.17.9
-    "@babel/plugin-transform-runtime": ^7.17.0
-    "@babel/preset-env": ^7.16.11
-    "@babel/preset-typescript": ^7.16.7
-    "@castore/core": "workspace:"
-    "@castore/demo-blueprint": "workspace:"
-    "@castore/in-memory-message-queue-adapter": "workspace:"
-    "@castore/test-tools": "workspace:"
-    "@types/node": ^17.0.29
-    babel-plugin-module-resolver: ^4.1.0
-    concurrently: ^7.1.0
-    dependency-cruiser: ^11.7.0
-    eslint: ^8.14.0
-    prettier: ^2.6.2
-    throttled-queue: ^2.1.4
-    ts-node: ^10.7.0
-    tsc-alias: ^1.8.7
-    typescript: ^4.6.3
-    vite-tsconfig-paths: ^4.0.3
-    vitest: ^0.26.2
-  peerDependencies:
-    "@castore/core": "*"
-  languageName: unknown
-  linkType: soft
-
 "@castore/demo-blueprint@workspace:, @castore/demo-blueprint@workspace:demo/blueprint":
   version: 0.0.0-use.local
   resolution: "@castore/demo-blueprint@workspace:demo/blueprint"
@@ -6066,9 +6064,9 @@ __metadata:
     "@babel/preset-env": ^7.16.11
     "@babel/preset-typescript": ^7.16.7
     "@babel/runtime": ^7.18.3
+    "@castore/command-json-schema": "workspace:"
     "@castore/core": "workspace:"
-    "@castore/json-schema-command": "workspace:"
-    "@castore/json-schema-event": "workspace:"
+    "@castore/event-type-json-schema": "workspace:"
     "@types/node": ^17.0.29
     babel-plugin-module-resolver: ^4.1.0
     concurrently: ^7.1.0
@@ -6082,7 +6080,7 @@ __metadata:
     typescript: ^4.6.3
   peerDependencies:
     "@castore/core": "*"
-    "@castore/json-schema-event": "*"
+    "@castore/event-type-json-schema": "*"
     json-schema-to-ts: ^2.0.0
   languageName: unknown
   linkType: soft
@@ -6094,8 +6092,8 @@ __metadata:
     "@aws-sdk/client-dynamodb": ^3.2.0
     "@castore/core": "workspace:"
     "@castore/demo-blueprint": "workspace:"
-    "@castore/dynamodb-event-storage-adapter": "workspace:"
-    "@castore/test-tools": "workspace:"
+    "@castore/event-storage-adapter-dynamodb": "workspace:"
+    "@castore/lib-test-tools": "workspace:"
     "@middy/core": ^3.0.4
     "@middy/validator": ^3.0.4
     "@serverless/typescript": ^3.0.0
@@ -6120,10 +6118,10 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@castore/demo-visualization@workspace:demo/visualization"
   dependencies:
+    "@castore/command-json-schema": "workspace:"
     "@castore/core": "workspace:"
     "@castore/demo-blueprint": "workspace:"
-    "@castore/json-schema-command": "workspace:"
-    "@castore/react-visualizer": "workspace:"
+    "@castore/lib-react-visualizer": "workspace:"
     "@mui/material": ^5.6.3
     "@types/react": ^17.0.38
     "@types/react-dom": ^17.0.11
@@ -6147,10 +6145,10 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@castore/docs@workspace:docs"
   dependencies:
+    "@castore/command-json-schema": "workspace:"
     "@castore/core": "workspace:"
     "@castore/demo-blueprint": "workspace:"
-    "@castore/json-schema-command": "workspace:"
-    "@castore/react-visualizer": "workspace:"
+    "@castore/lib-react-visualizer": "workspace:"
     "@docusaurus/core": 2.4.1
     "@docusaurus/module-type-aliases": 2.4.1
     "@docusaurus/preset-classic": 2.4.1
@@ -6176,9 +6174,9 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@castore/dynamodb-event-storage-adapter@workspace:, @castore/dynamodb-event-storage-adapter@workspace:packages/dynamodb-event-storage-adapter":
+"@castore/event-storage-adapter-dynamodb@workspace:, @castore/event-storage-adapter-dynamodb@workspace:packages/event-storage-adapter-dynamodb":
   version: 0.0.0-use.local
-  resolution: "@castore/dynamodb-event-storage-adapter@workspace:packages/dynamodb-event-storage-adapter"
+  resolution: "@castore/event-storage-adapter-dynamodb@workspace:packages/event-storage-adapter-dynamodb"
   dependencies:
     "@aws-sdk/client-dynamodb": ^3.2.0
     "@aws-sdk/util-dynamodb": ^3.319.0
@@ -6210,133 +6208,9 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@castore/event-bridge-message-bus-adapter@workspace:, @castore/event-bridge-message-bus-adapter@workspace:packages/event-bridge-message-bus-adapter":
+"@castore/event-storage-adapter-in-memory@workspace:, @castore/event-storage-adapter-in-memory@workspace:packages/event-storage-adapter-in-memory":
   version: 0.0.0-use.local
-  resolution: "@castore/event-bridge-message-bus-adapter@workspace:packages/event-bridge-message-bus-adapter"
-  dependencies:
-    "@aws-sdk/client-eventbridge": ^3.2.0
-    "@babel/cli": ^7.17.6
-    "@babel/core": ^7.17.9
-    "@babel/plugin-transform-runtime": ^7.17.0
-    "@babel/preset-env": ^7.16.11
-    "@babel/preset-typescript": ^7.16.7
-    "@castore/core": "workspace:"
-    "@types/aws-lambda": ^8.10.111
-    "@types/lodash.chunk": ^4.2.7
-    "@types/node": ^17.0.29
-    aws-sdk-client-mock: ^2.1.0
-    babel-plugin-module-resolver: ^4.1.0
-    concurrently: ^7.1.0
-    dependency-cruiser: ^11.7.0
-    eslint: ^8.14.0
-    lodash.chunk: ^4.2.0
-    prettier: ^2.6.2
-    ts-node: ^10.7.0
-    ts-toolbelt: ^9.6.0
-    tsc-alias: ^1.8.7
-    typescript: ^4.6.3
-    vitest: ^0.26.2
-  peerDependencies:
-    "@aws-sdk/client-eventbridge": ^3.0.0
-    "@castore/core": "*"
-  languageName: unknown
-  linkType: soft
-
-"@castore/event-bridge-s3-message-bus-adapter@workspace:packages/event-bridge-s3-message-bus-adapter":
-  version: 0.0.0-use.local
-  resolution: "@castore/event-bridge-s3-message-bus-adapter@workspace:packages/event-bridge-s3-message-bus-adapter"
-  dependencies:
-    "@aws-sdk/client-eventbridge": ^3.2.0
-    "@aws-sdk/client-s3": ^3.2.0
-    "@aws-sdk/s3-request-presigner": ^3.2.0
-    "@babel/cli": ^7.17.6
-    "@babel/core": ^7.17.9
-    "@babel/plugin-transform-runtime": ^7.17.0
-    "@babel/preset-env": ^7.16.11
-    "@babel/preset-typescript": ^7.16.7
-    "@castore/core": "workspace:"
-    "@castore/event-bridge-message-bus-adapter": "workspace:"
-    "@types/aws-lambda": ^8.10.111
-    "@types/lodash.chunk": ^4.2.7
-    "@types/node": ^17.0.29
-    aws-sdk-client-mock: ^2.1.0
-    babel-plugin-module-resolver: ^4.1.0
-    concurrently: ^7.1.0
-    dependency-cruiser: ^11.7.0
-    eslint: ^8.14.0
-    lodash.chunk: ^4.2.0
-    prettier: ^2.6.2
-    ts-node: ^10.7.0
-    ts-toolbelt: ^9.6.0
-    tsc-alias: ^1.8.7
-    typescript: ^4.6.3
-    undici: ^5.23.0
-    vitest: ^0.26.2
-  peerDependencies:
-    "@aws-sdk/client-eventbridge": ^3.0.0
-    "@aws-sdk/client-s3": ^3.0.0
-    "@aws-sdk/s3-request-presigner": ^3.0.0
-    "@castore/core": "*"
-  languageName: unknown
-  linkType: soft
-
-"@castore/in-memory-message-bus-adapter@workspace:packages/in-memory-message-bus-adapter":
-  version: 0.0.0-use.local
-  resolution: "@castore/in-memory-message-bus-adapter@workspace:packages/in-memory-message-bus-adapter"
-  dependencies:
-    "@babel/cli": ^7.17.6
-    "@babel/core": ^7.17.9
-    "@babel/plugin-transform-runtime": ^7.17.0
-    "@babel/preset-env": ^7.16.11
-    "@babel/preset-typescript": ^7.16.7
-    "@castore/core": "workspace:"
-    "@castore/demo-blueprint": "workspace:"
-    "@types/node": ^17.0.29
-    babel-plugin-module-resolver: ^4.1.0
-    concurrently: ^7.1.0
-    dependency-cruiser: ^11.7.0
-    eslint: ^8.14.0
-    prettier: ^2.6.2
-    ts-node: ^10.7.0
-    tsc-alias: ^1.8.7
-    typescript: ^4.6.3
-    vitest: ^0.26.2
-  peerDependencies:
-    "@castore/core": "*"
-  languageName: unknown
-  linkType: soft
-
-"@castore/in-memory-message-queue-adapter@workspace:, @castore/in-memory-message-queue-adapter@workspace:packages/in-memory-message-queue-adapter":
-  version: 0.0.0-use.local
-  resolution: "@castore/in-memory-message-queue-adapter@workspace:packages/in-memory-message-queue-adapter"
-  dependencies:
-    "@babel/cli": ^7.17.6
-    "@babel/core": ^7.17.9
-    "@babel/plugin-transform-runtime": ^7.17.0
-    "@babel/preset-env": ^7.16.11
-    "@babel/preset-typescript": ^7.16.7
-    "@castore/core": "workspace:"
-    "@castore/demo-blueprint": "workspace:"
-    "@types/node": ^17.0.29
-    babel-plugin-module-resolver: ^4.1.0
-    concurrently: ^7.1.0
-    dependency-cruiser: ^11.7.0
-    eslint: ^8.14.0
-    fastq: ^1.15.0
-    prettier: ^2.6.2
-    ts-node: ^10.7.0
-    ts-toolbelt: ^9.6.0
-    tsc-alias: ^1.8.7
-    typescript: ^4.6.3
-    vitest: ^0.26.2
-  peerDependencies:
-    "@castore/core": "*"
-  languageName: unknown
-  linkType: soft
-
-"@castore/inmemory-event-storage-adapter@workspace:, @castore/inmemory-event-storage-adapter@workspace:packages/inmemory-event-storage-adapter":
-  version: 0.0.0-use.local
-  resolution: "@castore/inmemory-event-storage-adapter@workspace:packages/inmemory-event-storage-adapter"
+  resolution: "@castore/event-storage-adapter-in-memory@workspace:packages/event-storage-adapter-in-memory"
   dependencies:
     "@babel/cli": ^7.17.6
     "@babel/core": ^7.17.9
@@ -6362,9 +6236,38 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@castore/json-schema-command@workspace:, @castore/json-schema-command@workspace:packages/json-schema-command":
+"@castore/event-storage-adapter-redux@workspace:, @castore/event-storage-adapter-redux@workspace:packages/event-storage-adapter-redux":
   version: 0.0.0-use.local
-  resolution: "@castore/json-schema-command@workspace:packages/json-schema-command"
+  resolution: "@castore/event-storage-adapter-redux@workspace:packages/event-storage-adapter-redux"
+  dependencies:
+    "@babel/cli": ^7.17.6
+    "@babel/core": ^7.17.9
+    "@babel/plugin-transform-runtime": ^7.17.0
+    "@babel/preset-env": ^7.16.11
+    "@babel/preset-typescript": ^7.16.7
+    "@castore/core": "workspace:"
+    "@reduxjs/toolkit": ^1.9.1
+    "@types/node": ^17.0.29
+    babel-plugin-module-resolver: ^4.1.0
+    concurrently: ^7.1.0
+    dependency-cruiser: ^11.7.0
+    eslint: ^8.14.0
+    prettier: ^2.6.2
+    react-redux: ^8.0.5
+    ts-node: ^10.7.0
+    tsc-alias: ^1.8.7
+    typescript: ^4.6.3
+    vitest: ^0.26.2
+  peerDependencies:
+    "@castore/core": "*"
+    "@reduxjs/toolkit": ^1.9.0
+    react-redux: ^8.0.0
+  languageName: unknown
+  linkType: soft
+
+"@castore/event-type-json-schema@workspace:, @castore/event-type-json-schema@workspace:packages/event-type-json-schema":
+  version: 0.0.0-use.local
+  resolution: "@castore/event-type-json-schema@workspace:packages/event-type-json-schema"
   dependencies:
     "@babel/cli": ^7.17.6
     "@babel/core": ^7.17.9
@@ -6390,9 +6293,9 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@castore/json-schema-event@workspace:, @castore/json-schema-event@workspace:packages/json-schema-event":
+"@castore/event-type-zod@workspace:packages/event-type-zod":
   version: 0.0.0-use.local
-  resolution: "@castore/json-schema-event@workspace:packages/json-schema-event"
+  resolution: "@castore/event-type-zod@workspace:packages/event-type-zod"
   dependencies:
     "@babel/cli": ^7.17.6
     "@babel/core": ^7.17.9
@@ -6405,22 +6308,78 @@ __metadata:
     concurrently: ^7.1.0
     dependency-cruiser: ^11.7.0
     eslint: ^8.14.0
-    json-schema-to-ts: ^2.5.4
     prettier: ^2.6.2
     ts-node: ^10.7.0
     ts-toolbelt: ^9.6.0
     tsc-alias: ^1.8.7
     typescript: ^4.6.3
     vitest: ^0.26.2
+    zod: ^3.15.1
   peerDependencies:
     "@castore/core": "*"
-    json-schema-to-ts: ^2.0.0
+    zod: ^3.0.0
   languageName: unknown
   linkType: soft
 
-"@castore/react-visualizer@workspace:, @castore/react-visualizer@workspace:packages/react-visualizer":
+"@castore/in-memory-message-bus-adapter@workspace:packages/message-bus-adapter-in-memory":
   version: 0.0.0-use.local
-  resolution: "@castore/react-visualizer@workspace:packages/react-visualizer"
+  resolution: "@castore/in-memory-message-bus-adapter@workspace:packages/message-bus-adapter-in-memory"
+  dependencies:
+    "@babel/cli": ^7.17.6
+    "@babel/core": ^7.17.9
+    "@babel/plugin-transform-runtime": ^7.17.0
+    "@babel/preset-env": ^7.16.11
+    "@babel/preset-typescript": ^7.16.7
+    "@castore/core": "workspace:"
+    "@castore/demo-blueprint": "workspace:"
+    "@types/node": ^17.0.29
+    babel-plugin-module-resolver: ^4.1.0
+    concurrently: ^7.1.0
+    dependency-cruiser: ^11.7.0
+    eslint: ^8.14.0
+    prettier: ^2.6.2
+    ts-node: ^10.7.0
+    tsc-alias: ^1.8.7
+    typescript: ^4.6.3
+    vitest: ^0.26.2
+  peerDependencies:
+    "@castore/core": "*"
+  languageName: unknown
+  linkType: soft
+
+"@castore/lib-dam@workspace:packages/lib-dam":
+  version: 0.0.0-use.local
+  resolution: "@castore/lib-dam@workspace:packages/lib-dam"
+  dependencies:
+    "@babel/cli": ^7.17.6
+    "@babel/core": ^7.17.9
+    "@babel/plugin-transform-runtime": ^7.17.0
+    "@babel/preset-env": ^7.16.11
+    "@babel/preset-typescript": ^7.16.7
+    "@castore/core": "workspace:"
+    "@castore/demo-blueprint": "workspace:"
+    "@castore/lib-test-tools": "workspace:"
+    "@castore/message-queue-adapter-in-memory": "workspace:"
+    "@types/node": ^17.0.29
+    babel-plugin-module-resolver: ^4.1.0
+    concurrently: ^7.1.0
+    dependency-cruiser: ^11.7.0
+    eslint: ^8.14.0
+    prettier: ^2.6.2
+    throttled-queue: ^2.1.4
+    ts-node: ^10.7.0
+    tsc-alias: ^1.8.7
+    typescript: ^4.6.3
+    vite-tsconfig-paths: ^4.0.3
+    vitest: ^0.26.2
+  peerDependencies:
+    "@castore/core": "*"
+  languageName: unknown
+  linkType: soft
+
+"@castore/lib-react-visualizer@workspace:, @castore/lib-react-visualizer@workspace:packages/lib-react-visualizer":
+  version: 0.0.0-use.local
+  resolution: "@castore/lib-react-visualizer@workspace:packages/lib-react-visualizer"
   dependencies:
     "@babel/cli": ^7.17.6
     "@babel/core": ^7.17.9
@@ -6429,9 +6388,9 @@ __metadata:
     "@babel/preset-env": ^7.20.2
     "@babel/preset-react": ^7.18.6
     "@babel/preset-typescript": ^7.16.7
+    "@castore/command-json-schema": "workspace:"
     "@castore/core": "workspace:"
-    "@castore/json-schema-command": "workspace:"
-    "@castore/redux-event-storage-adapter": "workspace:"
+    "@castore/event-storage-adapter-redux": "workspace:"
     "@emotion/react": ^11.9.3
     "@emotion/styled": ^11.9.3
     "@mui/icons-material": ^5.11.0
@@ -6459,15 +6418,15 @@ __metadata:
     typescript: ^4.6.3
     vitest: ^0.26.2
   peerDependencies:
+    "@castore/command-json-schema": "*"
     "@castore/core": "*"
-    "@castore/json-schema-command": "*"
     react: ^17.0.0
   languageName: unknown
   linkType: soft
 
-"@castore/redux-event-storage-adapter@workspace:, @castore/redux-event-storage-adapter@workspace:packages/redux-event-storage-adapter":
+"@castore/lib-test-tools@workspace:, @castore/lib-test-tools@workspace:packages/lib-test-tools":
   version: 0.0.0-use.local
-  resolution: "@castore/redux-event-storage-adapter@workspace:packages/redux-event-storage-adapter"
+  resolution: "@castore/lib-test-tools@workspace:packages/lib-test-tools"
   dependencies:
     "@babel/cli": ^7.17.6
     "@babel/core": ^7.17.9
@@ -6475,28 +6434,124 @@ __metadata:
     "@babel/preset-env": ^7.16.11
     "@babel/preset-typescript": ^7.16.7
     "@castore/core": "workspace:"
-    "@reduxjs/toolkit": ^1.9.1
+    "@castore/demo-blueprint": "workspace:"
+    "@castore/event-storage-adapter-in-memory": "workspace:"
     "@types/node": ^17.0.29
     babel-plugin-module-resolver: ^4.1.0
     concurrently: ^7.1.0
     dependency-cruiser: ^11.7.0
     eslint: ^8.14.0
     prettier: ^2.6.2
-    react-redux: ^8.0.5
     ts-node: ^10.7.0
     tsc-alias: ^1.8.7
     typescript: ^4.6.3
     vitest: ^0.26.2
   peerDependencies:
     "@castore/core": "*"
-    "@reduxjs/toolkit": ^1.9.0
-    react-redux: ^8.0.0
   languageName: unknown
   linkType: soft
 
-"@castore/sqs-message-queue-adapter@workspace:packages/sqs-message-queue-adapter":
+"@castore/message-bus-adapter-event-bridge-s3@workspace:packages/message-bus-adapter-event-bridge-s3":
   version: 0.0.0-use.local
-  resolution: "@castore/sqs-message-queue-adapter@workspace:packages/sqs-message-queue-adapter"
+  resolution: "@castore/message-bus-adapter-event-bridge-s3@workspace:packages/message-bus-adapter-event-bridge-s3"
+  dependencies:
+    "@aws-sdk/client-eventbridge": ^3.2.0
+    "@aws-sdk/client-s3": ^3.2.0
+    "@aws-sdk/s3-request-presigner": ^3.2.0
+    "@babel/cli": ^7.17.6
+    "@babel/core": ^7.17.9
+    "@babel/plugin-transform-runtime": ^7.17.0
+    "@babel/preset-env": ^7.16.11
+    "@babel/preset-typescript": ^7.16.7
+    "@castore/core": "workspace:"
+    "@castore/message-bus-adapter-event-bridge": "workspace:"
+    "@types/aws-lambda": ^8.10.111
+    "@types/lodash.chunk": ^4.2.7
+    "@types/node": ^17.0.29
+    aws-sdk-client-mock: ^2.1.0
+    babel-plugin-module-resolver: ^4.1.0
+    concurrently: ^7.1.0
+    dependency-cruiser: ^11.7.0
+    eslint: ^8.14.0
+    lodash.chunk: ^4.2.0
+    prettier: ^2.6.2
+    ts-node: ^10.7.0
+    ts-toolbelt: ^9.6.0
+    tsc-alias: ^1.8.7
+    typescript: ^4.6.3
+    undici: ^5.23.0
+    vitest: ^0.26.2
+  peerDependencies:
+    "@aws-sdk/client-eventbridge": ^3.0.0
+    "@aws-sdk/client-s3": ^3.0.0
+    "@aws-sdk/s3-request-presigner": ^3.0.0
+    "@castore/core": "*"
+  languageName: unknown
+  linkType: soft
+
+"@castore/message-bus-adapter-event-bridge@workspace:, @castore/message-bus-adapter-event-bridge@workspace:packages/message-bus-adapter-event-bridge":
+  version: 0.0.0-use.local
+  resolution: "@castore/message-bus-adapter-event-bridge@workspace:packages/message-bus-adapter-event-bridge"
+  dependencies:
+    "@aws-sdk/client-eventbridge": ^3.2.0
+    "@babel/cli": ^7.17.6
+    "@babel/core": ^7.17.9
+    "@babel/plugin-transform-runtime": ^7.17.0
+    "@babel/preset-env": ^7.16.11
+    "@babel/preset-typescript": ^7.16.7
+    "@castore/core": "workspace:"
+    "@types/aws-lambda": ^8.10.111
+    "@types/lodash.chunk": ^4.2.7
+    "@types/node": ^17.0.29
+    aws-sdk-client-mock: ^2.1.0
+    babel-plugin-module-resolver: ^4.1.0
+    concurrently: ^7.1.0
+    dependency-cruiser: ^11.7.0
+    eslint: ^8.14.0
+    lodash.chunk: ^4.2.0
+    prettier: ^2.6.2
+    ts-node: ^10.7.0
+    ts-toolbelt: ^9.6.0
+    tsc-alias: ^1.8.7
+    typescript: ^4.6.3
+    vitest: ^0.26.2
+  peerDependencies:
+    "@aws-sdk/client-eventbridge": ^3.0.0
+    "@castore/core": "*"
+  languageName: unknown
+  linkType: soft
+
+"@castore/message-queue-adapter-in-memory@workspace:, @castore/message-queue-adapter-in-memory@workspace:packages/message-queue-adapter-in-memory":
+  version: 0.0.0-use.local
+  resolution: "@castore/message-queue-adapter-in-memory@workspace:packages/message-queue-adapter-in-memory"
+  dependencies:
+    "@babel/cli": ^7.17.6
+    "@babel/core": ^7.17.9
+    "@babel/plugin-transform-runtime": ^7.17.0
+    "@babel/preset-env": ^7.16.11
+    "@babel/preset-typescript": ^7.16.7
+    "@castore/core": "workspace:"
+    "@castore/demo-blueprint": "workspace:"
+    "@types/node": ^17.0.29
+    babel-plugin-module-resolver: ^4.1.0
+    concurrently: ^7.1.0
+    dependency-cruiser: ^11.7.0
+    eslint: ^8.14.0
+    fastq: ^1.15.0
+    prettier: ^2.6.2
+    ts-node: ^10.7.0
+    ts-toolbelt: ^9.6.0
+    tsc-alias: ^1.8.7
+    typescript: ^4.6.3
+    vitest: ^0.26.2
+  peerDependencies:
+    "@castore/core": "*"
+  languageName: unknown
+  linkType: soft
+
+"@castore/message-queue-adapter-sqs@workspace:packages/message-queue-adapter-sqs":
+  version: 0.0.0-use.local
+  resolution: "@castore/message-queue-adapter-sqs@workspace:packages/message-queue-adapter-sqs"
   dependencies:
     "@aws-sdk/client-sqs": ^3.2.0
     "@babel/cli": ^7.17.6
@@ -6523,61 +6578,6 @@ __metadata:
   peerDependencies:
     "@aws-sdk/client-sqs": ^3.0.0
     "@castore/core": "*"
-  languageName: unknown
-  linkType: soft
-
-"@castore/test-tools@workspace:, @castore/test-tools@workspace:packages/test-tools":
-  version: 0.0.0-use.local
-  resolution: "@castore/test-tools@workspace:packages/test-tools"
-  dependencies:
-    "@babel/cli": ^7.17.6
-    "@babel/core": ^7.17.9
-    "@babel/plugin-transform-runtime": ^7.17.0
-    "@babel/preset-env": ^7.16.11
-    "@babel/preset-typescript": ^7.16.7
-    "@castore/core": "workspace:"
-    "@castore/demo-blueprint": "workspace:"
-    "@castore/inmemory-event-storage-adapter": "workspace:"
-    "@types/node": ^17.0.29
-    babel-plugin-module-resolver: ^4.1.0
-    concurrently: ^7.1.0
-    dependency-cruiser: ^11.7.0
-    eslint: ^8.14.0
-    prettier: ^2.6.2
-    ts-node: ^10.7.0
-    tsc-alias: ^1.8.7
-    typescript: ^4.6.3
-    vitest: ^0.26.2
-  peerDependencies:
-    "@castore/core": "*"
-  languageName: unknown
-  linkType: soft
-
-"@castore/zod-event@workspace:packages/zod-event":
-  version: 0.0.0-use.local
-  resolution: "@castore/zod-event@workspace:packages/zod-event"
-  dependencies:
-    "@babel/cli": ^7.17.6
-    "@babel/core": ^7.17.9
-    "@babel/plugin-transform-runtime": ^7.17.0
-    "@babel/preset-env": ^7.16.11
-    "@babel/preset-typescript": ^7.16.7
-    "@castore/core": "workspace:"
-    "@types/node": ^17.0.29
-    babel-plugin-module-resolver: ^4.1.0
-    concurrently: ^7.1.0
-    dependency-cruiser: ^11.7.0
-    eslint: ^8.14.0
-    prettier: ^2.6.2
-    ts-node: ^10.7.0
-    ts-toolbelt: ^9.6.0
-    tsc-alias: ^1.8.7
-    typescript: ^4.6.3
-    vitest: ^0.26.2
-    zod: ^3.15.1
-  peerDependencies:
-    "@castore/core": "*"
-    zod: ^3.0.0
   languageName: unknown
   linkType: soft
 

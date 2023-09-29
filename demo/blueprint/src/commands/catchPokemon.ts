@@ -1,5 +1,5 @@
+import { JSONSchemaCommand } from '@castore/command-json-schema';
 import { EventStore, tuple } from '@castore/core';
-import { JSONSchemaCommand } from '@castore/json-schema-command';
 
 import { pokemonsEventStore } from '~/pokemons';
 import { trainersEventStore } from '~/trainers';

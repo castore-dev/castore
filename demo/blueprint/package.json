@@ -28,7 +28,7 @@
   },
   "dependencies": {
     "@babel/runtime": "^7.18.3",
-    "@castore/json-schema-command": "workspace:"
+    "@castore/command-json-schema": "workspace:"
   },
   "devDependencies": {
     "@babel/cli": "^7.17.6",
@@ -37,7 +37,7 @@
     "@babel/preset-env": "^7.16.11",
     "@babel/preset-typescript": "^7.16.7",
     "@castore/core": "workspace:",
-    "@castore/json-schema-event": "workspace:",
+    "@castore/event-type-json-schema": "workspace:",
     "@types/node": "^17.0.29",
     "babel-plugin-module-resolver": "^4.1.0",
     "concurrently": "^7.1.0",
@@ -68,7 +68,7 @@
   },
   "peerDependencies": {
     "@castore/core": "*",
-    "@castore/json-schema-event": "*",
+    "@castore/event-type-json-schema": "*",
     "json-schema-to-ts": "^2.0.0"
   }
 }
