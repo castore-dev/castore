@@ -81,6 +81,10 @@
   align-items: center;
 }
 
+.justify-around {
+  justify-content: space-around;
+}
+
 .justify-center {
   justify-content: center;
 }
@@ -99,6 +103,11 @@
 
 .p-2 {
   padding: 0.5rem;
+}
+
+.py-10 {
+  padding-top: 2.5rem;
+  padding-bottom: 2.5rem;
 }
 
 .py-2 {
@@ -226,6 +235,10 @@ a:hover,
   width: 40px;
 }
 
+.full-width {
+  width: 100%;
+}
+
 .max-w-screen-xl {
   max-width: 1280px;
 }
@@ -289,6 +302,10 @@ a:hover,
   .sm\:grid-cols-2 {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
+
+  .sm\:justify-around {
+    justify-content: space-around;
+  }
 }
 
 @media (min-width: 768px) {
@@ -298,6 +315,10 @@ a:hover,
 
   .md\:flex-row {
     flex-direction: row;
+  }
+
+  .md\:justify-center {
+    justify-content: center;
   }
 
   .md\:grid-cols-3 {
