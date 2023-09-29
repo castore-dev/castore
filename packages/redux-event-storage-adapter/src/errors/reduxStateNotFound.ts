@@ -1,4 +1,4 @@
-export class EventStoreReduxStateNotFoundError extends Error {
+export class ReduxStateNotFoundError extends Error {
   eventStoreSliceName: string;
 
   constructor({ eventStoreSliceName }: { eventStoreSliceName: string }) {

@@ -1,6 +1,6 @@
 import type {
   EventStoreAggregate,
-  EventStoreEventsDetails,
+  EventStoreEventDetails,
 } from '~/eventStore/generics';
 import {
   NotificationMessageChannel,
@@ -14,7 +14,7 @@ export const publishPushedEvent = async <
 >(
   connectedEventStore: CONNECTED_EVENT_STORE,
   message: {
-    event: EventStoreEventsDetails<CONNECTED_EVENT_STORE>;
+    event: EventStoreEventDetails<CONNECTED_EVENT_STORE>;
     nextAggregate?: EventStoreAggregate<CONNECTED_EVENT_STORE>;
   },
 ): Promise<void> => {

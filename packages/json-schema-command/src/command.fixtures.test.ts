@@ -5,7 +5,7 @@ import {
   EventStore,
   EventType,
   EventTypeDetail,
-  StorageAdapter,
+  EventStorageAdapter,
   tuple,
 } from '@castore/core';
 
@@ -20,7 +20,7 @@ export const putSnapshotMock = vi.fn();
 export const getLastSnapshotMock = vi.fn();
 export const listSnapshotsMock = vi.fn();
 
-export const mockStorageAdapter: StorageAdapter = {
+export const eventStorageAdapterMock: EventStorageAdapter = {
   pushEvent: pushEventMock,
   pushEventGroup: pushEventGroupMock,
   groupEvent: groupEvent,
@@ -93,13 +93,13 @@ export const countersReducer = (
 
 export const counterEventStore = new EventStore({
   eventStoreId: 'Counters',
-  eventStoreEvents: [
+  eventTypes: [
     counterCreatedEvent,
     counterIncrementedEvent,
     counterDeletedEvent,
   ],
-  reduce: countersReducer,
-  storageAdapter: mockStorageAdapter,
+  reducer: countersReducer,
+  eventStorageAdapter: eventStorageAdapterMock,
 });
 
 export const inputSchema = {

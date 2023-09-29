@@ -39,7 +39,7 @@
     },
     {
       "path": "packages/dynamodb-event-storage-adapter",
-      "name": "🔌  DynamoDb"
+      "name": "🔌  DynamoDB"
     },
     {
       "path": "packages/redux-event-storage-adapter",

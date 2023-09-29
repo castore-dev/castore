@@ -1,16 +1,16 @@
 export type { Aggregate } from './aggregate';
 export { EventType } from './event/eventType';
-export type { EventTypeDetail, EventTypesDetails } from './event/eventType';
+export type { EventTypeDetail, EventTypeDetails } from './event/eventType';
 export { GroupedEvent } from './event/groupedEvent';
 export type { EventDetail, OptionalTimestamp } from './event/eventDetail';
-export type { StorageAdapter } from './storageAdapter';
+export type { EventStorageAdapter } from './eventStorageAdapter';
 export type {
   EventsQueryOptions,
   PushEventOptions,
   EventStoreContext,
   ListAggregateIdsOptions,
   ListAggregateIdsOutput,
-} from './storageAdapter';
+} from './eventStorageAdapter';
 export {
   AggregateNotFoundError,
   isEventAlreadyExistsError,
@@ -19,12 +19,12 @@ export {
 } from './eventStore';
 export type {
   EventAlreadyExistsError,
-  UndefinedStorageAdapterError,
+  UndefinedEventStorageAdapterError,
   GetAggregateOptions,
   SimulationOptions,
   EventStoreId,
-  EventStoreEventsTypes,
-  EventStoreEventsDetails,
+  EventStoreEventTypes,
+  EventStoreEventDetails,
   EventStoreReducer,
   EventStoreAggregate,
   Reducer,

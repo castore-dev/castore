@@ -7,8 +7,8 @@ import {
 } from '@castore/core';
 
 import { ReduxEventStorageAdapter } from '~/adapter';
-import { EventStoreReduxStateNotFoundError } from '~/errors/eventStoreReduxStateNotFound';
-import { EventStoreReduxStorageAdapterNotFoundError } from '~/errors/reduxEventStorageAdapterNotFound';
+import { ReduxEventStorageAdapterNotFoundError } from '~/errors/reduxEventStorageAdapterNotFound';
+import { ReduxStateNotFoundError } from '~/errors/reduxStateNotFound';
 import { EventStoreReduxState } from '~/types';
 import {
   parseAppliedListAggregateIdsOptions,
@@ -23,19 +23,19 @@ export const useAggregateIds = <EVENT_STORE extends EventStore>(
   const storeAggregateEntries = (useSelector<
     Record<string, EventStoreReduxState<EVENT_STORE>>
   >(state => {
-    const storageAdapter = eventStore.getStorageAdapter();
+    const eventStorageAdapter = eventStore.getEventStorageAdapter();
 
-    if (!(storageAdapter instanceof ReduxEventStorageAdapter)) {
-      throw new EventStoreReduxStorageAdapterNotFoundError({
+    if (!(eventStorageAdapter instanceof ReduxEventStorageAdapter)) {
+      throw new ReduxEventStorageAdapterNotFoundError({
         eventStoreId: eventStore.eventStoreId,
       });
     }
 
-    const eventStoreSliceName = storageAdapter.eventStoreSliceName;
+    const eventStoreSliceName = eventStorageAdapter.eventStoreSliceName;
     const eventStoreState = state[eventStoreSliceName];
 
     if (!eventStoreState) {
-      throw new EventStoreReduxStateNotFoundError({ eventStoreSliceName });
+      throw new ReduxStateNotFoundError({ eventStoreSliceName });
     }
 
     return eventStoreState.aggregateIds;

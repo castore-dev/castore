@@ -1,7 +1,7 @@
 import type {
   EventDetail,
   EventStore,
-  EventStoreEventsDetails,
+  EventStoreEventDetails,
   EventStoreNotificationMessage,
 } from '@castore/core';
 
@@ -26,7 +26,7 @@ export class EventBook<EVENT_STORE extends EventStore> {
 
   getBookedEvents = (
     aggregateId: string,
-  ): EventStoreEventsDetails<EVENT_STORE>[] =>
+  ): EventStoreEventDetails<EVENT_STORE>[] =>
     this.eventsByAggregateId[aggregateId] ?? [];
 
   getMessagesToPour = ({
@@ -36,7 +36,7 @@ export class EventBook<EVENT_STORE extends EventStore> {
     areAllAggregatesScanned: boolean;
     fetchedEventsCursor: string;
   }): MessageBatch<EVENT_STORE> => {
-    const eventsToPour: EventStoreEventsDetails<EVENT_STORE>[] = [];
+    const eventsToPour: EventStoreEventDetails<EVENT_STORE>[] = [];
 
     for (const aggregateId in this.eventsByAggregateId) {
       const aggregateEvents = this.getBookedEvents(aggregateId);

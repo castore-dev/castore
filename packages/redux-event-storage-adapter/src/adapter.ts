@@ -3,7 +3,7 @@ import type { EnhancedStore } from '@reduxjs/toolkit';
 
 import {
   GroupedEvent,
-  StorageAdapter,
+  EventStorageAdapter,
   EventDetail,
   PushEventOptions,
   Aggregate,
@@ -11,7 +11,7 @@ import {
 
 import {
   ReduxStoreEventAlreadyExistsError,
-  EventStoreReduxStateNotFoundError,
+  ReduxStateNotFoundError,
 } from '~/errors';
 
 import type { EventStoreReduxState, EventStoresReduxState } from './types';
@@ -28,7 +28,7 @@ type ReduxGroupedEvent<
   eventStorageAdapter: ReduxEventStorageAdapter;
 };
 
-const hasReduxStorageAdapter = (
+const hasReduxEventStorageAdapter = (
   groupedEvent: GroupedEvent,
 ): groupedEvent is ReduxGroupedEvent =>
   groupedEvent.eventStorageAdapter instanceof ReduxEventStorageAdapter;
@@ -55,7 +55,7 @@ const parseGroupedEvents = (
   })[] = [];
 
   groupedEventsInput.forEach((groupedEvent, groupedEventIndex) => {
-    if (!hasReduxStorageAdapter(groupedEvent)) {
+    if (!hasReduxEventStorageAdapter(groupedEvent)) {
       throw new Error(
         `Event group event #${groupedEventIndex} is not connected to a ReduxEventStorageAdapter`,
       );
@@ -102,19 +102,19 @@ const parseGroupedEvents = (
   };
 };
 
-export class ReduxEventStorageAdapter implements StorageAdapter {
-  getEvents: StorageAdapter['getEvents'];
+export class ReduxEventStorageAdapter implements EventStorageAdapter {
+  getEvents: EventStorageAdapter['getEvents'];
   pushEventSync: (
     eventDetail: EventDetail,
     options: PushEventOptions,
-  ) => Awaited<ReturnType<StorageAdapter['pushEvent']>>;
-  pushEvent: StorageAdapter['pushEvent'];
-  pushEventGroup: StorageAdapter['pushEventGroup'];
-  groupEvent: StorageAdapter['groupEvent'];
-  listAggregateIds: StorageAdapter['listAggregateIds'];
-  putSnapshot: StorageAdapter['putSnapshot'];
-  getLastSnapshot: StorageAdapter['getLastSnapshot'];
-  listSnapshots: StorageAdapter['listSnapshots'];
+  ) => Awaited<ReturnType<EventStorageAdapter['pushEvent']>>;
+  pushEvent: EventStorageAdapter['pushEvent'];
+  pushEventGroup: EventStorageAdapter['pushEventGroup'];
+  groupEvent: EventStorageAdapter['groupEvent'];
+  listAggregateIds: EventStorageAdapter['listAggregateIds'];
+  putSnapshot: EventStorageAdapter['putSnapshot'];
+  getLastSnapshot: EventStorageAdapter['getLastSnapshot'];
+  listSnapshots: EventStorageAdapter['listSnapshots'];
 
   store: EnhancedStore<EventStoresReduxState>;
   eventStoreId: string;
@@ -140,7 +140,7 @@ export class ReduxEventStorageAdapter implements StorageAdapter {
       const eventStoreState = this.store.getState()[eventStoreSliceName];
 
       if (eventStoreState === undefined)
-        throw new EventStoreReduxStateNotFoundError({ eventStoreSliceName });
+        throw new ReduxStateNotFoundError({ eventStoreSliceName });
 
       return eventStoreState;
     };
@@ -198,13 +198,13 @@ export class ReduxEventStorageAdapter implements StorageAdapter {
               .reverse()
               .forEach(groupedEventToRevert => {
                 const {
-                  eventStorageAdapter: eventToRevertStorageAdapter,
+                  eventStorageAdapter: eventToRevertEventStorageAdapter,
                   event: eventToRevert,
                 } = groupedEventToRevert;
                 const { aggregateId, version } = eventToRevert;
 
-                eventToRevertStorageAdapter.store.dispatch({
-                  type: `${eventToRevertStorageAdapter.eventStoreSliceName}/eventReverted`,
+                eventToRevertEventStorageAdapter.store.dispatch({
+                  type: `${eventToRevertEventStorageAdapter.eventStoreSliceName}/eventReverted`,
                   payload: { aggregateId, version },
                 });
               });

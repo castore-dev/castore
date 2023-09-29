@@ -39,10 +39,7 @@ export type ListSnapshotsOptions = {
   reverse?: boolean;
 };
 
-/**
- * @debt v2 "To rename EventStorageAdapter"
- */
-export interface StorageAdapter {
+export interface EventStorageAdapter {
   getEvents: (
     aggregateId: string,
     context: EventStoreContext,

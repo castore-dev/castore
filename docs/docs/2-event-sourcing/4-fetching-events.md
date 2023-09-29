@@ -10,18 +10,18 @@ For the moment, we didn't provide any actual way to store our events data. This 
 import { EventStore } from '@castore/core';
 
 await pokemonsEventStore.getEvents('pikachu1');
-// ❌ Will throw an `UndefinedStorageAdapterError`
+// ❌ Will throw an `UndefinedEventStorageAdapterError`
 
 const pokemonsEventStore = new EventStore({
   eventStoreId: 'POKEMONS',
   eventTypes: pokemonEventTypes,
-  reduce: pokemonsReducer,
+  reducer: pokemonsReducer,
   // 👇 Provide it in the constructor
-  storageAdapter: mySuperStorageAdapter,
+  eventStorageAdapter: mySuperEventStorageAdapter,
 });
 
 // 👇 ...or set/switch it in context later
-pokemonsEventStore.storageAdapter = mySuperStorageAdapter;
+pokemonsEventStore.eventStorageAdapter = mySuperEventStorageAdapter;
 
 const { events } = await pokemonsEventStore.getEvents('pikachu1');
 const { aggregate } = await pokemonsEventStore.getAggregate('pikachu1');

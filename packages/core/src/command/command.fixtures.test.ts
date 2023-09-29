@@ -1,12 +1,12 @@
 import { vi } from 'vitest';
 
 import { EventType, EventTypeDetail } from '~/event/eventType';
+import { EventStorageAdapter } from '~/eventStorageAdapter';
 import {
   eventAlreadyExistsErrorCode,
   EventAlreadyExistsError,
   EventStore,
 } from '~/eventStore';
-import { StorageAdapter } from '~/storageAdapter';
 
 import { tuple, Command } from './command';
 
@@ -19,7 +19,7 @@ export const putSnapshotMock = vi.fn();
 export const getLastSnapshotMock = vi.fn();
 export const listSnapshotsMock = vi.fn();
 
-export const mockStorageAdapter: StorageAdapter = {
+export const eventStorageAdapterMock: EventStorageAdapter = {
   pushEvent: pushEventMock,
   pushEventGroup: pushEventGroupMock,
   groupEvent: groupEventMock,
@@ -110,13 +110,13 @@ export const countersReducer = (
 
 export const counterEventStore = new EventStore({
   eventStoreId: 'Counters',
-  eventStoreEvents: [
+  eventTypes: [
     counterCreatedEvent,
     counterIncrementedEvent,
     counterDeletedEvent,
   ],
-  reduce: countersReducer,
-  storageAdapter: mockStorageAdapter,
+  reducer: countersReducer,
+  eventStorageAdapter: eventStorageAdapterMock,
 });
 
 export const requiredEventStores = tuple(counterEventStore);

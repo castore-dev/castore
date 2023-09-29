@@ -1,4 +1,4 @@
-export class EventStoreReduxStorageAdapterNotFoundError extends Error {
+export class ReduxEventStorageAdapterNotFoundError extends Error {
   eventStoreId: string;
 
   constructor({ eventStoreId }: { eventStoreId: string }) {

@@ -1,7 +1,7 @@
 import type {
   EventStore,
   EventStoreId,
-  EventStoreEventsDetails,
+  EventStoreEventDetails,
   EventStoreAggregate,
 } from '~/eventStore';
 
@@ -23,7 +23,7 @@ export type EventStoreNotificationMessage<EVENT_STORES extends EventStore> =
     ? EVENT_STORE extends EventStore
       ? NotificationMessage<
           EventStoreId<EVENT_STORE>,
-          EventStoreEventsDetails<EVENT_STORE>
+          EventStoreEventDetails<EVENT_STORE>
         >
       : never
     : never;
@@ -33,7 +33,7 @@ export type EventStoreStateCarryingMessage<EVENT_STORES extends EventStore> =
     ? EVENT_STORE extends EventStore
       ? StateCarryingMessage<
           EventStoreId<EVENT_STORE>,
-          EventStoreEventsDetails<EVENT_STORE>,
+          EventStoreEventDetails<EVENT_STORE>,
           EventStoreAggregate<EVENT_STORE>
         >
       : never

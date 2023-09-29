@@ -1,3 +1,3 @@
 export { ReduxStoreEventAlreadyExistsError } from './reduxStoreEventAlreadyExists';
-export { EventStoreReduxStateNotFoundError } from './eventStoreReduxStateNotFound';
-export { EventStoreReduxStorageAdapterNotFoundError } from './reduxEventStorageAdapterNotFound';
+export { ReduxStateNotFoundError } from './reduxStateNotFound';
+export { ReduxEventStorageAdapterNotFoundError } from './reduxEventStorageAdapterNotFound';

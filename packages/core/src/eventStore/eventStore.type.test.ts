@@ -4,13 +4,13 @@ import type { Aggregate } from '~/aggregate';
 import type { EventDetail, OptionalTimestamp } from '~/event/eventDetail';
 import type { EventTypeDetail } from '~/event/eventType';
 import type { GroupedEvent } from '~/event/groupedEvent';
+import type { EventsQueryOptions } from '~/eventStorageAdapter';
 import {
   EventStore,
   EventStoreAggregate,
-  EventStoreEventsDetails,
+  EventStoreEventDetails,
   GetAggregateOptions,
 } from '~/eventStore';
-import type { EventsQueryOptions } from '~/storageAdapter';
 
 import {
   pokemonsEventStore,
@@ -39,13 +39,13 @@ assertEventStoreId;
 // --- EVENTS DETAILS ---
 
 const assertPokemonEventDetails: A.Equals<
-  EventStoreEventsDetails<typeof pokemonsEventStore>,
+  EventStoreEventDetails<typeof pokemonsEventStore>,
   PokemonEventDetails
 > = 1;
 assertPokemonEventDetails;
 
 const assertAnyEventsDetails: A.Equals<
-  EventStoreEventsDetails<EventStore>,
+  EventStoreEventDetails<EventStore>,
   EventDetail
 > = 1;
 assertAnyEventsDetails;

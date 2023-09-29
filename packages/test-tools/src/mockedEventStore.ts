@@ -3,16 +3,16 @@ import {
   EventDetail,
   EventStore,
   EventType,
-  EventTypesDetails,
+  EventTypeDetails,
   Reducer,
   $Contravariant,
 } from '@castore/core';
-import { InMemoryStorageAdapter } from '@castore/inmemory-event-storage-adapter';
+import { InMemoryEventStorageAdapter } from '@castore/inmemory-event-storage-adapter';
 
 export class MockedEventStore<
   EVENT_STORE_ID extends string = string,
   EVENT_TYPES extends EventType[] = EventType[],
-  EVENT_DETAIL extends EventDetail = EventTypesDetails<EVENT_TYPES>,
+  EVENT_DETAIL extends EventDetail = EventTypeDetails<EVENT_TYPES>,
   $EVENT_DETAIL extends EventDetail = $Contravariant<EVENT_DETAIL, EventDetail>,
   REDUCER extends Reducer<Aggregate, $EVENT_DETAIL> = Reducer<
     Aggregate,
@@ -46,14 +46,16 @@ export class MockedEventStore<
   }) {
     super({
       eventStoreId: eventStore.eventStoreId,
-      eventStoreEvents: eventStore.eventStoreEvents,
-      reduce: eventStore.reduce,
+      eventTypes: eventStore.eventTypes,
+      reducer: eventStore.reducer,
       simulateSideEffect: eventStore.simulateSideEffect,
-      storageAdapter: new InMemoryStorageAdapter({ initialEvents }),
+      eventStorageAdapter: new InMemoryEventStorageAdapter({ initialEvents }),
     });
 
     this.initialEvents = initialEvents;
     this.reset = () =>
-      (this.storageAdapter = new InMemoryStorageAdapter({ initialEvents }));
+      (this.eventStorageAdapter = new InMemoryEventStorageAdapter({
+        initialEvents,
+      }));
   }
 }
