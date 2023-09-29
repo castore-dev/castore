@@ -115,7 +115,7 @@ export const counterEventStore = new EventStore({
     counterIncrementedEvent,
     counterDeletedEvent,
   ],
-  reduce: countersReducer,
+  reducer: countersReducer,
   eventStorageAdapter: eventStorageAdapterMock,
 });
 

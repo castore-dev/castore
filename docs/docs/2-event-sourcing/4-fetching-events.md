@@ -15,7 +15,7 @@ await pokemonsEventStore.getEvents('pikachu1');
 const pokemonsEventStore = new EventStore({
   eventStoreId: 'POKEMONS',
   eventTypes: pokemonEventTypes,
-  reduce: pokemonsReducer,
+  reducer: pokemonsReducer,
   // 👇 Provide it in the constructor
   eventStorageAdapter: mySuperEventStorageAdapter,
 });

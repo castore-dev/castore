@@ -63,7 +63,7 @@ export class EventStore<
           (prevAggregate || event.version === 1) &&
           groupedEvent?.eventStore !== undefined
         ) {
-          nextAggregate = groupedEvent.eventStore.reduce(prevAggregate, event);
+          nextAggregate = groupedEvent.eventStore.reducer(prevAggregate, event);
         }
 
         return { event, ...(nextAggregate ? { nextAggregate } : {}) };
@@ -94,10 +94,7 @@ export class EventStore<
    * @debt v2 "rename as eventTypes"
    */
   eventStoreEvents: EVENT_TYPES;
-  /**
-   * @debt v2 "rename as reducer"
-   */
-  reduce: REDUCER;
+  reducer: REDUCER;
   simulateSideEffect: SideEffectsSimulator<EVENT_DETAILS, $EVENT_DETAILS>;
 
   getEvents: EventsGetter<EVENT_DETAILS>;
@@ -125,7 +122,7 @@ export class EventStore<
   constructor({
     eventStoreId,
     eventStoreEvents,
-    reduce,
+    reducer,
     simulateSideEffect = (indexedEvents, event) => ({
       ...indexedEvents,
       [event.version]: event,
@@ -137,16 +134,13 @@ export class EventStore<
      * @debt v2 "rename as eventTypes"
      */
     eventStoreEvents: EVENT_TYPES;
-    /**
-     * @debt v2 "rename as reducer"
-     */
-    reduce: REDUCER;
+    reducer: REDUCER;
     simulateSideEffect?: SideEffectsSimulator<EVENT_DETAILS, $EVENT_DETAILS>;
     eventStorageAdapter?: EventStorageAdapter;
   }) {
     this.eventStoreId = eventStoreId;
     this.eventStoreEvents = eventStoreEvents;
-    this.reduce = reduce;
+    this.reducer = reducer;
     this.simulateSideEffect = simulateSideEffect;
     this.eventStorageAdapter = $eventStorageAdapter;
 
@@ -183,7 +177,7 @@ export class EventStore<
 
       let nextAggregate: AGGREGATE | undefined = undefined;
       if (prevAggregate || event.version === 1) {
-        nextAggregate = this.reduce(prevAggregate, event) as AGGREGATE;
+        nextAggregate = this.reducer(prevAggregate, event) as AGGREGATE;
       }
 
       const response = {
@@ -227,7 +221,7 @@ export class EventStore<
       );
 
     this.buildAggregate = (eventDetails, aggregate) =>
-      eventDetails.reduce(this.reduce, aggregate) as AGGREGATE | undefined;
+      eventDetails.reduce(this.reducer, aggregate) as AGGREGATE | undefined;
 
     this.getAggregate = async (aggregateId, { maxVersion } = {}) => {
       const { events } = await this.getEvents(aggregateId, { maxVersion });

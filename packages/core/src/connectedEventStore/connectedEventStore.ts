@@ -74,7 +74,7 @@ export class ConnectedEventStore<
   };
   eventStoreId: EVENT_STORE_ID;
   eventStoreEvents: EVENT_TYPES;
-  reduce: REDUCER;
+  reducer: REDUCER;
   simulateSideEffect: SideEffectsSimulator<EVENT_DETAIL, $EVENT_DETAIL>;
   getEvents: EventsGetter<EVENT_DETAIL>;
   pushEvent: EventPusher<EVENT_DETAIL, $EVENT_DETAIL, AGGREGATE, $AGGREGATE>;
@@ -114,7 +114,7 @@ export class ConnectedEventStore<
   ) {
     this.eventStoreId = eventStore.eventStoreId;
     this.eventStoreEvents = eventStore.eventStoreEvents;
-    this.reduce = eventStore.reduce;
+    this.reducer = eventStore.reducer;
     this.simulateSideEffect = eventStore.simulateSideEffect;
     this.getEvents = eventStore.getEvents;
     this.groupEvent = eventStore.groupEvent;

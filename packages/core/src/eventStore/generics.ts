@@ -16,7 +16,7 @@ export type EventStoreEventsDetails<EVENT_STORE extends EventStore> =
   NonNullable<EVENT_STORE['_types']>['details'];
 
 export type EventStoreReducer<EVENT_STORE extends EventStore> =
-  EVENT_STORE['reduce'];
+  EVENT_STORE['reducer'];
 
 export type EventStoreAggregate<EVENT_STORE extends EventStore> = NonNullable<
   EVENT_STORE['_types']

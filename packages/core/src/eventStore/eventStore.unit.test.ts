@@ -43,7 +43,7 @@ describe('event store', () => {
       new Set([
         'eventStoreId',
         'eventStoreEvents',
-        'reduce',
+        'reducer',
         'simulateSideEffect',
         'eventStorageAdapter',
         'getEventStorageAdapter',

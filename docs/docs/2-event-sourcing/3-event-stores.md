@@ -32,7 +32,7 @@ const pokemonsEventStore = new EventStore({
     pokemonLeveledUpEventType,
     ...
   ],
-  reduce: pokemonsReducer,
+  reducer: pokemonsReducer,
 });
 // ...and that's it 🥳
 ```
