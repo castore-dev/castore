@@ -27,9 +27,9 @@ yarn add @castore/core
 ## 👩‍💻 Usage
 
 ```ts
-import { InMemoryStorageAdapter } from '@castore/inmemory-event-storage-adapter';
+import { InMemoryEventStorageAdapter } from '@castore/inmemory-event-storage-adapter';
 
-const pokemonsEventsStorageAdapter = new InMemoryStorageAdapter({
+const pokemonsEventStorageAdapter = new InMemoryEventStorageAdapter({
   // 👇 You can specify an initial state for your event store
   initialEvents: [
     {
@@ -41,7 +41,7 @@ const pokemonsEventsStorageAdapter = new InMemoryStorageAdapter({
 
 const pokemonsEventStore = new EventStore({
   ...
-  storageAdapter: pokemonsEventsStorageAdapter,
+  eventStorageAdapter: pokemonsEventStorageAdapter,
 });
 ```
 

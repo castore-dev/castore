@@ -3,7 +3,7 @@ import type {
   Aggregate,
   EventDetail,
   PushEventOptions,
-  StorageAdapter,
+  EventStorageAdapter,
 } from '@castore/core';
 import { GroupedEvent } from '@castore/core';
 
@@ -17,13 +17,13 @@ type InMemoryGroupedEvent<
   EVENT_DETAILS extends EventDetail = EventDetail,
   AGGREGATE extends Aggregate = Aggregate,
 > = GroupedEvent<EVENT_DETAILS, AGGREGATE> & {
-  eventStorageAdapter: InMemoryStorageAdapter;
+  eventStorageAdapter: InMemoryEventStorageAdapter;
 };
 
-const hasInMemoryStorageAdapter = (
+const hasInMemoryEventStorageAdapter = (
   groupedEvent: GroupedEvent,
 ): groupedEvent is InMemoryGroupedEvent =>
-  groupedEvent.eventStorageAdapter instanceof InMemoryStorageAdapter;
+  groupedEvent.eventStorageAdapter instanceof InMemoryEventStorageAdapter;
 
 const hasContext = (
   groupedEvent: GroupedEvent,
@@ -47,7 +47,7 @@ const parseGroupedEvents = (
   })[] = [];
 
   groupedEventsInput.forEach((groupedEvent, groupedEventIndex) => {
-    if (!hasInMemoryStorageAdapter(groupedEvent)) {
+    if (!hasInMemoryEventStorageAdapter(groupedEvent)) {
       throw new Error(
         `Event group event #${groupedEventIndex} is not connected to a InMemoryEventStorageAdapter`,
       );
@@ -109,19 +109,19 @@ const getInitialEventTimestamp = (
   return initialEventTimestamp;
 };
 
-export class InMemoryStorageAdapter implements StorageAdapter {
-  getEvents: StorageAdapter['getEvents'];
+export class InMemoryEventStorageAdapter implements EventStorageAdapter {
+  getEvents: EventStorageAdapter['getEvents'];
   pushEventSync: (
     eventDetail: EventDetail,
     options: PushEventOptions,
-  ) => Awaited<ReturnType<StorageAdapter['pushEvent']>>;
-  pushEvent: StorageAdapter['pushEvent'];
-  pushEventGroup: StorageAdapter['pushEventGroup'];
-  groupEvent: StorageAdapter['groupEvent'];
-  listAggregateIds: StorageAdapter['listAggregateIds'];
-  putSnapshot: StorageAdapter['putSnapshot'];
-  getLastSnapshot: StorageAdapter['getLastSnapshot'];
-  listSnapshots: StorageAdapter['listSnapshots'];
+  ) => Awaited<ReturnType<EventStorageAdapter['pushEvent']>>;
+  pushEvent: EventStorageAdapter['pushEvent'];
+  pushEventGroup: EventStorageAdapter['pushEventGroup'];
+  groupEvent: EventStorageAdapter['groupEvent'];
+  listAggregateIds: EventStorageAdapter['listAggregateIds'];
+  putSnapshot: EventStorageAdapter['putSnapshot'];
+  getLastSnapshot: EventStorageAdapter['getLastSnapshot'];
+  listSnapshots: EventStorageAdapter['listSnapshots'];
 
   eventStore: { [aggregateId: string]: EventDetail[] };
 
@@ -201,20 +201,22 @@ export class InMemoryStorageAdapter implements StorageAdapter {
               .reverse()
               .forEach(groupedEventToRevert => {
                 const {
-                  eventStorageAdapter: eventToRevertStorageAdapter,
+                  eventStorageAdapter: eventToRevertEventStorageAdapter,
                   event: eventToRevert,
                 } = groupedEventToRevert;
                 const { aggregateId, version } = eventToRevert;
 
                 const revertedEvent =
-                  eventToRevertStorageAdapter.eventStore[aggregateId]?.pop();
+                  eventToRevertEventStorageAdapter.eventStore[
+                    aggregateId
+                  ]?.pop();
 
                 // Check that version is indeed last pushed event
                 if (revertedEvent?.version !== version) {
                   if (revertedEvent !== undefined) {
-                    eventToRevertStorageAdapter.eventStore[aggregateId]?.push(
-                      revertedEvent,
-                    );
+                    eventToRevertEventStorageAdapter.eventStore[
+                      aggregateId
+                    ]?.push(revertedEvent);
                   }
 
                   throw new Error(

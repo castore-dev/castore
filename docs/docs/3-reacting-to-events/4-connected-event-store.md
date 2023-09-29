@@ -30,7 +30,7 @@ await connectedPokemonsEventStore.pushEvent({
 
 :::info
 
-Note that setting a connected event store `storageAdapter` and `onEventPushed` properties will override those of the original event store instead.
+Note that setting a connected event store `eventStorageAdapter` and `onEventPushed` properties will override those of the original event store instead.
 
 :::
 
@@ -81,14 +81,14 @@ const messageChannel = connectedPokemonsEventStore.messageChannel;
 // => appMessageBus
 ```
 
-> ☝️ Note that the `storageAdapter` property will act as a pointer toward the original event store `storageAdapter`:
+> ☝️ Note that the `eventStorageAdapter` property will act as a pointer toward the original event store `eventStorageAdapter`:
 >
 > ```ts
-> originalEventStore.storageAdapter = myStorageAdapter;
-> connectedEventStore.storageAdapter; // => myStorageAdapter
+> originalEventStore.eventStorageAdapter = myEventStorageAdapter;
+> connectedEventStore.eventStorageAdapter; // => myEventStorageAdapter
 >
-> connectedEventStore.storageAdapter = anotherStorageAdapter;
-> originalEventStore.storageAdapter; // => anotherStorageAdapter
+> connectedEventStore.eventStorageAdapter = anotherEventStorageAdapter;
+> originalEventStore.eventStorageAdapter; // => anotherEventStorageAdapter
 > ```
 
 </details>

@@ -7,7 +7,7 @@ import {
   Reducer,
   $Contravariant,
 } from '@castore/core';
-import { InMemoryStorageAdapter } from '@castore/inmemory-event-storage-adapter';
+import { InMemoryEventStorageAdapter } from '@castore/inmemory-event-storage-adapter';
 
 export class MockedEventStore<
   EVENT_STORE_ID extends string = string,
@@ -49,11 +49,13 @@ export class MockedEventStore<
       eventStoreEvents: eventStore.eventStoreEvents,
       reduce: eventStore.reduce,
       simulateSideEffect: eventStore.simulateSideEffect,
-      storageAdapter: new InMemoryStorageAdapter({ initialEvents }),
+      eventStorageAdapter: new InMemoryEventStorageAdapter({ initialEvents }),
     });
 
     this.initialEvents = initialEvents;
     this.reset = () =>
-      (this.storageAdapter = new InMemoryStorageAdapter({ initialEvents }));
+      (this.eventStorageAdapter = new InMemoryEventStorageAdapter({
+        initialEvents,
+      }));
   }
 }

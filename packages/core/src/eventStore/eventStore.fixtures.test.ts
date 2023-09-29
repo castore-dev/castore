@@ -2,8 +2,8 @@
 import { vi } from 'vitest';
 
 import { EventType, EventTypeDetail } from '~/event/eventType';
+import { EventStorageAdapter } from '~/eventStorageAdapter';
 import { EventStore } from '~/eventStore';
-import { StorageAdapter } from '~/storageAdapter';
 
 export const pushEventMock = vi.fn();
 export const pushEventGroupMock = vi.fn();
@@ -14,7 +14,7 @@ export const putSnapshotMock = vi.fn();
 export const getLastSnapshotMock = vi.fn();
 export const listSnapshotsMock = vi.fn();
 
-export const storageAdapterMock: StorageAdapter = {
+export const eventStorageAdapterMock: EventStorageAdapter = {
   pushEvent: pushEventMock,
   pushEventGroup: pushEventGroupMock,
   groupEvent: groupEventMock,
@@ -120,5 +120,5 @@ export const pokemonsEventStore = new EventStore({
     pokemonLeveledUpEvent,
   ],
   reduce: pokemonsReducer,
-  storageAdapter: storageAdapterMock,
+  eventStorageAdapter: eventStorageAdapterMock,
 });

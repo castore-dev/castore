@@ -5,7 +5,7 @@ import type {
   EventsQueryOptions,
   ListAggregateIdsOptions,
   ListAggregateIdsOutput,
-} from '~/storageAdapter';
+} from '~/eventStorageAdapter';
 import type { $Contravariant } from '~/utils';
 
 export type Reducer<

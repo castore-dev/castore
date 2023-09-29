@@ -4,13 +4,13 @@ import type { Aggregate } from '~/aggregate';
 import type { EventDetail, OptionalTimestamp } from '~/event/eventDetail';
 import type { EventTypeDetail } from '~/event/eventType';
 import type { GroupedEvent } from '~/event/groupedEvent';
+import type { EventsQueryOptions } from '~/eventStorageAdapter';
 import {
   EventStore,
   EventStoreAggregate,
   EventStoreEventsDetails,
   GetAggregateOptions,
 } from '~/eventStore';
-import type { EventsQueryOptions } from '~/storageAdapter';
 
 import {
   pokemonsEventStore,

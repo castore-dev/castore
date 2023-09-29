@@ -26,14 +26,14 @@ yarn add @castore/core @aws-sdk/client-dynamodb
 
 This library exposes two adapters:
 
-- `DynamoDbSingleTableEventStorageAdapter` which can plug several event stores to a single DynamoDB table.
-- (_deprecated_) `DynamoDbEventStorageAdapter` which needs a DynamoDB table per event store.
+- `DynamoDBSingleTableEventStorageAdapter` which can plug several event stores to a single DynamoDB table.
+- (_deprecated_) `DynamoDBEventStorageAdapter` which needs a DynamoDB table per event store.
 
-The legacy `DynamoDbEventStorageAdapter` is still exposed for backward compatibility. It will be deprecated and renamed `LegacyDynamoDbEventStorageAdapter` in the v2, to be finally removed in the v3.
+The legacy `DynamoDBEventStorageAdapter` is still exposed for backward compatibility. It will be deprecated and renamed `LegacyDynamoDBEventStorageAdapter` in the v2, to be finally removed in the v3.
 
 Documentation:
 
-- [`DynamoDbSingleTableEventStorageAdapter`](#dynamodbsingletableeventstorageadapter)
+- [`DynamoDBSingleTableEventStorageAdapter`](#dynamodbsingletableeventstorageadapter)
   - [👩‍💻 Usage](#-usage)
   - [🤔 How it works](#-how-it-works)
   - [📝 Examples](#-examples)
@@ -43,36 +43,36 @@ Documentation:
   - [🤝 EventGroups](#-eventgroups)
   - [🔑 IAM](#-iam)
   - [📸 `ImageParser`](#-imageparser)
-- [`DynamoDbEventStorageAdapter`](#legacy-dynamodbeventstorageadapter)
+- [`DynamoDBEventStorageAdapter`](#legacy-dynamodbeventstorageadapter)
 
-## `DynamoDbSingleTableEventStorageAdapter`
+## `DynamoDBSingleTableEventStorageAdapter`
 
 ### 👩‍💻 Usage
 
 ```ts
 import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
 
-import { DynamoDbSingleTableEventStorageAdapter } from '@castore/dynamodb-event-storage-adapter';
+import { DynamoDBSingleTableEventStorageAdapter } from '@castore/dynamodb-event-storage-adapter';
 
-const dynamoDbClient = new DynamoDBClient({});
+const dynamoDBClient = new DynamoDBClient({});
 
-const pokemonsEventsStorageAdapter = new DynamoDbSingleTableEventStorageAdapter(
+const pokemonsEventStorageAdapter = new DynamoDBSingleTableEventStorageAdapter(
   {
     tableName: 'my-table-name',
-    dynamoDbClient,
+    dynamoDBClient,
   },
 );
 
 // 👇 Alternatively, provide a getter
-const pokemonsEventsStorageAdapter =
-  new DynamoDbSingleTableEventStorageAdapter({
+const pokemonsEventStorageAdapter =
+  new DynamoDBSingleTableEventStorageAdapter({
     tableName: () => process.env.MY_TABLE_NAME,
-    dynamoDbClient,
+    dynamoDBClient,
   });
 
 const pokemonsEventStore = new EventStore({
   ...
-  storageAdapter: pokemonsEventsStorageAdapter,
+  eventStorageAdapter: pokemonsEventStorageAdapter,
 });
 ```
 
@@ -227,7 +227,7 @@ resource "aws_dynamodb_table" "pokemons-events-table" {
 
 ### 🤝 EventGroups
 
-This adapter implements the [EventGroups](https://github.com/castore-dev/castore/#event-groups) API using the [DynamoDb Transactions API](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/transaction-apis.html):
+This adapter implements the [EventGroups](https://github.com/castore-dev/castore/#event-groups) API using the [DynamoDB Transactions API](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/transaction-apis.html):
 
 ```ts
 import { EventStore } from '@castore/core';
@@ -244,7 +244,7 @@ await EventStore.pushEventGroup(
 
 Note that:
 
-- All the event stores involved in the transaction need to use the `DynamoDbSingleTableEventStorageAdapter`
+- All the event stores involved in the transaction need to use the `DynamoDBSingleTableEventStorageAdapter`
 - This util inherits of the [`TransactWriteItem` API](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/transaction-apis.html#transaction-apis-txwriteitems) limitations: It can target up to 100 distinct events in one or more DynamoDB tables within the same AWS account and in the same Region.
 
 ### 🔑 IAM
@@ -257,7 +257,7 @@ Required IAM permissions for each operations:
 
 ### 📸 `ImageParser`
 
-This library also exposes a useful `ImageParser` class to parse [DynamoDB stream](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/Streams.html) images from a `DynamoDbSingleTableEventStorageAdapter`. It will build a correctly typed `NotificationMessage` ouf of a stream image, unmarshalling it, removing the prefix of the `aggregateId` in the process and validating the `eventStoreId`:
+This library also exposes a useful `ImageParser` class to parse [DynamoDB stream](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/Streams.html) images from a `DynamoDBSingleTableEventStorageAdapter`. It will build a correctly typed `NotificationMessage` ouf of a stream image, unmarshalling it, removing the prefix of the `aggregateId` in the process and validating the `eventStoreId`:
 
 ```ts
 import { ImageParser } from '@castore/dynamodb-event-storage-adapter';
@@ -277,7 +277,7 @@ const notificationMessage = imageParser.parseImage(
 );
 ```
 
-## Legacy `DynamoDbEventStorageAdapter`
+## Legacy `DynamoDBEventStorageAdapter`
 
 <details>
 <summary><b>🔧 Documentation</b></summary>
@@ -287,24 +287,24 @@ const notificationMessage = imageParser.parseImage(
 ```ts
 import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
 
-import { DynamoDbEventStorageAdapter } from '@castore/dynamodb-event-storage-adapter';
+import { DynamoDBEventStorageAdapter } from '@castore/dynamodb-event-storage-adapter';
 
-const dynamoDbClient = new DynamoDBClient({});
+const dynamoDBClient = new DynamoDBClient({});
 
-const pokemonsEventsStorageAdapter = new DynamoDbEventStorageAdapter({
+const pokemonsEventStorageAdapter = new DynamoDBEventStorageAdapter({
   tableName: 'my-table-name',
-  dynamoDbClient,
+  dynamoDBClient,
 });
 
 // 👇 Alternatively, provide a getter
-const pokemonsEventsStorageAdapter = new DynamoDbEventStorageAdapter({
+const pokemonsEventStorageAdapter = new DynamoDBEventStorageAdapter({
   tableName: () => process.env.MY_TABLE_NAME,
-  dynamoDbClient,
+  dynamoDBClient,
 });
 
 const pokemonsEventStore = new EventStore({
   ...
-  storageAdapter: pokemonsEventsStorageAdapter
+  eventStorageAdapter: pokemonsEventStorageAdapter
 })
 ```
 
@@ -459,7 +459,7 @@ resource "aws_dynamodb_table" "pokemons-events-table" {
 
 ### 🤝 EventGroups
 
-This adapter implements the [EventGroups](https://github.com/castore-dev/castore/#event-groups) API using the [DynamoDb Transactions API](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/transaction-apis.html):
+This adapter implements the [EventGroups](https://github.com/castore-dev/castore/#event-groups) API using the [DynamoDB Transactions API](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/transaction-apis.html):
 
 ```ts
 import { EventStore } from '@castore/core';
@@ -476,7 +476,7 @@ await EventStore.pushEventGroup(
 
 Note that:
 
-- All the event stores involved in the transaction need to use the `DynamoDbEventStorageAdapter`
+- All the event stores involved in the transaction need to use the `DynamoDBEventStorageAdapter`
 - This util inherits of the [`TransactWriteItem` API](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/transaction-apis.html#transaction-apis-txwriteitems) limitations: It can target up to 100 distinct events in one or more DynamoDB tables within the same AWS account and in the same Region.
 
 ### 🔑 IAM

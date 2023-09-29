@@ -13,7 +13,7 @@ describe('mockEventStore', () => {
   ]);
 
   it('does not mutate the original event store', () => {
-    expect(pokemonsEventStore.storageAdapter).toBeUndefined();
+    expect(pokemonsEventStore.eventStorageAdapter).toBeUndefined();
   });
 
   it('gives the event store an in memory storage adapter and pushes the events', async () => {

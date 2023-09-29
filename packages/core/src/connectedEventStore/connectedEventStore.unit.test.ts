@@ -1,17 +1,17 @@
 import { vi } from 'vitest';
 
 import { GroupedEvent } from '~/event/groupedEvent';
+import type { EventStorageAdapter } from '~/eventStorageAdapter';
 import { EventStore } from '~/eventStore/eventStore';
 import {
   pokemonsEventStore,
-  storageAdapterMock,
+  eventStorageAdapterMock,
   pikachuAppearedEvent,
   pikachuLeveledUpEvent,
   pikachuCaughtEvent,
   pushEventGroupMock,
   PokemonEventDetails,
 } from '~/eventStore/eventStore.fixtures.test';
-import { StorageAdapter } from '~/storageAdapter';
 
 import {
   pokemonsEventStoreWithNotificationMessageQueue,
@@ -25,7 +25,7 @@ const publishPushedEventMock = vi
 
 const pushEvent = vi.spyOn(pokemonsEventStore, 'pushEvent');
 
-export const anotherStorageAdapterMock: StorageAdapter = {
+export const anotherEventStorageAdapterMock: EventStorageAdapter = {
   pushEvent: vi.fn(),
   pushEventGroup: vi.fn(),
   groupEvent: vi.fn(),
@@ -123,12 +123,12 @@ describe('ConnectedEventStore', () => {
           event: pikachuCaughtEvent,
           prevAggregate: prevPikachuAggregate,
           eventStore: pokemonsEventStoreWithStateCarryingMessageBus,
-          eventStorageAdapter: storageAdapterMock,
+          eventStorageAdapter: eventStorageAdapterMock,
         }),
         new GroupedEvent({
           event: charizardLeveledUpEvent,
           eventStore: pokemonsEventStoreWithNotificationMessageQueue,
-          eventStorageAdapter: storageAdapterMock,
+          eventStorageAdapter: eventStorageAdapterMock,
         }),
       ] as const;
 
@@ -153,20 +153,24 @@ describe('ConnectedEventStore', () => {
     });
   });
 
-  describe('storageAdapter', () => {
+  describe('eventStorageAdapterMock', () => {
     it('sets & gets the original event storage adapter', () => {
-      pokemonsEventStoreWithNotificationMessageQueue.storageAdapter =
-        anotherStorageAdapterMock;
+      pokemonsEventStoreWithNotificationMessageQueue.eventStorageAdapter =
+        anotherEventStorageAdapterMock;
       expect(
-        pokemonsEventStoreWithNotificationMessageQueue.storageAdapter,
-      ).toBe(anotherStorageAdapterMock);
-      expect(pokemonsEventStore.storageAdapter).toBe(anotherStorageAdapterMock);
+        pokemonsEventStoreWithNotificationMessageQueue.eventStorageAdapter,
+      ).toBe(anotherEventStorageAdapterMock);
+      expect(pokemonsEventStore.eventStorageAdapter).toBe(
+        anotherEventStorageAdapterMock,
+      );
 
-      pokemonsEventStore.storageAdapter = storageAdapterMock;
+      pokemonsEventStore.eventStorageAdapter = eventStorageAdapterMock;
       expect(
-        pokemonsEventStoreWithNotificationMessageQueue.storageAdapter,
-      ).toBe(storageAdapterMock);
-      expect(pokemonsEventStore.storageAdapter).toBe(storageAdapterMock);
+        pokemonsEventStoreWithNotificationMessageQueue.eventStorageAdapter,
+      ).toBe(eventStorageAdapterMock);
+      expect(pokemonsEventStore.eventStorageAdapter).toBe(
+        eventStorageAdapterMock,
+      );
     });
   });
 });

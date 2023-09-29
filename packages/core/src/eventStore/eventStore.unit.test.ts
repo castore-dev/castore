@@ -22,7 +22,7 @@ import {
   getLastSnapshotMock,
   putSnapshotMock,
   groupEventMock,
-  storageAdapterMock,
+  eventStorageAdapterMock,
   PokemonEventDetails,
 } from './eventStore.fixtures.test';
 
@@ -45,8 +45,8 @@ describe('event store', () => {
         'eventStoreEvents',
         'reduce',
         'simulateSideEffect',
-        'storageAdapter',
-        'getStorageAdapter',
+        'eventStorageAdapter',
+        'getEventStorageAdapter',
         'pushEvent',
         'groupEvent',
         'buildAggregate',
@@ -194,7 +194,7 @@ describe('event store', () => {
     groupEventMock.mockReturnValue(
       new GroupedEvent({
         event: pikachuLeveledUpEvent,
-        eventStorageAdapter: storageAdapterMock,
+        eventStorageAdapter: eventStorageAdapterMock,
       }),
     );
 
@@ -245,11 +245,11 @@ describe('event store', () => {
       const eventGroup = [
         new GroupedEvent({
           event: pikachuLeveledUpEvent,
-          eventStorageAdapter: storageAdapterMock,
+          eventStorageAdapter: eventStorageAdapterMock,
         }),
         new GroupedEvent({
           event: charizardLeveledUpEvent,
-          eventStorageAdapter: storageAdapterMock,
+          eventStorageAdapter: eventStorageAdapterMock,
         }),
       ] as const;
 
@@ -278,11 +278,11 @@ describe('event store', () => {
         new GroupedEvent({
           event: pikachuLeveledUpEvent,
           eventStore: pokemonsEventStore,
-          eventStorageAdapter: storageAdapterMock,
+          eventStorageAdapter: eventStorageAdapterMock,
         }),
         new GroupedEvent({
           event: charizardLeveledUpEvent,
-          eventStorageAdapter: storageAdapterMock,
+          eventStorageAdapter: eventStorageAdapterMock,
         }),
       ] as const;
 
@@ -308,11 +308,11 @@ describe('event store', () => {
             pikachuAppearedEvent,
           ]),
           eventStore: pokemonsEventStore,
-          eventStorageAdapter: storageAdapterMock,
+          eventStorageAdapter: eventStorageAdapterMock,
         }),
         new GroupedEvent({
           event: charizardLeveledUpEvent,
-          eventStorageAdapter: storageAdapterMock,
+          eventStorageAdapter: eventStorageAdapterMock,
         }),
       ] as const;
 

@@ -13,7 +13,7 @@ import { marshall, unmarshall } from '@aws-sdk/util-dynamodb';
 import type {
   Aggregate,
   EventDetail,
-  StorageAdapter,
+  EventStorageAdapter,
   PushEventOptions,
 } from '@castore/core';
 import { GroupedEvent } from '@castore/core';
@@ -45,18 +45,18 @@ const unprefixAggregateId = (
     ? aggregateId.slice(eventStoreId.length + 1)
     : aggregateId;
 
-type DynamoDbSingleTableGroupedEvent<
+type DynamoDBSingleTableGroupedEvent<
   EVENT_DETAILS extends EventDetail = EventDetail,
   AGGREGATE extends Aggregate = Aggregate,
 > = GroupedEvent<EVENT_DETAILS, AGGREGATE> & {
-  eventStorageAdapter: DynamoDbSingleTableEventStorageAdapter;
+  eventStorageAdapter: DynamoDBSingleTableEventStorageAdapter;
 };
 
-const hasDynamoDbSingleTableEventStorageAdapter = (
+const hasDynamoDBSingleTableEventStorageAdapter = (
   groupedEvent: GroupedEvent,
-): groupedEvent is DynamoDbSingleTableGroupedEvent =>
+): groupedEvent is DynamoDBSingleTableGroupedEvent =>
   groupedEvent.eventStorageAdapter instanceof
-  DynamoDbSingleTableEventStorageAdapter;
+  DynamoDBSingleTableEventStorageAdapter;
 
 const hasContext = (
   groupedEvent: GroupedEvent,
@@ -64,7 +64,7 @@ const hasContext = (
   context: NonNullable<GroupedEvent['context']>;
 } => groupedEvent.context !== undefined;
 
-type ParsedGroupedEvent = DynamoDbSingleTableGroupedEvent & {
+type ParsedGroupedEvent = DynamoDBSingleTableGroupedEvent & {
   context: NonNullable<GroupedEvent['context']>;
 };
 
@@ -80,9 +80,9 @@ const parseGroupedEvents = (
   const groupedEvents: ParsedGroupedEvent[] = [];
 
   groupedEventsInput.forEach((groupedEvent, groupedEventIndex) => {
-    if (!hasDynamoDbSingleTableEventStorageAdapter(groupedEvent)) {
+    if (!hasDynamoDBSingleTableEventStorageAdapter(groupedEvent)) {
       throw new Error(
-        `Event group event #${groupedEventIndex} is not connected to a DynamoDbEventStorageAdapter`,
+        `Event group event #${groupedEventIndex} is not connected to a DynamoDBEventStorageAdapter`,
       );
     }
 
@@ -130,34 +130,36 @@ const parseGroupedEvents = (
   };
 };
 
-export class DynamoDbSingleTableEventStorageAdapter implements StorageAdapter {
-  getEvents: StorageAdapter['getEvents'];
+export class DynamoDBSingleTableEventStorageAdapter
+  implements EventStorageAdapter
+{
+  getEvents: EventStorageAdapter['getEvents'];
   getPushEventInput: (
     eventDetail: EventDetail,
     options: PushEventOptions,
   ) => PutItemCommandInput;
-  pushEvent: StorageAdapter['pushEvent'];
-  pushEventGroup: StorageAdapter['pushEventGroup'];
-  groupEvent: StorageAdapter['groupEvent'];
-  listAggregateIds: StorageAdapter['listAggregateIds'];
+  pushEvent: EventStorageAdapter['pushEvent'];
+  pushEventGroup: EventStorageAdapter['pushEventGroup'];
+  groupEvent: EventStorageAdapter['groupEvent'];
+  listAggregateIds: EventStorageAdapter['listAggregateIds'];
 
-  putSnapshot: StorageAdapter['putSnapshot'];
-  getLastSnapshot: StorageAdapter['getLastSnapshot'];
-  listSnapshots: StorageAdapter['listSnapshots'];
+  putSnapshot: EventStorageAdapter['putSnapshot'];
+  getLastSnapshot: EventStorageAdapter['getLastSnapshot'];
+  listSnapshots: EventStorageAdapter['listSnapshots'];
 
   getTableName: () => string;
   tableName: string | (() => string);
-  dynamoDbClient: DynamoDBClient;
+  dynamoDBClient: DynamoDBClient;
 
   constructor({
     tableName,
-    dynamoDbClient,
+    dynamoDBClient,
   }: {
     tableName: string | (() => string);
-    dynamoDbClient: DynamoDBClient;
+    dynamoDBClient: DynamoDBClient;
   }) {
     this.tableName = tableName;
-    this.dynamoDbClient = dynamoDbClient;
+    this.dynamoDBClient = dynamoDBClient;
 
     this.getTableName = () =>
       typeof this.tableName === 'string' ? this.tableName : this.tableName();
@@ -199,7 +201,7 @@ export class DynamoDbSingleTableEventStorageAdapter implements StorageAdapter {
         ...(limit !== undefined ? { Limit: limit } : {}),
       });
 
-      let eventsQueryResult = await this.dynamoDbClient.send(
+      let eventsQueryResult = await this.dynamoDBClient.send(
         eventsQueryCommand,
       );
       marshalledEvents.push(...(eventsQueryResult.Items ?? []));
@@ -207,7 +209,7 @@ export class DynamoDbSingleTableEventStorageAdapter implements StorageAdapter {
       while (eventsQueryResult.LastEvaluatedKey !== undefined) {
         eventsQueryCommand.input.ExclusiveStartKey =
           eventsQueryResult.LastEvaluatedKey;
-        eventsQueryResult = await this.dynamoDbClient.send(eventsQueryCommand);
+        eventsQueryResult = await this.dynamoDBClient.send(eventsQueryCommand);
 
         marshalledEvents.push(...(eventsQueryResult.Items ?? []));
       }
@@ -278,7 +280,7 @@ export class DynamoDbSingleTableEventStorageAdapter implements StorageAdapter {
       const { aggregateId, version } = event;
 
       try {
-        await this.dynamoDbClient.send(putEventCommand);
+        await this.dynamoDBClient.send(putEventCommand);
       } catch (error) {
         if (
           error instanceof Error &&
@@ -308,7 +310,7 @@ export class DynamoDbSingleTableEventStorageAdapter implements StorageAdapter {
 
       const [firstGroupedEvent] = groupedEvents;
       const dynamodbClient =
-        firstGroupedEvent.eventStorageAdapter.dynamoDbClient;
+        firstGroupedEvent.eventStorageAdapter.dynamoDBClient;
 
       try {
         await dynamodbClient.send(
@@ -418,7 +420,7 @@ export class DynamoDbSingleTableEventStorageAdapter implements StorageAdapter {
       const {
         Items: unmarshalledInitialEvents = [],
         LastEvaluatedKey: lastEvaluatedKey,
-      } = await this.dynamoDbClient.send(
+      } = await this.dynamoDBClient.send(
         new QueryCommand(aggregateIdsQueryCommandInput),
       );
 

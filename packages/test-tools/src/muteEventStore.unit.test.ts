@@ -11,7 +11,7 @@ describe('muteEventStore', () => {
   muteEventStore(pokemonsEventStore, [pikachuAppearedEvent]);
 
   it('does mutate the original event store', () => {
-    expect(pokemonsEventStore.storageAdapter).not.toBeUndefined();
+    expect(pokemonsEventStore.eventStorageAdapter).not.toBeUndefined();
   });
 
   it('gives the event store an in memory storage adapter and pushes the events', async () => {

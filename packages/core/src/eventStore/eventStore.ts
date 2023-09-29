@@ -3,11 +3,11 @@ import type { Aggregate } from '~/aggregate';
 import type { EventDetail } from '~/event/eventDetail';
 import type { EventType, EventTypesDetails } from '~/event/eventType';
 import type { GroupedEvent } from '~/event/groupedEvent';
-import type { StorageAdapter } from '~/storageAdapter';
+import type { EventStorageAdapter } from '~/eventStorageAdapter';
 import type { $Contravariant } from '~/utils';
 
 import { AggregateNotFoundError } from './errors/aggregateNotFound';
-import { UndefinedStorageAdapterError } from './errors/undefinedStorageAdapter';
+import { UndefinedEventStorageAdapterError } from './errors/undefinedEventStorageAdapter';
 import type {
   AggregateIdsLister,
   EventPusher,
@@ -119,11 +119,8 @@ export class EventStore<
   getAggregate: AggregateGetter<EVENT_DETAILS, AGGREGATE>;
   getExistingAggregate: AggregateGetter<EVENT_DETAILS, AGGREGATE, true>;
   simulateAggregate: AggregateSimulator<$EVENT_DETAILS, AGGREGATE>;
-  /**
-   * @debt v2 "rename as eventStorageAdapter"
-   */
-  storageAdapter?: StorageAdapter;
-  getStorageAdapter: () => StorageAdapter;
+  eventStorageAdapter?: EventStorageAdapter;
+  getEventStorageAdapter: () => EventStorageAdapter;
 
   constructor({
     eventStoreId,
@@ -133,7 +130,7 @@ export class EventStore<
       ...indexedEvents,
       [event.version]: event,
     }),
-    storageAdapter: $storageAdapter,
+    eventStorageAdapter: $eventStorageAdapter,
   }: {
     eventStoreId: EVENT_STORE_ID;
     /**
@@ -145,29 +142,26 @@ export class EventStore<
      */
     reduce: REDUCER;
     simulateSideEffect?: SideEffectsSimulator<EVENT_DETAILS, $EVENT_DETAILS>;
-    storageAdapter?: StorageAdapter;
+    eventStorageAdapter?: EventStorageAdapter;
   }) {
     this.eventStoreId = eventStoreId;
     this.eventStoreEvents = eventStoreEvents;
     this.reduce = reduce;
     this.simulateSideEffect = simulateSideEffect;
-    /**
-     * @debt v2 "rename as eventStorageAdapter"
-     */
-    this.storageAdapter = $storageAdapter;
+    this.eventStorageAdapter = $eventStorageAdapter;
 
-    this.getStorageAdapter = () => {
-      if (!this.storageAdapter) {
-        throw new UndefinedStorageAdapterError({
+    this.getEventStorageAdapter = () => {
+      if (!this.eventStorageAdapter) {
+        throw new UndefinedEventStorageAdapterError({
           eventStoreId: this.eventStoreId,
         });
       }
 
-      return this.storageAdapter;
+      return this.eventStorageAdapter;
     };
 
     this.getEvents = (aggregateId, queryOptions) =>
-      this.getStorageAdapter().getEvents(
+      this.getEventStorageAdapter().getEvents(
         aggregateId,
         { eventStoreId: this.eventStoreId },
         queryOptions,
@@ -180,9 +174,9 @@ export class EventStore<
       eventDetail,
       { prevAggregate, force = false } = {},
     ) => {
-      const storageAdapter = this.getStorageAdapter();
+      const eventStorageAdapter = this.getEventStorageAdapter();
 
-      const { event } = (await storageAdapter.pushEvent(eventDetail, {
+      const { event } = (await eventStorageAdapter.pushEvent(eventDetail, {
         eventStoreId: this.eventStoreId,
         force,
       })) as { event: $EVENT_DETAILS };
@@ -210,9 +204,9 @@ export class EventStore<
     };
 
     this.groupEvent = (eventDetail, { prevAggregate } = {}) => {
-      const storageAdapter = this.getStorageAdapter();
+      const eventStorageAdapter = this.getEventStorageAdapter();
 
-      const groupedEvent = storageAdapter.groupEvent(
+      const groupedEvent = eventStorageAdapter.groupEvent(
         eventDetail,
       ) as GroupedEvent<EVENT_DETAILS, AGGREGATE>;
 
@@ -227,7 +221,7 @@ export class EventStore<
     };
 
     this.listAggregateIds = options =>
-      this.getStorageAdapter().listAggregateIds(
+      this.getEventStorageAdapter().listAggregateIds(
         { eventStoreId: this.eventStoreId },
         options,
       );

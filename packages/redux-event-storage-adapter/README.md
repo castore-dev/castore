@@ -44,7 +44,7 @@ const MyReactApp = () => (
 );
 ```
 
-And that's it 🙌 `configureCastore` not only configures the Redux store but also connects it to the event stores by replacing their `storageAdapter`.
+And that's it 🙌 `configureCastore` not only configures the Redux store but also connects it to the event stores by replacing their `eventStorageAdapter`.
 
 You can use the `pushEvent` method as usual:
 
@@ -121,7 +121,7 @@ const store = configureStore({
 
 // 👇 Connect the event stores to the store
 eventStores.forEach(eventStore => {
-  eventStore.storageAdapter = new ReduxEventStorageAdapter({
+  eventStore.eventStorageAdapter = new ReduxEventStorageAdapter({
     store,
     eventStoreId: eventStore.eventStoreId,
     // 👇 Don't forget the prefix if one has been provided

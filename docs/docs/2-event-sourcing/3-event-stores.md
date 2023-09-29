@@ -54,7 +54,7 @@ const pokemonsEventStore = new EventStore({
 - <code>eventStoreEvents <i>(EventType[])</i></code>: The list of event types in the event store
 - <code>reduce <i>(EventType[])</i></code>: A <a href="../aggregates-reducers">reducer function</a> that can be applied to the store event types
 - <code>onEventPushed <i>(?(pushEventResponse: PushEventResponse) => Promise&lt;void&gt;)</i></code>: To run a callback after events are pushed (input is exactly the return value of the <code>pushEvent</code> method)
-- <code>storageAdapter <i>(?EventStorageAdapter)</i></code>: See <a href="../fetching-events">fetching events</a>
+- <code>eventStorageAdapter <i>(?EventStorageAdapter)</i></code>: See <a href="../fetching-events">fetching events</a>
 
 > ☝️ The return type of the `reducer` is used to infer the `Aggregate` type of the `EventStore`, so it is important to type it explicitely.
 
@@ -90,26 +90,26 @@ const onEventPushed = pokemonsEventStore.onEventPushed;
 // => undefined (we did not provide one in this example)
 ```
 
-- <code>storageAdapter <i>(?EventStorageAdapter)</i></code>: See <a href="../fetching-events">fetching events</a>
+- <code>eventStorageAdapter <i>(?EventStorageAdapter)</i></code>: See <a href="../fetching-events">fetching events</a>
 
 ```ts
-const storageAdapter = pokemonsEventStore.storageAdapter;
+const eventStorageAdapter = pokemonsEventStore.eventStorageAdapter;
 // => undefined (we did not provide one in this example)
 ```
 
-> ☝️ The `storageAdapter` is not read-only so you do not have to provide it right away.
+> ☝️ The `eventStorageAdapter` is not read-only so you do not have to provide it right away.
 
 ---
 
 **Sync Methods:**
 
-- <code>getStorageAdapter <i>(() => EventStorageAdapter)</i></code>: Returns the event store event storage adapter if it exists. Throws an <code>UndefinedStorageAdapterError</code> if it doesn't.
+- <code>getEventStorageAdapter <i>(() => EventStorageAdapter)</i></code>: Returns the event store event storage adapter if it exists. Throws an <code>UndefinedEventStorageAdapterError</code> if it doesn't.
 
 ```ts
-import { UndefinedStorageAdapterError } from '@castore/core';
+import { UndefinedEventStorageAdapterError } from '@castore/core';
 
-expect(() => pokemonsEventStore.getStorageAdapter()).toThrow(
-  new UndefinedStorageAdapterError({ eventStoreId: 'POKEMONS' }),
+expect(() => pokemonsEventStore.getEventStorageAdapter()).toThrow(
+  new UndefinedEventStorageAdapterError({ eventStoreId: 'POKEMONS' }),
 );
 // => true
 ```
@@ -126,7 +126,7 @@ const myPikachuAggregate = pokemonsEventStore.buildAggregate(myPikachuEvents);
 
 **Async Methods:**
 
-The following methods interact with the data layer of your event store through its [`EventStorageAdapter`](./4-fetching-events.md). They will throw an `UndefinedStorageAdapterError` if you did not provide one.
+The following methods interact with the data layer of your event store through its [`EventStorageAdapter`](./4-fetching-events.md). They will throw an `UndefinedEventStorageAdapterError` if you did not provide one.
 
 - <code>getEvents <i>((aggregateId: string, opt?: OptionsObj) => Promise&lt;ResponseObj&gt;)</i></code>: Retrieves the events of an aggregate, ordered by <code>version</code>. Returns an empty array if no event is found for this <code>aggregateId</code>.
 

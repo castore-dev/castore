@@ -1,6 +1,7 @@
 import type { Aggregate } from '~/aggregate';
 import type { EventDetail } from '~/event/eventDetail';
 import type { EventType, EventTypesDetails } from '~/event/eventType';
+import type { EventStorageAdapter } from '~/eventStorageAdapter';
 import type {
   Reducer,
   AggregateIdsLister,
@@ -14,7 +15,6 @@ import type {
   OnEventPushed,
 } from '~/eventStore';
 import type { EventStoreMessageChannel } from '~/messaging';
-import type { StorageAdapter } from '~/storageAdapter';
 import type { $Contravariant } from '~/utils';
 
 import { publishPushedEvent } from './publishPushedEvent';
@@ -87,7 +87,7 @@ export class ConnectedEventStore<
   getAggregate: AggregateGetter<EVENT_DETAIL, AGGREGATE>;
   getExistingAggregate: AggregateGetter<EVENT_DETAIL, AGGREGATE, true>;
   simulateAggregate: AggregateSimulator<$EVENT_DETAIL, AGGREGATE>;
-  getStorageAdapter: () => StorageAdapter;
+  getEventStorageAdapter: () => EventStorageAdapter;
 
   eventStore: EventStore<
     EVENT_STORE_ID,
@@ -123,7 +123,7 @@ export class ConnectedEventStore<
     this.getAggregate = eventStore.getAggregate;
     this.getExistingAggregate = eventStore.getExistingAggregate;
     this.simulateAggregate = eventStore.simulateAggregate;
-    this.getStorageAdapter = eventStore.getStorageAdapter;
+    this.getEventStorageAdapter = eventStore.getEventStorageAdapter;
 
     this.pushEvent = async (eventInput, options = {}) => {
       const response = await this.eventStore.pushEvent(eventInput, options);
@@ -137,15 +137,14 @@ export class ConnectedEventStore<
     this.messageChannel = messageChannel;
   }
 
-  /**
-   * @debt v2 "rename as eventStorageAdapter"
-   */
-  set storageAdapter(storageAdapter: StorageAdapter | undefined) {
-    this.eventStore.storageAdapter = storageAdapter;
+  set eventStorageAdapter(
+    eventStorageAdapter: EventStorageAdapter | undefined,
+  ) {
+    this.eventStore.eventStorageAdapter = eventStorageAdapter;
   }
 
-  get storageAdapter(): StorageAdapter | undefined {
-    return this.eventStore.storageAdapter;
+  get eventStorageAdapter(): EventStorageAdapter | undefined {
+    return this.eventStore.eventStorageAdapter;
   }
 
   set onEventPushed(

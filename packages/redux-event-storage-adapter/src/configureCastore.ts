@@ -19,7 +19,7 @@ export const configureCastore = <EVENT_STORES extends EventStore[]>({
   const store = configureStore({ reducer: castoreReducers });
 
   eventStores.forEach(eventStore => {
-    eventStore.storageAdapter = new ReduxEventStorageAdapter({
+    eventStore.eventStorageAdapter = new ReduxEventStorageAdapter({
       store,
       eventStoreId: eventStore.eventStoreId,
       prefix,

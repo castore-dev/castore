@@ -1,5 +1,5 @@
-export { DynamoDbEventStorageAdapter } from './adapter';
-export { DynamoDbSingleTableEventStorageAdapter } from './singleTableAdapter';
+export { LegacyDynamoDBEventStorageAdapter } from './legacyAdapter';
+export { DynamoDBSingleTableEventStorageAdapter } from './singleTableAdapter';
 export {
   EVENT_TABLE_PK,
   EVENT_TABLE_SK,
@@ -11,6 +11,4 @@ export {
   EVENT_TABLE_EVENT_STORE_ID_KEY,
   EVENT_TABLE_INITIAL_EVENT_INDEX_NAME,
 } from './constants';
-export { formatEventForTransaction } from './utils/formatEventForTransaction';
-export { pushEventsTransaction } from './utils/pushEventsTransaction';
 export { ImageParser } from './utils/imageParser';

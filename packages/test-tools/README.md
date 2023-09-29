@@ -26,7 +26,7 @@ yarn add @castore/core
 
 ### MockEventStore
 
-The `mockEventStore` util returns a copy of the provided `EventStore` connected to an [`InMemoryStorageAdapter`](https://github.com/castore-dev/castore/tree/main/packages/inmemory-event-storage-adapter), empty or with a given initial state. It follows the `EventStore` interface but adds a `reset` method to reset it to the provided initial state. The original event store is not muted.
+The `mockEventStore` util returns a copy of the provided `EventStore` connected to an [`InMemoryEventStorageAdapter`](https://github.com/castore-dev/castore/tree/main/packages/inmemory-event-storage-adapter), empty or with a given initial state. It follows the `EventStore` interface but adds a `reset` method to reset it to the provided initial state. The original event store is not muted.
 
 ```ts
 import { EventStore } from '@castore/core';
@@ -71,7 +71,7 @@ describe('My awesome test', () => {
 
 ### MuteEventStore
 
-Unlike `mockEventStore`, the `muteEventStore` util mutes the original event store and replace its storage adapter with an `InMemoryStorageAdapter` matching the provided initial state.
+Unlike `mockEventStore`, the `muteEventStore` util mutes the original event store and replace its storage adapter with an `InMemoryEventStorageAdapter` matching the provided initial state.
 
 ```ts
 import { EventStore } from '@castore/core';
