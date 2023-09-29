@@ -46,7 +46,7 @@ export class MockedEventStore<
   }) {
     super({
       eventStoreId: eventStore.eventStoreId,
-      eventStoreEvents: eventStore.eventStoreEvents,
+      eventTypes: eventStore.eventTypes,
       reducer: eventStore.reducer,
       simulateSideEffect: eventStore.simulateSideEffect,
       eventStorageAdapter: new InMemoryEventStorageAdapter({ initialEvents }),

@@ -90,10 +90,7 @@ export class EventStore<
     aggregate: AGGREGATE;
   };
   eventStoreId: EVENT_STORE_ID;
-  /**
-   * @debt v2 "rename as eventTypes"
-   */
-  eventStoreEvents: EVENT_TYPES;
+  eventTypes: EVENT_TYPES;
   reducer: REDUCER;
   simulateSideEffect: SideEffectsSimulator<EVENT_DETAILS, $EVENT_DETAILS>;
 
@@ -121,7 +118,7 @@ export class EventStore<
 
   constructor({
     eventStoreId,
-    eventStoreEvents,
+    eventTypes,
     reducer,
     simulateSideEffect = (indexedEvents, event) => ({
       ...indexedEvents,
@@ -130,16 +127,13 @@ export class EventStore<
     eventStorageAdapter: $eventStorageAdapter,
   }: {
     eventStoreId: EVENT_STORE_ID;
-    /**
-     * @debt v2 "rename as eventTypes"
-     */
-    eventStoreEvents: EVENT_TYPES;
+    eventTypes: EVENT_TYPES;
     reducer: REDUCER;
     simulateSideEffect?: SideEffectsSimulator<EVENT_DETAILS, $EVENT_DETAILS>;
     eventStorageAdapter?: EventStorageAdapter;
   }) {
     this.eventStoreId = eventStoreId;
-    this.eventStoreEvents = eventStoreEvents;
+    this.eventTypes = eventTypes;
     this.reducer = reducer;
     this.simulateSideEffect = simulateSideEffect;
     this.eventStorageAdapter = $eventStorageAdapter;

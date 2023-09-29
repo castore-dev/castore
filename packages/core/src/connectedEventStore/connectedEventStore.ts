@@ -73,7 +73,7 @@ export class ConnectedEventStore<
     aggregate: AGGREGATE;
   };
   eventStoreId: EVENT_STORE_ID;
-  eventStoreEvents: EVENT_TYPES;
+  eventTypes: EVENT_TYPES;
   reducer: REDUCER;
   simulateSideEffect: SideEffectsSimulator<EVENT_DETAIL, $EVENT_DETAIL>;
   getEvents: EventsGetter<EVENT_DETAIL>;
@@ -113,7 +113,7 @@ export class ConnectedEventStore<
     messageChannel: MESSAGE_CHANNEL,
   ) {
     this.eventStoreId = eventStore.eventStoreId;
-    this.eventStoreEvents = eventStore.eventStoreEvents;
+    this.eventTypes = eventStore.eventTypes;
     this.reducer = eventStore.reducer;
     this.simulateSideEffect = eventStore.simulateSideEffect;
     this.getEvents = eventStore.getEvents;

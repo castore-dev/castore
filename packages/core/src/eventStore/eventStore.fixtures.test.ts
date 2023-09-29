@@ -114,11 +114,7 @@ export const pokemonsReducer = (
 
 export const pokemonsEventStore = new EventStore({
   eventStoreId: 'POKEMONS',
-  eventStoreEvents: [
-    pokemonAppearedEvent,
-    pokemonCaughtEvent,
-    pokemonLeveledUpEvent,
-  ],
+  eventTypes: [pokemonAppearedEvent, pokemonCaughtEvent, pokemonLeveledUpEvent],
   reducer: pokemonsReducer,
   eventStorageAdapter: eventStorageAdapterMock,
 });

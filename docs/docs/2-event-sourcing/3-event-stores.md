@@ -26,7 +26,7 @@ import { EventStore } from '@castore/core';
 
 const pokemonsEventStore = new EventStore({
   eventStoreId: 'POKEMONS',
-  eventStoreEvents: [
+  eventTypes: [
     pokemonAppearedEventType,
     pokemonCaughtEventType,
     pokemonLeveledUpEventType,
@@ -51,7 +51,7 @@ const pokemonsEventStore = new EventStore({
 **Constructor:**
 
 - <code>eventStoreId <i>(string)</i></code>: A string identifying the event store
-- <code>eventStoreEvents <i>(EventType[])</i></code>: The list of event types in the event store
+- <code>eventTypes <i>(EventType[])</i></code>: The list of event types in the event store
 - <code>reduce <i>(EventType[])</i></code>: A <a href="../aggregates-reducers">reducer function</a> that can be applied to the store event types
 - <code>onEventPushed <i>(?(pushEventResponse: PushEventResponse) => Promise&lt;void&gt;)</i></code>: To run a callback after events are pushed (input is exactly the return value of the <code>pushEvent</code> method)
 - <code>eventStorageAdapter <i>(?EventStorageAdapter)</i></code>: See <a href="../fetching-events">fetching events</a>
@@ -69,10 +69,10 @@ const pokemonsEventStoreId = pokemonsEventStore.eventStoreId;
 // => 'POKEMONS'
 ```
 
-- <code>eventStoreEvents <i>(EventType[])</i></code>
+- <code>eventTypes <i>(EventType[])</i></code>
 
 ```ts
-const pokemonsEventStoreEvents = pokemonsEventStore.eventStoreEvents;
+const pokemonsEventTypes = pokemonsEventStore.eventTypes;
 // => [pokemonAppearedEventType, pokemonCaughtEventType...]
 ```
 

@@ -5,7 +5,7 @@ import { gameStartedEvent, pokemonCaughtEvent } from './events';
 
 export const trainersEventStore = new EventStore({
   eventStoreId: 'TRAINERS',
-  eventStoreEvents: [gameStartedEvent, pokemonCaughtEvent],
+  eventTypes: [gameStartedEvent, pokemonCaughtEvent],
   reducer: (trainerAggregate: TrainerAggregate, event): TrainerAggregate => {
     const { version, aggregateId } = event;
 

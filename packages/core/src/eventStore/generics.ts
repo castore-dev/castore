@@ -4,7 +4,7 @@ export type EventStoreId<EVENT_STORE extends EventStore> =
   EVENT_STORE['eventStoreId'];
 
 export type EventStoreEventTypes<EVENT_STORE extends EventStore> =
-  EVENT_STORE['eventStoreEvents'];
+  EVENT_STORE['eventTypes'];
 
 export type EventStoreEventDetails<EVENT_STORE extends EventStore> =
   NonNullable<EVENT_STORE['_types']>['details'];

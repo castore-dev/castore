@@ -110,7 +110,7 @@ export const countersReducer = (
 
 export const counterEventStore = new EventStore({
   eventStoreId: 'Counters',
-  eventStoreEvents: [
+  eventTypes: [
     counterCreatedEvent,
     counterIncrementedEvent,
     counterDeletedEvent,

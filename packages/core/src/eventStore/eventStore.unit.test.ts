@@ -42,7 +42,7 @@ describe('event store', () => {
     expect(new Set(Object.keys(pokemonsEventStore))).toStrictEqual(
       new Set([
         'eventStoreId',
-        'eventStoreEvents',
+        'eventTypes',
         'reducer',
         'simulateSideEffect',
         'eventStorageAdapter',
@@ -60,7 +60,7 @@ describe('event store', () => {
 
     expect(pokemonsEventStore.eventStoreId).toBe('POKEMONS');
 
-    expect(pokemonsEventStore.eventStoreEvents).toStrictEqual([
+    expect(pokemonsEventStore.eventTypes).toStrictEqual([
       pokemonAppearedEvent,
       pokemonCaughtEvent,
       pokemonLeveledUpEvent,
