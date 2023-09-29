@@ -1,0 +1,6 @@
+{
+  "root": "packages/command-zod",
+  "projectType": "library",
+  "tags": [],
+  "implicitDependencies": ["core"]
+}
