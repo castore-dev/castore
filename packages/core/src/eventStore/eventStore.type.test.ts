@@ -8,7 +8,7 @@ import type { EventsQueryOptions } from '~/eventStorageAdapter';
 import {
   EventStore,
   EventStoreAggregate,
-  EventStoreEventsDetails,
+  EventStoreEventDetails,
   GetAggregateOptions,
 } from '~/eventStore';
 
@@ -39,13 +39,13 @@ assertEventStoreId;
 // --- EVENTS DETAILS ---
 
 const assertPokemonEventDetails: A.Equals<
-  EventStoreEventsDetails<typeof pokemonsEventStore>,
+  EventStoreEventDetails<typeof pokemonsEventStore>,
   PokemonEventDetails
 > = 1;
 assertPokemonEventDetails;
 
 const assertAnyEventsDetails: A.Equals<
-  EventStoreEventsDetails<EventStore>,
+  EventStoreEventDetails<EventStore>,
   EventDetail
 > = 1;
 assertAnyEventsDetails;

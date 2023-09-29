@@ -2,13 +2,13 @@ import { Reducer } from '@reduxjs/toolkit';
 
 import {
   EventStore,
-  EventStoreEventsDetails,
+  EventStoreEventDetails,
   EventStoreId,
 } from '@castore/core';
 
 export type EventStoreReduxState<EVENT_STORE extends EventStore = EventStore> =
   {
-    eventsByAggregateId: Record<string, EventStoreEventsDetails<EVENT_STORE>[]>;
+    eventsByAggregateId: Record<string, EventStoreEventDetails<EVENT_STORE>[]>;
     aggregateIds: {
       aggregateId: string;
       initialEventTimestamp: string;

@@ -1,7 +1,7 @@
 import type { EventBridgeEvent } from 'aws-lambda';
 
 import type {
-  EventStoreEventsDetails,
+  EventStoreEventDetails,
   EventStoreAggregate,
   AggregateExistsMessage,
   AggregateExistsMessageBus,
@@ -33,7 +33,7 @@ type EventBridgeStateCarryingMessageBusMessage<
             StateCarryingMessage<
               EVENT_STORE_ID,
               Extract<
-                EventStoreEventsDetails<
+                EventStoreEventDetails<
                   Extract<
                     MessageChannelSourceEventStores<MESSAGE_BUS>,
                     { eventStoreId: EVENT_STORE_IDS }
@@ -73,7 +73,7 @@ type EventBridgeNotificationMessageBusMessage<
             NotificationMessage<
               EVENT_STORE_ID,
               Extract<
-                EventStoreEventsDetails<
+                EventStoreEventDetails<
                   Extract<
                     MessageChannelSourceEventStores<MESSAGE_BUS>,
                     { eventStoreId: EVENT_STORE_IDS }

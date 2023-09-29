@@ -1,7 +1,7 @@
 import {
   EventStore,
   EventStoreAggregate,
-  EventStoreEventsDetails,
+  EventStoreEventDetails,
   GetAggregateOptions,
   AggregateNotFoundError,
 } from '@castore/core';
@@ -14,8 +14,8 @@ export const useExistingAggregate = <EVENT_STORE extends EventStore>(
   options: GetAggregateOptions = {},
 ): {
   aggregate: EventStoreAggregate<EVENT_STORE>;
-  events: EventStoreEventsDetails<EVENT_STORE>[];
-  lastEvent: EventStoreEventsDetails<EVENT_STORE>;
+  events: EventStoreEventDetails<EVENT_STORE>[];
+  lastEvent: EventStoreEventDetails<EVENT_STORE>;
 } => {
   const { aggregate, events, lastEvent } = useAggregate(
     eventStore,

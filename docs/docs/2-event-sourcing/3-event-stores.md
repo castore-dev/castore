@@ -287,21 +287,21 @@ type PokemonsEventStoreId = EventStoreId<typeof pokemonsEventStore>;
 // => 'POKEMONS'
 ```
 
-- `EventStoreEventsTypes`: Returns the `EventStore` list of events types
+- `EventStoreEventTypes`: Returns the `EventStore` list of events types
 
 ```ts
-import type { EventStoreEventsTypes } from '@castore/core';
+import type { EventStoreEventTypes } from '@castore/core';
 
-type PokemonEventTypes = EventStoreEventsTypes<typeof pokemonsEventStore>;
+type PokemonEventTypes = EventStoreEventTypes<typeof pokemonsEventStore>;
 // => [typeof pokemonAppearedEventType, typeof pokemonCaughtEventType...]
 ```
 
-- `EventStoreEventsDetails`: Returns the union of all the `EventStore` possible events details
+- `EventStoreEventDetails`: Returns the union of all the `EventStore` possible events details
 
 ```ts
-import type { EventStoreEventsDetails } from '@castore/core';
+import type { EventStoreEventDetails } from '@castore/core';
 
-type PokemonEventDetails = EventStoreEventsDetails<typeof pokemonsEventStore>;
+type PokemonEventDetails = EventStoreEventDetails<typeof pokemonsEventStore>;
 // => EventTypeDetail<typeof pokemonAppearedEventType>
 // | EventTypeDetail<typeof pokemonCaughtEventType>
 // | ...

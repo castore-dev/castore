@@ -1,6 +1,6 @@
 import type {
   EventStore,
-  EventStoreEventsTypes,
+  EventStoreEventTypes,
   EventStoreId,
 } from '~/eventStore';
 
@@ -57,7 +57,7 @@ export type MessageChannelSourceEventStoreIdTypes<
     | StateCarryingMessageChannel
     | NotificationMessageChannel,
   EVENT_STORE_ID extends MessageChannelSourceEventStoreIds<MESSAGE_CHANNEL> = MessageChannelSourceEventStoreIds<MESSAGE_CHANNEL>,
-> = EventStoreEventsTypes<
+> = EventStoreEventTypes<
   Extract<
     MessageChannelSourceEventStores<MESSAGE_CHANNEL>,
     { eventStoreId: EVENT_STORE_ID }

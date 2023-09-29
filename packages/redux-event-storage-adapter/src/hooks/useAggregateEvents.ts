@@ -3,7 +3,7 @@ import { useSelector } from 'react-redux';
 import {
   EventsQueryOptions,
   EventStore,
-  EventStoreEventsDetails,
+  EventStoreEventDetails,
 } from '@castore/core';
 
 import { ReduxEventStorageAdapter } from '~/adapter';
@@ -15,7 +15,7 @@ export const useAggregateEvents = <EVENT_STORE extends EventStore>(
   eventStore: EVENT_STORE,
   aggregateId: string,
   { minVersion, maxVersion, reverse, limit }: EventsQueryOptions = {},
-): { events: EventStoreEventsDetails<EVENT_STORE>[] } => {
+): { events: EventStoreEventDetails<EVENT_STORE>[] } => {
   let events = (useSelector<EventStoresReduxState>(state => {
     const eventStorageAdapter = eventStore.getEventStorageAdapter();
 
@@ -33,7 +33,7 @@ export const useAggregateEvents = <EVENT_STORE extends EventStore>(
     }
 
     return eventStoreState.eventsByAggregateId[aggregateId];
-  }) ?? []) as EventStoreEventsDetails<EVENT_STORE>[];
+  }) ?? []) as EventStoreEventDetails<EVENT_STORE>[];
 
   if (minVersion !== undefined) {
     events = events.filter(({ version }) => version >= minVersion);

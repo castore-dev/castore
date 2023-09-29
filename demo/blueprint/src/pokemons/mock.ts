@@ -1,10 +1,10 @@
-import { EventStoreEventsDetails } from '@castore/core';
+import { EventStoreEventDetails } from '@castore/core';
 
 import { pokemonsEventStore } from './eventStore';
 
 export const pikachuId = 'pikachu-id';
 
-export const pikachuAppearedEvent: EventStoreEventsDetails<
+export const pikachuAppearedEvent: EventStoreEventDetails<
   typeof pokemonsEventStore
 > = {
   aggregateId: pikachuId,
@@ -20,7 +20,7 @@ export const pikachuAppearedEvent: EventStoreEventsDetails<
   },
 };
 
-export const pikachuCaughtEvent: EventStoreEventsDetails<
+export const pikachuCaughtEvent: EventStoreEventDetails<
   typeof pokemonsEventStore
 > = {
   aggregateId: pikachuId,
@@ -32,7 +32,7 @@ export const pikachuCaughtEvent: EventStoreEventsDetails<
   },
 };
 
-export const pikachuLevelledUpEvent: EventStoreEventsDetails<
+export const pikachuLevelledUpEvent: EventStoreEventDetails<
   typeof pokemonsEventStore
 > = {
   aggregateId: pikachuId,

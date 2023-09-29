@@ -1,4 +1,4 @@
-import type { EventStoreEventsDetails } from '@castore/core';
+import type { EventStoreEventDetails } from '@castore/core';
 import {
   pokemonsEventStore,
   trainersEventStore,
@@ -19,7 +19,7 @@ export const garyOakId = 'garyOak';
 
 // POKEMON EVENTS
 
-export const pikachuEvents: EventStoreEventsDetails<
+export const pikachuEvents: EventStoreEventDetails<
   typeof pokemonsEventStore
 >[] = [
   {
@@ -45,7 +45,7 @@ export const pikachuEvents: EventStoreEventsDetails<
   },
 ];
 
-export const charizardEvents: EventStoreEventsDetails<
+export const charizardEvents: EventStoreEventDetails<
   typeof pokemonsEventStore
 >[] = [
   {
@@ -58,7 +58,7 @@ export const charizardEvents: EventStoreEventsDetails<
   },
 ];
 
-export const arcanineEvents: EventStoreEventsDetails<
+export const arcanineEvents: EventStoreEventDetails<
   typeof pokemonsEventStore
 >[] = [
   {
@@ -80,7 +80,7 @@ export const arcanineEvents: EventStoreEventsDetails<
 
 // TRAINER EVENTS
 
-export const ashKetchumEvents: EventStoreEventsDetails<
+export const ashKetchumEvents: EventStoreEventDetails<
   typeof trainersEventStore
 >[] = [
   {
@@ -99,7 +99,7 @@ export const ashKetchumEvents: EventStoreEventsDetails<
   },
 ];
 
-export const garyOakEvents: EventStoreEventsDetails<
+export const garyOakEvents: EventStoreEventDetails<
   typeof trainersEventStore
 >[] = [
   {

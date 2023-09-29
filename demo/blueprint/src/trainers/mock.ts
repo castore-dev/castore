@@ -1,10 +1,10 @@
-import { EventStoreEventsDetails } from '@castore/core';
+import { EventStoreEventDetails } from '@castore/core';
 
 import { trainersEventStore } from './eventStore';
 
 export const ashId = 'ash-ketchum-id';
 
-export const ashPokemonGameStartedEvent: EventStoreEventsDetails<
+export const ashPokemonGameStartedEvent: EventStoreEventDetails<
   typeof trainersEventStore
 > = {
   aggregateId: ashId,
@@ -16,7 +16,7 @@ export const ashPokemonGameStartedEvent: EventStoreEventsDetails<
   },
 };
 
-export const ashPokemonCaughtEvent: EventStoreEventsDetails<
+export const ashPokemonCaughtEvent: EventStoreEventDetails<
   typeof trainersEventStore
 > = {
   aggregateId: ashId,
