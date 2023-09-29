@@ -434,7 +434,7 @@ const Home = (): JSX.Element => (
             <h3 className="uppercase text-xl font-black">Stack Agnostic</h3>
             <p className="text-sm dark:text-gray-200 leading-6">
               Castore is in <strong>TypeScript</strong>. Outside from that, it
-              can be used pretty much <strong>anywhere</strong>: React apps,
+              can be used pretty much <strong>anywhere</strong>: Web apps,
               containers, Lambdas... you name it 🙌
             </p>
             <p className="text-sm dark:text-gray-200 leading-6">
