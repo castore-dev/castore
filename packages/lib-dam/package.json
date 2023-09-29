@@ -1,5 +1,5 @@
 {
-  "name": "@castore/dam",
+  "name": "@castore/lib-dam",
   "description": "Data maintenance & migration tooling for the Castore library.",
   "license": "MIT",
   "homepage": "https://github.com/castore-dev/castore#readme",
@@ -48,8 +48,8 @@
     "@babel/preset-typescript": "^7.16.7",
     "@castore/core": "workspace:",
     "@castore/demo-blueprint": "workspace:",
+    "@castore/lib-test-tools": "workspace:",
     "@castore/message-queue-adapter-in-memory": "workspace:",
-    "@castore/test-tools": "workspace:",
     "@types/node": "^17.0.29",
     "babel-plugin-module-resolver": "^4.1.0",
     "concurrently": "^7.1.0",
@@ -73,7 +73,7 @@
     "targets": {
       "package": {
         "outputs": [
-          "packages/dam/dist"
+          "packages/lib-dam/dist"
         ]
       }
     }

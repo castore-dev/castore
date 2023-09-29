@@ -82,15 +82,15 @@
       "name": "📨  InMemory"
     },
     {
-      "path": "packages/test-tools",
+      "path": "packages/lib-test-tools",
       "name": "🔨  Test Tools"
     },
     {
-      "path": "packages/react-visualizer",
+      "path": "packages/lib-react-visualizer",
       "name": "🔨  React Visualizer"
     },
     {
-      "path": "packages/dam",
+      "path": "packages/lib-dam",
       "name": "🔨  Dam"
     },
     {

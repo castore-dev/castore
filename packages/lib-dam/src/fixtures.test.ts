@@ -3,7 +3,7 @@ import {
   pokemonsEventStore,
   trainersEventStore,
 } from '@castore/demo-blueprint';
-import { mockEventStore } from '@castore/test-tools';
+import { mockEventStore } from '@castore/lib-test-tools';
 
 export const pokemonEvtStoreId = pokemonsEventStore.eventStoreId;
 export const trainerEvtStoreId = trainersEventStore.eventStoreId;

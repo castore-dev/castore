@@ -6,10 +6,10 @@ sidebar_position: 4
 
 ## 🎯 Test Tools
 
-The official [test tools package](https://www.npmjs.com/package/@castore/test-tools) facilitates the writing of unit tests: It allows mocking event stores, populating them with an initial state and resetting them to it in a boilerplate-free and type-safe way:
+The official [test tools package](https://www.npmjs.com/package/@castore/lib-test-tools) facilitates the writing of unit tests: It allows mocking event stores, populating them with an initial state and resetting them to it in a boilerplate-free and type-safe way:
 
 ```ts
-import { mockEventStore } from '@castore/test-tools';
+import { mockEventStore } from '@castore/lib-test-tools';
 
 describe('My awesome test', () => {
   const mockedPokemonsEventStore = mockEventStore(pokemonsEventStore, [
@@ -31,10 +31,10 @@ describe('My awesome test', () => {
 
 ## 🌊 Dam
 
-[Dam](https://www.npmjs.com/package/@castore/dam) is a suite of utils that facilitates data migration and maintenance operations with Castore (for instance, dispatching all the events of an event store - ordered by their timestamps - to a message queue):
+[Dam](https://www.npmjs.com/package/@castore/lib-dam) is a suite of utils that facilitates data migration and maintenance operations with Castore (for instance, dispatching all the events of an event store - ordered by their timestamps - to a message queue):
 
 ```ts
-import { pourEventStoreEvents } from '@castore/dam';
+import { pourEventStoreEvents } from '@castore/lib-dam';
 
 const maintenanceMessageQueue = new NotificationMessageQueue({
   sourceEventStores: [pokemonEventStore],
@@ -56,7 +56,7 @@ await pourEventStoreEvents({
 
 ## 🌈 React Visualizer
 
-The [React Visualizer](https://www.npmjs.com/package/@castore/react-visualizer) package exposes a React component to visualize, design and manually test Castore event stores and commands.
+The [React Visualizer](https://www.npmjs.com/package/@castore/lib-react-visualizer) package exposes a React component to visualize, design and manually test Castore event stores and commands.
 
 Here is a [hosted example](https://castore-dev.github.io/castore/visualizer/), based on this documentation code snippets about pokemons and trainers. You can find the related source code (commands & event stores) in the [demo package](https://github.com/castore-dev/castore/tree/main/demo/blueprint/src).
 

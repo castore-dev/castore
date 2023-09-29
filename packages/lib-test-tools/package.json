@@ -1,5 +1,5 @@
 {
-  "name": "@castore/test-tools",
+  "name": "@castore/lib-test-tools",
   "description": "Test tooling for the Castore library.",
   "license": "MIT",
   "homepage": "https://github.com/castore-dev/castore#readme",
@@ -70,7 +70,7 @@
     "targets": {
       "package": {
         "outputs": [
-          "packages/test-tools/dist"
+          "packages/lib-test-tools/dist"
         ]
       }
     }

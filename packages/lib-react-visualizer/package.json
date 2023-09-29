@@ -1,5 +1,5 @@
 {
-  "name": "@castore/react-visualizer",
+  "name": "@castore/lib-react-visualizer",
   "description": "React component to visualize, design and manually test Castore event stores and commands.",
   "license": "MIT",
   "homepage": "https://github.com/castore-dev/castore#readme",
@@ -88,7 +88,7 @@
     "targets": {
       "package": {
         "outputs": [
-          "packages/react-visualizer/dist"
+          "packages/lib-react-visualizer/dist"
         ]
       }
     }

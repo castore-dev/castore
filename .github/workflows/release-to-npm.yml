@@ -77,12 +77,12 @@ jobs:
       - uses: JS-DevTools/npm-publish@v2
         with:
           token: ${{ secrets.NPM_TOKEN }}
-          package: ./packages/test-tools/package.json
+          package: ./packages/lib-test-tools/package.json
       - uses: JS-DevTools/npm-publish@v2
         with:
           token: ${{ secrets.NPM_TOKEN }}
-          package: ./packages/react-visualizer/package.json
+          package: ./packages/lib-react-visualizer/package.json
       - uses: JS-DevTools/npm-publish@v2
         with:
           token: ${{ secrets.NPM_TOKEN }}
-          package: ./packages/dam/package.json
+          package: ./packages/lib-dam/package.json

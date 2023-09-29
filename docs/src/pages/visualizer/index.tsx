@@ -22,7 +22,7 @@ const VisualizerPage = (): JSX.Element => (
     <BrowserOnly>
       {() => {
         // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-var-requires
-        const Visualizer = require('@castore/react-visualizer').Visualizer;
+        const Visualizer = require('@castore/lib-react-visualizer').Visualizer;
         // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-var-requires
         const uuid = require('uuid').v4 as () => string;
 

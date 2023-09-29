@@ -27,7 +27,7 @@ Here is an example of working `package.json`:
     ...
   },
   "devDependencies": {
-    "@castore/test-tools": "2.0.0"
+    "@castore/lib-test-tools": "2.0.0"
     ...
   }
 }

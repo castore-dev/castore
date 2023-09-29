@@ -15,7 +15,7 @@
     {
       "path": "../../packages/event-storage-adapter-dynamodb/tsconfig.build.json"
     },
-    { "path": "../../packages/test-tools/tsconfig.build.json" }
+    { "path": "../../packages/lib-test-tools/tsconfig.build.json" }
   ],
   "ts-node": {
     "files": true,

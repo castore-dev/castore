@@ -1,5 +1,5 @@
 {
-  "root": "packages/dam",
+  "root": "packages/lib-react-visualizer",
   "projectType": "library",
   "tags": [],
   "implicitDependencies": []

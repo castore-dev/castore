@@ -6,10 +6,10 @@ Test tooling for the [Castore](https://github.com/castore-dev/castore) library.
 
 ```bash
 # npm
-npm install --save-dev @castore/test-tools
+npm install --save-dev @castore/lib-test-tools
 
 # yarn
-yarn add --dev @castore/test-tools
+yarn add --dev @castore/lib-test-tools
 ```
 
 This package has `@castore/core` as peer dependency, so you will have to install it as well:
@@ -30,7 +30,7 @@ The `mockEventStore` util returns a copy of the provided `EventStore` connected 
 
 ```ts
 import { EventStore } from '@castore/core';
-import { mockEventStore } from '@castore/test-tools';
+import { mockEventStore } from '@castore/lib-test-tools';
 
 const pokemonsEventStore = new EventStore({
   ...
@@ -75,7 +75,7 @@ Unlike `mockEventStore`, the `muteEventStore` util mutes the original event stor
 
 ```ts
 import { EventStore } from '@castore/core';
-import { muteEventStore } from '@castore/test-tools';
+import { muteEventStore } from '@castore/lib-test-tools';
 
 const pokemonsEventStore = new EventStore({
   ...

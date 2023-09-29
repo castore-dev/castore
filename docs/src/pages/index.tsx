@@ -496,15 +496,15 @@ const Home = (): JSX.Element => (
             <p className="text-sm dark:text-gray-200 leading-6">
               It also comes with an awesome collection of packages that will
               make your life easy, e.g. when working on{' '}
-              <a href="https://www.npmjs.com/package/@castore/test-tools">
+              <a href="https://www.npmjs.com/package/@castore/lib-test-tools">
                 unit tests
               </a>
               ,{' '}
-              <a href="https://www.npmjs.com/package/@castore/dam">
+              <a href="https://www.npmjs.com/package/@castore/lib-dam">
                 data migration
               </a>{' '}
               or{' '}
-              <a href="https://www.npmjs.com/package/@castore/react-visualizer">
+              <a href="https://www.npmjs.com/package/@castore/lib-react-visualizer">
                 data modelling
               </a>
               .

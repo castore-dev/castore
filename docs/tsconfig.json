@@ -26,7 +26,7 @@
   "references": [
     { "path": "../packages/core/tsconfig.build.json" },
     { "path": "../packages/command-json-schema/tsconfig.build.json" },
-    { "path": "../packages/react-visualizer/tsconfig.build.json" },
+    { "path": "../packages/lib-react-visualizer/tsconfig.build.json" },
     { "path": "../demo/blueprint/tsconfig.build.json" }
   ],
   "exclude": ["./dist", "dependency-cruiser.js"],

@@ -8,10 +8,10 @@ Here is a [hosted example](https://castore-dev.github.io/castore/visualizer/), b
 
 ```bash
 # npm
-npm install --save-dev @castore/react-visualizer
+npm install --save-dev @castore/lib-react-visualizer
 
 # yarn
-yarn add --dev @castore/react-visualizer
+yarn add --dev @castore/lib-react-visualizer
 ```
 
 This package has `@castore/core`, `@castore/command-json-schema` and `react` (above v17) as peer dependencies, so you will have to install them as well:
@@ -29,7 +29,7 @@ yarn add @castore/core @castore/command-json-schema react
 ```tsx
 // ...somewhere in your React App
 import { tuple } from '@castore/core';
-import { Visualizer } from '@castore/react-visualizer';
+import { Visualizer } from '@castore/lib-react-visualizer';
 
 const MyPage = () =>
   <Visualizer
@@ -72,7 +72,7 @@ The visualizer uses the [MUI](https://mui.com/) components library. You can cust
 
 ```tsx
 import { CssBaseline, ThemeProvider, createTheme } from '@mui/material';
-import { UnthemedVisualizer } from '@castore/react-visualizer';
+import { UnthemedVisualizer } from '@castore/lib-react-visualizer';
 
 const customTheme = createTheme({
   ...
