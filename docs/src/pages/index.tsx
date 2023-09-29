@@ -489,8 +489,9 @@ const Home = (): JSX.Element => (
               <strong>We ran into them for you</strong>!
             </p>
             <p className="text-sm dark:text-gray-200 leading-6">
-              Castore is opiniated. It comes with a collection of best practices
-              and documented anti-patterns that we hope will help you out!
+              Castore is opinionated. It comes with a collection of best
+              practices and documented anti-patterns that we hope will help you
+              out!
             </p>
             <p className="text-sm dark:text-gray-200 leading-6">
               It also comes with an awesome collection of packages that will
@@ -512,11 +513,11 @@ const Home = (): JSX.Element => (
         </div>
       </div>
     </div>
-    <div className="navbar navbar--dark flex flex-col items-start justify-center p-10 text-sm shadow-xl shadow-black/10">
-      <div className="mx-auto">
-        <div className="grid gap-2 sm:grid-cols-2 md:grid-cols-3">
+    <div className="navbar navbar--dark flex flex-col items-start justify-center py-10 text-sm shadow-xl shadow-black/10">
+      <div className="full-width">
+        <div className="flex justify-around md:justify-center gap-3">
           {footerLinks.map(item => (
-            <div key={item.to}>
+            <div key={item.to} className="text-center">
               {item.to.startsWith('http') ? (
                 <a href={item.to} target="_blank" rel="noreferrer">
                   {item.label}
