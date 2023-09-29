@@ -3,7 +3,7 @@ import {
   EventDetail,
   EventStore,
   EventType,
-  EventTypesDetails,
+  EventTypeDetails,
   Reducer,
   $Contravariant,
 } from '@castore/core';
@@ -12,7 +12,7 @@ import { InMemoryEventStorageAdapter } from '@castore/inmemory-event-storage-ada
 export class MockedEventStore<
   EVENT_STORE_ID extends string = string,
   EVENT_TYPES extends EventType[] = EventType[],
-  EVENT_DETAIL extends EventDetail = EventTypesDetails<EVENT_TYPES>,
+  EVENT_DETAIL extends EventDetail = EventTypeDetails<EVENT_TYPES>,
   $EVENT_DETAIL extends EventDetail = $Contravariant<EVENT_DETAIL, EventDetail>,
   REDUCER extends Reducer<Aggregate, $EVENT_DETAIL> = Reducer<
     Aggregate,

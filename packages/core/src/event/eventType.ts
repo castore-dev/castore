@@ -19,10 +19,7 @@ export type EventTypeDetail<EVENT_TYPE extends EventType> = NonNullable<
   EVENT_TYPE['_types']
 >['detail'];
 
-/**
- * @debt v2 "rename as EventTypeDetails"
- */
-export type EventTypesDetails<EVENT_TYPES extends EventType[]> =
+export type EventTypeDetails<EVENT_TYPES extends EventType[]> =
   EVENT_TYPES[number] extends infer EVENT_TYPE
     ? EVENT_TYPE extends EventType
       ? EventTypeDetail<EVENT_TYPE>

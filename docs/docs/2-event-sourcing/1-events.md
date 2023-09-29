@@ -109,12 +109,12 @@ type PokemonCaughtEventTypeDetail = {
 };
 ```
 
-- `EventTypesDetails`: Returns the events details of a list of `EventType`
+- `EventTypeDetails`: Returns the events details of a list of `EventType`
 
 ```ts
-import type { EventTypesDetails } from '@castore/core';
+import type { EventTypeDetails } from '@castore/core';
 
-type PokemonEventTypeDetails = EventTypesDetails<
+type PokemonEventTypeDetails = EventTypeDetails<
   [typeof pokemonAppearedEventType, typeof pokemonCaughtEventType]
 >;
 // => EventTypeDetail<typeof pokemonAppearedEventType>

@@ -1,6 +1,6 @@
 import type { Aggregate } from '~/aggregate';
 import type { EventDetail } from '~/event/eventDetail';
-import type { EventType, EventTypesDetails } from '~/event/eventType';
+import type { EventType, EventTypeDetails } from '~/event/eventType';
 import type { EventStorageAdapter } from '~/eventStorageAdapter';
 import type {
   Reducer,
@@ -22,7 +22,7 @@ import { publishPushedEvent } from './publishPushedEvent';
 export class ConnectedEventStore<
   EVENT_STORE_ID extends string = string,
   EVENT_TYPES extends EventType[] = EventType[],
-  EVENT_DETAIL extends EventDetail = EventTypesDetails<EVENT_TYPES>,
+  EVENT_DETAIL extends EventDetail = EventTypeDetails<EVENT_TYPES>,
   $EVENT_DETAIL extends EventDetail = $Contravariant<EVENT_DETAIL, EventDetail>,
   REDUCER extends Reducer<Aggregate, $EVENT_DETAIL> = Reducer<
     Aggregate,

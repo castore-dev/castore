@@ -1,6 +1,6 @@
 export type { Aggregate } from './aggregate';
 export { EventType } from './event/eventType';
-export type { EventTypeDetail, EventTypesDetails } from './event/eventType';
+export type { EventTypeDetail, EventTypeDetails } from './event/eventType';
 export { GroupedEvent } from './event/groupedEvent';
 export type { EventDetail, OptionalTimestamp } from './event/eventDetail';
 export type { EventStorageAdapter } from './eventStorageAdapter';

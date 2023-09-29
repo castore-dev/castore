@@ -1,6 +1,6 @@
 import type { A } from 'ts-toolbelt';
 
-import { EventType, EventTypeDetail, EventTypesDetails } from './eventType';
+import { EventType, EventTypeDetail, EventTypeDetails } from './eventType';
 
 // Payload, no metadata
 
@@ -66,7 +66,7 @@ const eventTypes = [
   counterRemovedEvent,
 ];
 
-type CounterEventDetail = EventTypesDetails<typeof eventTypes>;
+type CounterEventDetail = EventTypeDetails<typeof eventTypes>;
 const assertDetails: A.Equals<
   CounterEventDetail,
   | EventTypeDetail<typeof counterCreatedEvent>

@@ -1,7 +1,7 @@
 /* eslint-disable max-lines */
 import type { Aggregate } from '~/aggregate';
 import type { EventDetail } from '~/event/eventDetail';
-import type { EventType, EventTypesDetails } from '~/event/eventType';
+import type { EventType, EventTypeDetails } from '~/event/eventType';
 import type { GroupedEvent } from '~/event/groupedEvent';
 import type { EventStorageAdapter } from '~/eventStorageAdapter';
 import type { $Contravariant } from '~/utils';
@@ -25,7 +25,7 @@ import type {
 export class EventStore<
   EVENT_STORE_ID extends string = string,
   EVENT_TYPES extends EventType[] = EventType[],
-  EVENT_DETAILS extends EventDetail = EventTypesDetails<EVENT_TYPES>,
+  EVENT_DETAILS extends EventDetail = EventTypeDetails<EVENT_TYPES>,
   // cf https://devblogs.microsoft.com/typescript/announcing-typescript-4-7-rc/#optional-variance-annotations-for-type-parameters
   // EventStore is contravariant on its fns args: We have to type them as "any" so that EventStore implementations still extends the EventStore type
   $EVENT_DETAILS extends EventDetail = $Contravariant<
