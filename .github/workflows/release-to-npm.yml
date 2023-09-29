@@ -57,15 +57,15 @@ jobs:
       - uses: JS-DevTools/npm-publish@v2
         with:
           token: ${{ secrets.NPM_TOKEN }}
-          package: ./packages/event-bridge-message-bus-adapter/package.json
+          package: ./packages/message-bus-adapter-event-bridge/package.json
       - uses: JS-DevTools/npm-publish@v2
         with:
           token: ${{ secrets.NPM_TOKEN }}
-          package: ./packages/event-bridge-s3-message-bus-adapter/package.json
+          package: ./packages/message-bus-adapter-event-bridge-s3/package.json
       - uses: JS-DevTools/npm-publish@v2
         with:
           token: ${{ secrets.NPM_TOKEN }}
-          package: ./packages/in-memory-message-bus-adapter/package.json
+          package: ./packages/message-bus-adapter-in-memory/package.json
       - uses: JS-DevTools/npm-publish@v2
         with:
           token: ${{ secrets.NPM_TOKEN }}

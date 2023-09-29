@@ -1,6 +1,6 @@
 {
-  "name": "@castore/event-bridge-message-bus-adapter",
-  "description": "DRY Castore MessageBus definition using AWS EventBridge",
+  "name": "@castore/message-bus-adapter-event-bridge-s3",
+  "description": "DRY Castore MessageBus definition using AWS EventBridge and S3",
   "license": "MIT",
   "homepage": "https://github.com/theodo/castore#readme",
   "bugs": "https://github.com/theodo/castore/issues",
@@ -38,11 +38,16 @@
     "watch": "rm -rf dist && concurrently 'yarn:package-* --watch'"
   },
   "dependencies": {
+    "@castore/message-bus-adapter-event-bridge": "workspace:",
     "@types/aws-lambda": "^8.10.111",
-    "lodash.chunk": "^4.2.0"
+    "lodash.chunk": "^4.2.0",
+    "ts-toolbelt": "^9.6.0",
+    "undici": "^5.23.0"
   },
   "devDependencies": {
     "@aws-sdk/client-eventbridge": "^3.2.0",
+    "@aws-sdk/client-s3": "^3.2.0",
+    "@aws-sdk/s3-request-presigner": "^3.2.0",
     "@babel/cli": "^7.17.6",
     "@babel/core": "^7.17.9",
     "@babel/plugin-transform-runtime": "^7.17.0",
@@ -58,7 +63,6 @@
     "eslint": "^8.14.0",
     "prettier": "^2.6.2",
     "ts-node": "^10.7.0",
-    "ts-toolbelt": "^9.6.0",
     "tsc-alias": "^1.8.7",
     "typescript": "^4.6.3",
     "vitest": "^0.26.2"
@@ -74,13 +78,15 @@
     "targets": {
       "package": {
         "outputs": [
-          "packages/event-bridge-message-bus-adapter/dist"
+          "packages/message-bus-adapter-event-bridge-s3/dist"
         ]
       }
     }
   },
   "peerDependencies": {
     "@aws-sdk/client-eventbridge": "^3.0.0",
+    "@aws-sdk/client-s3": "^3.0.0",
+    "@aws-sdk/s3-request-presigner": "^3.0.0",
     "@castore/core": "*"
   }
 }

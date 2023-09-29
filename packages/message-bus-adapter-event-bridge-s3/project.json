@@ -1,5 +1,5 @@
 {
-  "root": "packages/event-bridge-message-bus-adapter",
+  "root": "packages/message-bus-adapter-event-bridge-s3",
   "projectType": "library",
   "tags": [],
   "implicitDependencies": ["core"]

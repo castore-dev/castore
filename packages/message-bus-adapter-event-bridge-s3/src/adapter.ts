@@ -11,7 +11,7 @@ import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 
 import type { Message, MessageChannelAdapter } from '@castore/core';
 import { isEventCarryingMessage } from '@castore/core';
-import { EventBridgeMessageBusAdapter } from '@castore/event-bridge-message-bus-adapter';
+import { EventBridgeMessageBusAdapter } from '@castore/message-bus-adapter-event-bridge';
 
 import { getEntrySize, PUT_EVENTS_ENTRIES_SIZE_LIMIT } from './getEntrySize';
 import type { OversizedEntryDetail } from './message';

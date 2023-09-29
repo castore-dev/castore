@@ -7,7 +7,7 @@ import type {
   MessageChannelSourceEventStoreIds,
   MessageChannelSourceEventStoreIdTypes,
 } from '@castore/core';
-import type { EventBridgeMessageBusMessage } from '@castore/event-bridge-message-bus-adapter';
+import type { EventBridgeMessageBusMessage } from '@castore/message-bus-adapter-event-bridge';
 
 export type OversizedEntryDetail = { messageUrl: string };
 

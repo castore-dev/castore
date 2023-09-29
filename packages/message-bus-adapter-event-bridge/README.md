@@ -6,10 +6,10 @@ DRY Castore [`MessageBus`](https://github.com/castore-dev/castore/#--messagebus)
 
 ```bash
 # npm
-npm install @castore/event-bridge-message-bus-adapter
+npm install @castore/message-bus-adapter-event-bridge
 
 # yarn
-yarn add @castore/event-bridge-message-bus-adapter
+yarn add @castore/message-bus-adapter-event-bridge
 ```
 
 This package has `@castore/core` and `@aws-sdk/client-eventbridge` (above v3) as peer dependencies, so you will have to install them as well:
@@ -27,7 +27,7 @@ yarn add @castore/core @aws-sdk/client-eventbridge
 ```ts
 import { EventBridgeClient } from '@aws-sdk/client-eventbridge';
 
-import { EventBridgeMessageBusAdapter } from '@castore/event-bridge-message-bus-adapter';
+import { EventBridgeMessageBusAdapter } from '@castore/message-bus-adapter-event-bridge';
 
 const eventBridgeClient = new EventBridgeClient({});
 
@@ -125,7 +125,7 @@ If the `replay` option is set to `true` when publishing a notification or state-
 On the listeners side, you can use the `EventBridgeMessageBusMessage` TS type to type your argument:
 
 ```ts
-import type { EventBridgeMessageBusMessage } from '@castore/event-bridge-message-bus-adapter';
+import type { EventBridgeMessageBusMessage } from '@castore/message-bus-adapter-event-bridge';
 
 const listener = async (
   message: EventBridgeMessageBusMessage<typeof appMessageBus>,
@@ -138,7 +138,7 @@ const listener = async (
 You can provide event store ids and event types if you listener only listens to specific event types:
 
 ```ts
-import type { EventBridgeMessageBusMessage } from '@castore/event-bridge-message-bus-adapter';
+import type { EventBridgeMessageBusMessage } from '@castore/message-bus-adapter-event-bridge';
 
 const listener = async (
   message: EventBridgeMessageBusMessage<

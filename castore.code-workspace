@@ -62,15 +62,15 @@
       "name": "👮‍♀️  Json Schema Command"
     },
     {
-      "path": "packages/event-bridge-message-bus-adapter",
+      "path": "packages/message-bus-adapter-event-bridge",
       "name": "🚌  EventBridge"
     },
     {
-      "path": "packages/event-bridge-s3-message-bus-adapter",
+      "path": "packages/message-bus-adapter-event-bridge-s3",
       "name": "🚌  EventBridge + S3"
     },
     {
-      "path": "packages/in-memory-message-bus-adapter",
+      "path": "packages/message-bus-adapter-in-memory",
       "name": "🚌  InMemory"
     },
     {
