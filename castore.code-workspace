@@ -60,7 +60,8 @@
     {
       "path": "packages/command-json-schema",
       "name": "👮‍♀️  Json Schema Command"
-    },    {
+    },
+    {
       "path": "packages/command-zod",
       "name": "👮‍♀️  Zod Command"
     },
