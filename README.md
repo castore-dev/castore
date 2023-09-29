@@ -67,7 +67,7 @@ If you don't, that's fine 👍 Castore is still available in Node/JS. And you ca
 
 The Event Sourcing journey has many hidden pitfalls. We ran into them for you!
 
-Castore is opiniated. It comes with a collection of best practices and documented anti-patterns that we hope will help you out!
+Castore is opinionated. It comes with a collection of best practices and documented anti-patterns that we hope will help you out!
 
 ## Table of content
 
@@ -894,7 +894,7 @@ type PokemonEventStateCarryingMessage = StateCarryingMessage<
 type PokemonEventStateCarryingMessage = {
   eventStoreId: 'POKEMONS';
   event: PokemonEventDetails;
-  aggregate: PokemonAggregate
+  aggregate: PokemonAggregate;
 };
 
 // 👇 Also equivalent to:
