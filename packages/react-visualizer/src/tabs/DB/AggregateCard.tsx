@@ -13,7 +13,7 @@ import {
 import React, { useState } from 'react';
 
 import type { EventStore } from '@castore/core';
-import { useAggregateEvents } from '@castore/redux-event-storage-adapter';
+import { useAggregateEvents } from '@castore/event-storage-adapter-redux';
 
 import { JsonView } from '~/components/JsonView';
 

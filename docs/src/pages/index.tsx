@@ -447,7 +447,7 @@ const Home = (): JSX.Element => (
               You can code your own <code>EventStorageAdapter</code> (simply
               implement the interface), but it's much simpler to use
               off-the-shelf adapters like the{' '}
-              <a href="https://www.npmjs.com/package/@castore/dynamodb-event-storage-adapter">
+              <a href="https://www.npmjs.com/package/@castore/event-storage-adapter-dynamodb">
                 DynamoDBEventStorageAdapter
               </a>
               .

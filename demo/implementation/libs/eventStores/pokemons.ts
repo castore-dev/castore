@@ -1,5 +1,5 @@
 import { pokemonsEventStore as $pokemonsEventStore } from '@castore/demo-blueprint';
-import { LegacyDynamoDBEventStorageAdapter } from '@castore/dynamodb-event-storage-adapter';
+import { LegacyDynamoDBEventStorageAdapter } from '@castore/event-storage-adapter-dynamodb';
 
 import { dynamoDBClient } from './client';
 

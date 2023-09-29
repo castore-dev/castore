@@ -1,5 +1,5 @@
 {
-  "root": "packages/inmemory-event-storage-adapter",
+  "root": "packages/event-storage-adapter-redux",
   "projectType": "library",
   "tags": [],
   "implicitDependencies": ["core"]

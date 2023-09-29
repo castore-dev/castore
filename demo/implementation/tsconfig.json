@@ -13,7 +13,7 @@
     { "path": "../blueprint/tsconfig.build.json" },
     { "path": "../../packages/core/tsconfig.build.json" },
     {
-      "path": "../../packages/dynamodb-event-storage-adapter/tsconfig.build.json"
+      "path": "../../packages/event-storage-adapter-dynamodb/tsconfig.build.json"
     },
     { "path": "../../packages/test-tools/tsconfig.build.json" }
   ],

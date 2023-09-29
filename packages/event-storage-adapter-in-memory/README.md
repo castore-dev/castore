@@ -8,10 +8,10 @@ This class is mainly useful for manual and unit tests. It is obviously not recom
 
 ```bash
 # npm
-npm install @castore/inmemory-event-storage-adapter
+npm install @castore/event-storage-adapter-in-memory
 
 # yarn
-yarn add @castore/inmemory-event-storage-adapter
+yarn add @castore/event-storage-adapter-in-memory
 ```
 
 This package has `@castore/core` as peer dependency, so you will have to install it as well:
@@ -27,7 +27,7 @@ yarn add @castore/core
 ## 👩‍💻 Usage
 
 ```ts
-import { InMemoryEventStorageAdapter } from '@castore/inmemory-event-storage-adapter';
+import { InMemoryEventStorageAdapter } from '@castore/event-storage-adapter-in-memory';
 
 const pokemonsEventStorageAdapter = new InMemoryEventStorageAdapter({
   // 👇 You can specify an initial state for your event store

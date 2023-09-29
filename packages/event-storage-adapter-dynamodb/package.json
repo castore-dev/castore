@@ -1,5 +1,5 @@
 {
-  "name": "@castore/dynamodb-event-storage-adapter",
+  "name": "@castore/event-storage-adapter-dynamodb",
   "description": "DRY Castore EventStorageAdapter implementation using DynamoDB",
   "license": "MIT",
   "homepage": "https://github.com/castore-dev/castore#readme",
@@ -76,7 +76,7 @@
     "targets": {
       "package": {
         "outputs": [
-          "packages/dynamodb-event-storage-adapter/dist"
+          "packages/event-storage-adapter-dynamodb/dist"
         ]
       }
     }

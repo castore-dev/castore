@@ -38,15 +38,15 @@
       "name": "🫀  Core"
     },
     {
-      "path": "packages/dynamodb-event-storage-adapter",
+      "path": "packages/event-storage-adapter-dynamodb",
       "name": "🔌  DynamoDB"
     },
     {
-      "path": "packages/redux-event-storage-adapter",
+      "path": "packages/event-storage-adapter-redux",
       "name": "🔌  Redux"
     },
     {
-      "path": "packages/inmemory-event-storage-adapter",
+      "path": "packages/event-storage-adapter-in-memory",
       "name": "🔌  InMemory"
     },
     {

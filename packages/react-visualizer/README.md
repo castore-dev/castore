@@ -62,7 +62,7 @@ It will render a [visualizer](https://castore-dev.github.io/castore/).
 
 We are thinking about re-using some Components to develop an admin, but it is NOT an admin for now. It's main goal is to visualize, design and manually test your event stores and commands, as well as getting familiar with the event sourcing paradigm.
 
-No connection to a DB or API is actually done. All the data is stored locally your web page, thanks to a [`ReduxEventStorageAdapter`](https://github.com/castore-dev/castore/tree/main/packages/redux-event-storage-adapter).
+No connection to a DB or API is actually done. All the data is stored locally your web page, thanks to a [`ReduxEventStorageAdapter`](https://github.com/castore-dev/castore/tree/main/packages/event-storage-adapter-redux).
 
 Also, the forms are generated with [`react-json-schema-form`](https://github.com/rjsf-team/react-jsonschema-form), so only `JSONSchemaCommand`s are supported.
 

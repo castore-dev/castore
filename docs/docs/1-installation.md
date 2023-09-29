@@ -22,12 +22,12 @@ Here is an example of working `package.json`:
 {
   ...
   "dependencies": {
-    "@castore/core": "1.3.1",
-    "@castore/dynamodb-event-storage-adapter": "1.3.1"
+    "@castore/core": "2.0.0",
+    "@castore/event-storage-adapter-dynamodb": "2.0.0"
     ...
   },
   "devDependencies": {
-    "@castore/test-tools": "1.3.1"
+    "@castore/test-tools": "2.0.0"
     ...
   }
 }

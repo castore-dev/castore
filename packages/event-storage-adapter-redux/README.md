@@ -6,10 +6,10 @@ DRY Castore [`EventStorageAdapter`](https://github.com/castore-dev/castore/#--ev
 
 ```bash
 # npm
-npm install @castore/redux-event-storage-adapter
+npm install @castore/event-storage-adapter-redux
 
 # yarn
-yarn add @castore/redux-event-storage-adapter
+yarn add @castore/event-storage-adapter-redux
 ```
 
 This package has `@castore/core`, `@reduxjs/toolkit` (above v1.9) and `react-redux` (above v8) as peer dependencies, so you will have to install them as well:
@@ -31,7 +31,7 @@ If you do not already use Redux in your app, you can simply use the `configureCa
 ```tsx
 import { Provider } from 'react-redux';
 
-import { configureCastore } from '@castore/redux-event-storage-adapter';
+import { configureCastore } from '@castore/event-storage-adapter-redux';
 
 const store = configureCastore({
   eventStores: [pokemonsEventStore, trainersEventStore],
@@ -69,7 +69,7 @@ You can also use the other methods, but it's simpler to use the following built-
 You can use the `useAggregateEvents`, `useAggregate`, `useExistingAggregate` and `useAggregateIds` hooks to read data from the store. Their interface is the same as the event store methods, but synchronous.
 
 ```tsx
-import { useAggregateIds } from '@castore/redux-event-storage-adapter';
+import { useAggregateIds } from '@castore/event-storage-adapter-redux';
 
 const AggregateIdsList = () => {
   // 🙌 Will synchronously return the store data, as well as hook the component to it
@@ -104,7 +104,7 @@ import { Provider } from 'react-redux';
 import {
   ReduxEventStorageAdapter,
   getCastoreReducers,
-} from '@castore/redux-event-storage-adapter';
+} from '@castore/event-storage-adapter-redux';
 
 const castoreReducers = getCastoreReducers({
   eventStores: [pokemonsEventStore, trainersEventStore],

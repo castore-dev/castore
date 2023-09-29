@@ -6,10 +6,10 @@ DRY Castore [`EventStorageAdapter`](https://github.com/castore-dev/castore/#--ev
 
 ```bash
 # npm
-npm install @castore/dynamodb-event-storage-adapter
+npm install @castore/event-storage-adapter-dynamodb
 
 # yarn
-yarn add @castore/dynamodb-event-storage-adapter
+yarn add @castore/event-storage-adapter-dynamodb
 ```
 
 This package has `@castore/core` and `@aws-sdk/client-dynamodb` (above v3) as peer dependencies, so you will have to install them as well:
@@ -52,7 +52,7 @@ Documentation:
 ```ts
 import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
 
-import { DynamoDBSingleTableEventStorageAdapter } from '@castore/dynamodb-event-storage-adapter';
+import { DynamoDBSingleTableEventStorageAdapter } from '@castore/event-storage-adapter-dynamodb';
 
 const dynamoDBClient = new DynamoDBClient({});
 
@@ -123,7 +123,7 @@ import {
   EVENT_TABLE_INITIAL_EVENT_INDEX_NAME, // => initialEvents
   EVENT_TABLE_EVENT_STORE_ID_KEY, // => eventStoreId
   EVENT_TABLE_TIMESTAMP_KEY, // => timestamp
-} from '@castore/dynamodb-event-storage-adapter';
+} from '@castore/event-storage-adapter-dynamodb';
 ```
 
 #### CloudFormation
@@ -260,7 +260,7 @@ Required IAM permissions for each operations:
 This library also exposes a useful `ImageParser` class to parse [DynamoDB stream](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/Streams.html) images from a `DynamoDBSingleTableEventStorageAdapter`. It will build a correctly typed `NotificationMessage` ouf of a stream image, unmarshalling it, removing the prefix of the `aggregateId` in the process and validating the `eventStoreId`:
 
 ```ts
-import { ImageParser } from '@castore/dynamodb-event-storage-adapter';
+import { ImageParser } from '@castore/event-storage-adapter-dynamodb';
 
 const imageParser = new ImageParser({
   sourceEventStores: [pokemonsEventStore, trainersEventStore],
@@ -287,7 +287,7 @@ const notificationMessage = imageParser.parseImage(
 ```ts
 import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
 
-import { DynamoDBEventStorageAdapter } from '@castore/dynamodb-event-storage-adapter';
+import { DynamoDBEventStorageAdapter } from '@castore/event-storage-adapter-dynamodb';
 
 const dynamoDBClient = new DynamoDBClient({});
 
@@ -355,7 +355,7 @@ import {
   EVENT_TABLE_INITIAL_EVENT_INDEX_NAME, // => initialEvents
   EVENT_TABLE_IS_INITIAL_EVENT_KEY, // => isInitialEvent
   EVENT_TABLE_TIMESTAMP_KEY, // => timestamp
-} from '@castore/dynamodb-event-storage-adapter';
+} from '@castore/event-storage-adapter-dynamodb';
 ```
 
 #### CloudFormation

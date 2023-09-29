@@ -2,7 +2,7 @@ import { Stack } from '@mui/material';
 import React from 'react';
 
 import type { EventStore } from '@castore/core';
-import { useAggregateIds } from '@castore/redux-event-storage-adapter';
+import { useAggregateIds } from '@castore/event-storage-adapter-redux';
 
 import { AggregateCard } from './AggregateCard';
 

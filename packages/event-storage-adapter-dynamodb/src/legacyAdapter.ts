@@ -119,7 +119,7 @@ const parseGroupedEvents = (
 };
 
 /**
- * @deprecated "use DynamoDBSingleTableEventStorageAdapter instead: https://github.com/castore-dev/castore/blob/main/packages/dynamodb-event-storage-adapter/README.md#table-of-content"
+ * @deprecated "use DynamoDBSingleTableEventStorageAdapter instead: https://github.com/castore-dev/castore/blob/main/packages/event-storage-adapter-dynamodb/README.md#table-of-content"
  */
 export class LegacyDynamoDBEventStorageAdapter implements EventStorageAdapter {
   getEvents: EventStorageAdapter['getEvents'];

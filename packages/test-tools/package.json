@@ -38,7 +38,7 @@
     "watch": "rm -rf dist && concurrently 'yarn:package-* --watch'"
   },
   "dependencies": {
-    "@castore/inmemory-event-storage-adapter": "workspace:"
+    "@castore/event-storage-adapter-in-memory": "workspace:"
   },
   "devDependencies": {
     "@babel/cli": "^7.17.6",

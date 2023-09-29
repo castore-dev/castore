@@ -33,15 +33,15 @@ jobs:
       - uses: JS-DevTools/npm-publish@v2
         with:
           token: ${{ secrets.NPM_TOKEN }}
-          package: ./packages/dynamodb-event-storage-adapter/package.json
+          package: ./packages/event-storage-adapter-dynamodb/package.json
       - uses: JS-DevTools/npm-publish@v2
         with:
           token: ${{ secrets.NPM_TOKEN }}
-          package: ./packages/inmemory-event-storage-adapter/package.json
+          package: ./packages/event-storage-adapter-in-memory/package.json
       - uses: JS-DevTools/npm-publish@v2
         with:
           token: ${{ secrets.NPM_TOKEN }}
-          package: ./packages/redux-event-storage-adapter/package.json
+          package: ./packages/event-storage-adapter-redux/package.json
       - uses: JS-DevTools/npm-publish@v2
         with:
           token: ${{ secrets.NPM_TOKEN }}

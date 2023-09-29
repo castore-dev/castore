@@ -38,7 +38,7 @@
     "watch": "rm -rf dist && concurrently 'yarn:package-* --watch'"
   },
   "dependencies": {
-    "@castore/redux-event-storage-adapter": "workspace:",
+    "@castore/event-storage-adapter-redux": "workspace:",
     "@emotion/react": "^11.9.3",
     "@emotion/styled": "^11.9.3",
     "@mui/icons-material": "^5.11.0",
