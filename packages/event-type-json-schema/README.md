@@ -6,10 +6,10 @@ DRY Castore [`EventType`](https://github.com/castore-dev/castore/#--eventtype) d
 
 ```bash
 # npm
-npm install @castore/json-schema-event
+npm install @castore/event-type-json-schema
 
 # yarn
-yarn add @castore/json-schema-event
+yarn add @castore/event-type-json-schema
 ```
 
 This package has `@castore/core` and `json-schema-to-ts` (above v2) as peer dependencies, so you will have to install them as well:
@@ -25,7 +25,7 @@ yarn add @castore/core json-schema-to-ts
 ## 👩‍💻 Usage
 
 ```ts
-import { JSONSchemaEventType } from '@castore/json-schema-event';
+import { JSONSchemaEventType } from '@castore/event-type-json-schema';
 
 const pokemonAppearedPayloadSchema = {
   type: 'object',

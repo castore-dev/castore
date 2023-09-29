@@ -25,7 +25,7 @@
   },
   "references": [
     { "path": "../packages/core/tsconfig.build.json" },
-    { "path": "../packages/json-schema-command/tsconfig.build.json" },
+    { "path": "../packages/command-json-schema/tsconfig.build.json" },
     { "path": "../packages/react-visualizer/tsconfig.build.json" },
     { "path": "../demo/blueprint/tsconfig.build.json" }
   ],

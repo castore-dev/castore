@@ -1,10 +1,10 @@
 {
-  "name": "@castore/zod-event",
-  "description": "DRY Castore EventType definition using zod",
+  "name": "@castore/command-json-schema",
+  "description": "DRY Castore Command definition using JSON Schemas and json-schema-to-ts",
   "license": "MIT",
-  "homepage": "https://github.com/castore-dev/castore#readme",
-  "bugs": "https://github.com/castore-dev/castore/issues",
-  "repository": "castore-dev/castore.git",
+  "homepage": "https://github.com/theodo/castore#readme",
+  "bugs": "https://github.com/theodo/castore/issues",
+  "repository": "theodo/castore.git",
   "keywords": [
     "event",
     "source",
@@ -37,6 +37,9 @@
     "transpile": "babel src --extensions .ts --quiet",
     "watch": "rm -rf dist && concurrently 'yarn:package-* --watch'"
   },
+  "dependencies": {
+    "ts-toolbelt": "^9.6.0"
+  },
   "devDependencies": {
     "@babel/cli": "^7.17.6",
     "@babel/core": "^7.17.9",
@@ -49,13 +52,12 @@
     "concurrently": "^7.1.0",
     "dependency-cruiser": "^11.7.0",
     "eslint": "^8.14.0",
+    "json-schema-to-ts": "^2.5.4",
     "prettier": "^2.6.2",
     "ts-node": "^10.7.0",
-    "ts-toolbelt": "^9.6.0",
     "tsc-alias": "^1.8.7",
     "typescript": "^4.6.3",
-    "vitest": "^0.26.2",
-    "zod": "^3.15.1"
+    "vitest": "^0.26.2"
   },
   "maintainers": [
     "Thomas Aribart",
@@ -68,13 +70,13 @@
     "targets": {
       "package": {
         "outputs": [
-          "packages/zod-event/dist"
+          "packages/command-json-schema/dist"
         ]
       }
     }
   },
   "peerDependencies": {
     "@castore/core": "*",
-    "zod": "^3.0.0"
+    "json-schema-to-ts": "^2.0.0"
   }
 }

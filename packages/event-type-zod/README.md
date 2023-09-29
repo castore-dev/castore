@@ -6,10 +6,10 @@ DRY Castore [`EventType`](https://github.com/castore-dev/castore/#--eventtype) d
 
 ```bash
 # npm
-npm install @castore/zod-event
+npm install @castore/event-type-zod
 
 # yarn
-yarn add @castore/zod-event
+yarn add @castore/event-type-zod
 ```
 
 This package has `@castore/core` and `zod` (above v3) as peer dependencies, so you will have to install them as well:
@@ -27,7 +27,7 @@ yarn add @castore/core zod
 ```ts
 import z from 'zod';
 
-import { ZodEventType } from '@castore/zod-event';
+import { ZodEventType } from '@castore/event-type-zod';
 
 const pokemonAppearedPayloadSchema = z.object({
   name: z.string(),

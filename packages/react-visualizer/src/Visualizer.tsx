@@ -1,8 +1,8 @@
 import { CssBaseline, ThemeProvider } from '@mui/material';
 import React from 'react';
 
+import type { JSONSchemaCommand } from '@castore/command-json-schema';
 import { EventStore, Command, CommandId, CommandContext } from '@castore/core';
-import type { JSONSchemaCommand } from '@castore/json-schema-command';
 
 import { UnthemedVisualizer } from './UnthemedVisualizer';
 import { defaultTheme } from './defaultTheme';

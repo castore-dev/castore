@@ -1,9 +1,9 @@
 import React from 'react';
 import { Provider } from 'react-redux';
 
+import type { JSONSchemaCommand } from '@castore/command-json-schema';
 import type { EventStore } from '@castore/core';
 import { configureCastore } from '@castore/event-storage-adapter-redux';
-import type { JSONSchemaCommand } from '@castore/json-schema-command';
 
 import { VisualizerContent } from './VisualizerContent';
 

@@ -50,15 +50,15 @@
       "name": "🔌  InMemory"
     },
     {
-      "path": "packages/json-schema-event",
+      "path": "packages/event-type-json-schema",
       "name": "📆  Json Schema Event"
     },
     {
-      "path": "packages/zod-event",
+      "path": "packages/event-type-zod",
       "name": "📆  Zod Event"
     },
     {
-      "path": "packages/json-schema-command",
+      "path": "packages/command-json-schema",
       "name": "👮‍♀️  Json Schema Command"
     },
     {

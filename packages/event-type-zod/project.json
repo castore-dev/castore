@@ -1,5 +1,5 @@
 {
-  "root": "packages/zod-event",
+  "root": "packages/event-type-zod",
   "projectType": "library",
   "tags": [],
   "implicitDependencies": ["core"]

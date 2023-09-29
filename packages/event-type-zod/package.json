@@ -1,6 +1,6 @@
 {
-  "name": "@castore/json-schema-event",
-  "description": "DRY Castore EventType definition using JSON Schemas and json-schema-to-ts",
+  "name": "@castore/event-type-zod",
+  "description": "DRY Castore EventType definition using zod",
   "license": "MIT",
   "homepage": "https://github.com/castore-dev/castore#readme",
   "bugs": "https://github.com/castore-dev/castore/issues",
@@ -49,13 +49,13 @@
     "concurrently": "^7.1.0",
     "dependency-cruiser": "^11.7.0",
     "eslint": "^8.14.0",
-    "json-schema-to-ts": "^2.5.4",
     "prettier": "^2.6.2",
     "ts-node": "^10.7.0",
     "ts-toolbelt": "^9.6.0",
     "tsc-alias": "^1.8.7",
     "typescript": "^4.6.3",
-    "vitest": "^0.26.2"
+    "vitest": "^0.26.2",
+    "zod": "^3.15.1"
   },
   "maintainers": [
     "Thomas Aribart",
@@ -68,13 +68,13 @@
     "targets": {
       "package": {
         "outputs": [
-          "packages/json-schema-event/dist"
+          "packages/event-type-zod/dist"
         ]
       }
     }
   },
   "peerDependencies": {
     "@castore/core": "*",
-    "json-schema-to-ts": "^2.0.0"
+    "zod": "^3.0.0"
   }
 }

@@ -6,10 +6,10 @@ DRY Castore [`Command`](https://github.com/castore-dev/castore/#--command) defin
 
 ```bash
 # npm
-npm install @castore/json-schema-command
+npm install @castore/command-json-schema
 
 # yarn
-yarn add @castore/json-schema-command
+yarn add @castore/command-json-schema
 ```
 
 This package has `@castore/core` and `json-schema-to-ts` (above v2) as peer dependencies, so you will have to install them as well:
@@ -25,8 +25,8 @@ yarn add @castore/core json-schema-to-ts
 ## 👩‍💻 Usage
 
 ```ts
+import { JSONSchemaCommand } from '@castore/command-json-schema';
 import { tuple } from '@castore/core';
-import { JSONSchemaCommand } from '@castore/json-schema-command';
 
 const pokemonAppearedInputSchema = {
   type: 'object',

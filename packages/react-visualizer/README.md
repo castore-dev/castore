@@ -14,14 +14,14 @@ npm install --save-dev @castore/react-visualizer
 yarn add --dev @castore/react-visualizer
 ```
 
-This package has `@castore/core`, `@castore/json-schema-command` and `react` (above v17) as peer dependencies, so you will have to install them as well:
+This package has `@castore/core`, `@castore/command-json-schema` and `react` (above v17) as peer dependencies, so you will have to install them as well:
 
 ```bash
 # npm
-npm install @castore/core @castore/json-schema-command react
+npm install @castore/core @castore/command-json-schema react
 
 # yarn
-yarn add @castore/core @castore/json-schema-command react
+yarn add @castore/core @castore/command-json-schema react
 ```
 
 ## 👩‍💻 Usage

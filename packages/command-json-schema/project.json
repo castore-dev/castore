@@ -1,5 +1,5 @@
 {
-  "root": "packages/json-schema-command",
+  "root": "packages/command-json-schema",
   "projectType": "library",
   "tags": [],
   "implicitDependencies": ["core"]

@@ -1,4 +1,4 @@
-import { JSONSchemaEventType } from '@castore/json-schema-event';
+import { JSONSchemaEventType } from '@castore/event-type-json-schema';
 
 export const gameStartedEvent = new JSONSchemaEventType({
   type: 'GAME_STARTED',

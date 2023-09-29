@@ -1,5 +1,5 @@
 {
-  "root": "packages/json-schema-event",
+  "root": "packages/event-type-json-schema",
   "projectType": "library",
   "tags": [],
   "implicitDependencies": ["core"]

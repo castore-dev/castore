@@ -64,8 +64,8 @@ Here is a [hosted example](https://castore-dev.github.io/castore/visualizer/), b
 
 To add run-time validation to your event types:
 
-- [JSON Schema Event Type](https://www.npmjs.com/package/@castore/json-schema-event): DRY `EventType` definition using [JSON Schemas](http://json-schema.org/understanding-json-schema/reference/index.html) and [`json-schema-to-ts`](https://github.com/ThomasAribart/json-schema-to-ts)
-- [Zod Event Type](https://www.npmjs.com/package/@castore/zod-event): DRY `EventType` definition using [`zod`](https://github.com/colinhacks/zod)
+- [JSON Schema Event Type](https://www.npmjs.com/package/@castore/event-type-json-schema): DRY `EventType` definition using [JSON Schemas](http://json-schema.org/understanding-json-schema/reference/index.html) and [`json-schema-to-ts`](https://github.com/ThomasAribart/json-schema-to-ts)
+- [Zod Event Type](https://www.npmjs.com/package/@castore/event-type-zod): DRY `EventType` definition using [`zod`](https://github.com/colinhacks/zod)
 
 ## 💾 Event Storage Adapters
 
@@ -77,7 +77,7 @@ To add run-time validation to your event types:
 
 To add run-time validation to your commands:
 
-- [JSON Schema Command](https://www.npmjs.com/package/@castore/json-schema-command): DRY `Command` definition using [JSON Schemas](http://json-schema.org/understanding-json-schema/reference/index.html) and [`json-schema-to-ts`](https://github.com/ThomasAribart/json-schema-to-ts)
+- [JSON Schema Command](https://www.npmjs.com/package/@castore/command-json-schema): DRY `Command` definition using [JSON Schemas](http://json-schema.org/understanding-json-schema/reference/index.html) and [`json-schema-to-ts`](https://github.com/ThomasAribart/json-schema-to-ts)
 
 ## 📨 Message Queue Adapters
 

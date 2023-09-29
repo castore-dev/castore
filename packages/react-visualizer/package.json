@@ -60,8 +60,8 @@
     "@babel/preset-env": "^7.20.2",
     "@babel/preset-react": "^7.18.6",
     "@babel/preset-typescript": "^7.16.7",
+    "@castore/command-json-schema": "workspace:",
     "@castore/core": "workspace:",
-    "@castore/json-schema-command": "workspace:",
     "@types/node": "^17.0.29",
     "babel-plugin-module-resolver": "^4.1.0",
     "babel-plugin-optimize-clsx": "^2.6.2",
@@ -94,8 +94,8 @@
     }
   },
   "peerDependencies": {
+    "@castore/command-json-schema": "*",
     "@castore/core": "*",
-    "@castore/json-schema-command": "*",
     "react": "^17.0.0"
   }
 }

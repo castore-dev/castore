@@ -45,15 +45,15 @@ jobs:
       - uses: JS-DevTools/npm-publish@v2
         with:
           token: ${{ secrets.NPM_TOKEN }}
-          package: ./packages/json-schema-event/package.json
+          package: ./packages/event-type-json-schema/package.json
       - uses: JS-DevTools/npm-publish@v2
         with:
           token: ${{ secrets.NPM_TOKEN }}
-          package: ./packages/zod-event/package.json
+          package: ./packages/event-type-zod/package.json
       - uses: JS-DevTools/npm-publish@v2
         with:
           token: ${{ secrets.NPM_TOKEN }}
-          package: ./packages/json-schema-command/package.json
+          package: ./packages/command-json-schema/package.json
       - uses: JS-DevTools/npm-publish@v2
         with:
           token: ${{ secrets.NPM_TOKEN }}

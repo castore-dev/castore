@@ -1,8 +1,8 @@
 import { Stack } from '@mui/material';
 import React from 'react';
 
+import type { JSONSchemaCommand } from '@castore/command-json-schema';
 import type { EventStore } from '@castore/core';
-import type { JSONSchemaCommand } from '@castore/json-schema-command';
 
 import { CommandCard } from './CommandCard';
 
