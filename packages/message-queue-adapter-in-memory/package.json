@@ -1,5 +1,5 @@
 {
-  "name": "@castore/in-memory-message-queue-adapter",
+  "name": "@castore/message-queue-adapter-in-memory",
   "description": "DRY Castore MessageQueue definition using FastQ",
   "license": "MIT",
   "homepage": "https://github.com/theodo/castore#readme",
@@ -71,7 +71,7 @@
     "targets": {
       "package": {
         "outputs": [
-          "packages/in-memory-message-queue-adapter/dist"
+          "packages/message-queue-adapter-in-memory/dist"
         ]
       }
     }

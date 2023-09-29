@@ -74,11 +74,11 @@
       "name": "🚌  InMemory"
     },
     {
-      "path": "packages/sqs-message-queue-adapter",
+      "path": "packages/message-queue-adapter-sqs",
       "name": "📨  SQS"
     },
     {
-      "path": "packages/in-memory-message-queue-adapter",
+      "path": "packages/message-queue-adapter-in-memory",
       "name": "📨  InMemory"
     },
     {

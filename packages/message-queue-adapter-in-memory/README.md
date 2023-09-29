@@ -6,10 +6,10 @@ DRY Castore [`MessageQueue`](https://github.com/castore-dev/castore/#--messagequ
 
 ```bash
 # npm
-npm install @castore/in-memory-message-queue-adapter
+npm install @castore/message-queue-adapter-in-memory
 
 # yarn
-yarn add @castore/in-memory-message-queue-adapter
+yarn add @castore/message-queue-adapter-in-memory
 ```
 
 This package has `@castore/core` as peer dependency, so you will have to install it as well:
@@ -27,7 +27,7 @@ yarn add @castore/core
 The simplest way to use this adapter is to use the `attachTo` static method:
 
 ```ts
-import { InMemoryMessageQueueAdapter } from '@castore/in-memory-message-queue-adapter';
+import { InMemoryMessageQueueAdapter } from '@castore/message-queue-adapter-in-memory';
 
 const messageQueueAdapter =
   InMemoryMessageQueueAdapter.attachTo(appMessageQueue);
@@ -39,7 +39,7 @@ You can also instanciate one on its own, but notice the code duplication:
 
 ```ts
 import type { MessageQueueMessage } from '@castore/core';
-import { InMemoryMessageQueueAdapter } from '@castore/in-memory-message-queue-adapter';
+import { InMemoryMessageQueueAdapter } from '@castore/message-queue-adapter-in-memory';
 
 const messageQueueAdapter = new InMemoryMessageQueueAdapter<
   MessageQueueMessage<typeof appMessageQueue>

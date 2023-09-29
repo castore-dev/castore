@@ -81,8 +81,8 @@ To add run-time validation to your commands:
 
 ## 📨 Message Queue Adapters
 
-- [SQS Message Queue Adapter](https://www.npmjs.com/package/@castore/sqs-message-queue-adapter): Implementation of the `MessageQueueAdapter` interface based on AWS SQS.
-- [In-Memory Message Queue Adapter](https://www.npmjs.com/package/@castore/in-memory-message-queue-adapter): Implementation of the `MessageQueueAdapter` interface using a local Node/JS queue. To be used in manual or unit tests.
+- [SQS Message Queue Adapter](https://www.npmjs.com/package/@castore/message-queue-adapter-sqs): Implementation of the `MessageQueueAdapter` interface based on AWS SQS.
+- [In-Memory Message Queue Adapter](https://www.npmjs.com/package/@castore/message-queue-adapter-in-memory): Implementation of the `MessageQueueAdapter` interface using a local Node/JS queue. To be used in manual or unit tests.
 
 ## 🚌 Message Buses Adapters
 

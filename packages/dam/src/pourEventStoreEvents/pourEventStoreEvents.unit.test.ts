@@ -6,7 +6,7 @@ import {
 import {
   InMemoryMessageQueueAdapter,
   TaskContext,
-} from '@castore/in-memory-message-queue-adapter';
+} from '@castore/message-queue-adapter-in-memory';
 
 import {
   pokemonEventStore,

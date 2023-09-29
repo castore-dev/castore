@@ -48,7 +48,7 @@
     "@babel/preset-typescript": "^7.16.7",
     "@castore/core": "workspace:",
     "@castore/demo-blueprint": "workspace:",
-    "@castore/in-memory-message-queue-adapter": "workspace:",
+    "@castore/message-queue-adapter-in-memory": "workspace:",
     "@castore/test-tools": "workspace:",
     "@types/node": "^17.0.29",
     "babel-plugin-module-resolver": "^4.1.0",

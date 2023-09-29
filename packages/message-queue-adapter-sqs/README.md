@@ -6,10 +6,10 @@ DRY Castore [`MessageQueue`](https://github.com/castore-dev/castore/#--messagequ
 
 ```bash
 # npm
-npm install @castore/sqs-message-queue-adapter
+npm install @castore/message-queue-adapter-sqs
 
 # yarn
-yarn add @castore/sqs-message-queue-adapter
+yarn add @castore/message-queue-adapter-sqs
 ```
 
 This package has `@castore/core` and `@aws-sdk/client-sqs` (above v3) as peer dependencies, so you will have to install them as well:
@@ -27,7 +27,7 @@ yarn add @castore/core @aws-sdk/client-sqs
 ```ts
 import { SQSClient } from '@aws-sdk/client-sqs';
 
-import { SQSMessageQueueAdapter } from '@castore/sqs-message-queue-adapter';
+import { SQSMessageQueueAdapter } from '@castore/message-queue-adapter-sqs';
 
 const sqsClient = new SQSClient({});
 
@@ -149,7 +149,7 @@ On the worker side, you can use the `SQSMessageQueueMessage` and `SQSMessageQueu
 import type {
   SQSMessageQueueMessage,
   SQSMessageQueueMessageBody,
-} from '@castore/sqs-message-queue-adapter';
+} from '@castore/message-queue-adapter-sqs';
 
 const appMessagesWorker = async ({ Records }: SQSMessageQueueMessage) => {
   Records.forEach(({ body }) => {

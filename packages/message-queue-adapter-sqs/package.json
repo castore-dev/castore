@@ -1,5 +1,5 @@
 {
-  "name": "@castore/sqs-message-queue-adapter",
+  "name": "@castore/message-queue-adapter-sqs",
   "description": "DRY Castore MessageQueue definition using AWS SQS",
   "license": "MIT",
   "homepage": "https://github.com/theodo/castore#readme",
@@ -74,7 +74,7 @@
     "targets": {
       "package": {
         "outputs": [
-          "packages/sqs-message-queue-adapter/dist"
+          "packages/message-queue-adapter-sqs/dist"
         ]
       }
     }

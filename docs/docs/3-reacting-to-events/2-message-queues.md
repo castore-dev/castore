@@ -63,7 +63,7 @@ The adapter packages will also expose useful generics to type the arguments of y
 import type {
   SQSMessageQueueMessage,
   SQSMessageQueueMessageBody,
-} from '@castore/sqs-message-queue-adapter';
+} from '@castore/message-queue-adapter-sqs';
 
 const appMessagesWorker = async ({ Records }: SQSMessageQueueMessage) => {
   Records.forEach(({ body }) => {
