@@ -57,6 +57,10 @@ jobs:
       - uses: JS-DevTools/npm-publish@v2
         with:
           token: ${{ secrets.NPM_TOKEN }}
+          package: ./packages/command-zod/package.json
+      - uses: JS-DevTools/npm-publish@v2
+        with:
+          token: ${{ secrets.NPM_TOKEN }}
           package: ./packages/message-bus-adapter-event-bridge/package.json
       - uses: JS-DevTools/npm-publish@v2
         with:

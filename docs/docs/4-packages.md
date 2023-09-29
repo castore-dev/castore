@@ -78,6 +78,7 @@ To add run-time validation to your event types:
 To add run-time validation to your commands:
 
 - [JSON Schema Command](https://www.npmjs.com/package/@castore/command-json-schema): DRY `Command` definition using [JSON Schemas](http://json-schema.org/understanding-json-schema/reference/index.html) and [`json-schema-to-ts`](https://github.com/ThomasAribart/json-schema-to-ts)
+- [Zod Command](https://www.npmjs.com/package/@castore/command-zod): DRY `Command` definition using [`zod`](https://github.com/colinhacks/zod)
 
 ## 📨 Message Queue Adapters
 
