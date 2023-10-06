@@ -16,6 +16,10 @@ defaults:
   run:
     shell: bash
 
+permissions:
+  contents: read
+  pull-requests: write
+
 jobs:
   label-pr:
     name: 🏷 Label PR
