@@ -47,6 +47,14 @@ await connectedPokemonsEventStore.pushEvent(
   { prevAggregate: pokemonAggregate },
   // Removes the need to re-fetch 🙌
 );
+
+await EventStore.pushEventGroup(
+  connectedPokemonsEventStore.groupEvent(
+    { ... },
+    // Will also work on event groups 🙌
+    { prevAggregate: pokemonAggregate },
+  ),
+);
 ```
 
 Compared to data streams, connected event stores have the advantage of simplicity, performances and costs. However, they **strongly decouple your storage and messaging solutions**: Make sure to anticipate any issue that might arise (consistency, non-caught errors etc.).

@@ -288,7 +288,7 @@ export class LegacyDynamoDBEventStorageAdapter implements EventStorageAdapter {
     /**
      * @debt test "Add  unit test for pushEventGroup"
      */
-    this.pushEventGroup = async (...groupedEventsInput) => {
+    this.pushEventGroup = async (options, ...groupedEventsInput) => {
       const { groupedEvents, timestamp = new Date().toISOString() } =
         parseGroupedEvents(...groupedEventsInput);
 
@@ -302,7 +302,7 @@ export class LegacyDynamoDBEventStorageAdapter implements EventStorageAdapter {
             TransactItems: groupedEvents.map(groupedEvent => ({
               Put: groupedEvent.eventStorageAdapter.getPushEventInput(
                 { timestamp, ...groupedEvent.event },
-                { eventStoreId: groupedEvent.context.eventStoreId },
+                { ...options, eventStoreId: groupedEvent.context.eventStoreId },
               ),
             })),
           }),

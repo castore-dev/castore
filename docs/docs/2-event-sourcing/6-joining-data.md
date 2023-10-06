@@ -29,6 +29,15 @@ await EventStore.pushEventGroup(
     ...
   }),
 );
+
+// You can also pass options as a first argument
+await EventStore.pushEventGroup(
+  { force: true },
+  pokemonsEventStore.groupEvent({
+    ...
+  }),
+  ...
+);
 ```
 
 :::note

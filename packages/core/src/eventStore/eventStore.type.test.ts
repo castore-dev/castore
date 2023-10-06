@@ -1,3 +1,4 @@
+/* eslint-disable max-lines */
 import type { A } from 'ts-toolbelt';
 
 import type { Aggregate } from '~/aggregate';
@@ -147,17 +148,27 @@ assertGroupEventOutput;
 
 const assertGenericPushEventGroupInput: A.Equals<
   Parameters<typeof EventStore.pushEventGroup>,
-  [GroupedEvent, ...GroupedEvent[]]
+  [
+    GroupedEvent | { force?: boolean | undefined },
+    GroupedEvent,
+    ...GroupedEvent[],
+  ]
 > = 1;
 assertGenericPushEventGroupInput;
 
 const assertGenericPushEventGroupOutput: A.Equals<
   ReturnType<typeof EventStore.pushEventGroup>,
   Promise<{
-    eventGroup: {
-      event: EventDetail;
-      nextAggregate?: Aggregate | undefined;
-    }[];
+    eventGroup:
+      | {
+          event: EventDetail;
+          nextAggregate?: Aggregate | undefined;
+        }[]
+      // Weird TS bug
+      | {
+          event: EventDetail;
+          nextAggregate?: Aggregate | undefined;
+        }[];
   }>
 > = 1;
 assertGenericPushEventGroupOutput;
@@ -178,3 +189,21 @@ const assertPushEventGroupOutput: A.Equals<
   }
 > = 1;
 assertPushEventGroupOutput;
+
+const pushTwoPokemonsEventGroupWithOptions = () =>
+  EventStore.pushEventGroup(
+    { force: true },
+    pokemonsEventStore.groupEvent(pikachuAppearedEvent),
+    pokemonsEventStore.groupEvent(pikachuCaughtEvent),
+  );
+
+const assertPushTwoPokemonsEventGroupWithOptions: A.Equals<
+  Awaited<ReturnType<typeof pushTwoPokemonsEventGroupWithOptions>>,
+  {
+    eventGroup: [
+      { event: PokemonEventDetails; nextAggregate?: PokemonAggregate },
+      { event: PokemonEventDetails; nextAggregate?: PokemonAggregate },
+    ];
+  }
+> = 1;
+assertPushTwoPokemonsEventGroupWithOptions;

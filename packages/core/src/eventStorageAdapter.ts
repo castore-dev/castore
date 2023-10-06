@@ -38,6 +38,7 @@ export interface EventStorageAdapter {
     options: PushEventOptions,
   ) => Promise<{ event: EventDetail }>;
   pushEventGroup: (
+    options: { force?: boolean },
     ...groupedEvents: [GroupedEvent, ...GroupedEvent[]]
   ) => Promise<{ eventGroup: { event: EventDetail }[] }>;
   groupEvent: (eventDetail: OptionalTimestamp<EventDetail>) => GroupedEvent;

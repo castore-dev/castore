@@ -278,6 +278,7 @@ describe('in-memory storage adapter', () => {
       ];
 
       const eventGroup = await eventStorageAdapterA.pushEventGroup(
+        { force: true },
         ...groupedEvents,
       );
       expect(eventGroup).toStrictEqual({
@@ -312,7 +313,7 @@ describe('in-memory storage adapter', () => {
       ];
 
       await expect(() =>
-        eventStorageAdapterA.pushEventGroup(...groupedEvents),
+        eventStorageAdapterA.pushEventGroup({}, ...groupedEvents),
       ).rejects.toThrow();
     });
 
@@ -330,7 +331,7 @@ describe('in-memory storage adapter', () => {
       ];
 
       await expect(() =>
-        eventStorageAdapterA.pushEventGroup(...groupedEvents),
+        eventStorageAdapterA.pushEventGroup({}, ...groupedEvents),
       ).rejects.toThrow();
     });
 
@@ -351,7 +352,7 @@ describe('in-memory storage adapter', () => {
       ];
 
       await expect(() =>
-        eventStorageAdapterA.pushEventGroup(...groupedEvents),
+        eventStorageAdapterA.pushEventGroup({}, ...groupedEvents),
       ).rejects.toThrow();
     });
 
@@ -377,7 +378,7 @@ describe('in-memory storage adapter', () => {
       ];
 
       await expect(() =>
-        eventStorageAdapterA.pushEventGroup(...groupedEvents),
+        eventStorageAdapterA.pushEventGroup({}, ...groupedEvents),
       ).rejects.toThrow();
 
       expect(pushEventSyncASpy).toHaveBeenCalledOnce();
