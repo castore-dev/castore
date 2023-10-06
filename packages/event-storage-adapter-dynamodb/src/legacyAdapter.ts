@@ -132,10 +132,6 @@ export class LegacyDynamoDBEventStorageAdapter implements EventStorageAdapter {
   groupEvent: EventStorageAdapter['groupEvent'];
   listAggregateIds: EventStorageAdapter['listAggregateIds'];
 
-  putSnapshot: EventStorageAdapter['putSnapshot'];
-  getLastSnapshot: EventStorageAdapter['getLastSnapshot'];
-  listSnapshots: EventStorageAdapter['listSnapshots'];
-
   getTableName: () => string;
   tableName: string | (() => string);
   dynamoDBClient: DynamoDBClient;
@@ -430,13 +426,5 @@ export class LegacyDynamoDBEventStorageAdapter implements EventStorageAdapter {
           : {}),
       };
     };
-
-    this.putSnapshot = async () => new Promise(resolve => resolve());
-
-    this.getLastSnapshot = async () =>
-      new Promise(resolve => resolve({ snapshot: undefined }));
-
-    this.listSnapshots = async () =>
-      new Promise(resolve => resolve({ snapshots: [] }));
   }
 }

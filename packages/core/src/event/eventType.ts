@@ -9,6 +9,17 @@ export class EventType<
     detail: EventDetail<TYPE, PAYLOAD, METADATA>;
   };
   type: TYPE;
+  parseEventDetail?: (candidate: unknown) =>
+    | {
+        isValid: true;
+        parsedEventDetail: EventDetail<TYPE, PAYLOAD, METADATA>;
+        parsingErrors?: never;
+      }
+    | {
+        isValid: false;
+        parsedEventDetail?: never;
+        parsingErrors?: [Error, ...Error[]];
+      };
 
   constructor({ type }: { type: TYPE }) {
     this.type = type;

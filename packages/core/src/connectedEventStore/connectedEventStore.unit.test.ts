@@ -31,9 +31,6 @@ export const anotherEventStorageAdapterMock: EventStorageAdapter = {
   groupEvent: vi.fn(),
   getEvents: vi.fn(),
   listAggregateIds: vi.fn(),
-  putSnapshot: vi.fn(),
-  getLastSnapshot: vi.fn(),
-  listSnapshots: vi.fn(),
 };
 
 describe('ConnectedEventStore', () => {

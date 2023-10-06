@@ -143,10 +143,6 @@ export class DynamoDBSingleTableEventStorageAdapter
   groupEvent: EventStorageAdapter['groupEvent'];
   listAggregateIds: EventStorageAdapter['listAggregateIds'];
 
-  putSnapshot: EventStorageAdapter['putSnapshot'];
-  getLastSnapshot: EventStorageAdapter['getLastSnapshot'];
-  listSnapshots: EventStorageAdapter['listSnapshots'];
-
   getTableName: () => string;
   tableName: string | (() => string);
   dynamoDBClient: DynamoDBClient;
@@ -445,13 +441,5 @@ export class DynamoDBSingleTableEventStorageAdapter
           : {}),
       };
     };
-
-    this.putSnapshot = async () => new Promise(resolve => resolve());
-
-    this.getLastSnapshot = async () =>
-      new Promise(resolve => resolve({ snapshot: undefined }));
-
-    this.listSnapshots = async () =>
-      new Promise(resolve => resolve({ snapshots: [] }));
   }
 }

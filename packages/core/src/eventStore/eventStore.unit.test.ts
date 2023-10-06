@@ -19,8 +19,6 @@ import {
   pushEventMock,
   pushEventGroupMock,
   listAggregateIdsMock,
-  getLastSnapshotMock,
-  putSnapshotMock,
   groupEventMock,
   eventStorageAdapterMock,
   PokemonEventDetails,
@@ -33,9 +31,6 @@ describe('event store', () => {
     pushEventMock.mockClear();
     listAggregateIdsMock.mockClear();
     listAggregateIdsMock.mockReturnValue({ aggregateIds: [pikachuId] });
-    putSnapshotMock.mockClear();
-    getLastSnapshotMock.mockClear();
-    getLastSnapshotMock.mockResolvedValue({ snapshot: undefined });
   });
 
   it('has correct properties', () => {

@@ -15,9 +15,6 @@ export const pushEventGroupMock = vi.fn();
 export const groupEventMock = vi.fn();
 export const getEventsMock = vi.fn();
 export const listAggregateIdsMock = vi.fn();
-export const putSnapshotMock = vi.fn();
-export const getLastSnapshotMock = vi.fn();
-export const listSnapshotsMock = vi.fn();
 
 export const eventStorageAdapterMock: EventStorageAdapter = {
   pushEvent: pushEventMock,
@@ -25,9 +22,6 @@ export const eventStorageAdapterMock: EventStorageAdapter = {
   groupEvent: groupEventMock,
   getEvents: getEventsMock,
   listAggregateIds: listAggregateIdsMock,
-  putSnapshot: putSnapshotMock,
-  getLastSnapshot: getLastSnapshotMock,
-  listSnapshots: listSnapshotsMock,
 };
 
 // Counters
