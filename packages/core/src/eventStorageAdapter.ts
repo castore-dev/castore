@@ -1,4 +1,3 @@
-import type { Aggregate } from '~/aggregate';
 import type { EventDetail, OptionalTimestamp } from '~/event/eventDetail';
 import type { GroupedEvent } from '~/event/groupedEvent';
 
@@ -28,17 +27,6 @@ export type ListAggregateIdsOutput = {
   nextPageToken?: string;
 };
 
-export type GetLastSnapshotOptions = {
-  maxVersion?: number;
-};
-
-export type ListSnapshotsOptions = {
-  minVersion?: number;
-  maxVersion?: number;
-  limit?: number;
-  reverse?: boolean;
-};
-
 export interface EventStorageAdapter {
   getEvents: (
     aggregateId: string,
@@ -57,13 +45,4 @@ export interface EventStorageAdapter {
     context: EventStoreContext,
     options?: ListAggregateIdsOptions,
   ) => Promise<ListAggregateIdsOutput>;
-  putSnapshot: (aggregate: Aggregate) => Promise<void>;
-  getLastSnapshot: (
-    aggregateId: string,
-    options?: GetLastSnapshotOptions,
-  ) => Promise<{ snapshot: Aggregate | undefined }>;
-  listSnapshots: (
-    aggregateId: string,
-    options?: ListSnapshotsOptions,
-  ) => Promise<{ snapshots: Aggregate[] }>;
 }

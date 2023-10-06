@@ -119,9 +119,6 @@ export class InMemoryEventStorageAdapter implements EventStorageAdapter {
   pushEventGroup: EventStorageAdapter['pushEventGroup'];
   groupEvent: EventStorageAdapter['groupEvent'];
   listAggregateIds: EventStorageAdapter['listAggregateIds'];
-  putSnapshot: EventStorageAdapter['putSnapshot'];
-  getLastSnapshot: EventStorageAdapter['getLastSnapshot'];
-  listSnapshots: EventStorageAdapter['listSnapshots'];
 
   eventStore: { [aggregateId: string]: EventDetail[] };
 
@@ -342,12 +339,5 @@ export class InMemoryEventStorageAdapter implements EventStorageAdapter {
             : {}),
         });
       });
-
-    // We do not implement snapshots in this adapter
-    this.putSnapshot = () => new Promise(resolve => resolve());
-    this.getLastSnapshot = () =>
-      new Promise(resolve => resolve({ snapshot: undefined }));
-    this.listSnapshots = () =>
-      new Promise(resolve => resolve({ snapshots: [] }));
   }
 }
