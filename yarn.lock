@@ -6321,32 +6321,6 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@castore/in-memory-message-bus-adapter@workspace:packages/message-bus-adapter-in-memory":
-  version: 0.0.0-use.local
-  resolution: "@castore/in-memory-message-bus-adapter@workspace:packages/message-bus-adapter-in-memory"
-  dependencies:
-    "@babel/cli": ^7.17.6
-    "@babel/core": ^7.17.9
-    "@babel/plugin-transform-runtime": ^7.17.0
-    "@babel/preset-env": ^7.16.11
-    "@babel/preset-typescript": ^7.16.7
-    "@castore/core": "workspace:"
-    "@castore/demo-blueprint": "workspace:"
-    "@types/node": ^17.0.29
-    babel-plugin-module-resolver: ^4.1.0
-    concurrently: ^7.1.0
-    dependency-cruiser: ^11.7.0
-    eslint: ^8.14.0
-    prettier: ^2.6.2
-    ts-node: ^10.7.0
-    tsc-alias: ^1.8.7
-    typescript: ^4.6.3
-    vitest: ^0.26.2
-  peerDependencies:
-    "@castore/core": "*"
-  languageName: unknown
-  linkType: soft
-
 "@castore/lib-dam@workspace:packages/lib-dam":
   version: 0.0.0-use.local
   resolution: "@castore/lib-dam@workspace:packages/lib-dam"
@@ -6517,6 +6491,32 @@ __metadata:
     vitest: ^0.26.2
   peerDependencies:
     "@aws-sdk/client-eventbridge": ^3.0.0
+    "@castore/core": "*"
+  languageName: unknown
+  linkType: soft
+
+"@castore/message-bus-adapter-in-memory@workspace:packages/message-bus-adapter-in-memory":
+  version: 0.0.0-use.local
+  resolution: "@castore/message-bus-adapter-in-memory@workspace:packages/message-bus-adapter-in-memory"
+  dependencies:
+    "@babel/cli": ^7.17.6
+    "@babel/core": ^7.17.9
+    "@babel/plugin-transform-runtime": ^7.17.0
+    "@babel/preset-env": ^7.16.11
+    "@babel/preset-typescript": ^7.16.7
+    "@castore/core": "workspace:"
+    "@castore/demo-blueprint": "workspace:"
+    "@types/node": ^17.0.29
+    babel-plugin-module-resolver: ^4.1.0
+    concurrently: ^7.1.0
+    dependency-cruiser: ^11.7.0
+    eslint: ^8.14.0
+    prettier: ^2.6.2
+    ts-node: ^10.7.0
+    tsc-alias: ^1.8.7
+    typescript: ^4.6.3
+    vitest: ^0.26.2
+  peerDependencies:
     "@castore/core": "*"
   languageName: unknown
   linkType: soft

@@ -6,10 +6,10 @@ DRY Castore [`MessageBus`](https://github.com/castore-dev/castore/#--messagebus)
 
 ```bash
 # npm
-npm install @castore/in-memory-message-bus-adapter
+npm install @castore/message-bus-adapter-in-memory
 
 # yarn
-yarn add @castore/in-memory-message-bus-adapter
+yarn add @castore/message-bus-adapter-in-memory
 ```
 
 This package has `@castore/core` as peer dependency, so you will have to install it as well:
@@ -31,7 +31,7 @@ The simplest way to use this adapter is to use the `attachTo` static method:
 // Outside of NodeJS (like browsers) you can use the event-emitter package
 import { EventEmitter } from 'events';
 
-import { InMemoryMessageBusAdapter } from '@castore/in-memory-message-bus-adapter';
+import { InMemoryMessageBusAdapter } from '@castore/message-bus-adapter-in-memory';
 
 const eventEmitter = new EventEmitter();
 
@@ -47,7 +47,7 @@ You can also instanciate one on its own, but notice the code duplication:
 
 ```ts
 import type { MessageBusMessage } from '@castore/core';
-import { InMemoryMessageBusAdapter } from '@castore/in-memory-message-bus-adapter';
+import { InMemoryMessageBusAdapter } from '@castore/message-bus-adapter-in-memory';
 
 const messageBusAdapter = new InMemoryMessageBusAdapter<
   MessageBusMessage<typeof appMessageBus>
