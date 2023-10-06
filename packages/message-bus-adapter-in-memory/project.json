@@ -1,5 +1,5 @@
 {
-  "root": "packages/in-memory-message-bus-adapter",
+  "root": "packages/message-bus-adapter-in-memory",
   "projectType": "library",
   "tags": [],
   "implicitDependencies": ["core"]

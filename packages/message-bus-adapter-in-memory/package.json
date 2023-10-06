@@ -1,5 +1,5 @@
 {
-  "name": "@castore/in-memory-message-bus-adapter",
+  "name": "@castore/message-bus-adapter-in-memory",
   "description": "DRY Castore MessageBus definition using EventEmitter",
   "license": "MIT",
   "homepage": "https://github.com/theodo/castore#readme",
@@ -67,7 +67,7 @@
     "targets": {
       "package": {
         "outputs": [
-          "packages/in-memory-message-bus-adapter/dist"
+          "packages/message-bus-adapter-in-memory/dist"
         ]
       }
     }
