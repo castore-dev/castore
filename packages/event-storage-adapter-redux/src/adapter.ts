@@ -144,7 +144,7 @@ export class ReduxEventStorageAdapter implements EventStorageAdapter {
 
     this.pushEventSync = (event, options) => {
       const { aggregateId } = event;
-      const force = options.force ?? false;
+      const { force = false } = options;
 
       const eventStoreState = this.getEventStoreState();
 
@@ -172,7 +172,7 @@ export class ReduxEventStorageAdapter implements EventStorageAdapter {
         resolve(this.pushEventSync({ timestamp, ...event }, context));
       });
 
-    this.pushEventGroup = async (...groupedEventsInput) =>
+    this.pushEventGroup = async (options, ...groupedEventsInput) =>
       new Promise(resolve => {
         const { groupedEvents, timestamp = new Date().toISOString() } =
           parseGroupedEvents(...groupedEventsInput);
@@ -185,7 +185,7 @@ export class ReduxEventStorageAdapter implements EventStorageAdapter {
           try {
             const response = eventStorageAdapter.pushEventSync(
               { timestamp, ...event },
-              context,
+              { ...options, ...context },
             );
             responses.push(response);
           } catch (error) {

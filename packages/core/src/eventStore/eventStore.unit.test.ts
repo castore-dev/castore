@@ -229,6 +229,10 @@ describe('event store', () => {
       timestamp: pikachuLeveledUpEvent.timestamp,
     };
 
+    beforeEach(() => {
+      pushEventGroupMock.mockReset();
+    });
+
     it('pushes new event group correctly', async () => {
       pushEventGroupMock.mockResolvedValue({
         eventGroup: [
@@ -251,7 +255,41 @@ describe('event store', () => {
       const response = await EventStore.pushEventGroup(...eventGroup);
 
       expect(pushEventGroupMock).toHaveBeenCalledTimes(1);
-      expect(pushEventGroupMock).toHaveBeenCalledWith(...eventGroup);
+      expect(pushEventGroupMock).toHaveBeenCalledWith({}, ...eventGroup);
+
+      expect(response).toStrictEqual({
+        eventGroup: [
+          { event: pikachuLeveledUpEvent },
+          { event: charizardLeveledUpEvent },
+        ],
+      });
+    });
+
+    it('passes options through', async () => {
+      const options = { force: true };
+
+      pushEventGroupMock.mockResolvedValue({
+        eventGroup: [
+          { event: pikachuLeveledUpEvent },
+          { event: charizardLeveledUpEvent },
+        ],
+      });
+
+      const eventGroup = [
+        new GroupedEvent({
+          event: pikachuLeveledUpEvent,
+          eventStorageAdapter: eventStorageAdapterMock,
+        }),
+        new GroupedEvent({
+          event: charizardLeveledUpEvent,
+          eventStorageAdapter: eventStorageAdapterMock,
+        }),
+      ] as const;
+
+      const response = await EventStore.pushEventGroup(options, ...eventGroup);
+
+      expect(pushEventGroupMock).toHaveBeenCalledTimes(1);
+      expect(pushEventGroupMock).toHaveBeenCalledWith(options, ...eventGroup);
 
       expect(response).toStrictEqual({
         eventGroup: [

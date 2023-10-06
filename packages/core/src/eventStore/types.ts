@@ -61,12 +61,19 @@ export type EventGroupPusher = <
     GroupedEvent,
     ...GroupedEvent[],
   ],
+  OPTIONS_OR_GROUPED_EVENTS_HEAD extends
+    | GroupedEvent
+    | { force?: boolean } = GroupedEvent,
 >(
-  /**
-   * @debt v2 "use an array and enable options in 2nd arg (useful for 'force' opt for instance)"
-   */
+  optionsOrGroupedEventsHead: OPTIONS_OR_GROUPED_EVENTS_HEAD,
   ...groupedEvents: GROUPED_EVENTS
-) => Promise<{ eventGroup: EventGroupPusherResponse<GROUPED_EVENTS> }>;
+) => Promise<{
+  eventGroup: OPTIONS_OR_GROUPED_EVENTS_HEAD extends GroupedEvent
+    ? EventGroupPusherResponse<
+        [OPTIONS_OR_GROUPED_EVENTS_HEAD, ...GROUPED_EVENTS]
+      >
+    : EventGroupPusherResponse<GROUPED_EVENTS>;
+}>;
 
 export type EventGroupPusherResponse<GROUPED_EVENTS extends GroupedEvent[]> =
   number extends GROUPED_EVENTS['length']

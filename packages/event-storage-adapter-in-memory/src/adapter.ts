@@ -175,7 +175,7 @@ export class InMemoryEventStorageAdapter implements EventStorageAdapter {
         resolve(this.pushEventSync({ timestamp, ...event }, options));
       });
 
-    this.pushEventGroup = async (...groupedEventsInput) =>
+    this.pushEventGroup = async (options, ...groupedEventsInput) =>
       new Promise(resolve => {
         const { groupedEvents, timestamp = new Date().toISOString() } =
           parseGroupedEvents(...groupedEventsInput);
@@ -188,7 +188,7 @@ export class InMemoryEventStorageAdapter implements EventStorageAdapter {
           try {
             const response = eventStorageAdapter.pushEventSync(
               { timestamp, ...event },
-              context,
+              { ...options, ...context },
             );
             responses.push(response);
           } catch (error) {

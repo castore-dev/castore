@@ -300,7 +300,7 @@ export class DynamoDBSingleTableEventStorageAdapter
     /**
      * @debt test "Add  unit test for pushEventGroup"
      */
-    this.pushEventGroup = async (...groupedEventsInput) => {
+    this.pushEventGroup = async (options, ...groupedEventsInput) => {
       const { groupedEvents, timestamp = new Date().toISOString() } =
         parseGroupedEvents(...groupedEventsInput);
 
@@ -314,7 +314,7 @@ export class DynamoDBSingleTableEventStorageAdapter
             TransactItems: groupedEvents.map(groupedEvent => ({
               Put: groupedEvent.eventStorageAdapter.getPushEventInput(
                 { timestamp, ...groupedEvent.event },
-                groupedEvent.context,
+                { ...options, ...groupedEvent.context },
               ),
             })),
           }),

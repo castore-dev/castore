@@ -2,7 +2,7 @@
 import type { Aggregate } from '~/aggregate';
 import type { EventDetail } from '~/event/eventDetail';
 import type { EventType, EventTypeDetails } from '~/event/eventType';
-import type { GroupedEvent } from '~/event/groupedEvent';
+import { GroupedEvent } from '~/event/groupedEvent';
 import type { EventStorageAdapter } from '~/eventStorageAdapter';
 import type { $Contravariant } from '~/utils';
 
@@ -41,15 +41,29 @@ export class EventStore<
 > {
   static pushEventGroup: EventGroupPusher = async <
     GROUPED_EVENTS extends [GroupedEvent, ...GroupedEvent[]],
+    OPTIONS_OR_GROUPED_EVENTS_HEAD extends
+      | GroupedEvent
+      | { force?: boolean } = GroupedEvent,
   >(
-    ...groupedEvents: GROUPED_EVENTS
+    optionsOrGroupedEvent: OPTIONS_OR_GROUPED_EVENTS_HEAD,
+    ..._groupedEvents: GROUPED_EVENTS
   ) => {
-    const [groupedEventsHead, ...groupedEventsTail] = groupedEvents;
+    const groupedEvents = (
+      optionsOrGroupedEvent instanceof GroupedEvent
+        ? [optionsOrGroupedEvent, ..._groupedEvents]
+        : _groupedEvents
+    ) as [GroupedEvent, ...GroupedEvent[]];
+
+    const options = (
+      optionsOrGroupedEvent instanceof GroupedEvent ? {} : optionsOrGroupedEvent
+    ) as { force?: boolean };
+
+    const [groupedEventsHead] = groupedEvents;
 
     const { eventGroup: eventGroupWithoutAggregates } =
       await groupedEventsHead.eventStorageAdapter.pushEventGroup(
-        groupedEventsHead,
-        ...groupedEventsTail,
+        options,
+        ...groupedEvents,
       );
 
     const eventGroupWithAggregates = eventGroupWithoutAggregates.map(
@@ -68,7 +82,7 @@ export class EventStore<
 
         return { event, ...(nextAggregate ? { nextAggregate } : {}) };
       },
-    ) as EventGroupPusherResponse<GROUPED_EVENTS>;
+    );
 
     await Promise.all(
       groupedEvents.map((groupedEvent, eventIndex) => {
@@ -82,7 +96,13 @@ export class EventStore<
       }),
     );
 
-    return { eventGroup: eventGroupWithAggregates };
+    return { eventGroup: eventGroupWithAggregates } as {
+      eventGroup: OPTIONS_OR_GROUPED_EVENTS_HEAD extends GroupedEvent
+        ? EventGroupPusherResponse<
+            [OPTIONS_OR_GROUPED_EVENTS_HEAD, ...GROUPED_EVENTS]
+          >
+        : EventGroupPusherResponse<GROUPED_EVENTS>;
+    };
   };
 
   _types?: {
