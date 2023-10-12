@@ -23,7 +23,10 @@ export type ListAggregateIdsOptions = {
 };
 
 export type ListAggregateIdsOutput = {
-  aggregateIds: string[];
+  aggregateIds: {
+    aggregateId: string;
+    initialEventTimestamp: string;
+  }[];
   nextPageToken?: string;
 };
 

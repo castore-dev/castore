@@ -11,20 +11,24 @@ import { InMemoryEventAlreadyExistsError } from './error';
 const eventStoreId = 'eventStoreId';
 
 const aggregateIdMock1 = randomUUID();
+const aggregate1InitialEventTimestamp = '2021-01-01T00:00:00.000Z';
 const aggregateIdMock2 = randomUUID();
+const aggregate2InitialEventTimestamp = '2022-01-01T00:00:00.000Z';
 const aggregateIdMock3 = randomUUID();
+const aggregate3InitialEventTimestamp = '2023-01-01T00:00:00.000Z';
 const aggregateIdMock4 = randomUUID();
+const aggregate4InitialEventTimestamp = '2024-01-01T00:00:00.000Z';
 const eventMock1 = {
   aggregateId: aggregateIdMock1,
   version: 1,
   type: 'EVENT_TYPE',
-  timestamp: '2021-01-01T00:00:00.000Z',
+  timestamp: aggregate1InitialEventTimestamp,
 };
 const eventMock2 = {
   aggregateId: aggregateIdMock1,
   version: 2,
   type: 'EVENT_TYPE',
-  timestamp: '2022-01-01T00:00:00.000Z',
+  timestamp: aggregate2InitialEventTimestamp,
 };
 
 describe('in-memory storage adapter', () => {
@@ -135,7 +139,7 @@ describe('in-memory storage adapter', () => {
             aggregateId: aggregateIdMock2,
             version: 1,
             type: 'EVENT_TYPE',
-            timestamp: '2022-01-01T00:00:00.000Z',
+            timestamp: aggregate2InitialEventTimestamp,
           },
           { eventStoreId },
         );
@@ -145,7 +149,16 @@ describe('in-memory storage adapter', () => {
         });
 
         expect(aggregateIds).toStrictEqual({
-          aggregateIds: [aggregateIdMock1, aggregateIdMock2],
+          aggregateIds: [
+            {
+              aggregateId: aggregateIdMock1,
+              initialEventTimestamp: aggregate1InitialEventTimestamp,
+            },
+            {
+              aggregateId: aggregateIdMock2,
+              initialEventTimestamp: aggregate2InitialEventTimestamp,
+            },
+          ],
         });
       });
 
@@ -155,7 +168,7 @@ describe('in-memory storage adapter', () => {
             aggregateId: aggregateIdMock3,
             version: 1,
             type: 'EVENT_TYPE',
-            timestamp: '2023-01-01T00:00:00.000Z',
+            timestamp: aggregate3InitialEventTimestamp,
           },
           { eventStoreId },
         );
@@ -165,7 +178,7 @@ describe('in-memory storage adapter', () => {
             aggregateId: aggregateIdMock4,
             version: 1,
             type: 'EVENT_TYPE',
-            timestamp: '2024-01-01T00:00:00.000Z',
+            timestamp: aggregate4InitialEventTimestamp,
           },
           { eventStoreId },
         );
@@ -177,12 +190,22 @@ describe('in-memory storage adapter', () => {
           );
 
         expect(aggregateIds).toStrictEqual([
-          aggregateIdMock1,
-          aggregateIdMock2,
+          {
+            aggregateId: aggregateIdMock1,
+            initialEventTimestamp: aggregate1InitialEventTimestamp,
+          },
+          {
+            aggregateId: aggregateIdMock2,
+            initialEventTimestamp: aggregate2InitialEventTimestamp,
+          },
         ]);
+
         expect(JSON.parse(nextPageToken as string)).toStrictEqual({
           limit: 2,
-          lastEvaluatedKey: aggregateIdMock2,
+          lastEvaluatedKey: {
+            aggregateId: aggregateIdMock2,
+            initialEventTimestamp: aggregate2InitialEventTimestamp,
+          },
         });
 
         const lastAggregateIds = await eventStorageAdapter.listAggregateIds(
@@ -191,7 +214,16 @@ describe('in-memory storage adapter', () => {
         );
 
         expect(lastAggregateIds).toStrictEqual({
-          aggregateIds: [aggregateIdMock3, aggregateIdMock4],
+          aggregateIds: [
+            {
+              aggregateId: aggregateIdMock3,
+              initialEventTimestamp: aggregate3InitialEventTimestamp,
+            },
+            {
+              aggregateId: aggregateIdMock4,
+              initialEventTimestamp: aggregate4InitialEventTimestamp,
+            },
+          ],
         });
       });
 
@@ -207,13 +239,21 @@ describe('in-memory storage adapter', () => {
             },
           );
 
-        expect(aggregateIds).toStrictEqual([aggregateIdMock3]);
+        expect(aggregateIds).toStrictEqual([
+          {
+            aggregateId: aggregateIdMock3,
+            initialEventTimestamp: aggregate3InitialEventTimestamp,
+          },
+        ]);
         expect(JSON.parse(nextPageToken as string)).toStrictEqual({
           limit: 1,
           initialEventAfter: '2021-02-01T00:00:00.000Z',
           initialEventBefore: '2023-02-01T00:00:00.000Z',
           reverse: true,
-          lastEvaluatedKey: aggregateIdMock3,
+          lastEvaluatedKey: {
+            aggregateId: aggregateIdMock3,
+            initialEventTimestamp: aggregate3InitialEventTimestamp,
+          },
         });
 
         const { aggregateIds: lastAggregateIds, nextPageToken: noPageToken } =
@@ -223,7 +263,12 @@ describe('in-memory storage adapter', () => {
           );
 
         expect(noPageToken).toBeUndefined();
-        expect(lastAggregateIds).toStrictEqual([aggregateIdMock2]);
+        expect(lastAggregateIds).toStrictEqual([
+          {
+            aggregateId: aggregateIdMock2,
+            initialEventTimestamp: aggregate2InitialEventTimestamp,
+          },
+        ]);
       });
     });
 

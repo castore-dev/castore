@@ -1,3 +1,4 @@
+/* eslint-disable max-lines */
 import {
   NotificationMessage,
   NotificationMessageQueue,
@@ -61,15 +62,23 @@ describe('pourEventStoreEvents', () => {
     expect(pouredEventCount).toStrictEqual(10);
     expect(scans).toStrictEqual({
       [pokemonEvtStoreId]: {
-        firstScannedAggregate: { aggregateId: pikachuId },
-        lastScannedAggregate: { aggregateId: arcanineId },
+        firstScannedAggregate: {
+          aggregateId: pikachuId,
+          initialEventTimestamp: pikachuEvents[0]?.timestamp,
+        },
+        lastScannedAggregate: {
+          aggregateId: arcanineId,
+          initialEventTimestamp: arcanineEvents[0]?.timestamp,
+        },
       },
       [trainerEvtStoreId]: {
         firstScannedAggregate: {
           aggregateId: ashKetchumId,
+          initialEventTimestamp: ashKetchumEvents[0]?.timestamp,
         },
         lastScannedAggregate: {
           aggregateId: garyOakId,
+          initialEventTimestamp: garyOakEvents[0]?.timestamp,
         },
       },
     });
@@ -145,12 +154,24 @@ describe('pourEventStoreEvents', () => {
     expect(pouredEventCount).toStrictEqual(3);
     expect(scans).toStrictEqual({
       [pokemonEvtStoreId]: {
-        firstScannedAggregate: { aggregateId: pikachuId },
-        lastScannedAggregate: { aggregateId: charizardId },
+        firstScannedAggregate: {
+          aggregateId: pikachuId,
+          initialEventTimestamp: pikachuEvents[0]?.timestamp,
+        },
+        lastScannedAggregate: {
+          aggregateId: charizardId,
+          initialEventTimestamp: charizardEvents[0]?.timestamp,
+        },
       },
       [trainerEvtStoreId]: {
-        firstScannedAggregate: { aggregateId: ashKetchumId },
-        lastScannedAggregate: { aggregateId: ashKetchumId },
+        firstScannedAggregate: {
+          aggregateId: ashKetchumId,
+          initialEventTimestamp: ashKetchumEvents[0]?.timestamp,
+        },
+        lastScannedAggregate: {
+          aggregateId: ashKetchumId,
+          initialEventTimestamp: ashKetchumEvents[0]?.timestamp,
+        },
       },
     });
 

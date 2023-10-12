@@ -16,7 +16,12 @@ describe('muteEventStore', () => {
 
   it('gives the event store an in memory storage adapter and pushes the events', async () => {
     expect(await pokemonsEventStore.listAggregateIds()).toStrictEqual({
-      aggregateIds: [pikachuId],
+      aggregateIds: [
+        {
+          aggregateId: pikachuId,
+          initialEventTimestamp: pikachuAppearedEvent.timestamp,
+        },
+      ],
     });
 
     expect(await pokemonsEventStore.getEvents(pikachuId)).toStrictEqual({

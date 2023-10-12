@@ -51,8 +51,14 @@ describe('pourEventStoreEvents', () => {
       });
 
     expect(pouredEventCount).toStrictEqual(6);
-    expect(firstScannedAggregate).toStrictEqual({ aggregateId: pikachuId });
-    expect(lastScannedAggregate).toStrictEqual({ aggregateId: arcanineId });
+    expect(firstScannedAggregate).toStrictEqual({
+      aggregateId: pikachuId,
+      initialEventTimestamp: pikachuEvents[0]?.timestamp,
+    });
+    expect(lastScannedAggregate).toStrictEqual({
+      aggregateId: arcanineId,
+      initialEventTimestamp: arcanineEvents[0]?.timestamp,
+    });
 
     expect(receivedMessages).toHaveLength(6);
 
@@ -98,8 +104,14 @@ describe('pourEventStoreEvents', () => {
       });
 
     expect(pouredEventCount).toStrictEqual(3);
-    expect(firstScannedAggregate).toStrictEqual({ aggregateId: pikachuId });
-    expect(lastScannedAggregate).toStrictEqual({ aggregateId: arcanineId });
+    expect(firstScannedAggregate).toStrictEqual({
+      aggregateId: pikachuId,
+      initialEventTimestamp: pikachuEvents[0]?.timestamp,
+    });
+    expect(lastScannedAggregate).toStrictEqual({
+      aggregateId: arcanineId,
+      initialEventTimestamp: arcanineEvents[0]?.timestamp,
+    });
 
     expect(receivedMessages).toHaveLength(3);
 

@@ -53,7 +53,7 @@ export const pourEventStoreAggregateIds = async <
       areAllAggregatesScanned: nextPageToken === undefined,
     });
 
-    for (const aggregateId of aggregateIds) {
+    for (const { aggregateId } of aggregateIds) {
       await throttle(() =>
         messageChannel.publishMessage(
           { eventStoreId, aggregateId },

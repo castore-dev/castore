@@ -399,7 +399,7 @@ export class LegacyDynamoDBEventStorageAdapter implements EventStorageAdapter {
       }
 
       const {
-        Items: unmarshalledInitialEvents = [],
+        Items: marshalledInitialEvents = [],
         LastEvaluatedKey: lastEvaluatedKey,
       } = await this.dynamoDBClient.send(
         new QueryCommand(aggregateIdsQueryCommandInput),
@@ -414,12 +414,12 @@ export class LegacyDynamoDBEventStorageAdapter implements EventStorageAdapter {
       };
 
       return {
-        aggregateIds: unmarshalledInitialEvents
+        aggregateIds: marshalledInitialEvents
           .map(item => unmarshall(item))
           .map(item => {
-            const { aggregateId } = item as Pick<EventDetail, 'aggregateId'>;
+            const { aggregateId, timestamp } = item as EventDetail;
 
-            return aggregateId;
+            return { aggregateId, initialEventTimestamp: timestamp };
           }),
         ...(lastEvaluatedKey !== undefined
           ? { nextPageToken: JSON.stringify(parsedNextPageToken) }
