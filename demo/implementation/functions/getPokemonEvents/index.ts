@@ -6,7 +6,7 @@ export const getPokemonEvents: Exclude<AWS['functions'], undefined>[string] = {
     {
       httpApi: {
         method: 'GET',
-        path: '/getEvents',
+        path: '/events',
       },
     },
   ],

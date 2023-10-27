@@ -9,7 +9,7 @@ export const listPokemonAggregateIds: Exclude<
     {
       httpApi: {
         method: 'GET',
-        path: '/listAggregateIds',
+        path: '/aggregateIds',
       },
     },
   ],
