@@ -15,7 +15,7 @@ export const EventStoreDB = ({
 
   return (
     <Stack spacing={2}>
-      {aggregateIds.map(aggregateId => (
+      {aggregateIds.map(({ aggregateId }) => (
         <AggregateCard
           key={aggregateId}
           aggregateId={aggregateId}

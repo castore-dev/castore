@@ -56,22 +56,19 @@ export const pourEventStoreEvents = async <EVENT_STORE extends EventStore>({
       areAllAggregatesScanned,
     });
 
-    const lastScannedAggregateId = aggregateIds[aggregateIds.length - 1];
-    if (lastScannedAggregateId === undefined) {
+    // Weird TS error
+    const lastScannedAggregate = aggregateIds[aggregateIds.length - 1] as
+      | { aggregateId: string; initialEventTimestamp: string }
+      | undefined;
+
+    if (lastScannedAggregate === undefined) {
       // should only happen if no event must be poured at all
       break;
     }
 
-    await eventBook.feedAggregateEvents(aggregateIds);
+    await eventBook.bookAggregateEvents(aggregateIds);
 
-    const lastScannedAggregateEvents = eventBook.getBookedEvents(
-      lastScannedAggregateId,
-    );
-
-    /**
-     * @debt v2 "make listAggregateIds return initialEventTimestamp and use it here"
-     */
-    fetchedEventsCursor = lastScannedAggregateEvents[0]!.timestamp;
+    fetchedEventsCursor = lastScannedAggregate.initialEventTimestamp;
 
     const messagesToPour = eventBook.getMessagesToPour({
       areAllAggregatesScanned,

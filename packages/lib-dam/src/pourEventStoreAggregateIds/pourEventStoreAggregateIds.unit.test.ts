@@ -15,6 +15,9 @@ import {
   pikachuId,
   charizardId,
   arcanineId,
+  pikachuEvents,
+  arcanineEvents,
+  charizardEvents,
 } from '../fixtures.test';
 import { pourEventStoreAggregateIds } from './pourEventStoreAggregateIds';
 
@@ -53,14 +56,21 @@ describe('pourEventStoreAggregateIds', () => {
     });
 
     expect(pouredAggregateIdCount).toStrictEqual(3);
-    expect(firstScannedAggregate).toStrictEqual({ aggregateId: pikachuId });
-    expect(lastScannedAggregate).toStrictEqual({ aggregateId: arcanineId });
+    expect(firstScannedAggregate).toStrictEqual({
+      aggregateId: pikachuId,
+      initialEventTimestamp: pikachuEvents[0]?.timestamp,
+    });
+    expect(lastScannedAggregate).toStrictEqual({
+      aggregateId: arcanineId,
+      initialEventTimestamp: arcanineEvents[0]?.timestamp,
+    });
 
     expect(receivedMessages).toHaveLength(3);
 
     expect(receivedMessages[0]?.message).toStrictEqual({
       eventStoreId: pokemonEvtStoreId,
       aggregateId: pikachuId,
+      initialEventTimestamp: pikachuEvents[0]?.timestamp,
     });
     expect(receivedMessages[0]?.context).toMatchObject({
       replay: true,
@@ -68,10 +78,12 @@ describe('pourEventStoreAggregateIds', () => {
     expect(receivedMessages[1]?.message).toStrictEqual({
       eventStoreId: pokemonEvtStoreId,
       aggregateId: charizardId,
+      initialEventTimestamp: charizardEvents[0]?.timestamp,
     });
     expect(receivedMessages[2]?.message).toStrictEqual({
       eventStoreId: pokemonEvtStoreId,
       aggregateId: arcanineId,
+      initialEventTimestamp: arcanineEvents[0]?.timestamp,
     });
   });
 

@@ -4,6 +4,7 @@ import type { EventDetail } from '~/event/eventDetail';
 export type AggregateExistsMessage<EVENT_STORE_ID extends string = string> = {
   eventStoreId: EVENT_STORE_ID;
   aggregateId: string;
+  initialEventTimestamp: string;
 };
 
 export type NotificationMessage<

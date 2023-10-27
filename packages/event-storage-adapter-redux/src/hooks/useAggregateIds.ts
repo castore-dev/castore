@@ -55,27 +55,24 @@ export const useAggregateIds = <EVENT_STORE extends EventStore>(
     inputOptions,
   });
 
-  let aggregateEntries = [...storeAggregateEntries].sort(
-    (
-      { initialEventTimestamp: initialEventTimestampA },
-      { initialEventTimestamp: initialEventTimestampB },
-    ) => (initialEventTimestampA > initialEventTimestampB ? 1 : -1),
+  let aggregateIds = [...storeAggregateEntries].sort((aggregateA, aggregateB) =>
+    aggregateA.initialEventTimestamp > aggregateB.initialEventTimestamp
+      ? 1
+      : -1,
   );
 
   if (initialEventAfter !== undefined) {
-    aggregateEntries = aggregateEntries.filter(
+    aggregateIds = aggregateIds.filter(
       ({ initialEventTimestamp }) => initialEventAfter <= initialEventTimestamp,
     );
   }
 
   if (initialEventBefore !== undefined) {
-    aggregateEntries = aggregateEntries.filter(
+    aggregateIds = aggregateIds.filter(
       ({ initialEventTimestamp }) =>
         initialEventTimestamp <= initialEventBefore,
     );
   }
-
-  let aggregateIds = aggregateEntries.map(({ aggregateId }) => aggregateId);
 
   if (reverse === true) {
     aggregateIds = aggregateIds.reverse();
@@ -83,7 +80,7 @@ export const useAggregateIds = <EVENT_STORE extends EventStore>(
 
   if (exclusiveStartKey !== undefined) {
     const exclusiveStartKeyIndex = aggregateIds.findIndex(
-      aggregateId => aggregateId === exclusiveStartKey,
+      ({ aggregateId }) => aggregateId === exclusiveStartKey.aggregateId,
     );
 
     aggregateIds = aggregateIds.slice(exclusiveStartKeyIndex + 1);

@@ -18,7 +18,12 @@ describe('mockEventStore', () => {
 
   it('gives the event store an in memory storage adapter and pushes the events', async () => {
     expect(await mockedCounterEventStore.listAggregateIds()).toStrictEqual({
-      aggregateIds: [pikachuId],
+      aggregateIds: [
+        {
+          aggregateId: pikachuId,
+          initialEventTimestamp: pikachuAppearedEvent.timestamp,
+        },
+      ],
     });
 
     expect(await mockedCounterEventStore.getEvents(pikachuId)).toStrictEqual({

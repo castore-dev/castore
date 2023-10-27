@@ -3,7 +3,12 @@ export type ParsedPageToken = {
   initialEventAfter?: string | undefined;
   initialEventBefore?: string | undefined;
   reverse?: boolean | undefined;
-  lastEvaluatedKey?: string | undefined;
+  lastEvaluatedKey?:
+    | {
+        aggregateId: string;
+        initialEventTimestamp: string;
+      }
+    | undefined;
 };
 
 export const parseAppliedListAggregateIdsOptions = ({

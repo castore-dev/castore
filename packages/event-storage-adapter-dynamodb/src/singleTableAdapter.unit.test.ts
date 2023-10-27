@@ -294,9 +294,10 @@ describe('DynamoDBEventStorageAdapter', () => {
       const secondAggregateIdMock = 'my-second-aggregate-id';
       const queryCommandOutputMock: QueryCommandOutput = {
         Items: [
-          marshall({ aggregateId: prefixedAggregateId }),
+          marshall({ aggregateId: prefixedAggregateId, timestamp: timestampA }),
           marshall({
             aggregateId: prefixAggregateId(eventStoreId, secondAggregateIdMock),
+            timestamp: timestampB,
           }),
         ],
         $metadata: {},
@@ -323,7 +324,13 @@ describe('DynamoDBEventStorageAdapter', () => {
       });
 
       // We have to serialize / deserialize because DynamoDB numbers are not regular numbers
-      expect(aggregateIds).toMatchObject([aggregateId, secondAggregateIdMock]);
+      expect(aggregateIds).toMatchObject([
+        { aggregateId, initialEventTimestamp: timestampA },
+        {
+          aggregateId: secondAggregateIdMock,
+          initialEventTimestamp: timestampB,
+        },
+      ]);
     });
 
     it('adds limit option', async () => {

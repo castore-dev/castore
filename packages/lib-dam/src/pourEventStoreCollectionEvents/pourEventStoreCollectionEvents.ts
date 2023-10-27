@@ -97,26 +97,19 @@ export const pourEventStoreCollectionEvents = async <
         areAllAggregatesScanned: areAllAggregatesScanned[eventStoreId],
       });
 
-      const lastScannedAggregateId = aggregateIds[aggregateIds.length - 1];
-      if (lastScannedAggregateId === undefined) {
+      const lastScannedAggregate = aggregateIds[aggregateIds.length - 1];
+      if (lastScannedAggregate === undefined) {
         // should only happen if no event must be poured for this event store
         continue;
       }
 
       const eventBook = eventBooks[eventStoreId];
-      await eventBook.feedAggregateEvents(aggregateIds);
+      await eventBook.bookAggregateEvents(aggregateIds);
 
       pageTokens[eventStoreId] = nextPageToken;
 
-      const lastScannedAggregateEvents = eventBook.getBookedEvents(
-        lastScannedAggregateId,
-      );
-
-      /**
-       * @debt v2 "make listAggregateIds return initialEventTimestamp and use it here"
-       */
       fetchedEventsCursors[eventStoreId] =
-        lastScannedAggregateEvents[0]!.timestamp;
+        lastScannedAggregate.initialEventTimestamp;
     }
 
     areAllCollectionAggregatesScanned = Object.values(
@@ -126,6 +119,7 @@ export const pourEventStoreCollectionEvents = async <
     collectionFetchedEventsCursor = Object.values(
       fetchedEventsCursors,
     ).sort()[0] as string | undefined;
+
     if (collectionFetchedEventsCursor === undefined) {
       // should only happen if no event must be poured at all
       break;

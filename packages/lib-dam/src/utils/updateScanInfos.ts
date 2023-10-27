@@ -6,23 +6,27 @@ export const updateScanInfos = ({
   areAllAggregatesScanned,
 }: {
   scanInfos: ScanInfos;
-  aggregateIds: string[];
+  aggregateIds: { aggregateId: string; initialEventTimestamp: string }[];
   areAllAggregatesScanned: boolean;
 }): void => {
   if (
     scanInfos.firstScannedAggregate === undefined &&
     aggregateIds[0] !== undefined
   ) {
+    const { aggregateId, initialEventTimestamp } = aggregateIds[0];
     scanInfos.firstScannedAggregate = {
-      aggregateId: aggregateIds[0],
+      aggregateId,
+      initialEventTimestamp,
     };
   }
 
-  const lastScannedAggregateId = aggregateIds[aggregateIds.length - 1];
+  const lastScannedAggregate = aggregateIds[aggregateIds.length - 1];
 
-  if (areAllAggregatesScanned && lastScannedAggregateId !== undefined) {
+  if (areAllAggregatesScanned && lastScannedAggregate !== undefined) {
+    const { aggregateId, initialEventTimestamp } = lastScannedAggregate;
     scanInfos.lastScannedAggregate = {
-      aggregateId: lastScannedAggregateId,
+      aggregateId,
+      initialEventTimestamp,
     };
   }
 };

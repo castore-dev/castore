@@ -277,32 +277,33 @@ export class InMemoryEventStorageAdapter implements EventStorageAdapter {
           inputOptions,
         });
 
-        let aggregateEntries = Object.entries(this.eventStore).sort(
-          (entryA, entryB) => {
-            const initialEventATimestamp = getInitialEventTimestamp(...entryA);
-            const initialEventBTimestamp = getInitialEventTimestamp(...entryB);
-
-            return initialEventATimestamp > initialEventBTimestamp ? 1 : -1;
-          },
-        );
+        let aggregateIds = Object.entries(this.eventStore)
+          .map(([aggregateId, aggregateEvents]) => ({
+            aggregateId,
+            initialEventTimestamp: getInitialEventTimestamp(
+              aggregateId,
+              aggregateEvents,
+            ),
+          }))
+          .sort((aggregateA, aggregateB) =>
+            aggregateA.initialEventTimestamp > aggregateB.initialEventTimestamp
+              ? 1
+              : -1,
+          );
 
         if (initialEventAfter !== undefined) {
-          aggregateEntries = aggregateEntries.filter(entry => {
-            const initialEventTimestamp = getInitialEventTimestamp(...entry);
-
-            return initialEventTimestamp >= initialEventAfter;
-          });
+          aggregateIds = aggregateIds.filter(
+            ({ initialEventTimestamp }) =>
+              initialEventTimestamp >= initialEventAfter,
+          );
         }
 
         if (initialEventBefore !== undefined) {
-          aggregateEntries = aggregateEntries.filter(entry => {
-            const initialEventTimestamp = getInitialEventTimestamp(...entry);
-
-            return initialEventTimestamp <= initialEventBefore;
-          });
+          aggregateIds = aggregateIds.filter(
+            ({ initialEventTimestamp }) =>
+              initialEventTimestamp <= initialEventBefore,
+          );
         }
-
-        let aggregateIds = aggregateEntries.map(([aggregateId]) => aggregateId);
 
         if (reverse === true) {
           aggregateIds = aggregateIds.reverse();
@@ -310,7 +311,7 @@ export class InMemoryEventStorageAdapter implements EventStorageAdapter {
 
         if (exclusiveStartKey !== undefined) {
           const exclusiveStartKeyIndex = aggregateIds.findIndex(
-            aggregateId => aggregateId === exclusiveStartKey,
+            ({ aggregateId }) => aggregateId === exclusiveStartKey.aggregateId,
           );
 
           aggregateIds = aggregateIds.slice(exclusiveStartKeyIndex + 1);

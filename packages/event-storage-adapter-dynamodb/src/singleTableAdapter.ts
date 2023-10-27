@@ -414,7 +414,7 @@ export class DynamoDBSingleTableEventStorageAdapter
       }
 
       const {
-        Items: unmarshalledInitialEvents = [],
+        Items: marshalledInitialEvents = [],
         LastEvaluatedKey: lastEvaluatedKey,
       } = await this.dynamoDBClient.send(
         new QueryCommand(aggregateIdsQueryCommandInput),
@@ -429,12 +429,15 @@ export class DynamoDBSingleTableEventStorageAdapter
       };
 
       return {
-        aggregateIds: unmarshalledInitialEvents
+        aggregateIds: marshalledInitialEvents
           .map(item => unmarshall(item))
           .map(item => {
-            const { aggregateId } = item as Pick<EventDetail, 'aggregateId'>;
+            const { aggregateId, timestamp } = item as EventDetail;
 
-            return unprefixAggregateId(eventStoreId, aggregateId);
+            return {
+              aggregateId: unprefixAggregateId(eventStoreId, aggregateId),
+              initialEventTimestamp: timestamp,
+            };
           }),
         ...(lastEvaluatedKey !== undefined
           ? { nextPageToken: JSON.stringify(parsedNextPageToken) }

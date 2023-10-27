@@ -263,30 +263,26 @@ export class ReduxEventStorageAdapter implements EventStorageAdapter {
           inputOptions,
         });
 
-        let aggregateEntries = [...eventStoreState.aggregateIds].sort(
-          (
-            { initialEventTimestamp: initialEventTimestampA },
-            { initialEventTimestamp: initialEventTimestampB },
-          ) => (initialEventTimestampA > initialEventTimestampB ? 1 : -1),
+        let aggregateIds = [...eventStoreState.aggregateIds].sort(
+          (aggregateA, aggregateB) =>
+            aggregateA.initialEventTimestamp > aggregateB.initialEventTimestamp
+              ? 1
+              : -1,
         );
 
         if (initialEventAfter !== undefined) {
-          aggregateEntries = aggregateEntries.filter(
+          aggregateIds = aggregateIds.filter(
             ({ initialEventTimestamp }) =>
               initialEventAfter <= initialEventTimestamp,
           );
         }
 
         if (initialEventBefore !== undefined) {
-          aggregateEntries = aggregateEntries.filter(
+          aggregateIds = aggregateIds.filter(
             ({ initialEventTimestamp }) =>
               initialEventTimestamp <= initialEventBefore,
           );
         }
-
-        let aggregateIds = aggregateEntries.map(
-          ({ aggregateId }) => aggregateId,
-        );
 
         if (reverse === true) {
           aggregateIds = aggregateIds.reverse();
@@ -294,7 +290,7 @@ export class ReduxEventStorageAdapter implements EventStorageAdapter {
 
         if (exclusiveStartKey !== undefined) {
           const exclusiveStartKeyIndex = aggregateIds.findIndex(
-            aggregateId => aggregateId === exclusiveStartKey,
+            ({ aggregateId }) => aggregateId === exclusiveStartKey.aggregateId,
           );
 
           aggregateIds = aggregateIds.slice(exclusiveStartKeyIndex + 1);

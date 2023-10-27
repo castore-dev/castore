@@ -16,18 +16,14 @@ export class EventBook<EVENT_STORE extends EventStore> {
     this.eventsByAggregateId = {};
   }
 
-  feedAggregateEvents = async (aggregateIds: string[]): Promise<void[]> =>
-    Promise.all(
-      aggregateIds.map(async aggregateId => {
-        const { events } = await this.eventStore.getEvents(aggregateId);
-        this.eventsByAggregateId[aggregateId] = events;
-      }),
-    );
-
-  getBookedEvents = (
-    aggregateId: string,
-  ): EventStoreEventDetails<EVENT_STORE>[] =>
-    this.eventsByAggregateId[aggregateId] ?? [];
+  bookAggregateEvents = async (
+    aggregateIds: { aggregateId: string }[],
+  ): Promise<void> => {
+    for (const { aggregateId } of aggregateIds) {
+      const { events } = await this.eventStore.getEvents(aggregateId);
+      this.eventsByAggregateId[aggregateId] = events;
+    }
+  };
 
   getMessagesToPour = ({
     areAllAggregatesScanned,
@@ -39,7 +35,7 @@ export class EventBook<EVENT_STORE extends EventStore> {
     const eventsToPour: EventStoreEventDetails<EVENT_STORE>[] = [];
 
     for (const aggregateId in this.eventsByAggregateId) {
-      const aggregateEvents = this.getBookedEvents(aggregateId);
+      const aggregateEvents = this.eventsByAggregateId[aggregateId] ?? [];
 
       while (
         aggregateEvents[0] &&
