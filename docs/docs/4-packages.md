@@ -18,7 +18,7 @@ describe('My awesome test', () => {
       aggregateId: 'pikachu1',
       version: 1,
       type: 'POKEMON_APPEARED',
-      // ...
+      ...
     },
   ]);
 

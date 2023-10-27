@@ -155,7 +155,7 @@ import { pourEventStoreEvents } from '@castore/lib-dam';
 // 👇 ...or NotificationMessageBus
 const maintenanceMessageQueue = new NotificationMessageQueue({
   sourceEventStores: [pokemonEventStore, trainerEventStore],
-  // ...
+  ...
 });
 
 const results = await pourEventStoreCollectionEvents({
