@@ -53,10 +53,10 @@ export const pourEventStoreAggregateIds = async <
       areAllAggregatesScanned: nextPageToken === undefined,
     });
 
-    for (const { aggregateId } of aggregateIds) {
+    for (const { aggregateId, initialEventTimestamp } of aggregateIds) {
       await throttle(() =>
         messageChannel.publishMessage(
-          { eventStoreId, aggregateId },
+          { eventStoreId, aggregateId, initialEventTimestamp },
           { replay: true },
         ),
       );
