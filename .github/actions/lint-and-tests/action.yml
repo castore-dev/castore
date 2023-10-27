@@ -4,6 +4,10 @@ inputs:
   path:
     required: true
     description: Path to the directory to lint and test
+  typescript-version:
+    description: TS version to use
+    default: 'default'
+
 runs:
   using: composite
   steps:
@@ -12,11 +16,10 @@ runs:
       with:
         node-version: ${{ env.NODE_VERSION }}
 
-    - name: Install node_modules
-      uses: ./.github/actions/install-node-modules
-
-    - name: Package
-      uses: ./.github/actions/package
+    - name: Install node_modules & package
+      uses: ./.github/actions/install-node-modules-and-package
+      with:
+        typescript-version: ${{ inputs.typescript-version }}
 
     - name: Run lint
       run: |

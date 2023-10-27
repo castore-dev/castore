@@ -1,0 +1,54 @@
+name: Install Node Dependencies
+description: Install dependencies using yarn
+inputs:
+  typescript-version:
+    description: TS version to use
+    default: 'default'
+
+runs:
+  using: composite
+  steps:
+    - name: Use Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: ${{ env.NODE_VERSION }}
+
+    - name: Get yarn cache directory path
+      id: yarn-cache-dir-path
+      run: echo "dir=$(yarn config get cacheFolder)" >> $GITHUB_OUTPUT
+      shell: bash
+
+    - name: Sync yarn cache
+      uses: actions/cache@v3
+      with:
+        path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
+        key: ${{ runner.os }}-yarn-${{ hashFiles('./yarn.lock') }}
+        restore-keys: |
+          ${{ runner.os }}-yarn-
+
+    - name: Sync node_modules cache
+      id: sync-node-modules-cache
+      uses: actions/cache@v3
+      with:
+        path: '**/node_modules'
+        key: ${{ runner.os }}-modules-${{ inputs.typescript-version }}-${{ hashFiles('./yarn.lock') }}
+
+    - name: Install node_modules
+      run: if [ '${{ steps.sync-node-modules-cache.outputs.cache-hit }}' != 'true' ]; then yarn install --immutable; fi
+      shell: bash
+
+    - name: Override TS with specified version
+      run: if [ '${{ inputs.typescript-version }}' != 'default' ] && [ '${{ steps.sync-node-modules-cache.outputs.cache-hit }}' != 'true' ]; then yarn add --dev typescript@${{ inputs.typescript-version }}; fi
+      shell: bash
+
+    - name: Sync packages cache
+      id: sync-packages-cache
+      uses: actions/cache@v3
+      with:
+        path: |
+          node_modules/@castore/**/dist
+        key: ts-${{ inputs.typescript-version }}-${{ hashFiles('./packages/**') }}-${{ hashFiles('./demo/**') }}
+
+    - name: Package
+      run: if [ '${{ steps.sync-packages-cache.outputs.cache-hit }}' != 'true' ]; then yarn package; fi
+      shell: bash
