@@ -28,6 +28,8 @@ export type EventsGetter<EVENT_DETAIL extends EventDetail> = (
   options?: EventsQueryOptions,
 ) => Promise<{ events: EVENT_DETAIL[] }>;
 
+export type ValidateEventDetail = boolean | 'auto';
+
 export type EventPusher<
   EVENT_DETAILS extends EventDetail,
   $EVENT_DETAILS extends EventDetail,
@@ -37,7 +39,11 @@ export type EventPusher<
   event: $EVENT_DETAILS extends EventDetail
     ? OptionalTimestamp<$EVENT_DETAILS>
     : $EVENT_DETAILS,
-  options?: { prevAggregate?: $AGGREGATE; force?: boolean },
+  options?: {
+    prevAggregate?: $AGGREGATE;
+    force?: boolean;
+    validate?: ValidateEventDetail;
+  },
 ) => Promise<{ event: EVENT_DETAILS; nextAggregate?: AGGREGATE }>;
 
 export type AggregateIdsLister = (
