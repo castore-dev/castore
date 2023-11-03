@@ -12,7 +12,7 @@ import {
 
 getEventsMock.mockResolvedValue({ events: counterEventsMocks });
 
-describe('jsonSchemaCommand implementation', () => {
+describe('zodCommand implementation', () => {
   const expectedProperties = new Set([
     // applying super(...) apparently adds { _types: undefined } to the class
     '_types',

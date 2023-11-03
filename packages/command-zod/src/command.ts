@@ -7,8 +7,6 @@ import {
   OnEventAlreadyExistsCallback,
 } from '@castore/core';
 
-export { OnEventAlreadyExistsCallback };
-
 export class ZodCommand<
   COMMAND_ID extends string = string,
   EVENT_STORES extends EventStore[] = EventStore[],

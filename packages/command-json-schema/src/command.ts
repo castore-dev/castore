@@ -2,15 +2,10 @@ import type { FromSchema, JSONSchema } from 'json-schema-to-ts';
 
 import {
   Command,
-  EventAlreadyExistsError,
   EventStore,
   $Contravariant,
+  OnEventAlreadyExistsCallback,
 } from '@castore/core';
-
-export type OnEventAlreadyExistsCallback = (
-  error: EventAlreadyExistsError,
-  context: { attemptNumber: number; retriesLeft: number },
-) => Promise<void>;
 
 export class JSONSchemaCommand<
   COMMAND_ID extends string = string,

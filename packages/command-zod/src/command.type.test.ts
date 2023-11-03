@@ -20,14 +20,14 @@ type Output = z.infer<typeof outputSchema>;
 
 // --- CLASS ---
 
-const assertJsonSchemaCommandExtendsCommand: A.Extends<ZodCommand, Command> = 1;
-assertJsonSchemaCommandExtendsCommand;
+const assertZodCommandExtendsCommand: A.Extends<ZodCommand, Command> = 1;
+assertZodCommandExtendsCommand;
 
-const assertCreateCounterExtendsJsonSchemaCommand: A.Extends<
+const assertCreateCounterExtendsZodCommand: A.Extends<
   typeof createCounter,
   ZodCommand
 > = 1;
-assertCreateCounterExtendsJsonSchemaCommand;
+assertCreateCounterExtendsZodCommand;
 
 const assertCreateCounterExtendsCommand: A.Extends<
   typeof createCounter,
@@ -35,11 +35,11 @@ const assertCreateCounterExtendsCommand: A.Extends<
 > = 1;
 assertCreateCounterExtendsCommand;
 
-const assertIncrementCounterExtendsJsonSchemaCommand: A.Extends<
+const assertIncrementCounterExtendsZodCommand: A.Extends<
   typeof incrementCounter,
   ZodCommand
 > = 1;
-assertIncrementCounterExtendsJsonSchemaCommand;
+assertIncrementCounterExtendsZodCommand;
 
 const assertIncrementCounterExtendsCommand: A.Extends<
   typeof incrementCounter,
@@ -47,11 +47,11 @@ const assertIncrementCounterExtendsCommand: A.Extends<
 > = 1;
 assertIncrementCounterExtendsCommand;
 
-const assertIncrementCounterNoOutputExtendsJsonSchemaCommand: A.Extends<
+const assertIncrementCounterNoOutputExtendsZodCommand: A.Extends<
   typeof incrementCounterNoOutput,
   ZodCommand
 > = 1;
-assertIncrementCounterNoOutputExtendsJsonSchemaCommand;
+assertIncrementCounterNoOutputExtendsZodCommand;
 
 const assertIncrementCounterNoOutputExtendsCommand: A.Extends<
   typeof incrementCounterNoOutput,
@@ -59,11 +59,11 @@ const assertIncrementCounterNoOutputExtendsCommand: A.Extends<
 > = 1;
 assertIncrementCounterNoOutputExtendsCommand;
 
-const assertIncrementCounterAExtendsJsonSchemaCommand: A.Extends<
+const assertIncrementCounterAExtendsZodCommand: A.Extends<
   typeof incrementCounterA,
   ZodCommand
 > = 1;
-assertIncrementCounterAExtendsJsonSchemaCommand;
+assertIncrementCounterAExtendsZodCommand;
 
 const assertIncrementCounterAExtendsCommand: A.Extends<
   typeof incrementCounterA,
@@ -71,11 +71,11 @@ const assertIncrementCounterAExtendsCommand: A.Extends<
 > = 1;
 assertIncrementCounterAExtendsCommand;
 
-const assertIncrementCounterANoOutputExtendsJsonSchemaCommand: A.Extends<
+const assertIncrementCounterANoOutputExtendsZodCommand: A.Extends<
   typeof incrementCounterANoOutput,
   ZodCommand
 > = 1;
-assertIncrementCounterANoOutputExtendsJsonSchemaCommand;
+assertIncrementCounterANoOutputExtendsZodCommand;
 
 const assertIncrementCounterANoOutputExtendsCommand: A.Extends<
   typeof incrementCounterANoOutput,

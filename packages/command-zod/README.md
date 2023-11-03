@@ -1,4 +1,4 @@
-# JSON Schema Command
+# Zod Command
 
 DRY Castore [`Command`](https://github.com/castore-dev/castore/#--command) definition using [`zod`](https://github.com/colinhacks/zod).
 
@@ -46,7 +46,11 @@ const pokemonAppearCommand = new ZodCommand({
   inputSchema: pokemonAppearedInputSchema,
   outputSchema: pokemonAppearedOutputSchema,
   // 👇 handler input/output types are correctly inferred
-  handler: async (commandInput, [pokemonsEventStore]) => {
+  handler: async (
+    commandInput,
+    [pokemonsEventStore],
+    { generateUuid }: { generateUuid: () => string },
+  ) => {
     const { name, level } = commandInput;
     const pokemonId = generateUuid();
 
@@ -54,7 +58,6 @@ const pokemonAppearCommand = new ZodCommand({
       aggregateId: pokemonId,
       version: 1,
       type: 'POKEMON_APPEARED',
-      timestamp: new Date().toISOString(),
       payload: { name, level },
     });
 
