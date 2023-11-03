@@ -12,6 +12,8 @@ import type {
   MessageChannelSourceEventStoreIds,
   MessageChannelSourceEventStoreIdTypes,
   MessageChannelSourceEventStores,
+  __REPLAYED__,
+  __AGGREGATE_EXISTS__,
 } from '@castore/core';
 
 type EventBridgeStateCarryingMessageBusMessage<
@@ -29,7 +31,7 @@ type EventBridgeStateCarryingMessageBusMessage<
           EVENT_STORE_ID
         >
         ? EventBridgeEvent<
-            EVENT_TYPE | '__REPLAYED__',
+            EVENT_TYPE | __REPLAYED__,
             StateCarryingMessage<
               EVENT_STORE_ID,
               Extract<
@@ -69,7 +71,7 @@ type EventBridgeNotificationMessageBusMessage<
           EVENT_STORE_ID
         >
         ? EventBridgeEvent<
-            EVENT_TYPE | '__REPLAYED__',
+            EVENT_TYPE | __REPLAYED__,
             NotificationMessage<
               EVENT_STORE_ID,
               Extract<
@@ -94,7 +96,7 @@ type EventBridgeAggregateExistsMessageBusMessage<
 > = EVENT_STORE_IDS extends infer EVENT_STORE_ID
   ? EVENT_STORE_ID extends string
     ? EventBridgeEvent<
-        '__AGGREGATE_EXISTS__',
+        __AGGREGATE_EXISTS__,
         AggregateExistsMessage<EVENT_STORE_ID>
       > & { source: EVENT_STORE_ID }
     : never

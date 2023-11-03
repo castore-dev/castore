@@ -1,9 +1,18 @@
-import { A } from 'ts-toolbelt';
+import type { A } from 'ts-toolbelt';
 import { z } from 'zod';
 
-import { EventTypeDetail } from '@castore/core';
+import type { EventTypeDetail } from '@castore/core';
 
 import { ZodEventType } from './eventType';
+
+const expectedProperties = new Set([
+  // applying super(...) apparently adds { _types: undefined, parseEventDetail: undefined } to the class
+  '_types',
+  'parseEventDetail',
+  'type',
+  'payloadSchema',
+  'metadataSchema',
+]);
 
 describe('zodEvent implementation', () => {
   const type = 'SOMETHING_HAPPENED';
@@ -34,7 +43,9 @@ describe('zodEvent implementation', () => {
     > = 1;
     assertSimpleEventTypeDetail;
 
-    expect(Object.keys(simpleEventType)).toHaveLength(3);
+    expect(new Set(Object.keys(simpleEventType))).toStrictEqual(
+      expectedProperties,
+    );
     expect(simpleEventType.type).toStrictEqual(type);
     expect(simpleEventType.payloadSchema).toStrictEqual(undefined);
     expect(simpleEventType.metadataSchema).toStrictEqual(undefined);
@@ -59,7 +70,9 @@ describe('zodEvent implementation', () => {
     > = 1;
     assertPayloadEventTypeDetail;
 
-    expect(Object.keys(payloadEventType)).toHaveLength(3);
+    expect(new Set(Object.keys(payloadEventType))).toStrictEqual(
+      expectedProperties,
+    );
     expect(payloadEventType.type).toStrictEqual(type);
     expect(payloadEventType.payloadSchema).toStrictEqual(payloadSchema);
     expect(payloadEventType.metadataSchema).toStrictEqual(undefined);
@@ -84,7 +97,9 @@ describe('zodEvent implementation', () => {
     > = 1;
     assertMetadataEventTypeDetail;
 
-    expect(Object.keys(metadataEventType)).toHaveLength(3);
+    expect(new Set(Object.keys(metadataEventType))).toStrictEqual(
+      expectedProperties,
+    );
     expect(metadataEventType.type).toStrictEqual(type);
     expect(metadataEventType.payloadSchema).toStrictEqual(undefined);
     expect(metadataEventType.metadataSchema).toStrictEqual(metadataSchema);
@@ -114,7 +129,9 @@ describe('zodEvent implementation', () => {
     > = 1;
     assertFullEventTypeDetail;
 
-    expect(Object.keys(fullEventType)).toHaveLength(3);
+    expect(new Set(Object.keys(fullEventType))).toStrictEqual(
+      expectedProperties,
+    );
     expect(fullEventType.type).toStrictEqual(type);
     expect(fullEventType.payloadSchema).toStrictEqual(payloadSchema);
     expect(fullEventType.metadataSchema).toStrictEqual(metadataSchema);

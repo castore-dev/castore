@@ -1,6 +1,6 @@
-import { z, ZodType } from 'zod';
+import type { z, ZodType } from 'zod';
 
-import { EventDetail, EventType } from '@castore/core';
+import { EventType } from '@castore/core';
 
 export class ZodEventType<
   TYPE extends string = string,
@@ -20,12 +20,7 @@ export class ZodEventType<
     : METADATA_SCHEMA extends ZodType
     ? z.infer<METADATA_SCHEMA>
     : never,
-> implements EventType<TYPE, PAYLOAD, METADATA>
-{
-  _types?: {
-    detail: EventDetail<TYPE, PAYLOAD, METADATA>;
-  };
-  type: TYPE;
+> extends EventType<TYPE, PAYLOAD, METADATA> {
   payloadSchema?: PAYLOAD_SCHEMA;
   metadataSchema?: METADATA_SCHEMA;
 
@@ -38,7 +33,7 @@ export class ZodEventType<
     payloadSchema?: PAYLOAD_SCHEMA;
     metadataSchema?: METADATA_SCHEMA;
   }) {
-    this.type = type;
+    super({ type });
     this.payloadSchema = payloadSchema;
     this.metadataSchema = metadataSchema;
   }

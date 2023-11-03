@@ -1,4 +1,5 @@
 import type { EventDetail } from './eventDetail';
+import { reservedEventTypes } from './reservedEventTypes';
 
 export class EventType<
   TYPE extends string = string,
@@ -22,6 +23,12 @@ export class EventType<
       };
 
   constructor({ type }: { type: TYPE }) {
+    if (reservedEventTypes.has(type)) {
+      throw new Error(
+        `${type} is a reserved event type. Please chose another one.`,
+      );
+    }
+
     this.type = type;
   }
 }
