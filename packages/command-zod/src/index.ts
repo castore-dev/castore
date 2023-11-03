@@ -1,0 +1,1 @@
+export { ZodCommand } from './command';

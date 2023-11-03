@@ -1,4 +1,4 @@
-import type { FromSchema, JSONSchema } from 'json-schema-to-ts';
+import { z, ZodType } from 'zod';
 
 import {
   Command,
@@ -7,24 +7,24 @@ import {
   OnEventAlreadyExistsCallback,
 } from '@castore/core';
 
-export class JSONSchemaCommand<
+export class ZodCommand<
   COMMAND_ID extends string = string,
   EVENT_STORES extends EventStore[] = EventStore[],
   $EVENT_STORES extends EventStore[] = $Contravariant<
     EVENT_STORES,
     EventStore[]
   >,
-  INPUT_SCHEMA extends JSONSchema | undefined = JSONSchema | undefined,
+  INPUT_SCHEMA extends ZodType | undefined = ZodType | undefined,
   INPUT = $Contravariant<
     INPUT_SCHEMA,
-    JSONSchema,
-    INPUT_SCHEMA extends JSONSchema ? FromSchema<INPUT_SCHEMA> : never
+    ZodType,
+    INPUT_SCHEMA extends ZodType ? z.infer<INPUT_SCHEMA> : never
   >,
-  OUTPUT_SCHEMA extends JSONSchema | undefined = JSONSchema | undefined,
+  OUTPUT_SCHEMA extends ZodType | undefined = ZodType | undefined,
   OUTPUT = $Contravariant<
     OUTPUT_SCHEMA,
-    JSONSchema,
-    OUTPUT_SCHEMA extends JSONSchema ? FromSchema<OUTPUT_SCHEMA> : never
+    ZodType,
+    OUTPUT_SCHEMA extends ZodType ? z.infer<OUTPUT_SCHEMA> : never
   >,
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   CONTEXT extends any[] = any[],

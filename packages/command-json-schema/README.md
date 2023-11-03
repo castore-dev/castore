@@ -55,7 +55,11 @@ const pokemonAppearCommand = new JSONSchemaCommand({
   inputSchema: pokemonAppearedInputSchema,
   outputSchema: pokemonAppearedOutputSchema,
   // 👇 handler input/output types are correctly inferred
-  handler: async (commandInput, [pokemonsEventStore]) => {
+  handler: async (
+    commandInput,
+    [pokemonsEventStore],
+    { generateUuid }: { generateUuid: () => string },
+  ) => {
     const { name, level } = commandInput;
     const pokemonId = generateUuid();
 
@@ -63,7 +67,6 @@ const pokemonAppearCommand = new JSONSchemaCommand({
       aggregateId: pokemonId,
       version: 1,
       type: 'POKEMON_APPEARED',
-      timestamp: new Date().toISOString(),
       payload: { name, level },
     });
 
@@ -89,7 +92,11 @@ const pokemonAppearCommand = new Command<
 >({
   commandId: 'POKEMON_APPEAR',
   requiredEventStores: [pokemonsEventStore],
-  handler: async (commandInput, [pokemonsEventStore]) => {
+  handler: async (
+    commandInput,
+    [pokemonsEventStore],
+    { generateUuid }: { generateUuid: () => string },
+  ) => {
     // ...same code
   },
 });

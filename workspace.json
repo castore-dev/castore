@@ -8,6 +8,7 @@
     "event-type-json-schema": "packages/event-type-json-schema",
     "event-type-zod": "packages/event-type-zod",
     "command-json-schema": "packages/command-json-schema",
+    "command-zod": "packages/command-zod",
     "message-bus-adapter-event-bridge": "packages/message-bus-adapter-event-bridge",
     "message-bus-adapter-event-bridge-s3": "packages/message-bus-adapter-event-bridge-s3",
     "message-bus-adapter-in-memory": "packages/message-bus-adapter-in-memory",
