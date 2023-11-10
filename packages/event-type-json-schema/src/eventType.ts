@@ -1,6 +1,6 @@
-import { FromSchema, JSONSchema } from 'json-schema-to-ts';
+import type { FromSchema, JSONSchema } from 'json-schema-to-ts';
 
-import { EventDetail, EventType } from '@castore/core';
+import { EventType } from '@castore/core';
 
 export class JSONSchemaEventType<
   TYPE extends string = string,
@@ -20,12 +20,7 @@ export class JSONSchemaEventType<
     : METADATA_SCHEMA extends JSONSchema
     ? FromSchema<METADATA_SCHEMA>
     : never,
-> implements EventType<TYPE, PAYLOAD, METADATA>
-{
-  _types?: {
-    detail: EventDetail<TYPE, PAYLOAD, METADATA>;
-  };
-  type: TYPE;
+> extends EventType<TYPE, PAYLOAD, METADATA> {
   payloadSchema?: PAYLOAD_SCHEMA;
   metadataSchema?: METADATA_SCHEMA;
 
@@ -38,7 +33,7 @@ export class JSONSchemaEventType<
     payloadSchema?: PAYLOAD_SCHEMA;
     metadataSchema?: METADATA_SCHEMA;
   }) {
-    this.type = type;
+    super({ type });
     this.payloadSchema = payloadSchema;
     this.metadataSchema = metadataSchema;
   }

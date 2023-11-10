@@ -6,6 +6,7 @@ import { mockClient } from 'aws-sdk-client-mock';
 import type { A } from 'ts-toolbelt';
 
 import type { Message, PublishMessageOptions } from '@castore/core';
+import { __REPLAYED__ } from '@castore/core';
 
 import {
   EventBridgeMessageBusAdapter,
@@ -89,7 +90,7 @@ describe('EventBridgeMessageBusAdapter', () => {
           {
             EventBusName: eventBusNameMock,
             Source: eventStoreIdMock,
-            DetailType: '__REPLAYED__',
+            DetailType: __REPLAYED__,
             Detail: JSON.stringify(messageMock),
           },
         ],
@@ -128,13 +129,13 @@ describe('EventBridgeMessageBusAdapter', () => {
           {
             EventBusName: eventBusNameMock,
             Source: eventStoreIdMock,
-            DetailType: '__REPLAYED__',
+            DetailType: __REPLAYED__,
             Detail: JSON.stringify(messageMock),
           },
           {
             EventBusName: eventBusNameMock,
             Source: eventStoreIdMock,
-            DetailType: '__REPLAYED__',
+            DetailType: __REPLAYED__,
             Detail: JSON.stringify(otherMessageMock),
           },
         ],

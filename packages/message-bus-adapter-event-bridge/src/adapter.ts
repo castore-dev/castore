@@ -11,6 +11,8 @@ import type {
   PublishMessageOptions,
 } from '@castore/core';
 import {
+  __REPLAYED__,
+  __AGGREGATE_EXISTS__,
   isAggregateExistsMessage,
   isEventCarryingMessage,
 } from '@castore/core';
@@ -22,11 +24,11 @@ const getDetailType = (
   { replay = false }: PublishMessageOptions = {},
 ): string => {
   if (isEventCarryingMessage(message)) {
-    return replay ? '__REPLAYED__' : message.event.type;
+    return replay ? __REPLAYED__ : message.event.type;
   }
 
   if (isAggregateExistsMessage(message)) {
-    return '__AGGREGATE_EXISTS__';
+    return __AGGREGATE_EXISTS__;
   }
 
   throw new Error('Unable to infer detail-type from message');
