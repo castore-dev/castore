@@ -5,10 +5,16 @@ import { uuidSchema } from '~/libs/schemas/uuid';
 export const inputSchema = {
   type: 'object',
   properties: {
-    pokemonId: uuidSchema,
+    queryStringParameters: {
+      type: 'object',
+      properties: {
+        aggregateId: uuidSchema,
+      },
+      required: ['aggregateId'],
+      additionalProperties: false,
+    },
   },
-  required: ['pokemonId'],
-  additionalProperties: false,
+  required: ['queryStringParameters'],
 } as const;
 
 export type Input = FromSchema<typeof inputSchema>;

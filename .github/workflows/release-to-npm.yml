@@ -45,6 +45,10 @@ jobs:
       - uses: JS-DevTools/npm-publish@v2
         with:
           token: ${{ secrets.NPM_TOKEN }}
+          package: ./packages/event-storage-adapter-http/package.json
+      - uses: JS-DevTools/npm-publish@v2
+        with:
+          token: ${{ secrets.NPM_TOKEN }}
           package: ./packages/event-type-json-schema/package.json
       - uses: JS-DevTools/npm-publish@v2
         with:

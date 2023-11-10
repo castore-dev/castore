@@ -42,6 +42,10 @@
       "name": "🔌  DynamoDB"
     },
     {
+      "path": "packages/event-storage-adapter-http",
+      "name": "🔌  HTTP"
+    },
+    {
       "path": "packages/event-storage-adapter-redux",
       "name": "🔌  Redux"
     },
