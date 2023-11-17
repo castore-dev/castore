@@ -127,3 +127,11 @@ export type AggregateSimulator<$EVENT_DETAIL, AGGREGATE extends Aggregate> = (
   events: $EVENT_DETAIL[],
   options?: SimulationOptions,
 ) => AGGREGATE | undefined;
+
+export type SnapshotModeNone = 'none';
+export type SnapshotModeAuto = 'auto';
+export type SnapshotModeCustom = 'custom';
+export type SnapshotMode =
+  | SnapshotModeNone
+  | SnapshotModeAuto
+  | SnapshotModeCustom;

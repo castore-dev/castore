@@ -25,9 +25,15 @@ export type {
   EventStoreId,
   EventStoreEventTypes,
   EventStoreEventDetails,
+  EventStoreReducers,
+  EventStoreCurrentReducerVersion,
   EventStoreReducer,
   EventStoreAggregate,
   Reducer,
+  SnapshotMode,
+  SnapshotModeAuto,
+  SnapshotModeCustom,
+  SnapshotModeNone,
 } from './eventStore';
 export { ConnectedEventStore } from './connectedEventStore';
 export { Command, tuple } from './command/command';

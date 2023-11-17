@@ -6,6 +6,8 @@ import { EventStore } from './eventStore';
 import {
   PokemonAggregate,
   pokemonsEventStore,
+  pokemonsEventStoreAutoSnapshots,
+  pokemonsEventStoreCustomSnapshot,
   pokemonAppearedEvent,
   pokemonCaughtEvent,
   pokemonLeveledUpEvent,
@@ -38,6 +40,9 @@ describe('event store', () => {
       new Set([
         'eventStoreId',
         'eventTypes',
+        'snapshotMode',
+        'reducers',
+        'currentReducerVersion',
         'reducer',
         'simulateSideEffect',
         'eventStorageAdapter',
@@ -54,12 +59,40 @@ describe('event store', () => {
     );
 
     expect(pokemonsEventStore.eventStoreId).toBe('POKEMONS');
-
     expect(pokemonsEventStore.eventTypes).toStrictEqual([
       pokemonAppearedEvent,
       pokemonCaughtEvent,
       pokemonLeveledUpEvent,
     ]);
+    expect(pokemonsEventStore.snapshotMode).toBe('none');
+    expect(pokemonsEventStore.reducers).toBeUndefined();
+    expect(pokemonsEventStore.currentReducerVersion).toBeUndefined();
+
+    expect(pokemonsEventStoreAutoSnapshots.eventStoreId).toBe('POKEMONS_2');
+    expect(pokemonsEventStoreAutoSnapshots.eventTypes).toStrictEqual([
+      pokemonAppearedEvent,
+      pokemonCaughtEvent,
+      pokemonLeveledUpEvent,
+    ]);
+    expect(pokemonsEventStoreAutoSnapshots.snapshotMode).toBe('auto');
+    expect(pokemonsEventStoreAutoSnapshots.reducers).toBeUndefined();
+    expect(pokemonsEventStoreAutoSnapshots.currentReducerVersion).toBe('v1');
+
+    expect(pokemonsEventStoreCustomSnapshot.eventStoreId).toBe('POKEMONS_3');
+    expect(pokemonsEventStoreCustomSnapshot.eventTypes).toStrictEqual([
+      pokemonAppearedEvent,
+      pokemonCaughtEvent,
+      pokemonLeveledUpEvent,
+    ]);
+
+    expect(pokemonsEventStoreCustomSnapshot.snapshotMode).toBe('custom');
+    expect(pokemonsEventStoreCustomSnapshot.reducers).not.toBeUndefined();
+    expect(pokemonsEventStoreCustomSnapshot.currentReducerVersion).toBe('v2');
+    expect(pokemonsEventStoreCustomSnapshot.reducer).toBe(
+      pokemonsEventStoreCustomSnapshot.reducers[
+        pokemonsEventStoreCustomSnapshot.currentReducerVersion
+      ],
+    );
   });
 
   describe('getEvents', () => {
