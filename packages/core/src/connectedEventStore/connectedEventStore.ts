@@ -150,6 +150,7 @@ export class ConnectedEventStore<
   set onEventPushed(
     onEventPushed: OnEventPushed<$EVENT_DETAIL, $AGGREGATE> | undefined,
   ) {
+    console.log('test');
     this.eventStore.onEventPushed = onEventPushed;
   }
 
