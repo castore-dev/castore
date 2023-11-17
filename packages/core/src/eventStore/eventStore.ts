@@ -1,15 +1,12 @@
 /* eslint-disable max-lines */
 import type { Aggregate } from '~/aggregate';
 import type { EventDetail } from '~/event/eventDetail';
-import type {
-  EventDetailParser,
-  EventType,
-  EventTypeDetails,
-} from '~/event/eventType';
+import type { EventType, EventTypeDetails } from '~/event/eventType';
 import { GroupedEvent } from '~/event/groupedEvent';
 import type { EventStorageAdapter } from '~/eventStorageAdapter';
 import type { $Contravariant } from '~/utils';
 
+import { EventDetailParser } from '../event/eventType';
 import {
   EventDetailParserNotDefinedError,
   EventDetailTypeDoesNotExistError,

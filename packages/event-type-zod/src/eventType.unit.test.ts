@@ -49,6 +49,7 @@ describe('zodEvent implementation', () => {
     expect(simpleEventType.type).toStrictEqual(type);
     expect(simpleEventType.payloadSchema).toStrictEqual(undefined);
     expect(simpleEventType.metadataSchema).toStrictEqual(undefined);
+    expect(simpleEventType.parseEventDetail).toStrictEqual(undefined);
   });
 
   it('has correct properties (with payload, no metadata)', () => {
@@ -76,6 +77,7 @@ describe('zodEvent implementation', () => {
     expect(payloadEventType.type).toStrictEqual(type);
     expect(payloadEventType.payloadSchema).toStrictEqual(payloadSchema);
     expect(payloadEventType.metadataSchema).toStrictEqual(undefined);
+    expect(payloadEventType.parseEventDetail).toBeDefined();
   });
 
   it('has correct properties (no payload, with metadata)', () => {
@@ -103,6 +105,7 @@ describe('zodEvent implementation', () => {
     expect(metadataEventType.type).toStrictEqual(type);
     expect(metadataEventType.payloadSchema).toStrictEqual(undefined);
     expect(metadataEventType.metadataSchema).toStrictEqual(metadataSchema);
+    expect(metadataEventType.parseEventDetail).toBeDefined();
   });
 
   it('has correct properties (with payload, with metadata)', () => {
@@ -135,5 +138,58 @@ describe('zodEvent implementation', () => {
     expect(fullEventType.type).toStrictEqual(type);
     expect(fullEventType.payloadSchema).toStrictEqual(payloadSchema);
     expect(fullEventType.metadataSchema).toStrictEqual(metadataSchema);
+    expect(fullEventType.parseEventDetail).toBeDefined();
+  });
+
+  it('validates schemas', () => {
+    const fullEventType = new ZodEventType({
+      type,
+      payloadSchema,
+      metadataSchema,
+    });
+
+    expect(fullEventType.parseEventDetail).toBeDefined();
+    console.log(
+      fullEventType.parseEventDetail?.({
+        payload: { message: 'ok' },
+        metadata: { userEmail: 'email' },
+        aggregateId: 'id',
+        version: 10,
+        timestamp: 'anyString',
+        type: 'anyType',
+      }),
+    );
+    // Email not valid
+    expect(
+      fullEventType.parseEventDetail?.({
+        payload: { message: 'ok' },
+        metadata: { userEmail: 'email' },
+        aggregateId: 'id',
+        version: 10,
+        timestamp: 'anyString',
+        type: 'anyType',
+      }),
+    ).toMatchObject({ isValid: false });
+    // Payload key unknown
+    expect(
+      fullEventType.parseEventDetail?.({
+        payload: { someKey: 'ok' },
+        metadata: { userEmail: 'email@format.com' },
+        aggregateId: 'id',
+        version: 10,
+        timestamp: 'anyString',
+        type: 'anyType',
+      }),
+    ).toMatchObject({ isValid: false });
+    expect(
+      fullEventType.parseEventDetail?.({
+        payload: { message: 'ok' },
+        metadata: { userEmail: 'email@format.com' },
+        aggregateId: 'id',
+        version: 10,
+        timestamp: 'anyString',
+        type: 'anyType',
+      }),
+    ).toMatchObject({ isValid: true });
   });
 });
