@@ -1,5 +1,5 @@
 import type { EventStore } from '~/eventStore/eventStore';
-import type { $Contravariant } from '~/utils';
+import type { $Contravariant } from '~/typeUtils';
 
 import type {
   EventStoreStateCarryingMessage,

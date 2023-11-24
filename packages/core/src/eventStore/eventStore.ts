@@ -4,7 +4,7 @@ import type { EventDetail } from '~/event/eventDetail';
 import type { EventType, EventTypeDetails } from '~/event/eventType';
 import { GroupedEvent } from '~/event/groupedEvent';
 import type { EventStorageAdapter } from '~/eventStorageAdapter';
-import type { $Contravariant } from '~/utils';
+import type { $Contravariant } from '~/typeUtils';
 
 import { AggregateNotFoundError } from './errors/aggregateNotFound';
 import { UndefinedEventStorageAdapterError } from './errors/undefinedEventStorageAdapter';
@@ -25,6 +25,7 @@ import type {
   SnapshotModeCustom,
   SnapshotModeNone,
 } from './types';
+import { validateSnapshotMode } from './utils';
 
 export class EventStore<
   EVENT_STORE_ID extends string = string,
@@ -150,6 +151,7 @@ export class EventStore<
   eventStorageAdapter?: EventStorageAdapter;
   getEventStorageAdapter: () => EventStorageAdapter;
 
+  // eslint-disable-next-line complexity
   constructor({
     eventStoreId,
     eventTypes,
@@ -193,16 +195,22 @@ export class EventStore<
   )) {
     this.eventStoreId = eventStoreId;
     this.eventTypes = eventTypes;
-    // TODO: Validate snapshotMode + autoSnapshotPeriodVersions + reducers + currentReducerVersion
+
+    validateSnapshotMode({
+      snapshotMode,
+      autoSnapshotPeriodVersions,
+      reducers,
+      currentReducerVersion,
+      reducer,
+    });
+
     this.snapshotMode = snapshotMode;
-    if (autoSnapshotPeriodVersions !== undefined) {
-      this.autoSnapshotPeriodVersions = autoSnapshotPeriodVersions;
-    }
     this.reducers = reducers as REDUCERS;
     this.currentReducerVersion =
       currentReducerVersion as CURRENT_REDUCER_VERSION;
     this.reducer = (reducer ??
       this.reducers[this.currentReducerVersion]) as REDUCER;
+
     this.simulateSideEffect = simulateSideEffect;
     this.eventStorageAdapter = $eventStorageAdapter;
 

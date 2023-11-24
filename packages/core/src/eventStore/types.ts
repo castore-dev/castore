@@ -6,7 +6,7 @@ import type {
   ListAggregateIdsOptions,
   ListAggregateIdsOutput,
 } from '~/eventStorageAdapter';
-import type { $Contravariant } from '~/utils';
+import type { $Contravariant } from '~/typeUtils';
 
 export type Reducer<
   AGGREGATE extends Aggregate = Aggregate,

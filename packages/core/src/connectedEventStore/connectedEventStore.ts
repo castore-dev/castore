@@ -1,3 +1,4 @@
+/* eslint-disable max-lines */
 import type { Aggregate } from '~/aggregate';
 import type { EventDetail } from '~/event/eventDetail';
 import type { EventType, EventTypeDetails } from '~/event/eventType';
@@ -16,7 +17,7 @@ import type {
   SnapshotMode,
 } from '~/eventStore';
 import type { EventStoreMessageChannel } from '~/messaging';
-import type { $Contravariant } from '~/utils';
+import type { $Contravariant } from '~/typeUtils';
 
 import { publishPushedEvent } from './publishPushedEvent';
 
