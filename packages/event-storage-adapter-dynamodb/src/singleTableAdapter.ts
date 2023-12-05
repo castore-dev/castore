@@ -146,16 +146,36 @@ export class DynamoDBSingleTableEventStorageAdapter
   getTableName: () => string;
   tableName: string | (() => string);
   dynamoDBClient: DynamoDBClient;
+  eventTableInitialEventIndexName: string;
+  eventTablePk: string;
+  eventTableSk: string;
+  eventTableTimestampKey: string;
+  eventTableEventStoreIdKey: string;
 
   constructor({
     tableName,
     dynamoDBClient,
+    eventTableInitialEventIndexName = EVENT_TABLE_INITIAL_EVENT_INDEX_NAME,
+    eventTablePk = EVENT_TABLE_PK,
+    eventTableSk = EVENT_TABLE_SK,
+    eventTableTimestampKey = EVENT_TABLE_TIMESTAMP_KEY,
+    eventTableEventStoreIdKey = EVENT_TABLE_EVENT_STORE_ID_KEY,
   }: {
     tableName: string | (() => string);
     dynamoDBClient: DynamoDBClient;
+    eventTableInitialEventIndexName?: string;
+    eventTablePk?: string;
+    eventTableSk?: string;
+    eventTableTimestampKey?: string;
+    eventTableEventStoreIdKey?: string;
   }) {
     this.tableName = tableName;
     this.dynamoDBClient = dynamoDBClient;
+    this.eventTableInitialEventIndexName = eventTableInitialEventIndexName;
+    this.eventTablePk = eventTablePk;
+    this.eventTableSk = eventTableSk;
+    this.eventTableTimestampKey = eventTableTimestampKey;
+    this.eventTableEventStoreIdKey = eventTableEventStoreIdKey;
 
     this.getTableName = () =>
       typeof this.tableName === 'string' ? this.tableName : this.tableName();
@@ -179,9 +199,9 @@ export class DynamoDBSingleTableEventStorageAdapter
             ? '#aggregateId = :aggregateId and #version >= :minVersion'
             : '#aggregateId = :aggregateId',
         ExpressionAttributeNames: {
-          '#aggregateId': EVENT_TABLE_PK,
+          '#aggregateId': this.eventTablePk,
           ...(maxVersion !== undefined || minVersion !== undefined
-            ? { '#version': EVENT_TABLE_SK }
+            ? { '#version': this.eventTableSk }
             : {}),
         },
         ExpressionAttributeValues: marshall(
@@ -248,16 +268,21 @@ export class DynamoDBSingleTableEventStorageAdapter
             version,
             type,
             timestamp,
+            [this.eventTablePk]: prefixAggregateId(eventStoreId, aggregateId),
+            [this.eventTableSk]: version,
+            [this.eventTableTimestampKey]: timestamp,
             ...(payload !== undefined ? { payload } : {}),
             ...(metadata !== undefined ? { metadata } : {}),
-            ...(version === 1 ? { eventStoreId } : {}),
+            ...(version === 1
+              ? { [this.eventTableEventStoreIdKey]: eventStoreId, eventStoreId }
+              : {}),
           },
           MARSHALL_OPTIONS,
         ),
         ...(force
           ? {}
           : {
-              ExpressionAttributeNames: { '#version': EVENT_TABLE_SK },
+              ExpressionAttributeNames: { '#version': this.eventTableSk },
               ConditionExpression: 'attribute_not_exists(#version)',
             }),
       };
@@ -353,13 +378,13 @@ export class DynamoDBSingleTableEventStorageAdapter
         TableName: this.getTableName(),
         KeyConditionExpression: '#eventStoreId = :eventStoreId',
         ExpressionAttributeNames: {
-          '#eventStoreId': EVENT_TABLE_EVENT_STORE_ID_KEY,
+          '#eventStoreId': this.eventTableEventStoreIdKey,
         },
         ExpressionAttributeValues: marshall(
           { ':eventStoreId': eventStoreId },
           MARSHALL_OPTIONS,
         ),
-        IndexName: EVENT_TABLE_INITIAL_EVENT_INDEX_NAME,
+        IndexName: this.eventTableInitialEventIndexName,
       };
 
       const {
@@ -378,15 +403,15 @@ export class DynamoDBSingleTableEventStorageAdapter
         aggregateIdsQueryCommandInput.KeyConditionExpression =
           initialEventBefore !== undefined
             ? initialEventAfter !== undefined
-              ? '#eventStoreId = :eventStoreId and #timestamp between :initialEventAfter and :initialEventBefore'
-              : '#eventStoreId = :eventStoreId and #timestamp <= :initialEventBefore'
+              ? `#eventStoreId = :eventStoreId and #timestamp between :initialEventAfter and :initialEventBefore`
+              : `#eventStoreId = :eventStoreId and #timestamp <= :initialEventBefore`
             : initialEventAfter !== undefined
-            ? '#eventStoreId = :eventStoreId and #timestamp >= :initialEventAfter'
-            : '#eventStoreId = :eventStoreId';
+            ? `#eventStoreId = :eventStoreId and #timestamp >= :initialEventAfter`
+            : `#eventStoreId = :eventStoreId`;
 
         aggregateIdsQueryCommandInput.ExpressionAttributeNames = {
           ...aggregateIdsQueryCommandInput.ExpressionAttributeNames,
-          ['#timestamp']: EVENT_TABLE_TIMESTAMP_KEY,
+          ['#timestamp']: this.eventTableTimestampKey,
         };
 
         aggregateIdsQueryCommandInput.ExpressionAttributeValues = {

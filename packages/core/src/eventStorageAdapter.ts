@@ -49,4 +49,9 @@ export interface EventStorageAdapter {
     context: EventStoreContext,
     options?: ListAggregateIdsOptions,
   ) => Promise<ListAggregateIdsOutput>;
+  eventTableEventStoreIdKey?: string;
+  eventTableInitialEventIndexName?: string;
+  eventTablePk?: string;
+  eventTableSk?: string;
+  eventTableTimestampKey?: string;
 }
