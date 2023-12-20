@@ -251,7 +251,8 @@ export class DynamoDBSingleTableEventStorageAdapter
               ...(payload !== undefined ? { payload } : {}),
               ...(metadata !== undefined ? { metadata } : {}),
             };
-          }),
+          })
+          .sort((a, b) => a.version - b.version),
       };
     };
 
@@ -269,12 +270,12 @@ export class DynamoDBSingleTableEventStorageAdapter
             type,
             timestamp,
             [this.eventTablePk]: prefixAggregateId(eventStoreId, aggregateId),
-            [this.eventTableSk]: version,
+            [this.eventTableSk]: version.toString(),
             [this.eventTableTimestampKey]: timestamp,
             ...(payload !== undefined ? { payload } : {}),
             ...(metadata !== undefined ? { metadata } : {}),
             ...(version === 1
-              ? { [this.eventTableEventStoreIdKey]: eventStoreId, eventStoreId }
+              ? { eventStoreId, [this.eventTableEventStoreIdKey]: eventStoreId }
               : {}),
           },
           MARSHALL_OPTIONS,

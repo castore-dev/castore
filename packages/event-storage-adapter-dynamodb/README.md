@@ -393,7 +393,7 @@ import {
   "Properties": {
     "AttributeDefinitions": [
       { "AttributeName": "aggregateId", "AttributeType": "S" },
-      { "AttributeName": "version", "AttributeType": "N" }
+      { "AttributeName": "version", "AttributeType": "S" }
       { "AttributeName": "isInitialEvent", "AttributeType": "N" },
       { "AttributeName": "timestamp", "AttributeType": "S" }
     ],
@@ -430,7 +430,7 @@ const pokemonsEventsTable = new Table(scope, 'PokemonEvents', {
   },
   sortKey: {
     name: 'version',
-    type: NUMBER,
+    type: STRING,
   },
 });
 
@@ -462,7 +462,7 @@ resource "aws_dynamodb_table" "pokemons-events-table" {
 
   attribute {
     name = "version"
-    type = "N"
+    type = "S"
   }
 
   attribute {
