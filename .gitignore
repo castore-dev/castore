@@ -60,3 +60,6 @@ nx-cache
 # docusaurus
 .docusaurus
 build
+
+# code editor
+.vscode
