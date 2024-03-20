@@ -14,6 +14,7 @@
     "message-bus-adapter-event-bridge-s3": "packages/message-bus-adapter-event-bridge-s3",
     "message-bus-adapter-in-memory": "packages/message-bus-adapter-in-memory",
     "message-queue-adapter-sqs": "packages/message-queue-adapter-sqs",
+    "message-queue-adapter-sqs-s3": "packages/message-queue-adapter-sqs-s3",
     "message-queue-adapter-in-memory": "packages/message-queue-adapter-in-memory",
     "lib-test-tools": "packages/lib-test-tools",
     "lib-react-visualizer": "packages/lib-react-visualizer",

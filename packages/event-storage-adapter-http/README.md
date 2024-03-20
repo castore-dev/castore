@@ -1,6 +1,6 @@
 # HTTP Event Storage Adapter
 
-DRY Castore [`EventStorageAdapter`](https://github.com/castore-dev/castore/#--eventstorageadapter) implementation using a HTTP API.
+DRY Castore [`EventStorageAdapter`](https://castore-dev.github.io/castore/docs/event-sourcing/fetching-events/) implementation using a HTTP API.
 
 This class is mainly useful when you already have the logic for events implemented and you want to expose your methods for a front-end to use them, eg.
 

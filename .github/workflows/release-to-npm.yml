@@ -81,6 +81,10 @@ jobs:
       - uses: JS-DevTools/npm-publish@v2
         with:
           token: ${{ secrets.NPM_TOKEN }}
+          package: ./packages/message-queue-adapter-sqs-s3/package.json
+      - uses: JS-DevTools/npm-publish@v2
+        with:
+          token: ${{ secrets.NPM_TOKEN }}
           package: ./packages/message-queue-adapter-in-memory/package.json
       - uses: JS-DevTools/npm-publish@v2
         with:

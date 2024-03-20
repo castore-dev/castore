@@ -1,6 +1,6 @@
 # Redux Event Storage Adapter
 
-DRY Castore [`EventStorageAdapter`](https://github.com/castore-dev/castore/#--eventstorageadapter) implementation using a Redux store.
+DRY Castore [`EventStorageAdapter`](https://castore-dev.github.io/castore/docs/event-sourcing/fetching-events/) implementation using a Redux store.
 
 ## 📥 Installation
 

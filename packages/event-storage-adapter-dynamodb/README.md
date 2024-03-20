@@ -1,6 +1,6 @@
 # DynamoDB Event Storage Adapter
 
-DRY Castore [`EventStorageAdapter`](https://github.com/castore-dev/castore/#--eventstorageadapter) implementation using [AWS DynamoDB](https://aws.amazon.com/dynamodb/).
+DRY Castore [`EventStorageAdapter`](https://castore-dev.github.io/castore/docs/event-sourcing/fetching-events/) implementation using [AWS DynamoDB](https://aws.amazon.com/dynamodb/).
 
 ## 📥 Installation
 
@@ -227,7 +227,7 @@ resource "aws_dynamodb_table" "pokemons-events-table" {
 
 ### 🤝 EventGroups
 
-This adapter implements the [EventGroups](https://github.com/castore-dev/castore/#event-groups) API using the [DynamoDB Transactions API](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/transaction-apis.html):
+This adapter implements the [EventGroups](https://castore-dev.github.io/castore/docs/event-sourcing/joining-data/) API using the [DynamoDB Transactions API](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/transaction-apis.html):
 
 ```ts
 import { EventStore } from '@castore/core';
@@ -459,7 +459,7 @@ resource "aws_dynamodb_table" "pokemons-events-table" {
 
 ### 🤝 EventGroups
 
-This adapter implements the [EventGroups](https://github.com/castore-dev/castore/#event-groups) API using the [DynamoDB Transactions API](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/transaction-apis.html):
+This adapter implements the [EventGroups](https://castore-dev.github.io/castore/docs/event-sourcing/joining-data/) API using the [DynamoDB Transactions API](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/transaction-apis.html):
 
 ```ts
 import { EventStore } from '@castore/core';

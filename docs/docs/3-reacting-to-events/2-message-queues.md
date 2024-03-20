@@ -66,11 +66,11 @@ import type {
 } from '@castore/message-queue-adapter-sqs';
 
 const appMessagesWorker = async ({ Records }: SQSMessageQueueMessage) => {
-  Records.forEach(({ body }) => {
+  for (const { body } of Records) {
     // 👇 Correctly typed!
     const recordBody: SQSMessageQueueMessageBody<typeof appMessageQueue> =
       JSON.parse(body);
-  });
+  }
 };
 ```
 

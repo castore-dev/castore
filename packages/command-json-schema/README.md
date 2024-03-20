@@ -1,6 +1,6 @@
 # JSON Schema Command
 
-DRY Castore [`Command`](https://github.com/castore-dev/castore/#--command) definition using [JSON Schemas](http://json-schema.org/understanding-json-schema/reference/index.html) and [`json-schema-to-ts`](https://github.com/ThomasAribart/json-schema-to-ts).
+DRY Castore [`Command`](https://castore-dev.github.io/castore/docs/event-sourcing/pushing-events/) definition using [JSON Schemas](http://json-schema.org/understanding-json-schema/reference/index.html) and [`json-schema-to-ts`](https://github.com/ThomasAribart/json-schema-to-ts).
 
 ## 📥 Installation
 
@@ -104,7 +104,7 @@ const pokemonAppearCommand = new Command<
 
 ## ⚙️ Properties & Methods
 
-`JSONSchemaCommand` implements the [`Command`](https://github.com/castore-dev/castore/#--command) class and adds the following properties to it:
+`JSONSchemaCommand` implements the [`Command`](https://castore-dev.github.io/castore/docs/event-sourcing/pushing-events/) class and adds the following properties to it:
 
 - <code>inputSchema <i>(?object)</i></code>: The command input JSON schema
 

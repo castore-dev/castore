@@ -1,6 +1,6 @@
 # SQS Message Queue Adapter
 
-DRY Castore [`MessageQueue`](https://github.com/castore-dev/castore/#--messagequeue) definition using [AWS SQS](https://aws.amazon.com/sqs/).
+DRY Castore [`MessageQueue`](https://castore-dev.github.io/castore/docs/reacting-to-events/message-queues/) definition using [AWS SQS](https://aws.amazon.com/sqs/).
 
 ## 📥 Installation
 
@@ -152,11 +152,11 @@ import type {
 } from '@castore/message-queue-adapter-sqs';
 
 const appMessagesWorker = async ({ Records }: SQSMessageQueueMessage) => {
-  Records.forEach(({ body }) => {
+  for (const { body } of Records) {
     // 👇 Correctly typed!
     const recordBody: SQSMessageQueueMessageBody<typeof appMessageQueue> =
       JSON.parse(body);
-  });
+  }
 };
 ```
 

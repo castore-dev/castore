@@ -13,6 +13,7 @@ import type {
 export interface SQSMessageQueueRecord extends SQSRecord {
   messageAttributes: {
     replay?: { stringValue: '1'; dataType: 'Number' };
+    messageId: { stringValue: string; dataType: 'String' };
   };
 }
 
