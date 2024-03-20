@@ -65,6 +65,12 @@ describe('SQSMessageQueueAdapter', () => {
     expect(sqsClientMock.call(0).args[0].input).toMatchObject({
       QueueUrl: queueUrlMock,
       MessageBody: JSON.stringify(message),
+      MessageAttributes: {
+        messageId: {
+          DataType: 'String',
+          StringValue: [eventStoreId, aggregateId, version].join('#'),
+        },
+      },
     });
   });
 

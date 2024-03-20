@@ -1,6 +1,6 @@
-# EventBridge Message Bus Adapter
+# EventBridge + S3 Message Bus Adapter
 
-DRY Castore [`MessageBus`](https://github.com/castore-dev/castore/#--messagebus) definition using [AWS EventBridge](https://aws.amazon.com/eventbridge/) and [AWS S3](https://aws.amazon.com/s3/).
+DRY Castore [`MessageBus`](https://castore-dev.github.io/castore/docs/reacting-to-events/message-buses/) definition using [AWS EventBridge](https://aws.amazon.com/eventbridge/) and [AWS S3](https://aws.amazon.com/s3/).
 
 This adapter works like the [EventBridge Message Bus Adapter](https://www.npmjs.com/package/@castore/message-bus-adapter-event-bridge) (it actually uses it under the hood), excepts that entry sizes are checked before publishing messages to EventBridge. If they are over the [256KB limit](https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-putevent-size.html), they are written on a s3 bucket instead, and a message is sent containing a pre-signed URL, as [recommended by AWS](https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-putevent-size.html).
 
@@ -16,7 +16,7 @@ npm install @castore/message-bus-adapter-event-bridge-s3
 yarn add @castore/message-bus-adapter-event-bridge-s3
 ```
 
-This package has `@castore/core`, `@aws-sdk/client-eventbridge` (above v3), `@aws-sdk/client-eventbridge` (above v3) and `@aws-sdk/s3-request-presigner` (above v3) as peer dependencies, so you will have to install them as well:
+This package has `@castore/core`, `@aws-sdk/client-eventbridge` (above v3), `@aws-sdk/client-s3` (above v3) and `@aws-sdk/s3-request-presigner` (above v3) as peer dependencies, so you will have to install them as well:
 
 ```bash
 # npm
@@ -134,4 +134,4 @@ const listener = async (
 
 The `publishMessage` method requires the `events:PutEvents` IAM permission on the provided event bus, as well as the `s3:putObject` and `s3:getObject` IAM permissions on the provided s3 bucket at the desired keys (e.g. `my-bucket-name/temporary-storage/*`).
 
-The `parseMessage` doesn't require any permission as the messageURL is pre-signed.
+The `parseMessage` util doesn't require any permission as the messageURL is pre-signed.

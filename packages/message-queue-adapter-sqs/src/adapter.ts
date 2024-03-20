@@ -12,6 +12,7 @@ import {
   isEventCarryingMessage,
   Message,
   MessageChannelAdapter,
+  PublishMessageOptions,
 } from '@castore/core';
 
 export const SQS_MAX_MESSAGE_BATCH_SIZE = 10;
@@ -38,10 +39,20 @@ const parseMessage = (
 export class SQSMessageQueueAdapter implements MessageChannelAdapter {
   publishMessage: MessageChannelAdapter['publishMessage'];
   publishMessages: MessageChannelAdapter['publishMessages'];
-  getQueueUrl: () => string;
+
   queueUrl: string | (() => string);
   sqsClient: SQSClient;
   fifo: boolean;
+
+  getQueueUrl: () => string;
+  formatMessage: (
+    message: Message,
+    options?: PublishMessageOptions,
+  ) => SendMessageCommandInput;
+  publishFormattedMessage: (entry: SendMessageCommandInput) => Promise<void>;
+  publishFormattedMessages: (
+    entries: SendMessageCommandInput[],
+  ) => Promise<void>;
 
   constructor({
     queueUrl,
@@ -59,39 +70,64 @@ export class SQSMessageQueueAdapter implements MessageChannelAdapter {
     this.getQueueUrl = () =>
       typeof this.queueUrl === 'string' ? this.queueUrl : this.queueUrl();
 
-    this.publishMessage = async (message, { replay = false } = {}) => {
+    this.formatMessage = (message, { replay = false } = {}) => {
       const { eventStoreId } = message;
       const { aggregateId, version } = parseMessage(message);
 
-      const sendMessageCommandInput: SendMessageCommandInput = {
+      const formattedMessage: SendMessageCommandInput = {
         MessageBody: JSON.stringify(message),
         QueueUrl: this.getQueueUrl(),
       };
 
-      if (this.fifo) {
-        sendMessageCommandInput.MessageDeduplicationId = [
-          eventStoreId,
-          aggregateId,
-          version,
-        ]
-          .filter(Boolean)
-          .join('#');
+      const messageId = [eventStoreId, aggregateId, version]
+        .filter(Boolean)
+        .join('#');
 
-        sendMessageCommandInput.MessageGroupId = [
-          eventStoreId,
-          aggregateId,
-        ].join('#');
+      if (this.fifo) {
+        formattedMessage.MessageDeduplicationId = messageId;
+        formattedMessage.MessageGroupId = [eventStoreId, aggregateId].join('#');
       }
 
+      formattedMessage.MessageAttributes = {
+        messageId: { DataType: 'String', StringValue: messageId },
+      };
+
       if (replay) {
-        sendMessageCommandInput.MessageAttributes = {
-          replay: { DataType: 'Number', StringValue: '1' },
+        formattedMessage.MessageAttributes.replay = {
+          DataType: 'Number',
+          StringValue: '1',
         };
       }
 
-      await this.sqsClient.send(
-        new SendMessageCommand(sendMessageCommandInput),
-      );
+      return formattedMessage;
+    };
+
+    this.publishMessage = (message, options) =>
+      this.publishFormattedMessage(this.formatMessage(message, options));
+
+    this.publishFormattedMessage = async formattedMessage => {
+      await this.sqsClient.send(new SendMessageCommand(formattedMessage));
+    };
+
+    this.publishFormattedMessages = async formattedMessages => {
+      for (const formattedMessageBatch of chunk(
+        formattedMessages,
+        SQS_MAX_MESSAGE_BATCH_SIZE,
+      )) {
+        await this.sqsClient.send(
+          new SendMessageBatchCommand({
+            Entries: formattedMessageBatch.map(formattedMessage => ({
+              ...formattedMessage,
+              Id: (
+                formattedMessage.MessageAttributes as {
+                  messageId: { DataType: 'String'; StringValue: string };
+                }
+              ).messageId.StringValue,
+            })),
+            QueueUrl: this.getQueueUrl(),
+          }),
+        );
+      }
     };
 
     this.publishMessages = async (messages, { replay = false } = {}) => {

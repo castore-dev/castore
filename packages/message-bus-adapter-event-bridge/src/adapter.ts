@@ -42,12 +42,12 @@ export class EventBridgeMessageBusAdapter implements MessageChannelAdapter {
   eventBridgeClient: EventBridgeClient;
 
   getEventBusName: () => string;
-  getEntry: (
+  formatMessage: (
     message: Message,
     options?: PublishMessageOptions,
   ) => PutEventsRequestEntry;
-  publishEntry: (entry: PutEventsRequestEntry) => Promise<void>;
-  publishEntries: (entries: PutEventsRequestEntry[]) => Promise<void>;
+  publishFormattedMessage: (entry: PutEventsRequestEntry) => Promise<void>;
+  publishFormattedMessages: (entries: PutEventsRequestEntry[]) => Promise<void>;
 
   constructor({
     eventBusName,
@@ -64,10 +64,7 @@ export class EventBridgeMessageBusAdapter implements MessageChannelAdapter {
         ? this.eventBusName
         : this.eventBusName();
 
-    this.getEntry = (
-      message: Message,
-      options?: PublishMessageOptions,
-    ): PutEventsRequestEntry => ({
+    this.formatMessage = (message, options) => ({
       EventBusName: this.getEventBusName(),
       Source: message.eventStoreId,
       DetailType: getDetailType(message, options),
@@ -75,20 +72,20 @@ export class EventBridgeMessageBusAdapter implements MessageChannelAdapter {
     });
 
     this.publishMessage = (message, options) =>
-      this.publishEntry(this.getEntry(message, options));
+      this.publishFormattedMessage(this.formatMessage(message, options));
 
-    this.publishEntry = async entry => {
+    this.publishFormattedMessage = async formattedMessage => {
       await this.eventBridgeClient.send(
-        new PutEventsCommand({ Entries: [entry] }),
+        new PutEventsCommand({ Entries: [formattedMessage] }),
       );
     };
 
     this.publishMessages = async (messages, options) =>
-      this.publishEntries(
-        messages.map(message => this.getEntry(message, options)),
+      this.publishFormattedMessages(
+        messages.map(message => this.formatMessage(message, options)),
       );
 
-    this.publishEntries = async entries => {
+    this.publishFormattedMessages = async entries => {
       for (const entriesBatch of chunk(
         entries,
         EVENTBRIDGE_MAX_ENTRIES_BATCH_SIZE,

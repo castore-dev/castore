@@ -86,6 +86,10 @@
       "name": "📨  SQS"
     },
     {
+      "path": "packages/message-queue-adapter-sqs-s3",
+      "name": "📨  SQS + S3"
+    },
+    {
       "path": "packages/message-queue-adapter-in-memory",
       "name": "📨  InMemory"
     },

@@ -1,32 +1,30 @@
 /* eslint-disable max-lines */
-import type {
-  EventBridgeClient,
-  PutEventsRequestEntry,
-} from '@aws-sdk/client-eventbridge';
 import {
   S3Client,
   PutObjectCommand,
   GetObjectCommand,
 } from '@aws-sdk/client-s3';
+import {
+  SQSClient,
+  SendMessageRequest,
+  SendMessageCommandInput,
+} from '@aws-sdk/client-sqs';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 
 import type { Message, MessageChannelAdapter } from '@castore/core';
 import { isEventCarryingMessage } from '@castore/core';
-import { EventBridgeMessageBusAdapter } from '@castore/message-bus-adapter-event-bridge';
+import { SQSMessageQueueAdapter } from '@castore/message-queue-adapter-sqs';
 
-import {
-  getFormattedMessageSize,
-  PUT_EVENTS_ENTRIES_SIZE_LIMIT,
-} from './getFormattedMessageSize';
+import { getMessageSize, SEND_MESSAGES_SIZE_LIMIT } from './getMessageSize';
 import type { OversizedEntryDetail } from './message';
 
-const EVENTBRIDGE_MAX_ENTRIES_BATCH_SIZE = 10;
+export const SQS_MAX_MESSAGE_BATCH_SIZE = 10;
 
-export class EventBridgeS3MessageBusAdapter implements MessageChannelAdapter {
+export class SQSS3MessageQueueAdapter implements MessageChannelAdapter {
   publishMessage: MessageChannelAdapter['publishMessage'];
   publishMessages: MessageChannelAdapter['publishMessages'];
 
-  eventBridgeMessageBusAdapter: EventBridgeMessageBusAdapter;
+  sqsMessageQueueAdapter: SQSMessageQueueAdapter;
   s3BucketName: string | (() => string);
   s3Client: S3Client;
   s3Prefix: string;
@@ -34,28 +32,28 @@ export class EventBridgeS3MessageBusAdapter implements MessageChannelAdapter {
 
   getS3BucketName: () => string;
   publishFormattedMessage: (
-    formattedMessage: PutEventsRequestEntry,
+    messageRequest: SendMessageRequest,
     message: Message,
   ) => Promise<void>;
 
   constructor({
-    eventBusName,
-    eventBridgeClient,
+    queueUrl,
+    sqsClient,
     s3BucketName,
     s3Client,
     s3Prefix = '',
     s3PreSignatureExpirationInSec = 900,
   }: {
-    eventBusName: string | (() => string);
-    eventBridgeClient: EventBridgeClient;
+    queueUrl: string | (() => string);
+    sqsClient: SQSClient;
     s3BucketName: string | (() => string);
     s3Client: S3Client;
     s3Prefix?: string;
     s3PreSignatureExpirationInSec?: number;
   }) {
-    this.eventBridgeMessageBusAdapter = new EventBridgeMessageBusAdapter({
-      eventBusName,
-      eventBridgeClient,
+    this.sqsMessageQueueAdapter = new SQSMessageQueueAdapter({
+      queueUrl,
+      sqsClient,
     });
     this.s3BucketName = s3BucketName;
     this.s3Client = s3Client;
@@ -69,16 +67,13 @@ export class EventBridgeS3MessageBusAdapter implements MessageChannelAdapter {
 
     this.publishMessage = (message, options) =>
       this.publishFormattedMessage(
-        this.eventBridgeMessageBusAdapter.formatMessage(message, options),
+        this.sqsMessageQueueAdapter.formatMessage(message, options),
         message,
       );
 
     this.publishFormattedMessage = async (formattedMessage, message) => {
-      if (
-        getFormattedMessageSize(formattedMessage) <=
-        PUT_EVENTS_ENTRIES_SIZE_LIMIT
-      ) {
-        return this.eventBridgeMessageBusAdapter.publishFormattedMessage(
+      if (getMessageSize(formattedMessage) <= SEND_MESSAGES_SIZE_LIMIT) {
+        return this.sqsMessageQueueAdapter.publishFormattedMessage(
           formattedMessage,
         );
       }
@@ -120,27 +115,27 @@ export class EventBridgeS3MessageBusAdapter implements MessageChannelAdapter {
 
       const oversizedEntryDetail: OversizedEntryDetail = { messageUrl };
 
-      return this.eventBridgeMessageBusAdapter.publishFormattedMessage({
+      return this.sqsMessageQueueAdapter.publishFormattedMessage({
         ...formattedMessage,
-        Detail: JSON.stringify(oversizedEntryDetail),
+        MessageBody: JSON.stringify(oversizedEntryDetail),
       });
     };
 
     this.publishMessages = async (messages, options) => {
       const formattedMessages = messages.map(message =>
-        this.eventBridgeMessageBusAdapter.formatMessage(message, options),
+        this.sqsMessageQueueAdapter.formatMessage(message, options),
       );
 
       type FormattedMessageWithContext = {
         message: Message;
-        formattedMessage: PutEventsRequestEntry;
+        formattedMessage: SendMessageCommandInput;
         formattedMessageSize: number;
       };
 
       const formattedMessagesWithContext: FormattedMessageWithContext[] =
         formattedMessages.map((formattedMessage, index) => ({
           formattedMessage,
-          formattedMessageSize: getFormattedMessageSize(formattedMessage),
+          formattedMessageSize: getMessageSize(formattedMessage),
           message: messages[index] as Message,
         }));
 
@@ -154,14 +149,13 @@ export class EventBridgeS3MessageBusAdapter implements MessageChannelAdapter {
         formattedMessageBatches[0] as FormattedMessageWithContext[];
       let currentBatchSize = 0;
 
-      // NOTE: We could search for the largest fitting formattedMessage instead of doing a for loop
+      // NOTE: We could search for the largest fitting entry instead of doing a for loop
       for (const formattedMessageWithContext of formattedMessagesWithContext) {
         const { formattedMessageSize } = formattedMessageWithContext;
 
         if (
-          currentBatch.length < EVENTBRIDGE_MAX_ENTRIES_BATCH_SIZE &&
-          currentBatchSize + formattedMessageSize <=
-            PUT_EVENTS_ENTRIES_SIZE_LIMIT
+          currentBatch.length < SQS_MAX_MESSAGE_BATCH_SIZE &&
+          currentBatchSize + formattedMessageSize <= SEND_MESSAGES_SIZE_LIMIT
         ) {
           currentBatch.push(formattedMessageWithContext);
           currentBatchSize += formattedMessageSize;
@@ -191,26 +185,26 @@ export class EventBridgeS3MessageBusAdapter implements MessageChannelAdapter {
         }
 
         // We are sure that the batch is not oversized if there is more than 1 entry
-        await this.eventBridgeMessageBusAdapter.publishFormattedMessages(
+        return this.sqsMessageQueueAdapter.publishFormattedMessages(
           formattedMessageBatch.map(({ formattedMessage }) => formattedMessage),
         );
       }
     };
   }
 
-  set eventBusName(eventBusName: string | (() => string)) {
-    this.eventBridgeMessageBusAdapter.eventBusName = eventBusName;
+  set queueUrl(queueUrl: string | (() => string)) {
+    this.sqsMessageQueueAdapter.queueUrl = queueUrl;
   }
 
-  get eventBusName(): string {
-    return this.eventBridgeMessageBusAdapter.getEventBusName();
+  get queueUrl(): string {
+    return this.sqsMessageQueueAdapter.getQueueUrl();
   }
 
-  set eventBridgeClient(eventBridgeClient: EventBridgeClient) {
-    this.eventBridgeMessageBusAdapter.eventBridgeClient = eventBridgeClient;
+  set sqsClient(sqsClient: SQSClient) {
+    this.sqsMessageQueueAdapter.sqsClient = sqsClient;
   }
 
-  get eventBridgeClient(): EventBridgeClient {
-    return this.eventBridgeMessageBusAdapter.eventBridgeClient;
+  get sqsClient(): SQSClient {
+    return this.sqsMessageQueueAdapter.sqsClient;
   }
 }

@@ -1,6 +1,6 @@
 # Zod Command
 
-DRY Castore [`Command`](https://github.com/castore-dev/castore/#--command) definition using [`zod`](https://github.com/colinhacks/zod).
+DRY Castore [`Command`](https://castore-dev.github.io/castore/docs/event-sourcing/pushing-events/) definition using [`zod`](https://github.com/colinhacks/zod).
 
 ## 📥 Installation
 
@@ -91,7 +91,7 @@ const pokemonAppearCommand = new Command<
 
 ## ⚙️ Properties & Methods
 
-`ZodCommand` implements the [`Command`](https://github.com/castore-dev/castore/#--command) class and adds the following properties to it:
+`ZodCommand` implements the [`Command`](https://castore-dev.github.io/castore/docs/event-sourcing/pushing-events/) class and adds the following properties to it:
 
 - <code>inputSchema <i>(?object)</i></code>: The command input zod schema
 
