@@ -33,17 +33,22 @@ The legacy `DynamoDBEventStorageAdapter` is still exposed for backward compatibi
 
 Documentation:
 
-- [`DynamoDBSingleTableEventStorageAdapter`](#dynamodbsingletableeventstorageadapter)
-  - [👩‍💻 Usage](#-usage)
-  - [🤔 How it works](#-how-it-works)
-  - [📝 Examples](#-examples)
-    - [CloudFormation](#cloudformation)
-    - [CDK](#cdk)
-    - [Terraform](#terraform)
-  - [🤝 EventGroups](#-eventgroups)
-  - [🔑 IAM](#-iam)
-  - [📸 `ImageParser`](#-imageparser)
-- [`DynamoDBEventStorageAdapter`](#legacy-dynamodbeventstorageadapter)
+- [DynamoDB Event Storage Adapter](#dynamodb-event-storage-adapter)
+  - [📥 Installation](#-installation)
+  - [Table of content](#table-of-content)
+  - [`DynamoDBSingleTableEventStorageAdapter`](#dynamodbsingletableeventstorageadapter)
+    - [👩‍💻 Usage](#-usage)
+    - [🤔 How it works](#-how-it-works)
+    - [📝 Examples](#-examples)
+    - [🤝 EventGroups](#-eventgroups)
+    - [🔑 IAM](#-iam)
+    - [📸 `ImageParser`](#-imageparser)
+  - [Legacy `DynamoDBEventStorageAdapter`](#legacy-dynamodbeventstorageadapter)
+    - [👩‍💻 Usage](#-usage-1)
+    - [🤔 How it works](#-how-it-works-1)
+    - [📝 Examples](#-examples-1)
+    - [🤝 EventGroups](#-eventgroups-1)
+    - [🔑 IAM](#-iam-1)
 
 ## `DynamoDBSingleTableEventStorageAdapter`
 
@@ -115,6 +120,18 @@ By design, the `listAggregateIds` operation can only be **eventually consistent*
 ### 📝 Examples
 
 Note that if you define your infrastructure as code in TypeScript, you can directly use this package instead of hard-coding the below values:
+
+```ts
+import {
+  EVENT_TABLE_PK, // => aggregateId
+  EVENT_TABLE_SK, // => version
+  EVENT_TABLE_INITIAL_EVENT_INDEX_NAME, // => initialEvents
+  EVENT_TABLE_EVENT_STORE_ID_KEY, // => eventStoreId
+  EVENT_TABLE_TIMESTAMP_KEY, // => timestamp
+} from '@castore/event-storage-adapter-dynamodb';
+```
+
+Alternatively, you can declare your own keys and index name. This is useful if you want to use the Dynamo table for other purposes than Castore:
 
 ```ts
 import {
@@ -302,6 +319,16 @@ const pokemonsEventStorageAdapter = new DynamoDBEventStorageAdapter({
   dynamoDBClient,
 });
 
+// 👇 Alternatively, provide keys and index names
+const pokemonsEventStorageAdapter = new DynamoDBEventStorageAdapter({
+  tableName: 'my-table-name',
+  dynamoDBClient,
+  eventTableInitialEventIndexName: "_GSI1";
+  eventTablePk: "_PK";
+  eventTableSk: "_SK";
+  eventTableTimestampKey: "_GSI1_SK";
+});
+
 const pokemonsEventStore = new EventStore({
   ...
   eventStorageAdapter: pokemonsEventStorageAdapter
@@ -366,7 +393,7 @@ import {
   "Properties": {
     "AttributeDefinitions": [
       { "AttributeName": "aggregateId", "AttributeType": "S" },
-      { "AttributeName": "version", "AttributeType": "N" }
+      { "AttributeName": "version", "AttributeType": "S" }
       { "AttributeName": "isInitialEvent", "AttributeType": "N" },
       { "AttributeName": "timestamp", "AttributeType": "S" }
     ],
@@ -403,7 +430,7 @@ const pokemonsEventsTable = new Table(scope, 'PokemonEvents', {
   },
   sortKey: {
     name: 'version',
-    type: NUMBER,
+    type: STRING,
   },
 });
 
@@ -435,7 +462,7 @@ resource "aws_dynamodb_table" "pokemons-events-table" {
 
   attribute {
     name = "version"
-    type = "N"
+    type = "S"
   }
 
   attribute {
