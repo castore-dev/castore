@@ -72,3 +72,5 @@ export type {
   EventStoreNotificationMessage,
   EventStoreStateCarryingMessage,
 } from './messaging';
+
+console.log('youhou');
