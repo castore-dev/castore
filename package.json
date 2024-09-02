@@ -17,12 +17,8 @@
     "docs"
   ],
   "scripts": {
-    "build-all": "nx run-many --target=build --all --parallel=4",
     "check-audit": "check-audit --yarn",
     "graph": "nx dep-graph",
-    "info": "nx run-many --target=sls-info --all --parallel=4",
-    "lint-fix": "yarn linter-base-config --fix",
-    "linter-base-config": "eslint",
     "package": "nx run-many --target=package --all --parallel=4",
     "postinstall": "husky install && syncpack format",
     "resolve-audit": "resolve-audit --yarn",
