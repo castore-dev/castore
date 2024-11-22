@@ -11,6 +11,7 @@ import {
   EventStoreAggregate,
   EventStoreEventDetails,
   GetAggregateOptions,
+  ValidateEventDetail,
 } from '~/eventStore';
 
 import {
@@ -109,7 +110,12 @@ assertPushEventInput1;
 
 const assertPushEventInput2: A.Equals<
   Parameters<typeof pokemonsEventStore.pushEvent>[1],
-  { prevAggregate?: PokemonAggregate | undefined; force?: boolean } | undefined
+  | {
+      prevAggregate?: PokemonAggregate | undefined;
+      force?: boolean;
+      validate?: ValidateEventDetail;
+    }
+  | undefined
 > = 1;
 assertPushEventInput2;
 
