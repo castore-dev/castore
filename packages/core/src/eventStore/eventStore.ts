@@ -144,18 +144,21 @@ export class EventStore<
       ...indexedEvents,
       [event.version]: event,
     }),
+    onEventPushed: $onEventPushed,
     eventStorageAdapter: $eventStorageAdapter,
   }: {
     eventStoreId: EVENT_STORE_ID;
     eventTypes: EVENT_TYPES;
     reducer: REDUCER;
     simulateSideEffect?: SideEffectsSimulator<EVENT_DETAILS, $EVENT_DETAILS>;
+    onEventPushed?: OnEventPushed<$EVENT_DETAILS, $AGGREGATE>;
     eventStorageAdapter?: EventStorageAdapter;
   }) {
     this.eventStoreId = eventStoreId;
     this.eventTypes = eventTypes;
     this.reducer = reducer;
     this.simulateSideEffect = simulateSideEffect;
+    this.onEventPushed = $onEventPushed;
     this.eventStorageAdapter = $eventStorageAdapter;
 
     this.getEventStorageAdapter = () => {
