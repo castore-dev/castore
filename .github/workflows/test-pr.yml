@@ -21,6 +21,25 @@ jobs:
     name: 🏗 Build Project
     runs-on: ubuntu-latest
     timeout-minutes: 30
+    strategy:
+      matrix:
+        typescript-version:
+          ['default', '~4.6.4', '~4.7.4', '~4.8.3', '~4.9.5', '~5.0.4']
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+
+      - name: Install node_modules & package
+        uses: ./.github/actions/install-node-modules-and-package
+        with:
+          typescript-version: ${{ matrix.typescript-version }}
+
+  get-affected-packages:
+    name: 🔎 Get affected packages
+    needs: build
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
     outputs:
       affected-packages: ${{ steps.get-affected-packages-paths.outputs.affected-packages }}
     steps:
@@ -30,11 +49,8 @@ jobs:
           # We need to fetch all branches and commits so that Nx affected has a base to compare against.
           fetch-depth: 0
 
-      - name: Install node_modules
-        uses: ./.github/actions/install-node-modules
-
-      - name: Package
-        uses: ./.github/actions/package
+      - name: Install node_modules & package
+        uses: ./.github/actions/install-node-modules-and-package
 
       - name: Get affected packages paths
         id: get-affected-packages-paths
@@ -43,23 +59,27 @@ jobs:
           base-branch: ${{ github.base_ref }}
 
   library-lint-and-tests:
-    name: 🎯 Run Tests
-    needs: build
+    name: 🎯 Run tests
+    needs: [build, get-affected-packages]
     runs-on: ubuntu-latest
-    if: join(fromJson(needs.build.outputs.affected-packages)) != ''
+    if: join(fromJson(needs.get-affected-packages.outputs.affected-packages)) != ''
     timeout-minutes: 30
     strategy:
       fail-fast: false
       matrix:
-        AFFECTED_LIB: ${{ fromJson(needs.build.outputs.affected-packages) }}
+        AFFECTED_LIB: ${{ fromJson(needs.get-affected-packages.outputs.affected-packages) }}
+        typescript-version:
+          ['default', '~4.6.4', '~4.7.4', '~4.8.3', '~4.9.5', '~5.0.4']
     steps:
       - uses: actions/checkout@v3
         with:
           ref: ${{ github.event.pull_request.head.sha }}
+
       - name: Run tests
         uses: ./.github/actions/lint-and-tests
         with:
           path: ${{ matrix.AFFECTED_LIB }}
+          typescript-version: ${{ matrix.typescript-version }}
 
   validate-pr:
     name: ✅ Validate the PR
@@ -73,6 +93,7 @@ jobs:
             echo "build failed"
             exit 1
           fi
+
       - name: Validate tests
         run: |
           if [[ ${{ needs.library-lint-and-tests.result }} = "failure" ]]; then
