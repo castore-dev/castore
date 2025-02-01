@@ -1,5 +1,5 @@
 export type { Aggregate } from './aggregate';
-export { EventType } from './event/eventType';
+export { EventType, EventDetailParser } from './event/eventType';
 export type { EventTypeDetail, EventTypeDetails } from './event/eventType';
 export { GroupedEvent } from './event/groupedEvent';
 export { __REPLAYED__, __AGGREGATE_EXISTS__ } from './event/reservedEventTypes';

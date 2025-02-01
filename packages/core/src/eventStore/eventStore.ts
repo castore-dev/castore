@@ -6,6 +6,11 @@ import { GroupedEvent } from '~/event/groupedEvent';
 import type { EventStorageAdapter } from '~/eventStorageAdapter';
 import type { $Contravariant } from '~/utils';
 
+import { EventDetailParser } from '../event/eventType';
+import {
+  EventDetailParserNotDefinedError,
+  EventDetailTypeDoesNotExistError,
+} from './errors';
 import { AggregateNotFoundError } from './errors/aggregateNotFound';
 import { UndefinedEventStorageAdapterError } from './errors/undefinedEventStorageAdapter';
 import type {
@@ -20,6 +25,7 @@ import type {
   AggregateGetter,
   AggregateSimulator,
   Reducer,
+  ValidateEventDetail,
 } from './types';
 
 export class EventStore<
@@ -178,10 +184,58 @@ export class EventStore<
          */
       ) as Promise<{ events: EVENT_DETAILS[] }>;
 
+    const shouldValidateEventDetail = (
+      validate: ValidateEventDetail,
+      eventDetailType: string,
+      eventType?: EventType,
+    ): eventType is EventType => {
+      if (validate === false) {
+        return false;
+      }
+
+      if (eventType === undefined) {
+        throw new EventDetailTypeDoesNotExistError({
+          type: eventDetailType,
+          allowedTypes: this.eventTypes.map(({ type }) => type),
+        });
+      }
+
+      if (validate === 'auto' && eventType.parseEventDetail === undefined) {
+        return false;
+      }
+
+      return true;
+    };
+
+    const validateEventDetail = (
+      eventDetail: EventDetail,
+      eventDetailParser?: EventDetailParser,
+    ) => {
+      if (eventDetailParser === undefined) {
+        throw new EventDetailParserNotDefinedError(eventDetail.type);
+      }
+
+      const { parsingErrors, isValid } = eventDetailParser(eventDetail);
+
+      if (isValid) {
+        return;
+      }
+
+      throw new Error(parsingErrors[0].message);
+    };
+
     this.pushEvent = async (
       eventDetail,
-      { prevAggregate, force = false } = {},
+      { prevAggregate, force = false, validate = 'auto' } = {},
     ) => {
+      const eventType = this.eventTypes.find(
+        ({ type }) => type === eventDetail.type,
+      );
+
+      if (shouldValidateEventDetail(validate, eventDetail.type, eventType)) {
+        validateEventDetail(eventDetail, eventType.parseEventDetail);
+      }
+
       const eventStorageAdapter = this.getEventStorageAdapter();
 
       const { event } = (await eventStorageAdapter.pushEvent(eventDetail, {
