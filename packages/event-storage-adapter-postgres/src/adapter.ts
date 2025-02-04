@@ -203,8 +203,8 @@ export class PostgresEventStorageAdapter implements EventStorageAdapter {
     options?: EventsQueryOptions,
   ): Promise<{ events: EventDetail[] }> {
     const order = options?.reverse
-      ? this._sql`ORDER BY timestamp DESC`
-      : this._sql`ORDER BY timestamp ASC`;
+      ? this._sql`ORDER BY version DESC`
+      : this._sql`ORDER BY version ASC`;
     const limit = options?.limit
       ? this._sql`LIMIT ${options.limit}`
       : this._sql``;
