@@ -1,12 +1,15 @@
 /* eslint-disable max-lines */
+import {
+  PostgreSqlContainer,
+  StartedPostgreSqlContainer,
+} from '@testcontainers/postgresql';
 import { randomUUID } from 'crypto';
 import omit from 'lodash.omit';
-import MockDate from 'mockdate';
 
 import { GroupedEvent, EventStorageAdapter } from '@castore/core';
 
-import { InMemoryEventStorageAdapter } from './adapter';
-import { InMemoryEventAlreadyExistsError } from './error';
+import { PostgresEventStorageAdapter } from './adapter';
+import { PostgresEventAlreadyExistsError } from './error';
 
 const eventStoreId = 'eventStoreId';
 
@@ -31,23 +34,33 @@ const eventMock2 = {
   timestamp: aggregate2InitialEventTimestamp,
 };
 
-describe('in-memory storage adapter', () => {
-  describe('constructor', () => {
-    const eventStorageAdapter = new InMemoryEventStorageAdapter({
-      initialEvents: [eventMock1, eventMock2],
-    });
+let pgInstance: StartedPostgreSqlContainer;
+let connectionString: string;
+let eventStorageAdapter: PostgresEventStorageAdapter;
+let eventStorageAdapterB: PostgresEventStorageAdapter;
+beforeAll(async () => {
+  const pgInstanceNotReady = new PostgreSqlContainer('postgres:15.3-alpine');
+  pgInstance = await pgInstanceNotReady.start();
+  connectionString = pgInstance.getConnectionUri();
+  eventStorageAdapter = new PostgresEventStorageAdapter({ connectionString });
+  eventStorageAdapterB = new PostgresEventStorageAdapter({ connectionString });
+});
 
-    it('fills the db with initial events', () => {
-      expect(eventStorageAdapter.eventStore).toStrictEqual({
-        [aggregateIdMock1]: [eventMock1, eventMock2],
-      });
-    });
-  });
+beforeEach(async () => {
+  await eventStorageAdapter.createEventTable();
+});
 
+afterEach(async () => {
+  await eventStorageAdapter.dropEventTable();
+});
+
+afterAll(async () => {
+  await pgInstance.stop();
+});
+
+describe('postgres storage adapter', () => {
   describe('methods', () => {
     describe('getEvents / pushEvent', () => {
-      const eventStorageAdapter = new InMemoryEventStorageAdapter();
-
       it('gets an empty array if there is no event for aggregateId', async () => {
         const response = await eventStorageAdapter.getEvents(aggregateIdMock1, {
           eventStoreId,
@@ -56,11 +69,13 @@ describe('in-memory storage adapter', () => {
       });
 
       it('throws an error if version already exists', async () => {
-        await eventStorageAdapter.pushEvent(eventMock1, { eventStoreId });
+        await eventStorageAdapter.pushEvent(eventMock1, {
+          eventStoreId,
+        });
 
         await expect(() =>
           eventStorageAdapter.pushEvent(eventMock1, { eventStoreId }),
-        ).rejects.toThrow(InMemoryEventAlreadyExistsError);
+        ).rejects.toThrow(PostgresEventAlreadyExistsError);
       });
 
       it('overrides event is force option is set to true', async () => {
@@ -73,12 +88,12 @@ describe('in-memory storage adapter', () => {
       });
 
       it('pushes and gets events correctly', async () => {
-        const { timestamp, ...eventMock2WithoutTimestamp } = eventMock2;
-        MockDate.set(timestamp);
-        await eventStorageAdapter.pushEvent(eventMock2WithoutTimestamp, {
+        await eventStorageAdapter.pushEvent(eventMock1, {
           eventStoreId,
         });
-        MockDate.reset();
+        await eventStorageAdapter.pushEvent(eventMock2, {
+          eventStoreId,
+        });
 
         const allEvents = await eventStorageAdapter.getEvents(
           aggregateIdMock1,
@@ -86,7 +101,7 @@ describe('in-memory storage adapter', () => {
             eventStoreId,
           },
         );
-        // Check that the timestamp is added
+
         expect(allEvents).toStrictEqual({ events: [eventMock1, eventMock2] });
 
         const eventsMaxVersion = await eventStorageAdapter.getEvents(
@@ -129,11 +144,8 @@ describe('in-memory storage adapter', () => {
     });
 
     describe('listAggregateIds', () => {
-      const eventStorageAdapter = new InMemoryEventStorageAdapter();
-
       it('list aggregate Ids', async () => {
         await eventStorageAdapter.pushEvent(eventMock1, { eventStoreId });
-
         await eventStorageAdapter.pushEvent(
           {
             aggregateId: aggregateIdMock2,
@@ -163,6 +175,16 @@ describe('in-memory storage adapter', () => {
       });
 
       it('paginates aggregate Ids', async () => {
+        await eventStorageAdapter.pushEvent(eventMock1, { eventStoreId });
+        await eventStorageAdapter.pushEvent(
+          {
+            aggregateId: aggregateIdMock2,
+            version: 1,
+            type: 'EVENT_TYPE',
+            timestamp: aggregate2InitialEventTimestamp,
+          },
+          { eventStoreId },
+        );
         await eventStorageAdapter.pushEvent(
           {
             aggregateId: aggregateIdMock3,
@@ -228,6 +250,37 @@ describe('in-memory storage adapter', () => {
       });
 
       it('applies lisAggregateIds options', async () => {
+        await eventStorageAdapter.pushEvent(eventMock1, { eventStoreId });
+        await eventStorageAdapter.pushEvent(
+          {
+            aggregateId: aggregateIdMock2,
+            version: 1,
+            type: 'EVENT_TYPE',
+            timestamp: aggregate2InitialEventTimestamp,
+          },
+          { eventStoreId },
+        );
+
+        await eventStorageAdapter.pushEvent(
+          {
+            aggregateId: aggregateIdMock3,
+            version: 1,
+            type: 'EVENT_TYPE',
+            timestamp: aggregate3InitialEventTimestamp,
+          },
+          { eventStoreId },
+        );
+
+        await eventStorageAdapter.pushEvent(
+          {
+            aggregateId: aggregateIdMock4,
+            version: 1,
+            type: 'EVENT_TYPE',
+            timestamp: aggregate4InitialEventTimestamp,
+          },
+          { eventStoreId },
+        );
+
         const { aggregateIds, nextPageToken } =
           await eventStorageAdapter.listAggregateIds(
             { eventStoreId },
@@ -273,8 +326,6 @@ describe('in-memory storage adapter', () => {
     });
 
     describe('groupEvent', () => {
-      const eventStorageAdapter = new InMemoryEventStorageAdapter();
-
       it('groups events correctly', () => {
         const groupedEvent = eventStorageAdapter.groupEvent(
           omit(eventMock1, 'timestamp'),
@@ -290,9 +341,7 @@ describe('in-memory storage adapter', () => {
   });
 
   describe('pushEventGroup', () => {
-    const eventStorageAdapterA = new InMemoryEventStorageAdapter();
-    const eventStorageAdapterB = new InMemoryEventStorageAdapter();
-    // @ts-expect-error we don't care about the storage adapter, it just needs to not be an instance of InMemoryEventStorageAdapter
+    // @ts-expect-error we don't care about the storage adapter, it just needs to not be an instance of PostgresEventStorageAdapter
     const eventStorageAdapterC: EventStorageAdapter = {};
     eventStorageAdapterC;
 
@@ -303,16 +352,19 @@ describe('in-memory storage adapter', () => {
       timestamp: eventMock1.timestamp,
     };
 
-    beforeEach(() => {
-      eventStorageAdapterA.eventStore = {};
-      eventStorageAdapterB.eventStore = {};
+    beforeEach(async () => {
+      await eventStorageAdapter.dropEventTable();
+      await eventStorageAdapter.createEventTable();
+
+      await eventStorageAdapterB.dropEventTable();
+      await eventStorageAdapterB.createEventTable();
     });
 
     it('push grouped events correctly', async () => {
       const groupedEvents: [GroupedEvent, ...GroupedEvent[]] = [
         new GroupedEvent({
           event: eventMock1,
-          eventStorageAdapter: eventStorageAdapterA,
+          eventStorageAdapter: eventStorageAdapter,
           context: { eventStoreId },
         }),
         new GroupedEvent({
@@ -322,7 +374,7 @@ describe('in-memory storage adapter', () => {
         }),
       ];
 
-      const eventGroup = await eventStorageAdapterA.pushEventGroup(
+      const eventGroup = await eventStorageAdapter.pushEventGroup(
         { force: true },
         ...groupedEvents,
       );
@@ -330,7 +382,7 @@ describe('in-memory storage adapter', () => {
         eventGroup: [{ event: eventMock1 }, { event: aggregate2EventMock }],
       });
 
-      const { events: eventsA } = await eventStorageAdapterA.getEvents(
+      const { events: eventsA } = await eventStorageAdapter.getEvents(
         aggregateIdMock1,
         { eventStoreId },
       );
@@ -343,11 +395,11 @@ describe('in-memory storage adapter', () => {
       expect(eventsB).toStrictEqual([aggregate2EventMock]);
     });
 
-    it('throws if event storage adapter is not InMemoryEventStorageAdapter', async () => {
+    it('throws if event storage adapter is not PostgresEventStorageAdapter', async () => {
       const groupedEvents: [GroupedEvent, ...GroupedEvent[]] = [
         new GroupedEvent({
           event: eventMock1,
-          eventStorageAdapter: eventStorageAdapterA,
+          eventStorageAdapter: eventStorageAdapter,
           context: { eventStoreId },
         }),
         new GroupedEvent({
@@ -358,7 +410,7 @@ describe('in-memory storage adapter', () => {
       ];
 
       await expect(() =>
-        eventStorageAdapterA.pushEventGroup({}, ...groupedEvents),
+        eventStorageAdapter.pushEventGroup({}, ...groupedEvents),
       ).rejects.toThrow();
     });
 
@@ -366,7 +418,7 @@ describe('in-memory storage adapter', () => {
       const groupedEvents: [GroupedEvent, ...GroupedEvent[]] = [
         new GroupedEvent({
           event: eventMock1,
-          eventStorageAdapter: eventStorageAdapterA,
+          eventStorageAdapter: eventStorageAdapter,
           context: { eventStoreId },
         }),
         new GroupedEvent({
@@ -376,7 +428,7 @@ describe('in-memory storage adapter', () => {
       ];
 
       await expect(() =>
-        eventStorageAdapterA.pushEventGroup({}, ...groupedEvents),
+        eventStorageAdapter.pushEventGroup({}, ...groupedEvents),
       ).rejects.toThrow();
     });
 
@@ -384,7 +436,7 @@ describe('in-memory storage adapter', () => {
       const groupedEvents: [GroupedEvent, ...GroupedEvent[]] = [
         new GroupedEvent({
           event: eventMock1,
-          eventStorageAdapter: eventStorageAdapterA,
+          eventStorageAdapter: eventStorageAdapter,
           context: { eventStoreId },
         }),
         new GroupedEvent({
@@ -397,22 +449,16 @@ describe('in-memory storage adapter', () => {
       ];
 
       await expect(() =>
-        eventStorageAdapterA.pushEventGroup({}, ...groupedEvents),
+        eventStorageAdapter.pushEventGroup({}, ...groupedEvents),
       ).rejects.toThrow();
     });
 
     it('reverts all events if a push has failed', async () => {
-      const pushEventSyncASpy = vi.spyOn(eventStorageAdapterA, 'pushEventSync');
-      const pushEventSyncBSpy = vi
-        .spyOn(eventStorageAdapterB, 'pushEventSync')
-        .mockImplementation(() => {
-          throw new Error();
-        });
-
+      await eventStorageAdapter.pushEvent(eventMock1, { eventStoreId });
       const groupedEvents: [GroupedEvent, ...GroupedEvent[]] = [
         new GroupedEvent({
           event: eventMock1,
-          eventStorageAdapter: eventStorageAdapterA,
+          eventStorageAdapter: eventStorageAdapter,
           context: { eventStoreId },
         }),
         new GroupedEvent({
@@ -423,17 +469,14 @@ describe('in-memory storage adapter', () => {
       ];
 
       await expect(() =>
-        eventStorageAdapterA.pushEventGroup({}, ...groupedEvents),
+        eventStorageAdapter.pushEventGroup({}, ...groupedEvents),
       ).rejects.toThrow();
 
-      expect(pushEventSyncASpy).toHaveBeenCalledOnce();
-      expect(pushEventSyncBSpy).toHaveBeenCalledOnce();
-
-      const { events: eventsA } = await eventStorageAdapterA.getEvents(
+      const { events: eventsA } = await eventStorageAdapter.getEvents(
         aggregateIdMock1,
         { eventStoreId },
       );
-      expect(eventsA).toStrictEqual([]);
+      expect(eventsA).toStrictEqual([eventMock1]);
 
       const { events: eventsB } = await eventStorageAdapterB.getEvents(
         aggregateIdMock2,

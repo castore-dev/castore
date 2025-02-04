@@ -1,7 +1,10 @@
+/* eslint-disable complexity */
+
 /* eslint-disable max-lines */
 import type { SerializableParameter } from 'postgres';
 import postgres from 'postgres';
 
+import { GroupedEvent } from '@castore/core';
 import type {
   EventDetail,
   EventsQueryOptions,
@@ -12,14 +15,12 @@ import type {
   OptionalTimestamp,
   PushEventOptions,
 } from '@castore/core';
-import { GroupedEvent } from '@castore/core';
 
 import { PostgresEventAlreadyExistsError } from './error';
 
-const assertIsSerializableParameter = (
+const assertIsSerializableParameter: (
   value: unknown,
-): asserts value is SerializableParameter => {
-  // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
+) => asserts value is SerializableParameter = value => {
   if (!value) {
     throw new Error(`Payload is required`);
   }
@@ -43,7 +44,7 @@ export type ParsedPageToken = {
 };
 
 export class PostgresEventStorageAdapter implements EventStorageAdapter {
-  private _sql: postgres.Sql<{}>;
+  private _sql: postgres.Sql<{ bigint: bigint }>;
 
   constructor(
     payload: { connectionString: string } = {
@@ -55,6 +56,13 @@ export class PostgresEventStorageAdapter implements EventStorageAdapter {
       types: {
         bigint: postgres.BigInt,
       },
+      onnotice: notice => {
+        // simple notice of already existing table, index, relation
+        if (notice.severity === 'NOTICE') {
+          return;
+        }
+        console.log(notice);
+      },
       // debug: (connection: number, query: string, parameters: unknown[], paramTypes: unknown[]) => {
       //   console.log('Query:', query);
       //   console.log('Parameters:', parameters);
@@ -64,7 +72,7 @@ export class PostgresEventStorageAdapter implements EventStorageAdapter {
 
   //TODO do all that in a single transaction
   //TODO catch NOTICE errors
-  async createEventTable() {
+  async createEventTable(): Promise<void> {
     await this._sql`
       CREATE TABLE IF NOT EXISTS event (
         id              BIGSERIAL PRIMARY KEY,
@@ -72,7 +80,7 @@ export class PostgresEventStorageAdapter implements EventStorageAdapter {
         aggregate_id    UUID NOT NULL,
         version         BIGINT NOT NULL,
         type            VARCHAR(64) NOT NULL,
-        data            JSONB NOT NULL,
+        data            JSONB,
         metadata        JSONB,
         timestamp       TIMESTAMPTZ NOT NULL DEFAULT (CURRENT_TIMESTAMP(3)),
         UNIQUE (aggregate_name, aggregate_id, version)
@@ -95,26 +103,35 @@ export class PostgresEventStorageAdapter implements EventStorageAdapter {
     `;
   }
 
+  async dropEventTable(): Promise<void> {
+    await this._sql`
+      DROP TABLE IF EXISTS event CASCADE;
+    `;
+  }
+
   private toEventDetail(event: postgres.Row) {
-    return {
+    const eventDetail = {
       aggregateId: event.aggregate_id as string,
       version: Number(event.version),
       type: event.type as string,
-      payload: event.data as unknown,
+      payload: event.data as unknown | null,
       metadata: event.metadata as unknown | null,
-      timestamp: event.timestamp.toISOString() as string,
+      timestamp: (event.timestamp as Date).toISOString(),
     };
+    if (!eventDetail.payload) delete eventDetail.payload;
+    if (!eventDetail.metadata) delete eventDetail.metadata;
+
+    return eventDetail as EventDetail;
   }
 
   async pushEvent(
     eventDetail: OptionalTimestamp<EventDetail>,
     options: PushEventOptions,
   ): Promise<{ event: EventDetail }> {
-    const { aggregateId, version, type, payload, metadata } = eventDetail;
-    assertIsSerializableParameter(payload);
-    if (metadata) {
-      assertIsSerializableParameter(metadata);
-    }
+    const { aggregateId, version, type, payload, metadata, timestamp } =
+      eventDetail;
+    if (payload) assertIsSerializableParameter(payload);
+    if (metadata) assertIsSerializableParameter(metadata);
 
     const onForced = () => this._sql`
     	ON CONFLICT (aggregate_name, aggregate_id, version)
@@ -122,19 +139,35 @@ export class PostgresEventStorageAdapter implements EventStorageAdapter {
         type = EXCLUDED.type,
         data = EXCLUDED.data,
         metadata = EXCLUDED.metadata,
-        timestamp = CURRENT_TIMESTAMP(3)
+        timestamp = ${
+          timestamp
+            ? this._sql`EXCLUDED.timestamp`
+            : this._sql`CURRENT_TIMESTAMP(3)`
+        }
 		`;
 
+    const payloadValue = (payload as SerializableParameter) ?? null;
+    const metadataValue = (metadata as SerializableParameter) ?? null;
+
+    const INSERT = timestamp
+      ? this._sql`
+          INSERT INTO event (aggregate_name, aggregate_id, version, type, data, metadata, timestamp)
+        `
+      : this._sql`
+          INSERT INTO event (aggregate_name, aggregate_id, version, type, data, metadata)
+        `;
+
+    const VALUES = timestamp
+      ? this._sql`
+          VALUES (${options.eventStoreId}, ${aggregateId}, ${version}, ${type}, ${payloadValue}, ${metadataValue}, ${timestamp})
+        `
+      : this._sql`
+          VALUES (${options.eventStoreId}, ${aggregateId}, ${version}, ${type}, ${payloadValue}, ${metadataValue})
+        `;
+
     const query = this._sql`
-      INSERT INTO event (aggregate_name, aggregate_id, version, type, data, metadata)
-      VALUES (
-        ${options.eventStoreId},
-        ${aggregateId},
-        ${version},
-        ${type},
-        ${payload},
-        ${(metadata as SerializableParameter) ?? null}
-      )
+      ${INSERT}
+      ${VALUES}
       ${options.force ? onForced() : this._sql``}
       RETURNING *
     `;
@@ -154,6 +187,10 @@ export class PostgresEventStorageAdapter implements EventStorageAdapter {
     });
 
     const insertedEvent = res[0];
+
+    if (!insertedEvent) {
+      throw new Error('Failed to insert event');
+    }
 
     return {
       event: this.toEventDetail(insertedEvent),
@@ -217,18 +254,43 @@ export class PostgresEventStorageAdapter implements EventStorageAdapter {
     const allEvents = [groupedEvents_0, ...groupedEvents];
     const results: { event: EventDetail }[] = [];
 
+    const hasABadAdapter = allEvents.some(groupedEvent => {
+      if (
+        !(
+          groupedEvent.eventStorageAdapter instanceof
+          PostgresEventStorageAdapter
+        )
+      )
+        return true;
+
+      return false;
+    });
+
+    if (hasABadAdapter) {
+      throw new Error(
+        'All events must be connected to a PostgresEventStorageAdapter',
+      );
+    }
+
     await this._sql.begin(async transaction => {
       for (const groupedEvent of allEvents) {
         const eventDetail = groupedEvent.event;
-        const { aggregateId, version, type, payload, metadata } = eventDetail;
-        if (!groupedEvent.eventStore || !groupedEvent.eventStore.eventStoreId) {
+        const { aggregateId, version, type, payload, metadata, timestamp } =
+          eventDetail;
+
+        const aggregateName =
+          groupedEvent.eventStore?.eventStoreId ??
+          groupedEvent.context?.eventStoreId;
+
+        if (!aggregateName) {
           throw new Error('Event store ID (Aggregate name) is required');
         }
 
-        assertIsSerializableParameter(payload);
-        if (metadata) {
-          assertIsSerializableParameter(metadata);
-        }
+        if (payload) assertIsSerializableParameter(payload);
+        if (metadata) assertIsSerializableParameter(metadata);
+
+        const payloadValue = (payload as SerializableParameter) ?? null;
+        const metadataValue = (metadata as SerializableParameter) ?? null;
 
         const onForced = () => transaction`
           ON CONFLICT (aggregate_name, aggregate_id, version)
@@ -236,19 +298,32 @@ export class PostgresEventStorageAdapter implements EventStorageAdapter {
             type = EXCLUDED.type,
             data = EXCLUDED.data,
             metadata = EXCLUDED.metadata,
-            timestamp = CURRENT_TIMESTAMP(3)
+            timestamp = ${
+              timestamp
+                ? transaction`EXCLUDED.timestamp`
+                : transaction`CURRENT_TIMESTAMP(3)`
+            }
+        `;
+
+        const INSERT = timestamp
+          ? transaction`
+          INSERT INTO event (aggregate_name, aggregate_id, version, type, data, metadata, timestamp)
+        `
+          : transaction`
+          INSERT INTO event (aggregate_name, aggregate_id, version, type, data, metadata)
+        `;
+
+        const VALUES = timestamp
+          ? transaction`
+          VALUES (${aggregateName}, ${aggregateId}, ${version}, ${type}, ${payloadValue}, ${metadataValue}, ${timestamp})
+        `
+          : transaction`
+          VALUES (${aggregateName}, ${aggregateId}, ${version}, ${type}, ${payloadValue}, ${metadataValue})
         `;
 
         const query = transaction`
-          INSERT INTO event (aggregate_name, aggregate_id, version, type, data, metadata)
-          VALUES (
-            ${groupedEvent.eventStore.eventStoreId ?? 'default'},
-            ${aggregateId},
-            ${version},
-            ${type},
-            ${payload},
-            ${(metadata as SerializableParameter) ?? null}
-          )
+          ${INSERT}
+          ${VALUES}
           ${options.force ? onForced() : transaction``}
           RETURNING *
         `;
@@ -261,7 +336,7 @@ export class PostgresEventStorageAdapter implements EventStorageAdapter {
             )
           ) {
             throw new PostgresEventAlreadyExistsError({
-              eventStoreId: groupedEvent.eventStore?.eventStoreId ?? 'default',
+              eventStoreId: aggregateName,
               aggregateId,
               version,
             });
@@ -270,6 +345,11 @@ export class PostgresEventStorageAdapter implements EventStorageAdapter {
         });
 
         const insertedEvent = res[0];
+
+        if (!insertedEvent) {
+          throw new Error('Failed to insert event');
+        }
+
         results.push({ event: this.toEventDetail(insertedEvent) });
       }
     });
@@ -379,9 +459,9 @@ export class PostgresEventStorageAdapter implements EventStorageAdapter {
     const remainingCount = results[0]?.remaining_count
       ? Number(results[0].remaining_count)
       : 0;
-    const aggregateIds = results.map(({ id, aggregate_id, timestamp }) => ({
+    const aggregateIds = results.map(({ aggregate_id, timestamp }) => ({
       aggregateId: aggregate_id as string,
-      initialEventTimestamp: timestamp,
+      initialEventTimestamp: timestamp.toISOString(),
     }));
 
     const hasNextPage = limit === undefined ? false : remainingCount > limit;
