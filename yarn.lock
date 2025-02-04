@@ -6303,6 +6303,35 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@castore/event-storage-adapter-postgres@workspace:packages/event-storage-adapter-postgres":
+  version: 0.0.0-use.local
+  resolution: "@castore/event-storage-adapter-postgres@workspace:packages/event-storage-adapter-postgres"
+  dependencies:
+    "@babel/cli": ^7.17.6
+    "@babel/core": ^7.17.9
+    "@babel/plugin-transform-runtime": ^7.17.0
+    "@babel/preset-env": ^7.16.11
+    "@babel/preset-typescript": ^7.16.7
+    "@castore/core": "workspace:"
+    "@types/lodash.omit": ^4.5.7
+    "@types/node": ^17.0.29
+    babel-plugin-module-resolver: ^4.1.0
+    concurrently: ^7.1.0
+    dependency-cruiser: ^11.7.0
+    eslint: ^8.14.0
+    lodash.omit: ^4.5.0
+    mockdate: ^3.0.5
+    postgres: ^3.4.5
+    prettier: ^2.6.2
+    ts-node: ^10.7.0
+    tsc-alias: ^1.8.7
+    typescript: ^4.6.3
+    vitest: ^0.26.2
+  peerDependencies:
+    "@castore/core": "*"
+  languageName: unknown
+  linkType: soft
+
 "@castore/event-storage-adapter-redux@workspace:, @castore/event-storage-adapter-redux@workspace:packages/event-storage-adapter-redux":
   version: 0.0.0-use.local
   resolution: "@castore/event-storage-adapter-redux@workspace:packages/event-storage-adapter-redux"
@@ -22290,6 +22319,13 @@ __metadata:
     picocolors: ^1.0.0
     source-map-js: ^1.0.2
   checksum: 1a5609ea1c1b204f9c2974a0019ae9eef2d99bf645c2c9aac675166c4cb1005be7b5e2ba196160bc771f5d9ac896ed883f236f888c891e835e59d28fff6651aa
+  languageName: node
+  linkType: hard
+
+"postgres@npm:^3.4.5":
+  version: 3.4.5
+  resolution: "postgres@npm:3.4.5"
+  checksum: 9dd2b2c612cb4a82e750f9773b6bf1411f540bc3c07b17d8943fea0dc4d95e59ee4ffb664f50c4b75a73815740cf4b1cf7dab7593612c7e769d1bf5c3adf5532
   languageName: node
   linkType: hard
 

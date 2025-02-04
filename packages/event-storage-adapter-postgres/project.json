@@ -1,0 +1,6 @@
+{
+  "root": "packages/event-storage-adapter-postgres",
+  "projectType": "library",
+  "tags": [],
+  "implicitDependencies": ["core"]
+}
