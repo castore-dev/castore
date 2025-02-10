@@ -46,13 +46,12 @@ export type ParsedPageToken = {
 export class PostgresEventStorageAdapter implements EventStorageAdapter {
   private _sql: postgres.Sql<{ bigint: bigint }>;
 
-  constructor(
-    payload: { connectionString: string } = {
-      connectionString:
-        'postgresql://postgres:postgres@localhost:5432/postgres',
-    },
-  ) {
-    this._sql = postgres(payload.connectionString, {
+  constructor({
+    connectionString = 'postgresql://postgres:postgres@localhost:5432/postgres',
+  }: {
+    connectionString: string;
+  }) {
+    this._sql = postgres(connectionString, {
       types: {
         bigint: postgres.BigInt,
       },
@@ -63,15 +62,10 @@ export class PostgresEventStorageAdapter implements EventStorageAdapter {
         }
         console.log(notice);
       },
-      // debug: (connection: number, query: string, parameters: unknown[], paramTypes: unknown[]) => {
-      //   console.log('Query:', query);
-      //   console.log('Parameters:', parameters);
-      // },
     });
   }
 
   //TODO do all that in a single transaction
-  //TODO catch NOTICE errors
   async createEventTable(): Promise<void> {
     await this._sql`
       CREATE TABLE IF NOT EXISTS event (

@@ -1,17 +1,15 @@
-# In Memory Event Storage Adapter
+# Postgres Event Storage Adapter
 
-DRY Castore [`EventStorageAdapter`](https://castore-dev.github.io/castore/docs/event-sourcing/fetching-events/) implementation using a JS object.
-
-This class is mainly useful for manual and unit tests. It is obviously not recommended for production uses 🙂
+DRY Castore [`EventStorageAdapter`](https://castore-dev.github.io/castore/docs/event-sourcing/fetching-events/) implementation using a Postgres database.
 
 ## 📥 Installation
 
 ```bash
 # npm
-npm install @castore/event-storage-adapter-in-memory
+npm install @castore/event-storage-adapter-postgres
 
 # yarn
-yarn add @castore/event-storage-adapter-in-memory
+yarn add @castore/event-storage-adapter-postgres
 ```
 
 This package has `@castore/core` as peer dependency, so you will have to install it as well:
@@ -27,16 +25,11 @@ yarn add @castore/core
 ## 👩‍💻 Usage
 
 ```ts
-import { InMemoryEventStorageAdapter } from '@castore/event-storage-adapter-in-memory';
+import { PostgresEventStorageAdapter } from '@castore/event-storage-adapter-postgres';
 
-const pokemonsEventStorageAdapter = new InMemoryEventStorageAdapter({
-  // 👇 You can specify an initial state for your event store
-  initialEvents: [
-    {
-      aggregateId: '123',
-      ...
-    },
-  ],
+const pokemonsEventStorageAdapter = new PostgresEventStorageAdapter({
+  // 👇 You can specify a connection string for your Postgres database
+  connectionString: 'postgresql://postgres:postgres@localhost:5432/postgres',
 });
 
 const pokemonsEventStore = new EventStore({
@@ -47,9 +40,4 @@ const pokemonsEventStore = new EventStore({
 
 ## 🤔 How it works
 
-This adapter simply persists events in a local dictionary. You can retrieve it at all time through the `eventStore` property:
-
-```ts
-const eventStore = pokemonsEventStore.eventStore;
-// => { [aggregateId: string]: EventDetail[] }
-```
+This adapter simply persists events in a Postgres database. 
