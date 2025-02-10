@@ -1,6 +1,7 @@
 import type { Aggregate } from '~/aggregate';
 import type { EventDetail } from '~/event/eventDetail';
 import type { EventType, EventTypeDetails } from '~/event/eventType';
+import { GroupedEvent } from '~/event/groupedEvent';
 import type { EventStorageAdapter } from '~/eventStorageAdapter';
 import type {
   Reducer,
@@ -117,7 +118,6 @@ export class ConnectedEventStore<
     this.reducer = eventStore.reducer;
     this.simulateSideEffect = eventStore.simulateSideEffect;
     this.getEvents = eventStore.getEvents;
-    this.groupEvent = eventStore.groupEvent;
     this.listAggregateIds = eventStore.listAggregateIds;
     this.buildAggregate = eventStore.buildAggregate;
     this.getAggregate = eventStore.getAggregate;
@@ -131,6 +131,23 @@ export class ConnectedEventStore<
       await publishPushedEvent(this, response);
 
       return response;
+    };
+
+    this.groupEvent = (eventDetail, { prevAggregate } = {}) => {
+      const eventStorageAdapter = this.getEventStorageAdapter();
+
+      const groupedEvent = eventStorageAdapter.groupEvent(
+        eventDetail,
+      ) as GroupedEvent<EVENT_DETAIL, AGGREGATE>;
+
+      groupedEvent.eventStore = this;
+      groupedEvent.context = { eventStoreId: this.eventStoreId };
+
+      if (prevAggregate !== undefined) {
+        groupedEvent.prevAggregate = prevAggregate as unknown as AGGREGATE;
+      }
+
+      return groupedEvent;
     };
 
     this.eventStore = eventStore;
