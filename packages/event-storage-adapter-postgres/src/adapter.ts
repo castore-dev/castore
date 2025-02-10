@@ -18,6 +18,15 @@ import type {
 
 import { PostgresEventAlreadyExistsError } from './error';
 
+type AggregateId =
+  | {
+      type: 'UUID' | 'ULID';
+    }
+  | {
+      type: 'VARCHAR';
+      length: number;
+    };
+
 const assertIsSerializableParameter: (
   value: unknown,
 ) => asserts value is SerializableParameter = value => {
@@ -45,12 +54,16 @@ export type ParsedPageToken = {
 
 export class PostgresEventStorageAdapter implements EventStorageAdapter {
   private _sql: postgres.Sql<{ bigint: bigint }>;
+  private _tableName: string;
 
   constructor({
     connectionString = 'postgresql://postgres:postgres@localhost:5432/postgres',
+    tableName = 'event',
   }: {
-    connectionString: string;
-  }) {
+    connectionString?: string;
+    tableName?: string;
+  } = {}) {
+    this._tableName = tableName;
     this._sql = postgres(connectionString, {
       types: {
         bigint: postgres.BigInt,
@@ -66,14 +79,37 @@ export class PostgresEventStorageAdapter implements EventStorageAdapter {
   }
 
   //TODO do all that in a single transaction
-  async createEventTable(): Promise<void> {
+  async createEventTable({
+    tableName = 'event',
+    idType = 'BIGSERIAL',
+    aggregateNameLength = 32,
+    aggregateId = {
+      type: 'UUID',
+    },
+    versionType = 'BIGINT',
+    typeLength = 64,
+  }: {
+    tableName?: string;
+    idType?: 'BIGSERIAL' | 'SERIAL';
+    aggregateNameLength?: number;
+    aggregateId?: AggregateId;
+    versionType?: 'BIGINT' | 'INTEGER';
+    typeLength?: number;
+  } = {}): Promise<{ tableName: string }> {
+    const aggregateIdType =
+      aggregateId.type === 'VARCHAR'
+        ? this._sql.unsafe(`VARCHAR(${aggregateId.length})`)
+        : this._sql.unsafe(aggregateId.type);
+
     await this._sql`
-      CREATE TABLE IF NOT EXISTS event (
-        id              BIGSERIAL PRIMARY KEY,
-        aggregate_name  VARCHAR(32) NOT NULL,
-        aggregate_id    UUID NOT NULL,
-        version         BIGINT NOT NULL,
-        type            VARCHAR(64) NOT NULL,
+      CREATE TABLE IF NOT EXISTS ${this._sql.unsafe(tableName)} (
+        id              ${this._sql.unsafe(idType)} PRIMARY KEY,
+        aggregate_name  ${this._sql.unsafe(
+          `VARCHAR(${aggregateNameLength})`,
+        )} NOT NULL,
+        aggregate_id    ${aggregateIdType} NOT NULL,
+        version         ${this._sql.unsafe(versionType)} NOT NULL,
+        type            ${this._sql.unsafe(`VARCHAR(${typeLength})`)} NOT NULL,
         data            JSONB,
         metadata        JSONB,
         timestamp       TIMESTAMPTZ NOT NULL DEFAULT (CURRENT_TIMESTAMP(3)),
@@ -83,23 +119,25 @@ export class PostgresEventStorageAdapter implements EventStorageAdapter {
 
     await this._sql`
       CREATE INDEX IF NOT EXISTS idx_event_aggregate_name 
-      ON event(aggregate_name);
+      ON ${this._sql.unsafe(this._tableName)}(aggregate_name);
     `;
 
     await this._sql`
       CREATE INDEX IF NOT EXISTS idx_event_version
-      ON event(version);
+      ON ${this._sql.unsafe(this._tableName)}(version);
     `;
 
     await this._sql`
       CREATE INDEX IF NOT EXISTS idx_event_aggregate_lookup
-      ON event(aggregate_name, aggregate_id);
+      ON ${this._sql.unsafe(this._tableName)}(aggregate_name, aggregate_id);
     `;
+
+    return { tableName };
   }
 
   async dropEventTable(): Promise<void> {
     await this._sql`
-      DROP TABLE IF EXISTS event CASCADE;
+      DROP TABLE IF EXISTS ${this._sql.unsafe(this._tableName)} CASCADE;
     `;
   }
 
@@ -145,10 +183,14 @@ export class PostgresEventStorageAdapter implements EventStorageAdapter {
 
     const INSERT = timestamp
       ? this._sql`
-          INSERT INTO event (aggregate_name, aggregate_id, version, type, data, metadata, timestamp)
+          INSERT INTO ${this._sql.unsafe(
+            this._tableName,
+          )} (aggregate_name, aggregate_id, version, type, data, metadata, timestamp)
         `
       : this._sql`
-          INSERT INTO event (aggregate_name, aggregate_id, version, type, data, metadata)
+          INSERT INTO ${this._sql.unsafe(
+            this._tableName,
+          )} (aggregate_name, aggregate_id, version, type, data, metadata)
         `;
 
     const VALUES = timestamp
@@ -169,7 +211,9 @@ export class PostgresEventStorageAdapter implements EventStorageAdapter {
     const res = await query.catch(err => {
       if (
         err.code === '23505' &&
-        err.message.includes('event_aggregate_name_aggregate_id_version_key')
+        err.message.includes(
+          `${this._tableName}_aggregate_name_aggregate_id_version_key`,
+        )
       ) {
         throw new PostgresEventAlreadyExistsError({
           eventStoreId: options.eventStoreId,
@@ -211,7 +255,7 @@ export class PostgresEventStorageAdapter implements EventStorageAdapter {
 
     const query = this._sql`
       SELECT aggregate_id, version, type, data, metadata, timestamp 
-      FROM event
+      FROM ${this._sql.unsafe(this._tableName)}
       WHERE aggregate_id = ${aggregateId}
       AND aggregate_name = ${context.eventStoreId}
       ${minVersion}
@@ -301,10 +345,14 @@ export class PostgresEventStorageAdapter implements EventStorageAdapter {
 
         const INSERT = timestamp
           ? transaction`
-          INSERT INTO event (aggregate_name, aggregate_id, version, type, data, metadata, timestamp)
+          INSERT INTO ${this._sql.unsafe(
+            this._tableName,
+          )} (aggregate_name, aggregate_id, version, type, data, metadata, timestamp)
         `
           : transaction`
-          INSERT INTO event (aggregate_name, aggregate_id, version, type, data, metadata)
+          INSERT INTO ${this._sql.unsafe(
+            this._tableName,
+          )} (aggregate_name, aggregate_id, version, type, data, metadata)
         `;
 
         const VALUES = timestamp
@@ -431,7 +479,7 @@ export class PostgresEventStorageAdapter implements EventStorageAdapter {
     const query = this._sql`
       WITH aggregate_count AS (
         SELECT COUNT(*) as remaining_count 
-        FROM event
+        FROM ${this._sql.unsafe(this._tableName)}
         WHERE aggregate_name = ${context.eventStoreId}
         AND version = 1
         ${initialEventAfterFilter}
@@ -439,7 +487,7 @@ export class PostgresEventStorageAdapter implements EventStorageAdapter {
 				${filterRemainingCount()}
       )
       SELECT e.id, e.aggregate_id, e.timestamp, ac.remaining_count
-      FROM event e, aggregate_count ac
+      FROM ${this._sql.unsafe(this._tableName)} e, aggregate_count ac
       WHERE e.aggregate_name = ${context.eventStoreId}
       AND e.version = 1
       ${initialEventAfterFilter}

@@ -42,8 +42,12 @@ beforeAll(async () => {
   const pgInstanceNotReady = new PostgreSqlContainer('postgres:15.3-alpine');
   pgInstance = await pgInstanceNotReady.start();
   connectionString = pgInstance.getConnectionUri();
-  eventStorageAdapter = new PostgresEventStorageAdapter({ connectionString });
-  eventStorageAdapterB = new PostgresEventStorageAdapter({ connectionString });
+  eventStorageAdapter = new PostgresEventStorageAdapter({
+    connectionString,
+  });
+  eventStorageAdapterB = new PostgresEventStorageAdapter({
+    connectionString,
+  });
 });
 
 beforeEach(async () => {
