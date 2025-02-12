@@ -71,6 +71,7 @@ To add run-time validation to your event types:
 
 - [DynamoDB Event Storage Adapter](https://www.npmjs.com/package/@castore/event-storage-adapter-dynamodb): Implementation of the `EventStorageAdapter` interface based on DynamoDB.
 - [Redux Event Storage Adapter](https://www.npmjs.com/package/@castore/event-storage-adapter-redux): Implementation of the `EventStorageAdapter` interface based on a Redux store, along with tooling to configure the store and hooks to read from it efficiently.
+- [Postgres Event Storage Adapter](https://www.npmjs.com/package/@castore/event-storage-adapter-postgres): Implementation of the `EventStorageAdapter` interface using a Postgres database.
 - [In-Memory Event Storage Adapter](https://www.npmjs.com/package/@castore/event-storage-adapter-in-memory): Implementation of the `EventStorageAdapter` interface using a local Node/JS object. To be used in manual or unit tests.
 
 ## 🏋️‍♂️ Commands
