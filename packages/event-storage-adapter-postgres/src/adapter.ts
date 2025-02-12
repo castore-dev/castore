@@ -64,10 +64,18 @@ export class PostgresEventStorageAdapter implements EventStorageAdapter {
     tableName?: string;
   } = {}) {
     this._tableName = tableName;
-    this._sql = postgres(connectionString, {
-      types: {
-        bigint: postgres.BigInt,
-      },
+    this._sql = PostgresEventStorageAdapter.createClient({
+      connectionString,
+    });
+  }
+
+  private static createClient({
+    connectionString,
+  }: {
+    connectionString: string;
+  }): postgres.Sql<{ bigint: bigint }> {
+    return postgres(connectionString, {
+      types: { bigint: postgres.BigInt },
       onnotice: notice => {
         // simple notice of already existing table, index, relation
         if (notice.severity === 'NOTICE') {
@@ -79,7 +87,8 @@ export class PostgresEventStorageAdapter implements EventStorageAdapter {
   }
 
   //TODO do all that in a single transaction
-  async createEventTable({
+  static async createEventTable({
+    connectionString = 'postgresql://postgres:postgres@localhost:5432/postgres',
     tableName = 'event',
     idType = 'BIGSERIAL',
     aggregateNameLength = 32,
@@ -89,6 +98,7 @@ export class PostgresEventStorageAdapter implements EventStorageAdapter {
     versionType = 'BIGINT',
     typeLength = 64,
   }: {
+    connectionString?: string;
     tableName?: string;
     idType?: 'BIGSERIAL' | 'SERIAL';
     aggregateNameLength?: number;
@@ -96,20 +106,23 @@ export class PostgresEventStorageAdapter implements EventStorageAdapter {
     versionType?: 'BIGINT' | 'INTEGER';
     typeLength?: number;
   } = {}): Promise<{ tableName: string }> {
+    const sql = PostgresEventStorageAdapter.createClient({
+      connectionString,
+    });
     const aggregateIdType =
       aggregateId.type === 'VARCHAR'
-        ? this._sql.unsafe(`VARCHAR(${aggregateId.length})`)
-        : this._sql.unsafe(aggregateId.type);
+        ? sql.unsafe(`VARCHAR(${aggregateId.length})`)
+        : sql.unsafe(aggregateId.type);
 
-    await this._sql`
-      CREATE TABLE IF NOT EXISTS ${this._sql.unsafe(tableName)} (
-        id              ${this._sql.unsafe(idType)} PRIMARY KEY,
-        aggregate_name  ${this._sql.unsafe(
+    await sql`
+      CREATE TABLE IF NOT EXISTS ${sql.unsafe(tableName)} (
+        id              ${sql.unsafe(idType)} PRIMARY KEY,
+        aggregate_name  ${sql.unsafe(
           `VARCHAR(${aggregateNameLength})`,
         )} NOT NULL,
         aggregate_id    ${aggregateIdType} NOT NULL,
-        version         ${this._sql.unsafe(versionType)} NOT NULL,
-        type            ${this._sql.unsafe(`VARCHAR(${typeLength})`)} NOT NULL,
+        version         ${sql.unsafe(versionType)} NOT NULL,
+        type            ${sql.unsafe(`VARCHAR(${typeLength})`)} NOT NULL,
         data            JSONB,
         metadata        JSONB,
         timestamp       TIMESTAMPTZ NOT NULL DEFAULT (CURRENT_TIMESTAMP(3)),
@@ -117,28 +130,42 @@ export class PostgresEventStorageAdapter implements EventStorageAdapter {
       );
     `;
 
-    await this._sql`
+    await sql`
       CREATE INDEX IF NOT EXISTS idx_event_aggregate_name 
-      ON ${this._sql.unsafe(this._tableName)}(aggregate_name);
+      ON ${sql.unsafe(tableName)}(aggregate_name);
     `;
 
-    await this._sql`
+    await sql`
       CREATE INDEX IF NOT EXISTS idx_event_version
-      ON ${this._sql.unsafe(this._tableName)}(version);
+      ON ${sql.unsafe(tableName)}(version);
     `;
 
-    await this._sql`
+    await sql`
       CREATE INDEX IF NOT EXISTS idx_event_aggregate_lookup
-      ON ${this._sql.unsafe(this._tableName)}(aggregate_name, aggregate_id);
+      ON ${sql.unsafe(tableName)}(aggregate_name, aggregate_id);
     `;
+
+    await sql.end();
 
     return { tableName };
   }
 
-  async dropEventTable(): Promise<void> {
-    await this._sql`
-      DROP TABLE IF EXISTS ${this._sql.unsafe(this._tableName)} CASCADE;
+  static async dropEventTable({
+    connectionString = 'postgresql://postgres:postgres@localhost:5432/postgres',
+    tableName = 'event',
+  }: {
+    connectionString?: string;
+    tableName?: string;
+  }): Promise<void> {
+    const sql = PostgresEventStorageAdapter.createClient({
+      connectionString,
+    });
+
+    await sql`
+      DROP TABLE IF EXISTS ${sql.unsafe(tableName)};
     `;
+
+    await sql.end();
   }
 
   private toEventDetail(event: postgres.Row) {

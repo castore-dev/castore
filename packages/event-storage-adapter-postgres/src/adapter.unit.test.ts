@@ -51,11 +51,11 @@ beforeAll(async () => {
 });
 
 beforeEach(async () => {
-  await eventStorageAdapter.createEventTable();
+  await PostgresEventStorageAdapter.createEventTable({ connectionString });
 });
 
 afterEach(async () => {
-  await eventStorageAdapter.dropEventTable();
+  await PostgresEventStorageAdapter.dropEventTable({ connectionString });
 });
 
 afterAll(async () => {
@@ -357,11 +357,8 @@ describe('postgres storage adapter', () => {
     };
 
     beforeEach(async () => {
-      await eventStorageAdapter.dropEventTable();
-      await eventStorageAdapter.createEventTable();
-
-      await eventStorageAdapterB.dropEventTable();
-      await eventStorageAdapterB.createEventTable();
+      await PostgresEventStorageAdapter.dropEventTable({ connectionString });
+      await PostgresEventStorageAdapter.createEventTable({ connectionString });
     });
 
     it('push grouped events correctly', async () => {
