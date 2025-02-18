@@ -112,3 +112,63 @@ export const pokemonsEventStore = new EventStore({
   reducer: pokemonsReducer,
   eventStorageAdapter: eventStorageAdapterMock,
 });
+
+// With snapshots
+
+export type PokemonAggregate2 = {
+  aggregateId: string;
+  version: number;
+  name: string;
+  power: number;
+  status: 'wild' | 'caught';
+};
+
+export const pokemonsEventStoreAutoSnapshots = new EventStore({
+  eventStoreId: 'POKEMONS_2',
+  eventTypes: [pokemonAppearedEvent, pokemonCaughtEvent, pokemonLeveledUpEvent],
+  snapshotMode: 'auto',
+  autoSnapshotPeriodVersions: 10,
+  reducer: pokemonsReducer,
+  currentReducerVersion: 'v1',
+  eventStorageAdapter: eventStorageAdapterMock,
+});
+
+export const pokemonsEventStoreCustomSnapshot = new EventStore({
+  eventStoreId: 'POKEMONS_3',
+  eventTypes: [pokemonAppearedEvent, pokemonCaughtEvent, pokemonLeveledUpEvent],
+  snapshotMode: 'custom',
+  reducers: {
+    v1: pokemonsReducer,
+    v2: (pokemonAggregate: PokemonAggregate2, event): PokemonAggregate2 => {
+      const { version, aggregateId } = event;
+
+      switch (event.type) {
+        case 'POKEMON_APPEARED': {
+          const { name, level } = event.payload;
+
+          return {
+            aggregateId,
+            version: event.version,
+            name,
+            power: level,
+            status: 'wild',
+          };
+        }
+        case 'POKEMON_CAUGHT':
+          return {
+            ...pokemonAggregate,
+            version,
+            status: 'caught',
+          };
+        case 'POKEMON_LEVELED_UP':
+          return {
+            ...pokemonAggregate,
+            version,
+            power: pokemonAggregate.power + 1,
+          };
+      }
+    },
+  },
+  currentReducerVersion: 'v2',
+  eventStorageAdapter: eventStorageAdapterMock,
+});
