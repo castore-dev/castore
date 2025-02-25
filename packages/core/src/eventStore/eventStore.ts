@@ -144,19 +144,22 @@ export class EventStore<
       ...indexedEvents,
       [event.version]: event,
     }),
-    eventStorageAdapter: $eventStorageAdapter,
+    onEventPushed,
+    eventStorageAdapter,
   }: {
     eventStoreId: EVENT_STORE_ID;
     eventTypes: EVENT_TYPES;
     reducer: REDUCER;
     simulateSideEffect?: SideEffectsSimulator<EVENT_DETAILS, $EVENT_DETAILS>;
+    onEventPushed?: OnEventPushed<$EVENT_DETAILS, $AGGREGATE>;
     eventStorageAdapter?: EventStorageAdapter;
   }) {
     this.eventStoreId = eventStoreId;
     this.eventTypes = eventTypes;
     this.reducer = reducer;
     this.simulateSideEffect = simulateSideEffect;
-    this.eventStorageAdapter = $eventStorageAdapter;
+    this.onEventPushed = onEventPushed;
+    this.eventStorageAdapter = eventStorageAdapter;
 
     this.getEventStorageAdapter = () => {
       if (!this.eventStorageAdapter) {
@@ -182,12 +185,10 @@ export class EventStore<
       eventDetail,
       { prevAggregate, force = false } = {},
     ) => {
-      const eventStorageAdapter = this.getEventStorageAdapter();
-
-      const { event } = (await eventStorageAdapter.pushEvent(eventDetail, {
-        eventStoreId: this.eventStoreId,
-        force,
-      })) as { event: $EVENT_DETAILS };
+      const { event } = (await this.getEventStorageAdapter().pushEvent(
+        eventDetail,
+        { eventStoreId: this.eventStoreId, force },
+      )) as { event: $EVENT_DETAILS };
 
       let nextAggregate: AGGREGATE | undefined = undefined;
       if (prevAggregate || event.version === 1) {
@@ -212,9 +213,7 @@ export class EventStore<
     };
 
     this.groupEvent = (eventDetail, { prevAggregate } = {}) => {
-      const eventStorageAdapter = this.getEventStorageAdapter();
-
-      const groupedEvent = eventStorageAdapter.groupEvent(
+      const groupedEvent = this.getEventStorageAdapter().groupEvent(
         eventDetail,
       ) as GroupedEvent<EVENT_DETAILS, AGGREGATE>;
 
