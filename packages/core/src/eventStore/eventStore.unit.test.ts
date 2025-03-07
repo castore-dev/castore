@@ -6,6 +6,8 @@ import { EventStore } from './eventStore';
 import {
   PokemonAggregate,
   pokemonsEventStore,
+  pokemonsEventStoreAutoSnapshots,
+  pokemonsEventStoreCustomSnapshot,
   pokemonAppearedEvent,
   pokemonCaughtEvent,
   pokemonLeveledUpEvent,
@@ -38,6 +40,9 @@ describe('event store', () => {
       new Set([
         'eventStoreId',
         'eventTypes',
+        'snapshotMode',
+        'reducers',
+        'currentReducerVersion',
         'reducer',
         'simulateSideEffect',
         'onEventPushed',
@@ -55,12 +60,167 @@ describe('event store', () => {
     );
 
     expect(pokemonsEventStore.eventStoreId).toBe('POKEMONS');
-
     expect(pokemonsEventStore.eventTypes).toStrictEqual([
       pokemonAppearedEvent,
       pokemonCaughtEvent,
       pokemonLeveledUpEvent,
     ]);
+    expect(pokemonsEventStore.snapshotMode).toBe('none');
+    expect(pokemonsEventStore.reducers).toBeUndefined();
+    expect(pokemonsEventStore.currentReducerVersion).toBeUndefined();
+
+    expect(pokemonsEventStoreAutoSnapshots.eventStoreId).toBe('POKEMONS_2');
+    expect(pokemonsEventStoreAutoSnapshots.eventTypes).toStrictEqual([
+      pokemonAppearedEvent,
+      pokemonCaughtEvent,
+      pokemonLeveledUpEvent,
+    ]);
+    expect(pokemonsEventStoreAutoSnapshots.snapshotMode).toBe('auto');
+    expect(pokemonsEventStoreAutoSnapshots.reducers).toBeUndefined();
+    expect(pokemonsEventStoreAutoSnapshots.currentReducerVersion).toBe('v1');
+
+    expect(pokemonsEventStoreCustomSnapshot.eventStoreId).toBe('POKEMONS_3');
+    expect(pokemonsEventStoreCustomSnapshot.eventTypes).toStrictEqual([
+      pokemonAppearedEvent,
+      pokemonCaughtEvent,
+      pokemonLeveledUpEvent,
+    ]);
+
+    expect(pokemonsEventStoreCustomSnapshot.snapshotMode).toBe('custom');
+    expect(pokemonsEventStoreCustomSnapshot.reducers).not.toBeUndefined();
+    expect(pokemonsEventStoreCustomSnapshot.currentReducerVersion).toBe('v2');
+    expect(pokemonsEventStoreCustomSnapshot.reducer).toBe(
+      pokemonsEventStoreCustomSnapshot.reducers[
+        pokemonsEventStoreCustomSnapshot.currentReducerVersion
+      ],
+    );
+  });
+
+  describe('constructor sanity checks', () => {
+    const eventTypes = [
+      pokemonAppearedEvent,
+      pokemonCaughtEvent,
+      pokemonLeveledUpEvent,
+    ];
+
+    it('throws if invalid none snapshot options are provided', () => {
+      expect(
+        () =>
+          // @ts-expect-error currentReducerVersion not needed
+          new EventStore({
+            eventStoreId: 'POKEMONS',
+            eventTypes,
+            reducer: pokemonsReducer,
+            currentReducerVersion: 'v1',
+          }),
+      ).toThrow();
+
+      expect(
+        () =>
+          // @ts-expect-error use reducer instead of reducers
+          new EventStore({
+            eventStoreId: 'POKEMONS',
+            eventTypes,
+            reducers: {
+              v1: pokemonsReducer,
+            },
+            currentReducerVersion: 'v1',
+          }),
+      ).toThrow();
+    });
+
+    it('throws if invalid auto snapshot options are provided', () => {
+      expect(
+        () =>
+          // @ts-expect-error missing currentReducerVersion
+          new EventStore({
+            eventStoreId: 'POKEMONS',
+            eventTypes,
+            reducer: pokemonsReducer,
+            snapshotMode: 'auto',
+            autoSnapshotPeriodVersions: 10,
+          }),
+      ).toThrow();
+
+      expect(
+        () =>
+          // @ts-expect-error missing autoSnapshotPeriodVersions not needed
+          new EventStore({
+            eventStoreId: 'POKEMONS',
+            eventTypes,
+            reducer: pokemonsReducer,
+            snapshotMode: 'auto',
+            currentReducerVersion: 'v1',
+          }),
+      ).toThrow();
+
+      expect(
+        () =>
+          new EventStore({
+            eventStoreId: 'POKEMONS',
+            eventTypes,
+            reducer: pokemonsReducer,
+            snapshotMode: 'auto',
+            // Impossible to raise type error
+            autoSnapshotPeriodVersions: 1.5, // <= should be int
+            currentReducerVersion: 'v1',
+          }),
+      ).toThrow();
+
+      expect(
+        () =>
+          new EventStore({
+            eventStoreId: 'POKEMONS',
+            eventTypes,
+            reducer: pokemonsReducer,
+            snapshotMode: 'auto',
+            // Impossible to raise type error
+            autoSnapshotPeriodVersions: 1, // <= should be >1
+            currentReducerVersion: 'v1',
+          }),
+      ).toThrow();
+    });
+
+    it('throws if invalid custom snapshot options are provided', () => {
+      expect(
+        () =>
+          // @ts-expect-error missing reducers option
+          new EventStore({
+            eventStoreId: 'POKEMONS',
+            eventTypes,
+            snapshotMode: 'custom',
+            reducer: pokemonsReducer,
+            currentReducerVersion: 'v1',
+          }),
+      ).toThrow();
+
+      expect(
+        () =>
+          // @ts-expect-error missing currentReducerVersion option
+          new EventStore({
+            eventStoreId: 'POKEMONS',
+            eventTypes,
+            snapshotMode: 'custom',
+            reducers: {
+              v1: pokemonsReducer,
+            },
+          }),
+      ).toThrow();
+
+      expect(
+        () =>
+          new EventStore({
+            eventStoreId: 'POKEMONS',
+            eventTypes,
+            snapshotMode: 'custom',
+            reducers: {
+              v1: pokemonsReducer,
+            },
+            // @ts-expect-error invalid currentReducerVersion option
+            currentReducerVersion: 'v2',
+          }),
+      ).toThrow();
+    });
   });
 
   describe('getEvents', () => {

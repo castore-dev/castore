@@ -4,7 +4,7 @@ import type { EventDetail } from '~/event/eventDetail';
 import type { EventType, EventTypeDetails } from '~/event/eventType';
 import { GroupedEvent } from '~/event/groupedEvent';
 import type { EventStorageAdapter } from '~/eventStorageAdapter';
-import type { $Contravariant } from '~/utils';
+import type { $Contravariant } from '~/typeUtils';
 
 import { AggregateNotFoundError } from './errors/aggregateNotFound';
 import { UndefinedEventStorageAdapterError } from './errors/undefinedEventStorageAdapter';
@@ -20,7 +20,12 @@ import type {
   AggregateGetter,
   AggregateSimulator,
   Reducer,
+  SnapshotModeAuto,
+  SnapshotMode,
+  SnapshotModeCustom,
+  SnapshotModeNone,
 } from './types';
+import { validateSnapshotMode } from './utils';
 
 export class EventStore<
   EVENT_STORE_ID extends string = string,
@@ -32,10 +37,16 @@ export class EventStore<
     EVENT_DETAILS,
     EventDetail
   >,
-  REDUCER extends Reducer<Aggregate, $EVENT_DETAILS> = Reducer<
+  REDUCERS extends Record<string, Reducer<Aggregate, $EVENT_DETAILS>> = Record<
+    string,
+    Reducer<Aggregate, $EVENT_DETAILS>
+  >,
+  CURRENT_REDUCER_VERSION extends keyof REDUCERS & string = keyof REDUCERS &
+    string,
+  REDUCER extends Reducer<
     Aggregate,
     $EVENT_DETAILS
-  >,
+  > = REDUCERS[CURRENT_REDUCER_VERSION],
   AGGREGATE extends Aggregate = ReturnType<REDUCER>,
   $AGGREGATE extends Aggregate = $Contravariant<AGGREGATE, Aggregate>,
 > {
@@ -111,6 +122,10 @@ export class EventStore<
   };
   eventStoreId: EVENT_STORE_ID;
   eventTypes: EVENT_TYPES;
+  snapshotMode: SnapshotMode;
+  autoSnapshotPeriodVersions?: number;
+  reducers: REDUCERS;
+  currentReducerVersion: CURRENT_REDUCER_VERSION;
   reducer: REDUCER;
   simulateSideEffect: SideEffectsSimulator<EVENT_DETAILS, $EVENT_DETAILS>;
 
@@ -136,9 +151,14 @@ export class EventStore<
   eventStorageAdapter?: EventStorageAdapter;
   getEventStorageAdapter: () => EventStorageAdapter;
 
+  // eslint-disable-next-line complexity
   constructor({
     eventStoreId,
     eventTypes,
+    snapshotMode = 'none',
+    autoSnapshotPeriodVersions,
+    reducers,
+    currentReducerVersion,
     reducer,
     simulateSideEffect = (indexedEvents, event) => ({
       ...indexedEvents,
@@ -149,14 +169,50 @@ export class EventStore<
   }: {
     eventStoreId: EVENT_STORE_ID;
     eventTypes: EVENT_TYPES;
-    reducer: REDUCER;
     simulateSideEffect?: SideEffectsSimulator<EVENT_DETAILS, $EVENT_DETAILS>;
     onEventPushed?: OnEventPushed<$EVENT_DETAILS, $AGGREGATE>;
     eventStorageAdapter?: EventStorageAdapter;
-  }) {
+  } & (
+    | {
+        snapshotMode: SnapshotModeCustom;
+        autoSnapshotPeriodVersions?: undefined;
+        reducers: REDUCERS;
+        currentReducerVersion: CURRENT_REDUCER_VERSION;
+        reducer?: undefined;
+      }
+    | {
+        snapshotMode: SnapshotModeAuto;
+        autoSnapshotPeriodVersions: number;
+        reducers?: undefined;
+        currentReducerVersion: CURRENT_REDUCER_VERSION;
+        reducer: REDUCER;
+      }
+    | {
+        snapshotMode?: SnapshotModeNone;
+        autoSnapshotPeriodVersions?: undefined;
+        reducers?: undefined;
+        currentReducerVersion?: undefined;
+        reducer: REDUCER;
+      }
+  )) {
     this.eventStoreId = eventStoreId;
     this.eventTypes = eventTypes;
-    this.reducer = reducer;
+
+    validateSnapshotMode({
+      snapshotMode,
+      autoSnapshotPeriodVersions,
+      reducers,
+      currentReducerVersion,
+      reducer,
+    });
+
+    this.snapshotMode = snapshotMode;
+    this.reducers = reducers as REDUCERS;
+    this.currentReducerVersion =
+      currentReducerVersion as CURRENT_REDUCER_VERSION;
+    this.reducer = (reducer ??
+      this.reducers[this.currentReducerVersion]) as REDUCER;
+
     this.simulateSideEffect = simulateSideEffect;
     this.onEventPushed = onEventPushed;
     this.eventStorageAdapter = eventStorageAdapter;

@@ -1,3 +1,4 @@
+/* eslint-disable max-lines */
 import type { Aggregate } from '~/aggregate';
 import type { EventDetail } from '~/event/eventDetail';
 import type { EventType, EventTypeDetails } from '~/event/eventType';
@@ -13,21 +14,31 @@ import type {
   AggregateSimulator,
   EventStore,
   OnEventPushed,
+  SnapshotMode,
 } from '~/eventStore';
 import type { EventStoreMessageChannel } from '~/messaging';
-import type { $Contravariant } from '~/utils';
+import type { $Contravariant } from '~/typeUtils';
 
 import { publishPushedEvent } from './publishPushedEvent';
 
 export class ConnectedEventStore<
   EVENT_STORE_ID extends string = string,
   EVENT_TYPES extends EventType[] = EventType[],
-  EVENT_DETAIL extends EventDetail = EventTypeDetails<EVENT_TYPES>,
-  $EVENT_DETAIL extends EventDetail = $Contravariant<EVENT_DETAIL, EventDetail>,
-  REDUCER extends Reducer<Aggregate, $EVENT_DETAIL> = Reducer<
-    Aggregate,
-    $EVENT_DETAIL
+  EVENT_DETAILS extends EventDetail = EventTypeDetails<EVENT_TYPES>,
+  $EVENT_DETAILS extends EventDetail = $Contravariant<
+    EVENT_DETAILS,
+    EventDetail
   >,
+  REDUCERS extends Record<string, Reducer<Aggregate, $EVENT_DETAILS>> = Record<
+    string,
+    Reducer<Aggregate, $EVENT_DETAILS>
+  >,
+  CURRENT_REDUCER_VERSION extends keyof REDUCERS & string = keyof REDUCERS &
+    string,
+  REDUCER extends Reducer<
+    Aggregate,
+    $EVENT_DETAILS
+  > = REDUCERS[CURRENT_REDUCER_VERSION],
   AGGREGATE extends Aggregate = ReturnType<REDUCER>,
   $AGGREGATE extends Aggregate = $Contravariant<AGGREGATE, Aggregate>,
   MESSAGE_CHANNEL extends Pick<
@@ -35,8 +46,10 @@ export class ConnectedEventStore<
       EventStore<
         EVENT_STORE_ID,
         EVENT_TYPES,
-        EVENT_DETAIL,
-        $EVENT_DETAIL,
+        EVENT_DETAILS,
+        $EVENT_DETAILS,
+        REDUCERS,
+        CURRENT_REDUCER_VERSION,
         REDUCER,
         AGGREGATE,
         $AGGREGATE
@@ -48,8 +61,10 @@ export class ConnectedEventStore<
       EventStore<
         EVENT_STORE_ID,
         EVENT_TYPES,
-        EVENT_DETAIL,
-        $EVENT_DETAIL,
+        EVENT_DETAILS,
+        $EVENT_DETAILS,
+        REDUCERS,
+        CURRENT_REDUCER_VERSION,
         REDUCER,
         AGGREGATE,
         $AGGREGATE
@@ -61,39 +76,52 @@ export class ConnectedEventStore<
     EventStore<
       EVENT_STORE_ID,
       EVENT_TYPES,
-      EVENT_DETAIL,
-      $EVENT_DETAIL,
+      EVENT_DETAILS,
+      $EVENT_DETAILS,
+      REDUCERS,
+      CURRENT_REDUCER_VERSION,
       REDUCER,
       AGGREGATE,
       $AGGREGATE
     >
 {
   _types?: {
-    details: EVENT_DETAIL;
+    details: EVENT_DETAILS;
     aggregate: AGGREGATE;
   };
   eventStoreId: EVENT_STORE_ID;
   eventTypes: EVENT_TYPES;
+  snapshotMode: SnapshotMode;
+  autoSnapshotPeriodVersions?: number | undefined;
+  reducers: REDUCERS;
+  currentReducerVersion: CURRENT_REDUCER_VERSION;
   reducer: REDUCER;
-  simulateSideEffect: SideEffectsSimulator<EVENT_DETAIL, $EVENT_DETAIL>;
-  getEvents: EventsGetter<EVENT_DETAIL>;
-  pushEvent: EventPusher<EVENT_DETAIL, $EVENT_DETAIL, AGGREGATE, $AGGREGATE>;
-  groupEvent: EventGrouper<EVENT_DETAIL, $EVENT_DETAIL, AGGREGATE, $AGGREGATE>;
+  simulateSideEffect: SideEffectsSimulator<EVENT_DETAILS, $EVENT_DETAILS>;
+  getEvents: EventsGetter<EVENT_DETAILS>;
+  pushEvent: EventPusher<EVENT_DETAILS, $EVENT_DETAILS, AGGREGATE, $AGGREGATE>;
+  groupEvent: EventGrouper<
+    EVENT_DETAILS,
+    $EVENT_DETAILS,
+    AGGREGATE,
+    $AGGREGATE
+  >;
   listAggregateIds: AggregateIdsLister;
   buildAggregate: (
-    events: $EVENT_DETAIL[],
+    events: $EVENT_DETAILS[],
     aggregate?: $AGGREGATE,
   ) => AGGREGATE | undefined;
-  getAggregate: AggregateGetter<EVENT_DETAIL, AGGREGATE>;
-  getExistingAggregate: AggregateGetter<EVENT_DETAIL, AGGREGATE, true>;
-  simulateAggregate: AggregateSimulator<$EVENT_DETAIL, AGGREGATE>;
+  getAggregate: AggregateGetter<EVENT_DETAILS, AGGREGATE>;
+  getExistingAggregate: AggregateGetter<EVENT_DETAILS, AGGREGATE, true>;
+  simulateAggregate: AggregateSimulator<$EVENT_DETAILS, AGGREGATE>;
   getEventStorageAdapter: () => EventStorageAdapter;
 
   eventStore: EventStore<
     EVENT_STORE_ID,
     EVENT_TYPES,
-    EVENT_DETAIL,
-    $EVENT_DETAIL,
+    EVENT_DETAILS,
+    $EVENT_DETAILS,
+    REDUCERS,
+    CURRENT_REDUCER_VERSION,
     REDUCER,
     AGGREGATE,
     $AGGREGATE
@@ -104,8 +132,10 @@ export class ConnectedEventStore<
     eventStore: EventStore<
       EVENT_STORE_ID,
       EVENT_TYPES,
-      EVENT_DETAIL,
-      $EVENT_DETAIL,
+      EVENT_DETAILS,
+      $EVENT_DETAILS,
+      REDUCERS,
+      CURRENT_REDUCER_VERSION,
       REDUCER,
       AGGREGATE,
       $AGGREGATE
@@ -114,6 +144,12 @@ export class ConnectedEventStore<
   ) {
     this.eventStoreId = eventStore.eventStoreId;
     this.eventTypes = eventStore.eventTypes;
+    this.snapshotMode = eventStore.snapshotMode;
+    if (eventStore.autoSnapshotPeriodVersions !== undefined) {
+      this.autoSnapshotPeriodVersions = eventStore.autoSnapshotPeriodVersions;
+    }
+    this.reducers = eventStore.reducers;
+    this.currentReducerVersion = eventStore.currentReducerVersion;
     this.reducer = eventStore.reducer;
     this.simulateSideEffect = eventStore.simulateSideEffect;
     this.getEvents = eventStore.getEvents;
@@ -148,12 +184,12 @@ export class ConnectedEventStore<
   }
 
   set onEventPushed(
-    onEventPushed: OnEventPushed<$EVENT_DETAIL, $AGGREGATE> | undefined,
+    onEventPushed: OnEventPushed<$EVENT_DETAILS, $AGGREGATE> | undefined,
   ) {
     this.eventStore.onEventPushed = onEventPushed;
   }
 
-  get onEventPushed(): OnEventPushed<$EVENT_DETAIL, $AGGREGATE> {
+  get onEventPushed(): OnEventPushed<$EVENT_DETAILS, $AGGREGATE> {
     return async props => {
       if (this.eventStore.onEventPushed !== undefined) {
         await this.eventStore.onEventPushed(props);
@@ -161,7 +197,7 @@ export class ConnectedEventStore<
 
       await publishPushedEvent(
         this,
-        props as unknown as { event: EVENT_DETAIL; nextAggregate?: AGGREGATE },
+        props as unknown as { event: EVENT_DETAILS; nextAggregate?: AGGREGATE },
       );
     };
   }

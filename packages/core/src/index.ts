@@ -26,9 +26,15 @@ export type {
   EventStoreId,
   EventStoreEventTypes,
   EventStoreEventDetails,
+  EventStoreReducers,
+  EventStoreCurrentReducerVersion,
   EventStoreReducer,
   EventStoreAggregate,
   Reducer,
+  SnapshotMode,
+  SnapshotModeAuto,
+  SnapshotModeCustom,
+  SnapshotModeNone,
 } from './eventStore';
 export { ConnectedEventStore } from './connectedEventStore';
 export { Command, tuple } from './command/command';
@@ -39,7 +45,7 @@ export type {
   CommandContext,
 } from './command/command';
 export type { OnEventAlreadyExistsCallback } from './command/command';
-export type { $Contravariant } from './utils';
+export type { $Contravariant } from './typeUtils';
 export {
   MessageChannelEventStoreNotFoundError,
   UndefinedMessageChannelAdapterError,

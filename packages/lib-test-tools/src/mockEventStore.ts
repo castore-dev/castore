@@ -1,9 +1,11 @@
-import {
+import type {
   EventStore,
   EventStoreId,
   EventStoreEventTypes,
   EventStoreEventDetails,
   EventStoreReducer,
+  EventStoreReducers,
+  EventStoreCurrentReducerVersion,
   EventStoreAggregate,
 } from '@castore/core';
 
@@ -17,6 +19,8 @@ export const mockEventStore = <EVENT_STORE extends EventStore = EventStore>(
   EventStoreEventTypes<EVENT_STORE>,
   EventStoreEventDetails<EVENT_STORE>,
   EventStoreEventDetails<EVENT_STORE>,
+  EventStoreReducers<EVENT_STORE>,
+  EventStoreCurrentReducerVersion<EVENT_STORE>,
   EventStoreReducer<EVENT_STORE>,
   EventStoreAggregate<EVENT_STORE>
 > =>
@@ -25,6 +29,8 @@ export const mockEventStore = <EVENT_STORE extends EventStore = EventStore>(
     EventStoreEventTypes<EVENT_STORE>,
     EventStoreEventDetails<EVENT_STORE>,
     EventStoreEventDetails<EVENT_STORE>,
+    EventStoreReducers<EVENT_STORE>,
+    EventStoreCurrentReducerVersion<EVENT_STORE>,
     EventStoreReducer<EVENT_STORE>,
     EventStoreAggregate<EVENT_STORE>
   >({ eventStore, initialEvents });

@@ -6,7 +6,7 @@ import type {
   ListAggregateIdsOptions,
   ListAggregateIdsOutput,
 } from '~/eventStorageAdapter';
-import type { $Contravariant } from '~/utils';
+import type { $Contravariant } from '~/typeUtils';
 
 export type Reducer<
   AGGREGATE extends Aggregate = Aggregate,
@@ -127,3 +127,11 @@ export type AggregateSimulator<$EVENT_DETAIL, AGGREGATE extends Aggregate> = (
   events: $EVENT_DETAIL[],
   options?: SimulationOptions,
 ) => AGGREGATE | undefined;
+
+export type SnapshotModeNone = 'none';
+export type SnapshotModeAuto = 'auto';
+export type SnapshotModeCustom = 'custom';
+export type SnapshotMode =
+  | SnapshotModeNone
+  | SnapshotModeAuto
+  | SnapshotModeCustom;
