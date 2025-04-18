@@ -1,16 +1,15 @@
 import { vi } from 'vitest';
 
-import { GroupedEvent } from '~/event/groupedEvent';
 import type { EventStorageAdapter } from '~/eventStorageAdapter';
 import { EventStore } from '~/eventStore/eventStore';
 import {
-  pokemonsEventStore,
   eventStorageAdapterMock,
   pikachuAppearedEvent,
-  pikachuLeveledUpEvent,
   pikachuCaughtEvent,
-  pushEventGroupMock,
+  pikachuLeveledUpEvent,
   PokemonEventDetails,
+  pokemonsEventStore,
+  pushEventGroupMock,
 } from '~/eventStore/eventStore.fixtures.test';
 
 import {
@@ -116,17 +115,13 @@ describe('ConnectedEventStore', () => {
       ]);
 
       const eventGroup = [
-        new GroupedEvent({
-          event: pikachuCaughtEvent,
-          prevAggregate: prevPikachuAggregate,
-          eventStore: pokemonsEventStoreWithStateCarryingMessageBus,
-          eventStorageAdapter: eventStorageAdapterMock,
-        }),
-        new GroupedEvent({
-          event: charizardLeveledUpEvent,
-          eventStore: pokemonsEventStoreWithNotificationMessageQueue,
-          eventStorageAdapter: eventStorageAdapterMock,
-        }),
+        pokemonsEventStoreWithStateCarryingMessageBus.groupEvent(
+          pikachuCaughtEvent,
+          { prevAggregate: prevPikachuAggregate },
+        ),
+        pokemonsEventStoreWithNotificationMessageQueue.groupEvent(
+          charizardLeveledUpEvent,
+        ),
       ] as const;
 
       pushEventGroupMock.mockResolvedValue({

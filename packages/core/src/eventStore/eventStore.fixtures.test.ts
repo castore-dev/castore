@@ -1,13 +1,18 @@
 /* eslint-disable max-lines */
 import { vi } from 'vitest';
 
+import { OptionalTimestamp, EventDetail } from '~/event/eventDetail';
 import { EventType, EventTypeDetail } from '~/event/eventType';
+import { GroupedEvent } from '~/event/groupedEvent';
 import { EventStorageAdapter } from '~/eventStorageAdapter';
 import { EventStore } from '~/eventStore';
 
 export const pushEventMock = vi.fn();
 export const pushEventGroupMock = vi.fn();
-export const groupEventMock = vi.fn();
+export const groupEventMock = vi.fn(
+  (event: OptionalTimestamp<EventDetail>) =>
+    new GroupedEvent({ event, eventStorageAdapter: eventStorageAdapterMock }),
+);
 export const getEventsMock = vi.fn();
 export const listAggregateIdsMock = vi.fn();
 
