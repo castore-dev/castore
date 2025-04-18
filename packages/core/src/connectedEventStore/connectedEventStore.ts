@@ -3,16 +3,16 @@ import type { EventDetail } from '~/event/eventDetail';
 import type { EventType, EventTypeDetails } from '~/event/eventType';
 import type { EventStorageAdapter } from '~/eventStorageAdapter';
 import type {
-  Reducer,
-  AggregateIdsLister,
-  EventPusher,
-  EventGrouper,
-  EventsGetter,
-  SideEffectsSimulator,
   AggregateGetter,
+  AggregateIdsLister,
   AggregateSimulator,
+  EventGrouper,
+  EventPusher,
+  EventsGetter,
   EventStore,
   OnEventPushed,
+  Reducer,
+  SideEffectsSimulator,
 } from '~/eventStore';
 import type { EventStoreMessageChannel } from '~/messaging';
 import type { $Contravariant } from '~/utils';
@@ -117,13 +117,19 @@ export class ConnectedEventStore<
     this.reducer = eventStore.reducer;
     this.simulateSideEffect = eventStore.simulateSideEffect;
     this.getEvents = eventStore.getEvents;
-    this.groupEvent = eventStore.groupEvent;
     this.listAggregateIds = eventStore.listAggregateIds;
     this.buildAggregate = eventStore.buildAggregate;
     this.getAggregate = eventStore.getAggregate;
     this.getExistingAggregate = eventStore.getExistingAggregate;
     this.simulateAggregate = eventStore.simulateAggregate;
     this.getEventStorageAdapter = eventStore.getEventStorageAdapter;
+
+    this.groupEvent = (...args) => {
+      const groupedEvent = eventStore.groupEvent(...args);
+      groupedEvent.eventStore = this;
+
+      return groupedEvent;
+    };
 
     this.pushEvent = async (eventInput, options = {}) => {
       const response = await this.eventStore.pushEvent(eventInput, options);
