@@ -6068,7 +6068,7 @@ __metadata:
     tsc-alias: ^1.8.7
     typescript: ^4.6.3
     vitest: ^0.26.2
-    zod: ^3.15.1
+    zod: ^4.1.11
   peerDependencies:
     "@castore/core": "*"
     zod: ^3.0.0
@@ -6418,10 +6418,10 @@ __metadata:
     tsc-alias: ^1.8.7
     typescript: ^4.6.3
     vitest: ^0.26.2
-    zod: ^3.15.1
+    zod: ^4.1.11
   peerDependencies:
     "@castore/core": "*"
-    zod: ^3.0.0
+    zod: ^3.25.0 || ^4.0.0
   languageName: unknown
   linkType: soft
 
@@ -28266,10 +28266,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"zod@npm:^3.15.1":
-  version: 3.15.1
-  resolution: "zod@npm:3.15.1"
-  checksum: d1ceec91b1b19fe26233c2e6be7625c6d5937c6c667ce23ff7d59948eb1239a24819227c615096a5e6a6377a17fc2df3720e8d613d2176dc482c0a1e8d02e1e2
+"zod@npm:^4.1.11":
+  version: 4.1.11
+  resolution: "zod@npm:4.1.11"
+  checksum: 022d59f85ebe054835fbcdc96a93c01479a64321104f846cb5644812c91e00d17ae3479f823956ec9b04e4351dd32841e1f12c567e81bc43f6e21ef5cc02ce3c
   languageName: node
   linkType: hard
 

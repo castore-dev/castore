@@ -55,7 +55,7 @@
     "tsc-alias": "^1.8.7",
     "typescript": "^4.6.3",
     "vitest": "^0.26.2",
-    "zod": "^3.15.1"
+    "zod": "^4.1.11"
   },
   "maintainers": [
     "Thomas Aribart",
@@ -75,6 +75,6 @@
   },
   "peerDependencies": {
     "@castore/core": "*",
-    "zod": "^3.0.0"
+    "zod": "^3.25.0 || ^4.0.0"
   }
 }

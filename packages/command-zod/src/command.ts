@@ -1,4 +1,5 @@
-import { z, ZodType } from 'zod';
+import type * as z3 from 'zod/v3';
+import type * as z4 from 'zod/v4/core';
 
 import {
   Command,
@@ -6,6 +7,11 @@ import {
   $Contravariant,
   OnEventAlreadyExistsCallback,
 } from '@castore/core';
+
+type ZodType = z3.ZodTypeAny | z4.$ZodType;
+type inferZodType<T extends ZodType> = T extends z3.ZodTypeAny
+  ? z3.infer<T>
+  : z4.infer<T>;
 
 export class ZodCommand<
   COMMAND_ID extends string = string,
@@ -18,13 +24,13 @@ export class ZodCommand<
   INPUT = $Contravariant<
     INPUT_SCHEMA,
     ZodType,
-    INPUT_SCHEMA extends ZodType ? z.infer<INPUT_SCHEMA> : never
+    INPUT_SCHEMA extends ZodType ? inferZodType<INPUT_SCHEMA> : never
   >,
   OUTPUT_SCHEMA extends ZodType | undefined = ZodType | undefined,
   OUTPUT = $Contravariant<
     OUTPUT_SCHEMA,
     ZodType,
-    OUTPUT_SCHEMA extends ZodType ? z.infer<OUTPUT_SCHEMA> : never
+    OUTPUT_SCHEMA extends ZodType ? inferZodType<OUTPUT_SCHEMA> : never
   >,
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   CONTEXT extends any[] = any[],
