@@ -22,6 +22,15 @@ import {
   groupEventMock,
   eventStorageAdapterMock,
   PokemonEventDetails,
+  pokemonsEventStoreWithSnapshot,
+  getSnapshotMock,
+  snapshotV5,
+  saveSnapshotMock,
+  deleteSnapshotMock,
+  snapshotV10,
+  pikachuMultipleLevelUpEventsMocks,
+  pikachuCompleteEventsMocks,
+  pikachuMultipleLevelUpEvents2Mocks,
 } from './eventStore.fixtures.test';
 
 describe('event store', () => {
@@ -51,6 +60,10 @@ describe('event store', () => {
         'getAggregate',
         'getExistingAggregate',
         'simulateAggregate',
+        'snapshotConfig',
+        'snapshotStorageAdapter',
+        'getSnapshot',
+        'saveAggregateAsSnapshot',
       ]),
     );
 
@@ -390,6 +403,91 @@ describe('event store', () => {
       );
 
       expect(response).toStrictEqual({ aggregateIds: [pikachuId] });
+    });
+  });
+
+  describe('snapshots', () => {
+    beforeEach(() => {
+      getEventsMock.mockResolvedValue({
+        events: pikachuMultipleLevelUpEvents2Mocks,
+      });
+      getSnapshotMock.mockClear();
+      getSnapshotMock.mockResolvedValue(snapshotV5);
+      saveSnapshotMock.mockClear();
+      deleteSnapshotMock.mockClear();
+    });
+    describe('getAggregate', () => {
+      it('gets the latest snapshot', async () => {
+        await pokemonsEventStoreWithSnapshot.getAggregate(pikachuId, {
+          useSnapshot: true,
+        });
+
+        expect(getSnapshotMock).toHaveBeenCalledOnce();
+        expect(getSnapshotMock).toHaveBeenCalledWith({
+          aggregateId: pikachuId,
+          eventStoreId: 'POKEMONS',
+          reducerVersion: 'v1.0.0',
+        });
+      });
+
+      it('gets events from the latest snapshot', async () => {
+        await pokemonsEventStoreWithSnapshot.getAggregate(pikachuId, {
+          useSnapshot: true,
+        });
+
+        expect(getEventsMock).toHaveBeenCalledTimes(1);
+        expect(getEventsMock).toHaveBeenCalledWith(
+          pikachuId,
+          { eventStoreId: pokemonsEventStore.eventStoreId },
+          {
+            minVersion: 6,
+          },
+        );
+      });
+
+      it('saves a new snapshot', async () => {
+        await pokemonsEventStoreWithSnapshot.getAggregate(pikachuId, {
+          useSnapshot: true,
+        });
+
+        expect(saveSnapshotMock).toHaveBeenCalledTimes(1);
+        expect(saveSnapshotMock).toHaveBeenCalledWith(snapshotV10);
+      });
+
+      it('deletes the old snapshot', async () => {
+        await pokemonsEventStoreWithSnapshot.getAggregate(pikachuId, {
+          useSnapshot: true,
+        });
+
+        expect(deleteSnapshotMock).toHaveBeenCalledTimes(1);
+        expect(deleteSnapshotMock).toHaveBeenCalledWith({
+          aggregateId: 'pikachuId',
+          aggregateVersion: 5,
+          eventStoreId: 'POKEMONS',
+          reducerVersion: 'v1.0.0',
+        });
+      });
+
+      it('returns the aggregate from the snapshot and the rest of the events', async () => {
+        const response = await pokemonsEventStoreWithSnapshot.getAggregate(
+          pikachuId,
+          {
+            useSnapshot: true,
+          },
+        );
+
+        expect(response).toStrictEqual({
+          aggregate: pikachuCompleteEventsMocks.reduce(
+            pokemonsReducer,
+            undefined as unknown as PokemonAggregate,
+          ),
+          events: pikachuMultipleLevelUpEvents2Mocks, // events are incomplete
+          lastEvent:
+            pikachuMultipleLevelUpEvents2Mocks[
+              pikachuMultipleLevelUpEvents2Mocks.length - 1
+            ],
+        });
+      });
     });
   });
 });

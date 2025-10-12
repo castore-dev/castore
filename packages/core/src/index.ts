@@ -72,3 +72,12 @@ export type {
   EventStoreNotificationMessage,
   EventStoreStateCarryingMessage,
 } from './messaging';
+export {
+  cleanUpLastSnapshot,
+  createShouldSaveForRecurentSnapshots,
+} from './snapshot';
+export type {
+  Snapshot,
+  SnapshotConfig,
+  SnapshotStorageAdapter,
+} from './snapshot';

@@ -4,11 +4,12 @@ import type { EventDetail } from '~/event/eventDetail';
 import type { EventType, EventTypeDetails } from '~/event/eventType';
 import { GroupedEvent } from '~/event/groupedEvent';
 import type { EventStorageAdapter } from '~/eventStorageAdapter';
+import { SnapshotConfig, Snapshot, SnapshotStorageAdapter } from '~/snapshot';
 import type { $Contravariant } from '~/utils';
 
 import { AggregateNotFoundError } from './errors/aggregateNotFound';
 import { UndefinedEventStorageAdapterError } from './errors/undefinedEventStorageAdapter';
-import type {
+import {
   AggregateIdsLister,
   EventPusher,
   OnEventPushed,
@@ -20,6 +21,8 @@ import type {
   AggregateGetter,
   AggregateSimulator,
   Reducer,
+  AggregateAsSnapshotSaver,
+  SnapshotGetter,
 } from './types';
 
 export class EventStore<
@@ -139,6 +142,11 @@ export class EventStore<
   eventStorageAdapter?: EventStorageAdapter;
   getEventStorageAdapter: () => EventStorageAdapter;
 
+  snapshotConfig?: SnapshotConfig<AGGREGATE, $AGGREGATE>;
+  snapshotStorageAdapter?: SnapshotStorageAdapter<AGGREGATE, $AGGREGATE>;
+  getSnapshot: SnapshotGetter<AGGREGATE>;
+  saveAggregateAsSnapshot: AggregateAsSnapshotSaver<$AGGREGATE>;
+
   constructor({
     eventStoreId,
     eventTypes,
@@ -149,6 +157,8 @@ export class EventStore<
     }),
     onEventPushed,
     eventStorageAdapter,
+    snapshotConfig,
+    snapshotStorageAdapter,
   }: {
     eventStoreId: EVENT_STORE_ID;
     eventTypes: EVENT_TYPES;
@@ -156,6 +166,8 @@ export class EventStore<
     simulateSideEffect?: SideEffectsSimulator<EVENT_DETAILS, $EVENT_DETAILS>;
     onEventPushed?: OnEventPushed<$EVENT_DETAILS, $AGGREGATE>;
     eventStorageAdapter?: EventStorageAdapter;
+    snapshotConfig?: SnapshotConfig<AGGREGATE, $AGGREGATE>;
+    snapshotStorageAdapter?: SnapshotStorageAdapter<AGGREGATE, $AGGREGATE>;
   }) {
     this.eventStoreId = eventStoreId;
     this.eventTypes = eventTypes;
@@ -163,6 +175,8 @@ export class EventStore<
     this.simulateSideEffect = simulateSideEffect;
     this.onEventPushed = onEventPushed;
     this.eventStorageAdapter = eventStorageAdapter;
+    this.snapshotConfig = snapshotConfig;
+    this.snapshotStorageAdapter = snapshotStorageAdapter;
 
     this.getEventStorageAdapter = () => {
       if (this.eventStorageAdapter === undefined) {
@@ -239,15 +253,116 @@ export class EventStore<
     this.buildAggregate = (eventDetails, aggregate) =>
       eventDetails.reduce(this.reducer, aggregate) as AGGREGATE | undefined;
 
-    this.getAggregate = async (aggregateId, { maxVersion } = {}) => {
-      const { events } = await this.getEvents(aggregateId, { maxVersion });
+    this.getSnapshot = async (aggregateId, { maxVersion } = {}) => {
+      if (this.snapshotConfig === undefined) {
+        throw new Error(
+          `snapshotConfig is required in eventStore "${this.eventStoreId}" to use getAggregateFromSnapshot`,
+        );
+      }
+      if (this.snapshotStorageAdapter === undefined) {
+        throw new Error(
+          `EventStore "${this.eventStoreId}" has a snapshotConfig but no snapshotStorageAdapter.`,
+        );
+      }
+      const latestSnapshot = await this.snapshotStorageAdapter.getSnapshot({
+        aggregateId,
+        aggregateMaxVersion: maxVersion,
+        eventStoreId: this.eventStoreId,
+        reducerVersion:
+          this.snapshotConfig.migrateSnapshotReducerVersion === undefined
+            ? this.snapshotConfig.currentReducerVersion
+            : undefined,
+      });
+
+      if (latestSnapshot === undefined) {
+        return undefined;
+      }
+
+      if (
+        latestSnapshot.reducerVersion ===
+        this.snapshotConfig.currentReducerVersion
+      ) {
+        return latestSnapshot;
+      }
+
+      if (this.snapshotConfig.migrateSnapshotReducerVersion === undefined) {
+        throw new Error(
+          `snapshotStorageAdapter of eventStore "${this.eventStoreId}" returned a snapshot with a reducerVersion ("${latestSnapshot.reducerVersion}") different from the currentReducerVersion ("${this.snapshotConfig.currentReducerVersion}"). This is not supposed to happen`,
+        );
+      }
+
+      return this.snapshotConfig.migrateSnapshotReducerVersion(
+        latestSnapshot as unknown as Snapshot<$AGGREGATE>,
+      );
+    };
+
+    this.saveAggregateAsSnapshot = async (aggregate, previousSnapshot) => {
+      if (this.snapshotConfig === undefined) {
+        throw new Error(
+          `snapshotConfig is required in eventStore "${this.eventStoreId}" to use saveAggregateAsSnapshot`,
+        );
+      }
+      if (this.snapshotStorageAdapter === undefined) {
+        throw new Error(
+          `EventStore "${this.eventStoreId}" has a snapshotConfig but no snapshotStorageAdapter.`,
+        );
+      }
+
+      const snapshot = {
+        aggregate,
+        eventStoreId: this.eventStoreId,
+        reducerVersion: this.snapshotConfig.currentReducerVersion,
+      };
+
+      await this.snapshotStorageAdapter.saveSnapshot(snapshot);
+
+      await this.snapshotConfig.cleanUpAfterSnapshotSave?.({
+        latestSnapshot: snapshot,
+        previousSnapshot,
+        snapshotStorageAdapter: this
+          .snapshotStorageAdapter as unknown as SnapshotStorageAdapter<
+          $AGGREGATE,
+          $AGGREGATE
+        >,
+      });
+    };
+
+    this.getAggregate = async (
+      aggregateId,
+      { maxVersion, useSnapshot } = {},
+    ) => {
+      const snapshot =
+        useSnapshot === true
+          ? await this.getSnapshot(aggregateId, { maxVersion })
+          : undefined;
+      const minVersion =
+        snapshot !== undefined ? snapshot.aggregate.version + 1 : undefined;
+
+      const { events } = await this.getEvents(aggregateId, {
+        maxVersion,
+        minVersion,
+      });
 
       const aggregate = this.buildAggregate(
         events as unknown as $EVENT_DETAILS[],
-        undefined,
+        snapshot?.aggregate as unknown as $AGGREGATE | undefined,
       );
 
-      const lastEvent = events[events.length - 1];
+      if (
+        aggregate !== undefined &&
+        this.snapshotConfig?.shouldSaveSnapshot({
+          aggregate: aggregate as unknown as $AGGREGATE | undefined,
+          previousSnapshot: snapshot as Snapshot<$AGGREGATE> | undefined,
+        }) === true
+      ) {
+        await this.saveAggregateAsSnapshot(
+          aggregate as unknown as $AGGREGATE,
+          snapshot as Snapshot<$AGGREGATE> | undefined,
+        );
+      }
+
+      const lastEvent =
+        events.length > 0 ? events[events.length - 1] : undefined;
 
       return { aggregate, events, lastEvent };
     };

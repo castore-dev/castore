@@ -5,6 +5,11 @@ import { EventType, EventTypeDetail } from '~/event/eventType';
 import { GroupedEvent } from '~/event/groupedEvent';
 import { EventStorageAdapter } from '~/eventStorageAdapter';
 import { EventStore } from '~/eventStore';
+import {
+  cleanUpLastSnapshot,
+  createShouldSaveForRecurentSnapshots,
+  SnapshotStorageAdapter,
+} from '~/snapshot';
 
 export const pushEventMock = vi.fn();
 export const pushEventGroupMock = vi.fn();
@@ -65,12 +70,16 @@ export const pikachuCaughtEvent: PokemonEventDetails = {
   type: 'POKEMON_CAUGHT',
   timestamp: '2023',
 };
-export const pikachuLeveledUpEvent: PokemonEventDetails = {
+export const getPikachuLeveledUpEvent = (
+  version: number,
+): PokemonEventDetails => ({
   aggregateId: pikachuId,
-  version: 3,
+  version,
   type: 'POKEMON_LEVELED_UP',
   timestamp: '2024',
-};
+});
+export const pikachuLeveledUpEvent = getPikachuLeveledUpEvent(3);
+
 export const pikachuEventsMocks = [
   pikachuAppearedEvent,
   pikachuCaughtEvent,
@@ -115,4 +124,68 @@ export const pokemonsEventStore = new EventStore({
   eventTypes: [pokemonAppearedEvent, pokemonCaughtEvent, pokemonLeveledUpEvent],
   reducer: pokemonsReducer,
   eventStorageAdapter: eventStorageAdapterMock,
+});
+
+export const getSnapshotMock = vi.fn();
+export const saveSnapshotMock = vi.fn();
+export const deleteSnapshotMock = vi.fn();
+
+export const snapshotStorageAdapter: SnapshotStorageAdapter = {
+  getSnapshot: getSnapshotMock,
+  saveSnapshot: saveSnapshotMock,
+  deleteSnapshot: deleteSnapshotMock,
+};
+
+export const pikachuMultipleLevelUpEvents1Mocks = [
+  getPikachuLeveledUpEvent(4),
+  getPikachuLeveledUpEvent(5),
+];
+export const pikachuMultipleLevelUpEvents2Mocks = [
+  getPikachuLeveledUpEvent(6),
+  getPikachuLeveledUpEvent(7),
+  getPikachuLeveledUpEvent(8),
+  getPikachuLeveledUpEvent(9),
+  getPikachuLeveledUpEvent(10),
+];
+export const pikachuCompleteEventsMocks = [
+  ...pikachuEventsMocks,
+  ...pikachuMultipleLevelUpEvents1Mocks,
+  ...pikachuMultipleLevelUpEvents2Mocks,
+];
+
+export const snapshotV5 = {
+  aggregate: {
+    aggregateId: pikachuId,
+    version: 5,
+    name: 'Pikachu',
+    level: 45,
+    status: 'caught',
+  },
+  reducerVersion: 'v1.0.0',
+  eventStoreId: 'POKEMONS',
+};
+
+export const snapshotV10 = {
+  aggregate: {
+    aggregateId: pikachuId,
+    version: 10,
+    name: 'Pikachu',
+    level: 50,
+    status: 'caught',
+  },
+  reducerVersion: 'v1.0.0',
+  eventStoreId: 'POKEMONS',
+};
+
+export const pokemonsEventStoreWithSnapshot = new EventStore({
+  eventStoreId: 'POKEMONS',
+  eventTypes: [pokemonAppearedEvent, pokemonCaughtEvent, pokemonLeveledUpEvent],
+  reducer: pokemonsReducer,
+  eventStorageAdapter: eventStorageAdapterMock,
+  snapshotConfig: {
+    currentReducerVersion: 'v1.0.0',
+    shouldSaveSnapshot: createShouldSaveForRecurentSnapshots(5),
+    cleanUpAfterSnapshotSave: cleanUpLastSnapshot,
+  },
+  snapshotStorageAdapter,
 });

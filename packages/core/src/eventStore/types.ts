@@ -6,6 +6,7 @@ import type {
   ListAggregateIdsOptions,
   ListAggregateIdsOutput,
 } from '~/eventStorageAdapter';
+import { Snapshot } from '~/snapshot';
 import type { $Contravariant } from '~/utils';
 
 export type Reducer<
@@ -104,6 +105,7 @@ export type OnEventPushed<$EVENT_DETAILS, $AGGREGATE> = (props: {
 
 export type GetAggregateOptions = {
   maxVersion?: number;
+  useSnapshot?: boolean;
 };
 
 export type AggregateGetter<
@@ -115,11 +117,21 @@ export type AggregateGetter<
   options?: GetAggregateOptions,
 ) => Promise<{
   aggregate: SHOULD_EXIST extends true ? AGGREGATE : AGGREGATE | undefined;
-  events: EVENT_DETAIL[];
+  events: EVENT_DETAIL[]; // ⚠️ with useSnapshot = true, the events are incomplete
   lastEvent: SHOULD_EXIST extends true
     ? EVENT_DETAIL
     : EVENT_DETAIL | undefined;
 }>;
+
+export type SnapshotGetter<AGGREGATE extends Aggregate> = (
+  aggregateId: string,
+  options?: GetAggregateOptions,
+) => Promise<Snapshot<AGGREGATE> | undefined>;
+
+export type AggregateAsSnapshotSaver<AGGREGATE extends Aggregate> = (
+  aggregate: AGGREGATE,
+  prevSnapshot?: Snapshot<AGGREGATE>,
+) => Promise<void>;
 
 export type SimulationOptions = { simulationDate?: string };
 
